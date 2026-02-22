@@ -1,6 +1,8 @@
 import { auth } from '../firebase/config';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  "https://gormaran-growth-hub.onrender.com";
 
 async function getAuthHeader() {
   const user = auth.currentUser;
