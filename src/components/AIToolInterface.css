@@ -1,0 +1,247 @@
+.ai-tool {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.ai-tool__header {
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ai-tool__title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.ai-tool__icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ai-tool__title {
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.ai-tool__description {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Upgrade notice */
+.ai-tool__upgrade {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: rgba(99,102,241,0.08);
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: var(--border-radius);
+}
+
+.ai-tool__upgrade-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.ai-tool__upgrade > div {
+  flex: 1;
+}
+
+.ai-tool__upgrade strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
+}
+
+.ai-tool__upgrade p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Layout */
+.ai-tool__layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 1.5rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.ai-tool__panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ai-tool__panel-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+  margin-bottom: 0.75rem;
+}
+
+/* Input panel */
+.ai-tool__input-panel {
+  overflow-y: auto;
+}
+
+.ai-tool__actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.required-mark {
+  color: #f87171;
+  margin-left: 2px;
+}
+
+/* Output panel */
+.ai-tool__output-panel {
+  overflow: hidden;
+}
+
+.ai-tool__output-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.ai-tool__streaming {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-primary-light);
+  font-size: 0.9rem;
+}
+
+.ai-tool__streaming-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.6; }
+}
+
+.ai-tool__output-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ai-tool__word-count {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.ai-tool__output-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Placeholder */
+.ai-tool__output-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+  height: 100%;
+  min-height: 300px;
+}
+
+.ai-tool__placeholder-icon {
+  font-size: 3rem;
+  opacity: 0.4;
+}
+
+.ai-tool__output-placeholder p {
+  max-width: 300px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.ai-tool__output-placeholder strong {
+  color: var(--text-secondary);
+}
+
+.ai-tool__placeholder-features {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ai-tool__placeholder-features span {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  background: var(--bg-surface-2);
+  padding: 0.3rem 0.75rem;
+  border-radius: 100px;
+  border: 1px solid var(--border-color);
+}
+
+/* Output content */
+.ai-tool__output-content {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  padding-right: 0.5rem;
+}
+
+.ai-tool__cursor {
+  display: inline-block;
+  animation: blink 1s ease infinite;
+  color: var(--color-primary);
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Empty state */
+.ai-tool__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+  height: 100%;
+  min-height: 400px;
+}
+
+.ai-tool__empty-icon { font-size: 3rem; }
+.ai-tool__empty h3 { font-size: 1.25rem; }
+.ai-tool__empty p { color: var(--text-muted); font-size: 0.9rem; }
+
+@media (max-width: 1100px) {
+  .ai-tool__layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .ai-tool__output-panel { min-height: 400px; }
+}
