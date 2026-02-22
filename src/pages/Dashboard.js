@@ -5,6 +5,16 @@ import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { CATEGORIES } from '../data/categories';
 import './Dashboard.css';
+import { useTranslation } from "react-i18next";
+
+const { i18n } = useTranslation();
+
+const changeLanguage = (lng) => {
+  i18n.changeLanguage(lng);
+  localStorage.setItem("language", lng);
+};
+
+
 
 const stagger = {
   hidden: {},
@@ -20,6 +30,7 @@ export default function Dashboard() {
   const { currentUser } = useAuth();
   const { subscription, usageCount, isCategoryLocked, PLANS } = useSubscription();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
 
   const paymentStatus = searchParams.get('payment');
 
@@ -52,14 +63,13 @@ export default function Dashboard() {
           >
             <div>
               <h1 className="dashboard__greeting">
-                Good {getTimeOfDay()},{' '}
-                <span className="gradient-text">
-                  {currentUser?.displayName?.split(' ')[0] || 'there'} 👋
-                </span>
-              </h1>
+  {t("dashboard.greeting", {
+    name: currentUser?.displayName?.split(" ")[0] || t("dashboard.guestName"),
+  })}
+</h1>
               <p className="dashboard__subtitle">
-                What do you want to create today? Choose a category to get started.
-              </p>
+  {t("dashboard.subtitle")}
+</p>
             </div>
 
             <div className="dashboard__header-right">
