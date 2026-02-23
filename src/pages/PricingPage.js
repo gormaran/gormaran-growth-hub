@@ -16,7 +16,7 @@ const PLAN_META = [
 
 // Comparison row value keys (text values that need translation use a key, icons/numbers stay as-is)
 const COMPARISON_ROWS = [
-  { idx: 0, free: '5/day', pro: 'unlimited', business: 'unlimited' },
+  { idx: 0, free: '3/day', pro: 'unlimited', business: 'unlimited' },
   { idx: 1, free: '✅', pro: '✅', business: '✅' },
   { idx: 2, free: '✅', pro: '✅', business: '✅' },
   { idx: 3, free: '❌', pro: '✅', business: '✅' },

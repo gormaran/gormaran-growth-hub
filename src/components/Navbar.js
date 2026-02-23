@@ -95,44 +95,44 @@ export default function Navbar() {
 
         {/* Right section */}
         <div className="navbar__right">
+          {/* Language Selector - always visible */}
+          <div className="navbar__lang">
+            <button
+              className="navbar__lang-btn"
+              onClick={() => { setLangMenuOpen(!langMenuOpen); setUserMenuOpen(false); }}
+              aria-label="Select language"
+            >
+              <span className="navbar__lang-flag">{currentLang.flag}</span>
+              <span className="navbar__lang-code">{currentLang.code.toUpperCase()}</span>
+              <span className={`navbar__lang-arrow ${langMenuOpen ? 'open' : ''}`}>▾</span>
+            </button>
+
+            <AnimatePresence>
+              {langMenuOpen && (
+                <motion.div
+                  className="navbar__lang-dropdown"
+                  initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  {LANGUAGES.map(lang => (
+                    <button
+                      key={lang.code}
+                      className={`navbar__lang-option ${i18n.language === lang.code ? 'navbar__lang-option--active' : ''}`}
+                      onClick={() => changeLanguage(lang.code)}
+                    >
+                      <span>{lang.flag}</span>
+                      <span>{lang.label}</span>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           {currentUser ? (
             <div className="navbar__user">
-              {/* Language Selector */}
-              <div className="navbar__lang">
-                <button
-                  className="navbar__lang-btn"
-                  onClick={() => { setLangMenuOpen(!langMenuOpen); setUserMenuOpen(false); }}
-                  aria-label="Select language"
-                >
-                  <span className="navbar__lang-flag">{currentLang.flag}</span>
-                  <span className="navbar__lang-code">{currentLang.code.toUpperCase()}</span>
-                  <span className={`navbar__lang-arrow ${langMenuOpen ? 'open' : ''}`}>▾</span>
-                </button>
-
-                <AnimatePresence>
-                  {langMenuOpen && (
-                    <motion.div
-                      className="navbar__lang-dropdown"
-                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                      transition={{ duration: 0.15 }}
-                    >
-                      {LANGUAGES.map(lang => (
-                        <button
-                          key={lang.code}
-                          className={`navbar__lang-option ${i18n.language === lang.code ? 'navbar__lang-option--active' : ''}`}
-                          onClick={() => changeLanguage(lang.code)}
-                        >
-                          <span>{lang.flag}</span>
-                          <span>{lang.label}</span>
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
               {/* Plan badge */}
               <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
                 {subscription === 'free' ? 'Free' : subscription === 'pro' ? '⭐ Pro' : '💎 Business'}

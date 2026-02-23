@@ -1,0 +1,276 @@
+/* =============================================
+   3D FLIP CARD — Category cards on Landing Page
+   ============================================= */
+
+/* Wrapper takes the grid cell — same as the old .landing__category-card */
+.flip-card-wrapper {
+  height: 320px;
+}
+
+.flip-card {
+  height: 100%;
+  perspective: 1200px;
+  cursor: pointer;
+}
+
+/* The rotating inner container */
+.flip-card__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.flip-card:hover .flip-card__inner {
+  transform: rotateY(180deg);
+}
+
+/* Shared face styles */
+.flip-card__front,
+.flip-card__back {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* ── FRONT ─────────────────────────────────── */
+.flip-card__front {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.flip-card:hover .flip-card__front {
+  border-color: var(--cat-color, var(--border-hover));
+  box-shadow: 0 0 0 1px var(--cat-color, transparent), 0 8px 32px rgba(0,0,0,0.25);
+}
+
+/* "hover for demo" hint at bottom of front */
+.flip-card__hint {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  opacity: 0.55;
+  letter-spacing: 0.04em;
+  transition: opacity 0.25s;
+}
+
+.flip-card:hover .flip-card__hint {
+  opacity: 0;
+}
+
+.flip-card__hint-icon {
+  display: inline-block;
+  animation: spin-hint 3s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes spin-hint {
+  0%   { transform: rotate(0deg);   }
+  40%  { transform: rotate(180deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ── BACK ──────────────────────────────────── */
+.flip-card__back {
+  transform: rotateY(180deg);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--cat-color, #6366f1) 35%, transparent);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+/* Animated "video / demo" area */
+.flip-card__video {
+  position: relative;
+  height: 112px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Huge faint emoji in background */
+.flip-card__video-bg-icon {
+  position: absolute;
+  font-size: 5.5rem;
+  opacity: 0.07;
+  user-select: none;
+  pointer-events: none;
+  animation: float-icon 6s ease-in-out infinite;
+}
+
+@keyframes float-icon {
+  0%, 100% { transform: translateY(0) scale(1);    }
+  50%       { transform: translateY(-6px) scale(1.04); }
+}
+
+/* Animated shimmer lines to simulate AI output / video */
+.flip-card__video-lines {
+  position: absolute;
+  inset: 0;
+  padding: 0.65rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  pointer-events: none;
+}
+
+.flip-card__vline {
+  height: 8px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--cat-color, #6366f1) 70%, transparent) 0%,
+    color-mix(in srgb, var(--cat-color, #6366f1) 20%, transparent) 100%
+  );
+  border-radius: 4px;
+  animation: shimmer-line 2s ease infinite;
+}
+
+.flip-card__vline:nth-child(2) { animation-delay: 0.3s; }
+.flip-card__vline:nth-child(4) { animation-delay: 0.15s; }
+.flip-card__vline:nth-child(5) { animation-delay: 0.45s; }
+
+@keyframes shimmer-line {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.75; }
+}
+
+/* Mini table rows inside the video area */
+.flip-card__vtable {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin: 1px 0;
+}
+
+.flip-card__vtable > div {
+  height: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  animation: shimmer-line 2.4s ease infinite;
+}
+
+.flip-card__vtable > div:nth-child(2) { animation-delay: 0.4s; }
+.flip-card__vtable > div:nth-child(3) { animation-delay: 0.8s; }
+
+/* Play button overlay */
+.flip-card__play {
+  position: relative;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  color: white;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  backdrop-filter: blur(4px);
+  padding-left: 3px; /* optical centering of ▶ */
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.1);
+  animation: pulse-play 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-play {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.25); }
+  50%       { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);  }
+}
+
+/* Category name on the back */
+.flip-card__back-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 0;
+}
+
+/* Tool rows — 2-column grid */
+.flip-card__tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 0.5rem;
+  flex: 1;
+  align-content: start;
+  overflow: hidden;
+}
+
+.flip-card__tool-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+  overflow: hidden;
+}
+
+.flip-card__tool-icon {
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.flip-card__tool-row span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* CTA button */
+.flip-card__cta-btn {
+  display: block;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--cat-color, var(--color-primary));
+  opacity: 0.88;
+  transition: opacity 0.2s, transform 0.15s;
+  text-decoration: none;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.flip-card__cta-btn:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+/* ── RESPONSIVE ────────────────────────────── */
+@media (max-width: 1200px) {
+  .flip-card-wrapper { height: 340px; }
+}
+
+@media (max-width: 640px) {
+  .flip-card-wrapper { height: auto; min-height: 300px; }
+
+  /* On mobile: tap to flip using a checkbox hack or just show both */
+  /* Simple approach: always show front, make cards taller with tap support */
+  .flip-card { height: 300px; }
+}
