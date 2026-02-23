@@ -1,13 +1,11 @@
-import React from 'react';
+
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { CATEGORIES } from '../data/categories';
+import { useTranslation } from 'react-i18next';
 import './Dashboard.css';
-import { useTranslation } from "react-i18next";
-
-
 
 const stagger = {
   hidden: {},
@@ -24,12 +22,6 @@ export default function Dashboard() {
   const { subscription, usageCount, isCategoryLocked, PLANS } = useSubscription();
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
-  const { i18n } = useTranslation();
-
-const changeLanguage = (lng) => {
-  i18n.changeLanguage(lng);
-  localStorage.setItem("language", lng);
-};
 
   const paymentStatus = searchParams.get('payment');
 
@@ -62,24 +54,24 @@ const changeLanguage = (lng) => {
           >
             <div>
               <h1 className="dashboard__greeting">
-  {t("dashboard.greeting", {
-    name: currentUser?.displayName?.split(" ")[0] || t("dashboard.guestName"),
-  })}
-</h1>
-              <p className="dashboard__subtitle">
-  {t("dashboard.subtitle")}
-</p>
+                {t('dashboard.greeting', { name: currentUser?.displayName?.split(' ')[0] || t('dashboard.guestName', { defaultValue: 'friend' }) })}
+              </h1>
+              <p className="dashboard__subtitle">{t('dashboard.subtitle')}</p>
             </div>
 
             <div className="dashboard__header-right">
               <div className="dashboard__plan-badge">
                 <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
-                  {subscription === 'free' ? 'Free Plan' : subscription === 'pro' ? '⭐ Pro Plan' : '💎 Business Plan'}
+                  {subscription === 'free'
+                    ? t('ui.freePlan', { defaultValue: 'Free Plan' })
+                    : subscription === 'pro'
+                    ? `⭐ ${t('ui.proPlan', { defaultValue: 'Pro Plan' })}`
+                    : `💎 ${t('ui.businessPlan', { defaultValue: 'Business Plan' })}`}
                 </span>
               </div>
               {subscription === 'free' && (
                 <Link to="/pricing" className="btn btn-primary btn-sm">
-                  Upgrade ↗
+                  {t('ui.upgrade', { defaultValue: 'Upgrade' })} ↗
                 </Link>
               )}
             </div>
@@ -94,9 +86,9 @@ const changeLanguage = (lng) => {
               transition={{ delay: 0.1 }}
             >
               <div className="dashboard__usage-info">
-                <span>Daily AI Requests</span>
+                <span>{t('dailyRequests', { defaultValue: 'Daily AI Requests' })}</span>
                 <span className="dashboard__usage-count">
-                  <strong>{usageCount}</strong> / {plan.dailyLimit} used
+                  <strong>{usageCount}</strong> / {plan.dailyLimit} {t('ui.used', { defaultValue: 'used' })}
                 </span>
               </div>
               <div className="dashboard__usage-bar">
@@ -107,9 +99,9 @@ const changeLanguage = (lng) => {
               </div>
               <p className="dashboard__usage-note">
                 {usageCount >= plan.dailyLimit
-                  ? '🚫 Daily limit reached — '
-                  : `${plan.dailyLimit - usageCount} requests remaining today — `}
-                <Link to="/pricing">Upgrade to Pro for unlimited access</Link>
+                  ? `🚫 ${t('ui.dailyLimitReached', { defaultValue: 'Daily limit reached' })} — `
+                  : `${plan.dailyLimit - usageCount} ${t('ui.requestsRemaining', { defaultValue: 'requests remaining today' })} — `}
+                <Link to="/pricing">{t('ui.upgradeForUnlimited', { defaultValue: 'Upgrade to Pro for unlimited access' })}</Link>
               </p>
             </motion.div>
           )}
@@ -117,7 +109,7 @@ const changeLanguage = (lng) => {
           {/* Category Grid */}
           <section className="dashboard__categories">
             <h2 className="dashboard__section-title">
-              <span>🚀</span> AI Tool Categories
+              <span>🚀</span> {t('ui.aiToolCategories', { defaultValue: 'AI Tool Categories' })}
             </h2>
 
             <motion.div
@@ -127,13 +119,17 @@ const changeLanguage = (lng) => {
               variants={stagger}
             >
               {CATEGORIES.map((cat) => {
-                const locked = isCategoryLocked(cat.id);
+                const isAddon = !!cat.isAddon;
+                const locked = !isAddon && isCategoryLocked(cat.id);
+                const catName = t(`cat.${cat.id}.name`, { defaultValue: cat.name });
+                const catDesc = t(`cat.${cat.id}.desc`, { defaultValue: cat.description });
+
                 return (
                   <motion.div
                     key={cat.id}
-                    className={`dashboard__cat-card ${locked ? 'dashboard__cat-card--locked' : ''}`}
+                    className={`dashboard__cat-card ${locked ? 'dashboard__cat-card--locked' : ''} ${isAddon ? 'dashboard__cat-card--addon' : ''}`}
                     variants={fadeUp}
-                    whileHover={!locked ? { y: -6, scale: 1.01 } : {}}
+                    whileHover={{ y: -6, scale: 1.01 }}
                   >
                     <div
                       className="dashboard__cat-accent"
@@ -148,34 +144,39 @@ const changeLanguage = (lng) => {
                         {cat.icon}
                       </div>
                       {locked && (
-                        <span className="dashboard__cat-lock">
-                          🔒 Pro
-                        </span>
+                        <span className="dashboard__cat-lock">🔒 Pro</span>
+                      )}
+                      {isAddon && (
+                        <span className="dashboard__cat-addon-badge">🔌 Add-on</span>
                       )}
                     </div>
 
-                    <h3 className="dashboard__cat-name">{cat.name}</h3>
-                    <p className="dashboard__cat-desc">{cat.description}</p>
+                    <h3 className="dashboard__cat-name">{catName}</h3>
+                    <p className="dashboard__cat-desc">{catDesc}</p>
 
                     <div className="dashboard__cat-tools">
                       {cat.tools.map((tool) => (
                         <span key={tool.id} className="dashboard__tool-chip">
-                          {tool.icon} {tool.name}
+                          {tool.icon} {t(`tool.${tool.id}.name`, { defaultValue: tool.name })}
                         </span>
                       ))}
                     </div>
 
                     <div className="dashboard__cat-footer">
                       <span className="dashboard__cat-count">
-                        {cat.tools.length} tools
+                        {cat.tools.length} {t('ui.tools', { defaultValue: 'tools' })}
                       </span>
-                      {locked ? (
+                      {isAddon ? (
+                        <Link to="/pricing" className="btn btn-addon btn-sm">
+                          {t('ui.addonBuy', { defaultValue: 'Add-on · €10' })}
+                        </Link>
+                      ) : locked ? (
                         <Link to="/pricing" className="btn btn-secondary btn-sm">
-                          Upgrade
+                          {t('ui.upgrade', { defaultValue: 'Upgrade' })}
                         </Link>
                       ) : (
                         <Link to={`/category/${cat.id}`} className="btn btn-primary btn-sm">
-                          Open →
+                          {t('ui.open', { defaultValue: 'Open →' })}
                         </Link>
                       )}
                     </div>
@@ -201,11 +202,4 @@ const changeLanguage = (lng) => {
       </div>
     </div>
   );
-}
-
-function getTimeOfDay() {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'morning';
-  if (hour < 17) return 'afternoon';
-  return 'evening';
 }

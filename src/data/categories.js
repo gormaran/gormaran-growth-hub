@@ -10,7 +10,7 @@ export const CATEGORIES = [
       {
         id: 'seo-keyword-research',
         name: 'Keyword Research',
-        description: 'Find high-opportunity keywords to rank for',
+        description: 'Discover high-traffic, low-competition keywords to rank on Google and drive targeted organic traffic',
         icon: '🔍',
         inputs: [
           { id: 'keyword', label: 'Target Keyword / Topic', type: 'text', placeholder: 'e.g., email marketing automation', required: true },
@@ -38,7 +38,7 @@ Format everything in scannable markdown with tables where appropriate. Be specif
       {
         id: 'seo-meta-tags',
         name: 'Meta Tags Generator',
-        description: 'Create click-worthy title tags and meta descriptions',
+        description: 'Create SEO-optimized title tags and meta descriptions that maximize click-through rates from search results',
         icon: '🏷️',
         inputs: [
           { id: 'page_topic', label: 'Page Topic / Product', type: 'text', placeholder: 'e.g., Project management software for remote teams', required: true },
@@ -63,7 +63,7 @@ Always show exact character counts in brackets after each variation. Flag any th
       {
         id: 'copywriting-headlines',
         name: 'Headline Generator',
-        description: 'High-converting headlines for any medium',
+        description: 'Generate high-converting headlines using proven copywriting formulas and psychological triggers',
         icon: '✍️',
         inputs: [
           { id: 'product', label: 'Product / Service / Content', type: 'text', placeholder: 'e.g., CRM software for sales teams', required: true },
@@ -101,7 +101,7 @@ Rate each headline on Specificity, Emotional Impact, and Relevance (1-10 each).`
       {
         id: 'social-media-captions',
         name: 'Social Media Captions',
-        description: 'Engaging captions for every social platform',
+        description: 'Create platform-native captions for Instagram, LinkedIn, Twitter, Facebook and TikTok that boost engagement',
         icon: '📱',
         inputs: [
           { id: 'topic', label: 'Topic / Post Theme', type: 'text', placeholder: 'e.g., Launching our new product feature', required: true },
@@ -143,7 +143,7 @@ For each platform, explain the strategic choice of format and what makes it nati
       {
         id: 'email-campaign',
         name: 'Email Campaign',
-        description: 'Complete email sequences that convert',
+        description: 'Build complete email sequences — welcome flows, product launches, re-engagement — that convert subscribers into customers',
         icon: '📧',
         inputs: [
           { id: 'campaign_type', label: 'Campaign Type', type: 'select', options: ['Welcome Series', 'Product Launch', 'Abandoned Cart', 'Re-engagement', 'Promotional Offer', 'Newsletter', 'Post-Purchase'], required: true },
@@ -187,7 +187,7 @@ Use proven copywriting frameworks: AIDA, PAS (Problem-Agitate-Solution), and sto
       {
         id: 'business-plan',
         name: 'Business Plan Builder',
-        description: 'Comprehensive business plan sections',
+        description: 'Generate a full investor-ready business plan with executive summary, market analysis, financial projections and GTM strategy',
         icon: '📋',
         inputs: [
           { id: 'business_name', label: 'Business Name', type: 'text', placeholder: 'e.g., TechFlow SaaS', required: true },
@@ -219,7 +219,7 @@ Be specific, realistic, and include frameworks where appropriate (Porter's Five 
       {
         id: 'market-analysis',
         name: 'Market Analysis',
-        description: 'Deep dive into your market opportunity',
+        description: 'Get a deep-dive market research report with TAM/SAM/SOM sizing, growth drivers, customer segments and strategic recommendations',
         icon: '📊',
         inputs: [
           { id: 'market', label: 'Market / Industry', type: 'text', placeholder: 'e.g., AI writing tools market', required: true },
@@ -249,7 +249,7 @@ Include specific data points, frameworks, and strategic insights throughout.`,
       {
         id: 'competitor-research',
         name: 'Competitor Research',
-        description: 'Competitive intelligence and positioning strategy',
+        description: 'Map your competitive landscape with detailed profiles, feature comparison matrices, battle cards and positioning strategy',
         icon: '🔬',
         inputs: [
           { id: 'your_product', label: 'Your Product / Service', type: 'text', placeholder: 'e.g., AI-powered project management tool', required: true },
@@ -283,7 +283,7 @@ Be direct and analytical. Flag where assumptions are made.`,
       {
         id: 'swot-analysis',
         name: 'SWOT Analysis',
-        description: 'Strategic SWOT with actionable SO/ST/WO/WT strategies',
+        description: 'Go beyond a simple SWOT with advanced TOWS strategies, a priority action matrix and a risk heat map',
         icon: '⚖️',
         inputs: [
           { id: 'company', label: 'Company / Product Name', type: 'text', placeholder: 'e.g., GrowthApp', required: true },
@@ -329,7 +329,7 @@ Be specific to the business provided, not generic. Every item should reference t
       {
         id: 'blog-post',
         name: 'Blog Post Writer',
-        description: 'SEO-optimized long-form blog posts',
+        description: 'Produce complete, SEO-optimized blog posts with hook intro, structured sections, FAQ and internal link suggestions',
         icon: '📝',
         inputs: [
           { id: 'topic', label: 'Blog Topic / Title', type: 'text', placeholder: 'e.g., How to Build an Email List from Scratch in 2025', required: true },
@@ -369,7 +369,7 @@ Match the requested tone throughout. Write for humans first, Google second.`,
       {
         id: 'video-script',
         name: 'Video Script Writer',
-        description: 'Scripts for YouTube, ads, explainer videos',
+        description: 'Get production-ready scripts for YouTube, TikTok, ads and VSLs — including hook, chapters, CTAs and description templates',
         icon: '🎬',
         inputs: [
           { id: 'video_type', label: 'Video Type', type: 'select', options: ['YouTube Tutorial', 'YouTube Vlog/Story', 'Explainer Video', 'Product Demo', 'Sales VSL (Video Sales Letter)', 'Short-form (TikTok/Reels)', 'Podcast Episode'], required: true },
@@ -414,7 +414,7 @@ Make dialogue feel natural and authentic, not scripted. Include [PAUSE] markers 
       {
         id: 'newsletter',
         name: 'Newsletter Writer',
-        description: 'Engaging newsletters your subscribers actually read',
+        description: 'Craft engaging newsletter issues with subject line packs, personalized intro hooks and A/B test recommendations',
         icon: '📰',
         inputs: [
           { id: 'newsletter_name', label: 'Newsletter Name', type: 'text', placeholder: 'e.g., The Growth Weekly' },
@@ -465,7 +465,7 @@ Keep total read time to 3-5 minutes. One main idea per issue. Personality > perf
       {
         id: 'google-ads',
         name: 'Google Ads Creator',
-        description: 'Complete Google Ads campaigns with keywords and copy',
+        description: 'Build full Google Ads campaigns with ad groups, keyword lists, responsive search ads, extensions and an optimization roadmap',
         icon: '🎯',
         inputs: [
           { id: 'product', label: 'Product / Service', type: 'text', placeholder: 'e.g., Cloud-based accounting software for small businesses', required: true },
@@ -523,7 +523,7 @@ Always flag character limit compliance and note the best-performing ad formula.`
       {
         id: 'meta-ads',
         name: 'Meta Ads (Facebook & Instagram)',
-        description: 'High-converting Facebook and Instagram ad campaigns',
+        description: 'Design complete Facebook & Instagram campaigns with audience targeting, ad copy variations, retargeting and a testing framework',
         icon: '📘',
         inputs: [
           { id: 'product', label: 'Product / Service', type: 'text', placeholder: 'e.g., Online fitness coaching program', required: true },
@@ -579,7 +579,7 @@ Create a complete Meta Ads campaign package:
       {
         id: 'landing-page',
         name: 'Landing Page Copy',
-        description: 'High-converting landing page copy that drives action',
+        description: 'Write conversion-optimized copy for every section — hero, benefits, social proof, FAQs and final call to action',
         icon: '🖥️',
         inputs: [
           { id: 'product', label: 'Product / Service', type: 'text', placeholder: 'e.g., SaaS project management tool', required: true },
@@ -651,7 +651,7 @@ Write complete, conversion-optimized landing page copy:
       {
         id: 'amazon-listing',
         name: 'Amazon Listing Optimizer',
-        description: 'A9 algorithm-optimized Amazon product listings',
+        description: 'Fully optimize your Amazon listing with A9-algorithm titles, keyword-rich bullet points and backend search terms',
         icon: '📦',
         inputs: [
           { id: 'product_name', label: 'Product Name', type: 'text', placeholder: 'e.g., Stainless Steel Insulated Water Bottle', required: true },
@@ -709,7 +709,7 @@ Create a fully optimized Amazon listing:
       {
         id: 'product-description',
         name: 'Product Description Writer',
-        description: 'Persuasive product copy for Shopify, WooCommerce',
+        description: 'Create persuasive product page copy for Shopify, WooCommerce and Etsy that turns browsers into buyers',
         icon: '🛍️',
         inputs: [
           { id: 'product', label: 'Product Name', type: 'text', placeholder: 'e.g., Handmade Leather Journal', required: true },
@@ -756,7 +756,7 @@ Match the price tier with appropriate vocabulary (budget = accessible/value, lux
       {
         id: 'cro-audit',
         name: 'Conversion Rate Optimizer',
-        description: 'CRO audit and A/B testing ideas to boost sales',
+        description: 'Get a full CRO audit with prioritized A/B tests, quick wins, psychological trigger checklist and a 90-day roadmap',
         icon: '📊',
         inputs: [
           { id: 'page_type', label: 'Page Type', type: 'select', options: ['Product Page', 'Home Page', 'Category Page', 'Cart Page', 'Checkout', 'Collection Page'] },
@@ -829,7 +829,7 @@ Deliver a comprehensive CRO audit and action plan:
       {
         id: 'client-proposal',
         name: 'Client Proposal Generator',
-        description: 'Win clients with professional proposals',
+        description: 'Create professional, client-winning proposals with executive summary, scope of work, pricing and clear next steps',
         icon: '📄',
         inputs: [
           { id: 'agency_name', label: 'Your Agency Name', type: 'text', placeholder: 'e.g., Pixel Growth Agency', required: true },
@@ -909,7 +909,7 @@ Make it read like a conversation, not a legal document. Use second person ("you/
       {
         id: 'client-report',
         name: 'Client Report Generator',
-        description: 'Professional monthly performance reports',
+        description: 'Produce polished monthly performance reports with metrics dashboard, channel breakdown and next-month action plan',
         icon: '📈',
         inputs: [
           { id: 'agency_name', label: 'Agency Name', type: 'text', placeholder: 'e.g., Pixel Growth Agency', required: true },
@@ -971,7 +971,7 @@ Keep language professional but human. Avoid data dumps — every number should h
       {
         id: 'case-study',
         name: 'Case Study Builder',
-        description: 'Compelling case studies that win new clients',
+        description: 'Transform your client results into compelling case studies with narrative structure, headline metrics and social media versions',
         icon: '🏆',
         inputs: [
           { id: 'client_name', label: 'Client / Company Name', type: 'text', placeholder: 'e.g., BlueSky Retail Co. (use real or anonymized)', required: true },
@@ -1040,7 +1040,7 @@ Create a comprehensive case study:
       {
         id: 'investor-pitch',
         name: 'Investor Pitch Deck',
-        description: 'VC-ready pitch deck content and script',
+        description: 'Build a VC-ready pitch deck with slide-by-slide content, full pitch script and answers to the top 15 investor questions',
         icon: '💰',
         inputs: [
           { id: 'company', label: 'Company Name', type: 'text', placeholder: 'e.g., DataFlow AI', required: true },
@@ -1136,7 +1136,7 @@ Create a complete investor pitch deck package:
       {
         id: 'gtm-strategy',
         name: 'Go-to-Market Strategy',
-        description: 'Launch strategy and growth playbook for startups',
+        description: 'Develop a full GTM playbook covering ICP definition, positioning, channel strategy, launch timeline and first 100 customers plan',
         icon: '🗺️',
         inputs: [
           { id: 'product', label: 'Product / Service', type: 'text', placeholder: 'e.g., B2B project management SaaS tool', required: true },
@@ -1208,7 +1208,7 @@ Create a comprehensive go-to-market strategy:
       {
         id: 'user-stories',
         name: 'User Story Generator',
-        description: 'Agile user stories, epics, and acceptance criteria',
+        description: 'Generate complete Agile story packages with acceptance criteria, story points, MoSCoW priority and sprint planning',
         icon: '📋',
         inputs: [
           { id: 'product', label: 'Product / Feature', type: 'text', placeholder: 'e.g., User onboarding flow for B2B SaaS', required: true },
@@ -1267,6 +1267,81 @@ For each story:
 **8. RETROSPECTIVE PROMPTS** — After shipping the feature, what to review`,
         buildUserMessage: (inputs) =>
           `Generate user stories:\n\n**Product/Feature:** ${inputs.product}\n**User Types:** ${inputs.user_type || 'End users'}\n**Main Goal:** ${inputs.goal || 'Use the product effectively'}\n**Tech Stack:** ${inputs.tech_stack || 'Not specified'}\n**Sprint Length:** ${inputs.sprint_length || '2 weeks'}\n\nCreate the complete user story package with all sections.`,
+      },
+    ],
+  },
+  {
+    id: 'automation',
+    name: 'N8n Automation',
+    description: 'Design powerful no-code automations for your business using n8n',
+    icon: '⚡',
+    gradient: 'from-cyan-600 to-teal-600',
+    color: '#0891b2',
+    isAddon: true,
+    addonPrice: 10,
+    tools: [
+      {
+        id: 'n8n-workflow',
+        name: 'N8n Workflow Designer',
+        description: 'Design complete n8n automation workflows with triggers, nodes, logic conditions and step-by-step setup instructions',
+        icon: '🔄',
+        inputs: [
+          { id: 'goal', label: 'Automation Goal', type: 'textarea', placeholder: 'e.g., When a new lead fills out my Typeform, add them to HubSpot, send a Slack notification and create a task in Notion', required: true },
+          { id: 'apps', label: 'Apps / Services to Connect', type: 'text', placeholder: 'e.g., Gmail, Slack, HubSpot, Notion, Google Sheets', required: true },
+          { id: 'trigger', label: 'Trigger Event', type: 'text', placeholder: 'e.g., New form submission, new email, scheduled daily at 9am', required: true },
+          { id: 'frequency', label: 'How Often', type: 'select', options: ['Real-time (webhook)', 'Every hour', 'Daily', 'Weekly', 'On demand'] },
+          { id: 'complexity', label: 'Workflow Complexity', type: 'select', options: ['Simple (2-3 nodes)', 'Medium (4-7 nodes)', 'Complex (8+ nodes with branches)'] },
+        ],
+        systemPrompt: `You are an n8n automation expert who has built thousands of workflows for businesses of all sizes. You deeply understand n8n's node library, trigger types, expression syntax, error handling, and best practices for reliable, maintainable automations.
+
+Design a complete, ready-to-build n8n workflow:
+
+**1. WORKFLOW OVERVIEW**
+- Automation name and purpose
+- Business value: what this saves or enables
+- Estimated time saved per week
+
+**2. WORKFLOW DIAGRAM** (text-based flow)
+[Trigger Node] → [Node 1] → [Node 2] → ... → [Final Action]
+Include branching logic with ✅ Yes / ❌ No paths where applicable
+
+**3. NODE-BY-NODE BREAKDOWN**
+For each node:
+- **Node #N: [Node Name]** (n8n node type, e.g., HTTP Request, Slack, Gmail, IF)
+  - Purpose: what it does in this workflow
+  - Key settings to configure:
+    - Field name: value or expression
+  - Output passed to next node
+  - Error handling recommendation
+
+**4. EXPRESSIONS & DATA MAPPING**
+- Key n8n expressions needed (e.g., {{ $json.email }}, {{ $now.toISO() }})
+- Data transformation logic
+- Conditional IF node conditions with exact syntax
+
+**5. STEP-BY-STEP SETUP GUIDE**
+Numbered steps to build this workflow from scratch in n8n:
+1. Open n8n and create a new workflow
+2. Add the trigger node...
+(Continue for every node)
+
+**6. TESTING CHECKLIST**
+- How to test each node individually
+- Sample test data to use
+- Top 3 common errors and how to fix them
+
+**7. OPTIMIZATION & RELIABILITY**
+- Performance tips for this workflow type
+- Error handling nodes to add
+- Monitoring and alerting recommendations
+
+**8. WORKFLOW EXTENSIONS**
+- 3 ways to enhance this automation further
+- Related workflows that pair well with this one
+
+Be specific with exact n8n node names as they appear in the interface. Include real expression syntax.`,
+        buildUserMessage: (inputs) =>
+          `Design an n8n automation workflow:\n\n**Goal:** ${inputs.goal}\n**Apps to Connect:** ${inputs.apps}\n**Trigger:** ${inputs.trigger}\n**Frequency:** ${inputs.frequency || 'Real-time (webhook)'}\n**Complexity:** ${inputs.complexity || 'Medium (4-7 nodes)'}\n\nCreate the complete workflow design with full node breakdown, expressions and step-by-step setup guide.`,
       },
     ],
   },

@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { streamAIResponse } from '../utils/api';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import './AIToolInterface.css';
 
 function FormField({ field, value, onChange }) {
@@ -68,6 +70,7 @@ export default function AIToolInterface({ tool, categoryId }) {
 
   const { currentUser } = useAuth();
   const { canUseTool, trackUsage, isAtLimit, subscription } = useSubscription();
+  const { t, i18n } = useTranslation();
 
   // Reset when tool changes
   useEffect(() => {
@@ -118,9 +121,9 @@ export default function AIToolInterface({ tool, categoryId }) {
 
     if (!canUseTool(categoryId)) {
       if (isAtLimit()) {
-        setError('Daily usage limit reached. Upgrade to Pro for unlimited access.');
+        setError(t('ui.dailyLimitText', { limit: 5, defaultValue: "Daily usage limit reached. Upgrade to Pro for unlimited access." }));
       } else {
-        setError('This category requires a Pro plan.');
+        setError(t('ui.proOnlyText', { defaultValue: 'This category is available on Pro and Business plans.' }));
       }
       return;
     }
@@ -138,7 +141,7 @@ export default function AIToolInterface({ tool, categoryId }) {
     await streamAIResponse({
       categoryId,
       toolId: tool.id,
-      inputs,
+      inputs: { ...inputs, _language: i18n.language },
       onChunk: (text) => {
         if (!abortRef.current) {
           setOutput((prev) => prev + text);
@@ -180,11 +183,14 @@ export default function AIToolInterface({ tool, categoryId }) {
     return (
       <div className="ai-tool__empty">
         <div className="ai-tool__empty-icon">⬅️</div>
-        <h3>Select a tool to get started</h3>
-        <p>Choose a tool from the sidebar to generate AI-powered content</p>
+        <h3>{t('ui.selectTool', { defaultValue: 'Select a tool to get started' })}</h3>
+        <p>{t('ui.selectToolSub', { defaultValue: 'Choose a tool from the sidebar to generate AI-powered content' })}</p>
       </div>
     );
   }
+
+  const toolName = t(`tool.${tool.id}.name`, { defaultValue: tool.name });
+  const toolDesc = t(`tool.${tool.id}.desc`, { defaultValue: tool.description });
 
   return (
     <div className="ai-tool">
@@ -193,8 +199,8 @@ export default function AIToolInterface({ tool, categoryId }) {
         <div className="ai-tool__title-row">
           <span className="ai-tool__icon">{tool.icon}</span>
           <div>
-            <h2 className="ai-tool__title">{tool.name}</h2>
-            <p className="ai-tool__description">{tool.description}</p>
+            <h2 className="ai-tool__title">{toolName}</h2>
+            <p className="ai-tool__description">{toolDesc}</p>
           </div>
         </div>
       </div>
@@ -204,21 +210,21 @@ export default function AIToolInterface({ tool, categoryId }) {
         <div className="ai-tool__upgrade">
           <div className="ai-tool__upgrade-icon">🔒</div>
           <div>
-            <strong>{atLimit ? 'Daily limit reached' : 'Pro feature'}</strong>
+            <strong>{atLimit ? t('ui.dailyLimitReached', { defaultValue: 'Daily limit reached' }) : t('ui.proFeature', { defaultValue: 'Pro feature' })}</strong>
             <p>
               {atLimit
-                ? 'You\'ve used all 5 free daily requests. Upgrade to Pro for unlimited access.'
-                : 'This category is available on Pro and Business plans.'}
+                ? t('ui.dailyLimitText', { limit: 5, defaultValue: "You've used all 5 free daily requests. Upgrade to Pro for unlimited access." })
+                : t('ui.proOnlyText', { defaultValue: 'This category is available on Pro and Business plans.' })}
             </p>
           </div>
-          <Link to="/pricing" className="btn btn-primary btn-sm">Upgrade Now</Link>
+          <Link to="/pricing" className="btn btn-primary btn-sm">{t('ui.upgradeNow', { defaultValue: 'Upgrade Now' })}</Link>
         </div>
       )}
 
       <div className="ai-tool__layout">
         {/* Input Panel */}
         <div className="ai-tool__panel ai-tool__input-panel">
-          <h3 className="ai-tool__panel-title">📝 Your Inputs</h3>
+          <h3 className="ai-tool__panel-title">{t('ui.yourInputs', { defaultValue: '📝 Your Inputs' })}</h3>
           <form onSubmit={handleGenerate}>
             {tool.inputs.map((field) => (
               <FormField
@@ -238,7 +244,7 @@ export default function AIToolInterface({ tool, categoryId }) {
             <div className="ai-tool__actions">
               {isStreaming ? (
                 <button type="button" className="btn btn-danger" onClick={handleStop}>
-                  ⏹ Stop Generating
+                  ⏹ {t('ui.stopGenerating', { defaultValue: 'Stop Generating' })}
                 </button>
               ) : (
                 <button
@@ -247,12 +253,12 @@ export default function AIToolInterface({ tool, categoryId }) {
                   disabled={locked || atLimit}
                 >
                   <span>✨</span>
-                  Generate with AI
+                  {t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}
                 </button>
               )}
               {output && !isStreaming && (
                 <button type="button" className="btn btn-ghost btn-sm" onClick={handleClear}>
-                  Clear
+                  {t('ui.clear', { defaultValue: 'Clear' })}
                 </button>
               )}
             </div>
@@ -266,23 +272,23 @@ export default function AIToolInterface({ tool, categoryId }) {
               {isStreaming ? (
                 <span className="ai-tool__streaming">
                   <span className="ai-tool__streaming-dot" />
-                  AI is generating...
+                  {t('ui.aiGenerating', { defaultValue: 'AI is generating...' })}
                 </span>
               ) : output ? (
-                '✅ AI Output'
+                `✅ ${t('ui.aiOutput', { defaultValue: 'AI Output' })}`
               ) : (
-                '🤖 AI Output'
+                `🤖 ${t('ui.aiOutput', { defaultValue: 'AI Output' })}`
               )}
             </h3>
             {output && (
               <div className="ai-tool__output-controls">
-                <span className="ai-tool__word-count">{wordCount} words</span>
+                <span className="ai-tool__word-count">{wordCount} {t('ui.words', { defaultValue: 'words' })}</span>
                 <button
                   className="btn btn-secondary btn-sm"
                   onClick={handleCopy}
                   disabled={isStreaming}
                 >
-                  {copied ? '✅ Copied!' : '📋 Copy'}
+                  {copied ? `✅ ${t('ui.copied', { defaultValue: 'Copied!' })}` : `📋 ${t('ui.copy', { defaultValue: 'Copy' })}`}
                 </button>
               </div>
             )}
@@ -292,11 +298,11 @@ export default function AIToolInterface({ tool, categoryId }) {
             {!output && !isStreaming && (
               <div className="ai-tool__output-placeholder">
                 <div className="ai-tool__placeholder-icon">✨</div>
-                <p>Fill in the inputs on the left and click <strong>Generate with AI</strong> to create content.</p>
+                <p>{t('ui.fillInputs', { defaultValue: 'Fill in the inputs on the left and click' })} <strong>{t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}</strong>.</p>
                 <div className="ai-tool__placeholder-features">
-                  <span>📊 Structured output</span>
-                  <span>🎯 Category-specific</span>
-                  <span>⚡ Real-time streaming</span>
+                  <span>{t('ui.structuredOutput', { defaultValue: '📊 Structured output' })}</span>
+                  <span>{t('ui.categorySpecific', { defaultValue: '🎯 Category-specific' })}</span>
+                  <span>{t('ui.realTimeStreaming', { defaultValue: '⚡ Real-time streaming' })}</span>
                 </div>
               </div>
             )}
@@ -309,7 +315,7 @@ export default function AIToolInterface({ tool, categoryId }) {
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <ReactMarkdown>{output}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown>
                   {isStreaming && <span className="ai-tool__cursor">▋</span>}
                 </motion.div>
               )}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { getCategoryById } from '../data/categories';
 import { useSubscription } from '../context/SubscriptionContext';
 import AIToolInterface from '../components/AIToolInterface';
@@ -10,6 +11,7 @@ export default function CategoryPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
   const { isCategoryLocked } = useSubscription();
+  const { t } = useTranslation();
 
   const category = getCategoryById(categoryId);
   const [selectedTool, setSelectedTool] = useState(null);
@@ -20,7 +22,6 @@ export default function CategoryPage() {
       navigate('/dashboard');
       return;
     }
-    // Auto-select first tool
     if (category.tools.length > 0) {
       setSelectedTool(category.tools[0]);
     }
@@ -29,6 +30,7 @@ export default function CategoryPage() {
   if (!category) return null;
 
   const locked = isCategoryLocked(categoryId);
+  const catName = t(`cat.${category.id}.name`, { defaultValue: category.name });
 
   return (
     <div className="page">
@@ -38,11 +40,11 @@ export default function CategoryPage() {
           <div className="container">
             <div className="category__breadcrumb">
               <Link to="/dashboard" className="category__breadcrumb-link">
-                ← Dashboard
+                {t('ui.backToDashboard', { defaultValue: '← Dashboard' })}
               </Link>
               <span className="category__breadcrumb-sep">/</span>
               <span className="category__breadcrumb-icon">{category.icon}</span>
-              <span className="category__breadcrumb-name">{category.name}</span>
+              <span className="category__breadcrumb-name">{catName}</span>
             </div>
           </div>
         </div>
@@ -64,8 +66,10 @@ export default function CategoryPage() {
                   {category.icon}
                 </div>
                 <div>
-                  <h3 className="category__sidebar-name">{category.name}</h3>
-                  <span className="category__sidebar-count">{category.tools.length} tools</span>
+                  <h3 className="category__sidebar-name">{catName}</h3>
+                  <span className="category__sidebar-count">
+                    {category.tools.length} {t('ui.tools', { defaultValue: 'tools' })}
+                  </span>
                 </div>
               </div>
             </div>
@@ -74,10 +78,12 @@ export default function CategoryPage() {
               <div className="category__sidebar-upgrade">
                 <span>🔒</span>
                 <div>
-                  <strong>Pro Required</strong>
-                  <p>Upgrade to unlock all tools</p>
+                  <strong>{t('ui.proRequired', { defaultValue: 'Pro Required' })}</strong>
+                  <p>{t('ui.upgradeToUnlock', { defaultValue: 'Upgrade to unlock all tools' })}</p>
                 </div>
-                <Link to="/pricing" className="btn btn-primary btn-sm">Upgrade</Link>
+                <Link to="/pricing" className="btn btn-primary btn-sm">
+                  {t('ui.upgrade', { defaultValue: 'Upgrade' })}
+                </Link>
               </div>
             )}
 
@@ -90,8 +96,12 @@ export default function CategoryPage() {
                 >
                   <span className="category__tool-btn-icon">{tool.icon}</span>
                   <div className="category__tool-btn-text">
-                    <span className="category__tool-btn-name">{tool.name}</span>
-                    <span className="category__tool-btn-desc">{tool.description}</span>
+                    <span className="category__tool-btn-name">
+                      {t(`tool.${tool.id}.name`, { defaultValue: tool.name })}
+                    </span>
+                    <span className="category__tool-btn-desc">
+                      {t(`tool.${tool.id}.desc`, { defaultValue: tool.description })}
+                    </span>
                   </div>
                   {selectedTool?.id === tool.id && (
                     <motion.div
