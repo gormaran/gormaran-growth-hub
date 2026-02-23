@@ -23,23 +23,22 @@ router.post('/create-checkout', verifyToken, async (req, res) => {
 
   try {
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'subscription',
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${process.env.FRONTEND_URL}/dashboard?payment=success`,
-      cancel_url: `${process.env.FRONTEND_URL}/pricing?payment=cancelled`,
-      client_reference_id: user.uid,
-      customer_email: user.email,
-      metadata: {
-        firebaseUid: user.uid,
-      },
-      subscription_data: {
-        metadata: {
-          firebaseUid: user.uid,
-        },
-      },
-      allow_promotion_codes: true,
-    });
+  payment_method_types: ['card'],
+  mode: 'subscription',
+  line_items: [{ price: priceId, quantity: 1 }],
+  success_url: `${process.env.FRONTEND_URL}/dashboard?payment=success`,
+  cancel_url: `${process.env.FRONTEND_URL}/pricing?payment=cancelled`,
+  client_reference_id: user.uid,
+  metadata: {
+    firebaseUid: user.uid,
+  },
+  subscription_data: {
+    metadata: {
+      firebaseUid: user.uid,
+    },
+  },
+  allow_promotion_codes: true,
+});
 
     res.json({ url: session.url, sessionId: session.id });
   } catch (err) {
