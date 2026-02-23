@@ -4,87 +4,31 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { createCheckoutSession } from '../utils/api';
+import { useTranslation } from 'react-i18next';
 import './PricingPage.css';
 
-const PLANS = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: { monthly: 0 },
-    badge: null,
-    description: 'Get started and explore the platform',
-    features: [
-      '5 AI requests per day',
-      'Marketing & Growth tools',
-      'Content Creation tools',
-      'Real-time Claude AI streaming',
-      'Email support',
-    ],
-    locked: [
-      'Business Strategy tools',
-      'Digital Marketing tools',
-      'E-commerce Growth tools',
-      'Agency tools',
-      'Startup Launchpad tools',
-    ],
-    cta: 'Get Started Free',
-    ctaLink: '/auth?mode=register',
-    highlight: false,
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: { monthly: 29 },
-    badge: '⭐ Most Popular',
-    description: 'Everything you need to grow faster',
-    priceId: process.env.REACT_APP_STRIPE_PRO_PRICE_ID,
-    features: [
-      'Unlimited AI requests',
-      'All 7 AI categories unlocked',
-      '35+ specialized tools',
-      'Real-time Claude AI streaming',
-      'Structured markdown outputs',
-      'Copy & export results',
-      'Priority support',
-    ],
-    locked: [],
-    cta: 'Start Pro Plan',
-    highlight: true,
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: { monthly: 79 },
-    badge: '💎 Enterprise',
-    description: 'For teams and agencies at scale',
-    priceId: process.env.REACT_APP_STRIPE_BUSINESS_PRICE_ID,
-    features: [
-      'Everything in Pro',
-      'Team workspace (up to 10 seats)',
-      'Custom AI prompt training',
-      'Advanced analytics dashboard',
-      'Dedicated account manager',
-      'SLA & uptime guarantee',
-      'White-label options',
-    ],
-    locked: [],
-    cta: 'Start Business Plan',
-    highlight: false,
-  },
+// Plan metadata — only non-translatable values here
+const PLAN_META = [
+  { id: 'free',     price: 0,  featureCount: 5, lockedCount: 5, hasBadge: false, highlight: false, priceId: null },
+  { id: 'pro',      price: 29, featureCount: 7, lockedCount: 0, hasBadge: true,  highlight: true,  priceId: process.env.REACT_APP_STRIPE_PRO_PRICE_ID },
+  { id: 'business', price: 79, featureCount: 7, lockedCount: 0, hasBadge: true,  highlight: false, priceId: process.env.REACT_APP_STRIPE_BUSINESS_PRICE_ID },
 ];
 
-const COMPARISON = [
-  { feature: 'Daily AI Requests', free: '5/day', pro: 'Unlimited', business: 'Unlimited' },
-  { feature: 'Marketing & Growth', free: '✅', pro: '✅', business: '✅' },
-  { feature: 'Content Creation', free: '✅', pro: '✅', business: '✅' },
-  { feature: 'Business Strategy', free: '❌', pro: '✅', business: '✅' },
-  { feature: 'Digital Marketing Tools', free: '❌', pro: '✅', business: '✅' },
-  { feature: 'E-commerce Growth', free: '❌', pro: '✅', business: '✅' },
-  { feature: 'Agency Tools', free: '❌', pro: '✅', business: '✅' },
-  { feature: 'Startup Launchpad', free: '❌', pro: '✅', business: '✅' },
-  { feature: 'Team Seats', free: '1', pro: '1', business: '10' },
-  { feature: 'Support', free: 'Email', pro: 'Priority', business: 'Dedicated' },
+// Comparison row value keys (text values that need translation use a key, icons/numbers stay as-is)
+const COMPARISON_ROWS = [
+  { idx: 0, free: '5/day', pro: 'unlimited', business: 'unlimited' },
+  { idx: 1, free: '✅', pro: '✅', business: '✅' },
+  { idx: 2, free: '✅', pro: '✅', business: '✅' },
+  { idx: 3, free: '❌', pro: '✅', business: '✅' },
+  { idx: 4, free: '❌', pro: '✅', business: '✅' },
+  { idx: 5, free: '❌', pro: '✅', business: '✅' },
+  { idx: 6, free: '❌', pro: '✅', business: '✅' },
+  { idx: 7, free: '❌', pro: '✅', business: '✅' },
+  { idx: 8, free: '1', pro: '1', business: '10' },
+  { idx: 9, free: 'email', pro: 'priority', business: 'dedicated' },
 ];
+
+const FAQ_COUNT = 6;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -100,6 +44,7 @@ export default function PricingPage() {
   const { currentUser } = useAuth();
   const { subscription } = useSubscription();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [error, setError] = useState('');
 
@@ -131,10 +76,18 @@ export default function PricingPage() {
   }
 
   function getPlanCta(plan) {
-    if (!currentUser && plan.id !== 'free') return 'Sign Up to Start';
-    if (subscription === plan.id) return '✅ Current Plan';
-    if (plan.id === 'free' && subscription !== 'free') return 'Downgrade';
-    return plan.cta;
+    if (!currentUser && plan.id !== 'free') return t('pricing.signUpToStart', { defaultValue: 'Sign Up to Start' });
+    if (subscription === plan.id) return t('pricing.currentPlan', { defaultValue: '✅ Current Plan' });
+    if (plan.id === 'free' && subscription !== 'free') return t('pricing.downgrade', { defaultValue: 'Downgrade' });
+    return t(`pricing.plan.${plan.id}.cta`);
+  }
+
+  function translateVal(val) {
+    if (val === 'unlimited') return t('pricing.comparison.unlimited', { defaultValue: 'Unlimited' });
+    if (val === 'email')     return t('pricing.comparison.email',     { defaultValue: 'Email' });
+    if (val === 'priority')  return t('pricing.comparison.priority',  { defaultValue: 'Priority' });
+    if (val === 'dedicated') return t('pricing.comparison.dedicated', { defaultValue: 'Dedicated' });
+    return val;
   }
 
   return (
@@ -147,12 +100,15 @@ export default function PricingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <span className="badge badge-primary">Simple, Transparent Pricing</span>
+          <span className="badge badge-primary">
+            {t('pricing.hero.badge', { defaultValue: 'Simple, Transparent Pricing' })}
+          </span>
           <h1 className="pricing__title">
-            Choose Your <span className="gradient-text">Growth Plan</span>
+            {t('pricing.hero.titlePre', { defaultValue: 'Choose Your' })}{' '}
+            <span className="gradient-text">{t('pricing.hero.titleHighlight', { defaultValue: 'Growth Plan' })}</span>
           </h1>
           <p className="pricing__subtitle">
-            Start free. Upgrade when you're ready. No contracts, cancel anytime.
+            {t('pricing.hero.subtitle', { defaultValue: "Start free. Upgrade when you're ready. No contracts, cancel anytime." })}
           </p>
         </motion.div>
 
@@ -172,70 +128,79 @@ export default function PricingPage() {
             animate="visible"
             variants={stagger}
           >
-            {PLANS.map((plan) => (
-              <motion.div
-                key={plan.id}
-                className={`pricing__plan ${plan.highlight ? 'pricing__plan--highlight' : ''} ${subscription === plan.id ? 'pricing__plan--current' : ''}`}
-                variants={fadeUp}
-                whileHover={{ y: plan.highlight ? -8 : -4 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              >
-                {plan.highlight && (
-                  <div className="pricing__plan-glow" />
-                )}
+            {PLAN_META.map((plan) => {
+              const features = Array.from({ length: plan.featureCount }, (_, i) =>
+                t(`pricing.plan.${plan.id}.feature.${i}`)
+              );
+              const locked = Array.from({ length: plan.lockedCount }, (_, i) =>
+                t(`pricing.plan.${plan.id}.locked.${i}`)
+              );
 
-                {plan.badge && (
-                  <div className="pricing__plan-badge">{plan.badge}</div>
-                )}
-
-                {subscription === plan.id && (
-                  <div className="pricing__plan-badge pricing__plan-badge--current">
-                    ✅ Current Plan
-                  </div>
-                )}
-
-                <div className="pricing__plan-header">
-                  <h2 className="pricing__plan-name">{plan.name}</h2>
-                  <p className="pricing__plan-desc">{plan.description}</p>
-                </div>
-
-                <div className="pricing__plan-price">
-                  <span className="pricing__plan-amount">
-                    ${plan.price.monthly}
-                  </span>
-                  <div className="pricing__plan-period">
-                    {plan.price.monthly === 0 ? 'forever free' : '/month'}
-                  </div>
-                </div>
-
-                <button
-                  className={`btn ${plan.highlight ? 'btn-primary' : 'btn-secondary'} pricing__plan-cta`}
-                  onClick={() => handlePlanSelect(plan)}
-                  disabled={subscription === plan.id || loadingPlan === plan.id}
+              return (
+                <motion.div
+                  key={plan.id}
+                  className={`pricing__plan ${plan.highlight ? 'pricing__plan--highlight' : ''} ${subscription === plan.id ? 'pricing__plan--current' : ''}`}
+                  variants={fadeUp}
+                  whileHover={{ y: plan.highlight ? -8 : -4 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                 >
-                  {loadingPlan === plan.id ? (
-                    <><span className="spinner" /> Processing...</>
-                  ) : (
-                    getPlanCta(plan)
-                  )}
-                </button>
+                  {plan.highlight && <div className="pricing__plan-glow" />}
 
-                <div className="pricing__features">
-                  {plan.features.map((f) => (
-                    <div key={f} className="pricing__feature pricing__feature--included">
-                      <span className="pricing__feature-icon">✅</span>
-                      <span>{f}</span>
+                  {plan.hasBadge && subscription !== plan.id && (
+                    <div className="pricing__plan-badge">
+                      {t(`pricing.plan.${plan.id}.badge`)}
                     </div>
-                  ))}
-                  {plan.locked.map((f) => (
-                    <div key={f} className="pricing__feature pricing__feature--locked">
-                      <span className="pricing__feature-icon">🔒</span>
-                      <span>{f}</span>
+                  )}
+
+                  {subscription === plan.id && (
+                    <div className="pricing__plan-badge pricing__plan-badge--current">
+                      {t('pricing.currentPlan', { defaultValue: '✅ Current Plan' })}
                     </div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
+                  )}
+
+                  <div className="pricing__plan-header">
+                    <h2 className="pricing__plan-name">{t(`pricing.plan.${plan.id}.name`)}</h2>
+                    <p className="pricing__plan-desc">{t(`pricing.plan.${plan.id}.desc`)}</p>
+                  </div>
+
+                  <div className="pricing__plan-price">
+                    <span className="pricing__plan-amount">${plan.price}</span>
+                    <div className="pricing__plan-period">
+                      {plan.price === 0
+                        ? t('pricing.forever', { defaultValue: 'forever free' })
+                        : t('pricing.month', { defaultValue: '/month' })}
+                    </div>
+                  </div>
+
+                  <button
+                    className={`btn ${plan.highlight ? 'btn-primary' : 'btn-secondary'} pricing__plan-cta`}
+                    onClick={() => handlePlanSelect(plan)}
+                    disabled={subscription === plan.id || loadingPlan === plan.id}
+                  >
+                    {loadingPlan === plan.id ? (
+                      <><span className="spinner" /> {t('pricing.processing', { defaultValue: 'Processing...' })}</>
+                    ) : (
+                      getPlanCta(plan)
+                    )}
+                  </button>
+
+                  <div className="pricing__features">
+                    {features.map((f) => (
+                      <div key={f} className="pricing__feature pricing__feature--included">
+                        <span className="pricing__feature-icon">✅</span>
+                        <span>{f}</span>
+                      </div>
+                    ))}
+                    {locked.map((f) => (
+                      <div key={f} className="pricing__feature pricing__feature--locked">
+                        <span className="pricing__feature-icon">🔒</span>
+                        <span>{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
 
@@ -248,24 +213,26 @@ export default function PricingPage() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="pricing__comparison-title">Full Feature Comparison</h2>
+            <h2 className="pricing__comparison-title">
+              {t('pricing.comparison.title', { defaultValue: 'Full Feature Comparison' })}
+            </h2>
             <div className="pricing__table-wrap">
               <table className="pricing__table">
                 <thead>
                   <tr>
-                    <th>Feature</th>
-                    <th>Free</th>
+                    <th>{t('pricing.comparison.featureCol', { defaultValue: 'Feature' })}</th>
+                    <th>{t('pricing.plan.free.name', { defaultValue: 'Free' })}</th>
                     <th className="pricing__th--highlight">Pro</th>
-                    <th>Business</th>
+                    <th>{t('pricing.plan.business.name', { defaultValue: 'Business' })}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {COMPARISON.map((row) => (
-                    <tr key={row.feature}>
-                      <td>{row.feature}</td>
-                      <td>{row.free}</td>
-                      <td className="pricing__td--highlight">{row.pro}</td>
-                      <td>{row.business}</td>
+                  {COMPARISON_ROWS.map((row) => (
+                    <tr key={row.idx}>
+                      <td>{t(`pricing.comparison.row.${row.idx}`)}</td>
+                      <td>{translateVal(row.free)}</td>
+                      <td className="pricing__td--highlight">{translateVal(row.pro)}</td>
+                      <td>{translateVal(row.business)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -276,19 +243,14 @@ export default function PricingPage() {
 
         {/* FAQ */}
         <div className="container pricing__faq">
-          <h2 className="pricing__comparison-title">Frequently Asked Questions</h2>
+          <h2 className="pricing__comparison-title">
+            {t('pricing.faq.title', { defaultValue: 'Frequently Asked Questions' })}
+          </h2>
           <div className="pricing__faq-grid">
-            {[
-              { q: 'Can I cancel anytime?', a: 'Yes, absolutely. Cancel anytime from your account settings. No cancellation fees, no questions asked.' },
-              { q: 'What is the daily limit on the Free plan?', a: 'Free users get 5 AI requests per day, reset at midnight UTC. Upgrade to Pro for unlimited access.' },
-              { q: 'How does AI streaming work?', a: 'Results stream in real-time using Claude AI. You see the output generate word-by-word — no waiting for the full response.' },
-              { q: 'Is my data secure?', a: 'Your inputs are sent to the backend server over HTTPS. We never store your AI prompts or outputs. API keys are never exposed to the browser.' },
-              { q: 'Can I upgrade later?', a: 'Yes! Start on the Free plan and upgrade anytime. Your previous outputs are not affected.' },
-              { q: 'Do you offer refunds?', a: 'Yes, we offer a 7-day money-back guarantee on all paid plans. Contact support for a full refund.' },
-            ].map(({ q, a }) => (
-              <div key={q} className="pricing__faq-item">
-                <h4>{q}</h4>
-                <p>{a}</p>
+            {Array.from({ length: FAQ_COUNT }, (_, i) => (
+              <div key={i} className="pricing__faq-item">
+                <h4>{t(`pricing.faq.${i}.q`)}</h4>
+                <p>{t(`pricing.faq.${i}.a`)}</p>
               </div>
             ))}
           </div>
@@ -302,10 +264,13 @@ export default function PricingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2>Ready to <span className="gradient-text">Get Started?</span></h2>
-            <p>Join thousands of marketers, founders, and agencies growing with AI.</p>
+            <h2>
+              {t('pricing.cta.titlePre', { defaultValue: 'Ready to' })}{' '}
+              <span className="gradient-text">{t('pricing.cta.titleHighlight', { defaultValue: 'Get Started?' })}</span>
+            </h2>
+            <p>{t('pricing.cta.subtitle', { defaultValue: 'Join thousands of marketers, founders, and agencies growing with AI.' })}</p>
             <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
-              Start Free Today →
+              {t('pricing.cta.btn', { defaultValue: 'Start Free Today →' })}
             </Link>
           </motion.div>
         </div>
