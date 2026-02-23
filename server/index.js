@@ -65,7 +65,7 @@ app.get("/health", (req, res) => {
     env: {
       anthropic: !!process.env.ANTHROPIC_API_KEY,
       stripe: !!process.env.STRIPE_SECRET_KEY,
-      firebase: !!process.env.FIREBASE_PROJECT_ID,
+      firebase: !!process.env.FIREBASE_SERVICE_ACCOUNT,
     },
   });
 });
