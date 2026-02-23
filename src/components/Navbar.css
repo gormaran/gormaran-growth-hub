@@ -274,10 +274,135 @@
 .navbar__mobile-link--cta { background: var(--gradient-primary); color: white; text-align: center; margin-top: 0.5rem; }
 .navbar__mobile-link--danger { color: #f87171; }
 
+/* Language selector */
+.navbar__lang {
+  position: relative;
+}
+
+.navbar__lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.6rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-sans);
+}
+
+.navbar__lang-btn:hover {
+  background: rgba(255,255,255,0.09);
+  color: var(--text-primary);
+  border-color: rgba(99,102,241,0.4);
+}
+
+.navbar__lang-flag {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.navbar__lang-code {
+  letter-spacing: 0.04em;
+}
+
+.navbar__lang-arrow {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.navbar__lang-arrow.open {
+  transform: rotate(180deg);
+}
+
+.navbar__lang-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 0.4rem;
+  min-width: 148px;
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+}
+
+.navbar__lang-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.855rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-sans);
+  text-align: left;
+}
+
+.navbar__lang-option:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+}
+
+.navbar__lang-option--active {
+  background: rgba(99,102,241,0.12);
+  color: var(--color-primary-light);
+}
+
+/* Mobile language bar */
+.navbar__mobile-langs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  flex-wrap: wrap;
+}
+
+.navbar__mobile-lang {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.6rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition-fast);
+}
+
+.navbar__mobile-lang:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+}
+
+.navbar__mobile-lang--active {
+  background: rgba(99,102,241,0.15);
+  border-color: rgba(99,102,241,0.4);
+  color: var(--color-primary-light);
+}
+
 @media (max-width: 768px) {
   .navbar__links { display: none; }
   .navbar__auth { display: none; }
   .navbar__mobile-btn { display: block; }
   .navbar__inner { padding: 0 1rem; }
   .navbar__user .badge { display: none; }
+  .navbar__user .navbar__lang { display: none; }
 }
