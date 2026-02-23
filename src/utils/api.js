@@ -2,7 +2,7 @@ import { auth } from '../firebase/config';
 
 const API_URL =
   process.env.REACT_APP_API_URL ||
-  "https://gormaran-growth-hub.onrender.com";
+  "https://gormaran-growth-hub-2.onrender.com";
 
 async function getAuthHeader() {
   const user = auth.currentUser;
