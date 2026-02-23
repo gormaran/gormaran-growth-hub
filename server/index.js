@@ -4,7 +4,11 @@ const cors = require("cors");
 // const helmet = require('helmet');
 
 const admin = require("firebase-admin");
-const serviceAccount = require("./firebase-service-account.json");
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 const aiRoutes = require("./routes/ai");
 const stripeRoutes = require("./routes/stripe");
@@ -12,12 +16,6 @@ const stripeRoutes = require("./routes/stripe");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-/* ===============================
-   🔥 FIREBASE ADMIN INIT
-================================ */
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
 
 /* ===============================
    🔥 CORS CONFIG (PRODUCTION READY)
