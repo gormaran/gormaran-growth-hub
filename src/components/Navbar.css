@@ -404,5 +404,4 @@
   .navbar__mobile-btn { display: block; }
   .navbar__inner { padding: 0 1rem; }
   .navbar__user .badge { display: none; }
-  .navbar__user .navbar__lang { display: none; }
 }

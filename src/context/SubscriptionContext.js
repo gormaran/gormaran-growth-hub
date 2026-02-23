@@ -12,7 +12,7 @@ export function useSubscription() {
 const PLANS = {
   free: {
     name: 'Free',
-    dailyLimit: 5,
+    dailyLimit: 3,
     categories: ['marketing', 'content'],
   },
   pro: {

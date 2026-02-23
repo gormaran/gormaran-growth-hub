@@ -13,6 +13,23 @@ import CategoryPage from './pages/CategoryPage';
 import PricingPage from './pages/PricingPage';
 import SettingsPage from './pages/SettingsPage';
 
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import ReactGA from "react-ga4";
+
+function AnalyticsTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: location.pathname + location.search,
+    });
+  }, [location]);
+
+  return null;
+}
+
 import './App.css';
 
 function AppLayout({ children, hideFooter }) {
@@ -25,9 +42,23 @@ function AppLayout({ children, hideFooter }) {
   );
 }
 
+function AnalyticsTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: location.pathname + location.search,
+    });
+  }, [location]);
+
+  return null;
+}
+
 export default function App() {
   return (
     <Router>
+      <AnalyticsTracker />
       <AuthProvider>
         <SubscriptionProvider>
           <Routes>

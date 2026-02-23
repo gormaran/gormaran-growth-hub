@@ -9,12 +9,16 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './AIToolInterface.css';
 
-function FormField({ field, value, onChange }) {
+function FormField({ field, value, onChange, toolId }) {
+  const { t } = useTranslation();
+  const label = t(`input.${toolId}.${field.id}.label`, { defaultValue: field.label });
+  const placeholder = t(`input.${toolId}.${field.id}.placeholder`, { defaultValue: field.placeholder || '' });
+
   const commonProps = {
     id: field.id,
     value: value || '',
     onChange: (e) => onChange(field.id, e.target.value),
-    placeholder: field.placeholder || '',
+    placeholder,
     required: field.required,
   };
 
@@ -22,7 +26,7 @@ function FormField({ field, value, onChange }) {
     return (
       <div className="form-group">
         <label className="form-label" htmlFor={field.id}>
-          {field.label}
+          {label}
           {field.required && <span className="required-mark"> *</span>}
         </label>
         <textarea className="form-textarea" rows={4} {...commonProps} />
@@ -34,11 +38,11 @@ function FormField({ field, value, onChange }) {
     return (
       <div className="form-group">
         <label className="form-label" htmlFor={field.id}>
-          {field.label}
+          {label}
           {field.required && <span className="required-mark"> *</span>}
         </label>
         <select className="form-select" {...commonProps}>
-          <option value="">Select an option...</option>
+          <option value="">{t('ui.selectOption', { defaultValue: 'Select an option...' })}</option>
           {field.options.map((opt) => (
             <option key={opt} value={opt}>{opt}</option>
           ))}
@@ -50,7 +54,7 @@ function FormField({ field, value, onChange }) {
   return (
     <div className="form-group">
       <label className="form-label" htmlFor={field.id}>
-        {field.label}
+        {label}
         {field.required && <span className="required-mark"> *</span>}
       </label>
       <input type="text" className="form-input" {...commonProps} />
@@ -67,6 +71,9 @@ export default function AIToolInterface({ tool, categoryId }) {
   const [wordCount, setWordCount] = useState(0);
   const outputRef = useRef(null);
   const abortRef = useRef(false);
+  const finalOutputRef = useRef('');
+  const [history, setHistory] = useState([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const { currentUser } = useAuth();
   const { canUseTool, trackUsage, isAtLimit, subscription } = useSubscription();
@@ -78,6 +85,19 @@ export default function AIToolInterface({ tool, categoryId }) {
     setOutput('');
     setError('');
     setIsStreaming(false);
+  }, [tool?.id]);
+
+  // Load history when tool changes
+  useEffect(() => {
+    if (tool?.id) {
+      try {
+        const stored = localStorage.getItem(`gormaran_history_${tool.id}`);
+        setHistory(stored ? JSON.parse(stored) : []);
+      } catch {
+        setHistory([]);
+      }
+    }
+    setHistoryOpen(false);
   }, [tool?.id]);
 
   // Track word count
@@ -104,7 +124,8 @@ export default function AIToolInterface({ tool, categoryId }) {
     const required = tool.inputs.filter((f) => f.required);
     for (const field of required) {
       if (!inputs[field.id] || inputs[field.id].trim() === '') {
-        return `"${field.label}" is required`;
+        const fieldLabel = t(`input.${tool.id}.${field.id}.label`, { defaultValue: field.label });
+        return `"${fieldLabel}" is required`;
       }
     }
     return null;
@@ -121,7 +142,7 @@ export default function AIToolInterface({ tool, categoryId }) {
 
     if (!canUseTool(categoryId)) {
       if (isAtLimit()) {
-        setError(t('ui.dailyLimitText', { limit: 5, defaultValue: "Daily usage limit reached. Upgrade to Pro for unlimited access." }));
+        setError(t('ui.dailyLimitText', { limit: 3, defaultValue: "Daily usage limit reached. Upgrade to Pro for unlimited access." }));
       } else {
         setError(t('ui.proOnlyText', { defaultValue: 'This category is available on Pro and Business plans.' }));
       }
@@ -135,8 +156,10 @@ export default function AIToolInterface({ tool, categoryId }) {
     }
 
     setOutput('');
+    finalOutputRef.current = '';
     setIsStreaming(true);
     abortRef.current = false;
+    const capturedInputs = { ...inputs };
 
     await streamAIResponse({
       categoryId,
@@ -144,12 +167,17 @@ export default function AIToolInterface({ tool, categoryId }) {
       inputs: { ...inputs, _language: i18n.language },
       onChunk: (text) => {
         if (!abortRef.current) {
-          setOutput((prev) => prev + text);
+          setOutput((prev) => {
+            const next = prev + text;
+            finalOutputRef.current = next;
+            return next;
+          });
         }
       },
       onDone: () => {
         setIsStreaming(false);
         trackUsage();
+        saveToHistory(capturedInputs, finalOutputRef.current);
       },
       onError: (msg) => {
         setIsStreaming(false);
@@ -174,6 +202,17 @@ export default function AIToolInterface({ tool, categoryId }) {
     setOutput('');
     setError('');
     setInputs({});
+    finalOutputRef.current = '';
+  }
+
+  function saveToHistory(queryInputs, queryOutput) {
+    if (!tool?.id || !queryOutput) return;
+    const entry = { id: Date.now(), timestamp: new Date().toISOString(), inputs: queryInputs, output: queryOutput };
+    const key = `gormaran_history_${tool.id}`;
+    const existing = (() => { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; } })();
+    const updated = [entry, ...existing].slice(0, 10);
+    localStorage.setItem(key, JSON.stringify(updated));
+    setHistory(updated);
   }
 
   const locked = !canUseTool(categoryId) && !isAtLimit();
@@ -213,7 +252,7 @@ export default function AIToolInterface({ tool, categoryId }) {
             <strong>{atLimit ? t('ui.dailyLimitReached', { defaultValue: 'Daily limit reached' }) : t('ui.proFeature', { defaultValue: 'Pro feature' })}</strong>
             <p>
               {atLimit
-                ? t('ui.dailyLimitText', { limit: 5, defaultValue: "You've used all 5 free daily requests. Upgrade to Pro for unlimited access." })
+                ? t('ui.dailyLimitText', { limit: 3, defaultValue: "You've used all 3 free daily requests. Upgrade to Pro for unlimited access." })
                 : t('ui.proOnlyText', { defaultValue: 'This category is available on Pro and Business plans.' })}
             </p>
           </div>
@@ -232,6 +271,7 @@ export default function AIToolInterface({ tool, categoryId }) {
                 field={field}
                 value={inputs[field.id]}
                 onChange={handleInputChange}
+                toolId={tool.id}
               />
             ))}
 
@@ -323,6 +363,52 @@ export default function AIToolInterface({ tool, categoryId }) {
           </div>
         </div>
       </div>
+
+      {/* Query History */}
+      {history.length > 0 && (
+        <div className="ai-tool__history">
+          <button
+            type="button"
+            className="ai-tool__history-toggle"
+            onClick={() => setHistoryOpen((o) => !o)}
+          >
+            <span>🕐</span>
+            <span>{t('ui.history', { defaultValue: 'Recent queries' })} ({history.length})</span>
+            <span className={`ai-tool__history-arrow ${historyOpen ? 'open' : ''}`}>▾</span>
+          </button>
+
+          {historyOpen && (
+            <div className="ai-tool__history-list">
+              {history.map((entry) => {
+                const firstKey = Object.keys(entry.inputs).find((k) => !k.startsWith('_'));
+                const raw = firstKey ? String(entry.inputs[firstKey] || '') : '';
+                const preview = raw.slice(0, 70);
+                const d = new Date(entry.timestamp);
+                const timeStr =
+                  d.toLocaleDateString([], { month: 'short', day: 'numeric' }) +
+                  ' · ' +
+                  d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    className="ai-tool__history-item"
+                    onClick={() => {
+                      setInputs(entry.inputs);
+                      setOutput(entry.output);
+                      finalOutputRef.current = entry.output;
+                      setHistoryOpen(false);
+                    }}
+                  >
+                    <span className="ai-tool__history-time">{timeStr}</span>
+                    <span className="ai-tool__history-preview">{preview}{raw.length > 70 ? '…' : ''}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

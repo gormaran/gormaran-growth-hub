@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import { CATEGORIES } from '../data/categories';
 import { useTranslation } from 'react-i18next';
 import './LandingPage.css';
+import './FlipCard.css';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -68,6 +69,90 @@ const TESTIMONIALS = [
     avatar: 'O',
   },
 ];
+
+function FlipCard({ cat, i }) {
+  const { t } = useTranslation();
+  return (
+    <motion.div
+      className="flip-card-wrapper"
+      variants={fadeUp}
+      transition={{ duration: 0.5, delay: i * 0.05 }}
+    >
+      <div className="flip-card" style={{ '--cat-color': cat.color }}>
+        <div className="flip-card__inner">
+
+          {/* ── FRONT ── */}
+          <div className="flip-card__front">
+            <div
+              className="landing__category-icon"
+              style={{ background: `${cat.color}20`, borderColor: `${cat.color}40` }}
+            >
+              {cat.icon}
+            </div>
+            <h3 className="landing__category-name">
+              {t(`cat.${cat.id}.name`, { defaultValue: cat.name })}
+            </h3>
+            <p className="landing__category-desc">
+              {t(`cat.${cat.id}.desc`, { defaultValue: cat.description })}
+            </p>
+            <div className="landing__category-tools">
+              {cat.tools.slice(0, 3).map((tool) => (
+                <span key={tool.id} className="landing__tool-tag">
+                  {tool.icon} {t(`tool.${tool.id}.name`, { defaultValue: tool.name })}
+                </span>
+              ))}
+              {cat.tools.length > 3 && (
+                <span className="landing__tool-tag landing__tool-tag--more">
+                  +{cat.tools.length - 3} {t('landing.categories.more', { defaultValue: 'more' })}
+                </span>
+              )}
+            </div>
+            <div className="flip-card__hint">
+              <span className="flip-card__hint-icon">↻</span>
+              {t('landing.categories.flipHint', { defaultValue: 'hover for demo' })}
+            </div>
+          </div>
+
+          {/* ── BACK ── */}
+          <div className="flip-card__back">
+            {/* Animated "video" mockup */}
+            <div className="flip-card__video">
+              <div className="flip-card__video-bg-icon">{cat.icon}</div>
+              <div className="flip-card__video-lines">
+                <div className="flip-card__vline" style={{ width: '82%' }} />
+                <div className="flip-card__vline" style={{ width: '67%' }} />
+                <div className="flip-card__vtable">
+                  <div /><div /><div />
+                </div>
+                <div className="flip-card__vline" style={{ width: '74%' }} />
+                <div className="flip-card__vline" style={{ width: '50%' }} />
+              </div>
+              <div className="flip-card__play">▶</div>
+            </div>
+
+            <p className="flip-card__back-title">
+              {t(`cat.${cat.id}.name`, { defaultValue: cat.name })}
+            </p>
+
+            <div className="flip-card__tool-grid">
+              {cat.tools.map((tool) => (
+                <div key={tool.id} className="flip-card__tool-row">
+                  <span className="flip-card__tool-icon">{tool.icon}</span>
+                  <span>{t(`tool.${tool.id}.name`, { defaultValue: tool.name })}</span>
+                </div>
+              ))}
+            </div>
+
+            <Link to="/auth?mode=register" className="flip-card__cta-btn">
+              {t('landing.categories.tryFree', { defaultValue: 'Try Free →' })}
+            </Link>
+          </div>
+
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -220,27 +305,7 @@ export default function LandingPage() {
             variants={stagger}
           >
             {CATEGORIES.map((cat, i) => (
-              <motion.div
-                key={cat.id}
-                className="landing__category-card"
-                variants={fadeUp}
-                transition={{ duration: 0.5, delay: i * 0.05 }}
-                whileHover={{ y: -6 }}
-              >
-                <div className="landing__category-icon" style={{ background: `${cat.color}20`, borderColor: `${cat.color}40` }}>
-                  {cat.icon}
-                </div>
-                <h3 className="landing__category-name">{t(`cat.${cat.id}.name`, { defaultValue: cat.name })}</h3>
-                <p className="landing__category-desc">{t(`cat.${cat.id}.desc`, { defaultValue: cat.description })}</p>
-                <div className="landing__category-tools">
-                  {cat.tools.slice(0, 3).map((tool) => (
-                    <span key={tool.id} className="landing__tool-tag">{tool.icon} {t(`tool.${tool.id}.name`, { defaultValue: tool.name })}</span>
-                  ))}
-                  {cat.tools.length > 3 && (
-                    <span className="landing__tool-tag landing__tool-tag--more">+{cat.tools.length - 3} {t('landing.categories.more', { defaultValue: 'more' })}</span>
-                  )}
-                </div>
-              </motion.div>
+              <FlipCard key={cat.id} cat={cat} i={i} />
             ))}
           </motion.div>
         </div>
@@ -337,7 +402,7 @@ export default function LandingPage() {
                 </Link>
               </div>
               <small className="landing__cta-note">
-                {t('landing.cta.note', { defaultValue: 'Free plan includes 5 AI requests/day · No credit card required' })}
+                {t('landing.cta.note', { defaultValue: 'Free plan includes 3 AI requests/day · No credit card required' })}
               </small>
             </div>
           </AnimatedSection>
