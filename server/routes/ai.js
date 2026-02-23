@@ -46,7 +46,14 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
     });
   }
 
-  const systemPrompt = tool.systemPrompt;
+  // Language instruction based on user preference
+  const LANGUAGE_NAMES = { en: 'English', es: 'Spanish', fr: 'French', de: 'German', it: 'Italian' };
+  const lang = inputs._language && LANGUAGE_NAMES[inputs._language] ? inputs._language : 'en';
+  const languageInstruction = lang !== 'en'
+    ? `\n\nIMPORTANT: You MUST respond entirely in ${LANGUAGE_NAMES[lang]}. All section titles, content, analysis, tables and text must be written in ${LANGUAGE_NAMES[lang]}.`
+    : '';
+
+  const systemPrompt = tool.systemPrompt + languageInstruction;
   const userMessage = tool.buildUserMessage(inputs);
 
   // Set SSE headers
