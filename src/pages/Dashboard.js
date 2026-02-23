@@ -7,13 +7,6 @@ import { CATEGORIES } from '../data/categories';
 import './Dashboard.css';
 import { useTranslation } from "react-i18next";
 
-const { i18n } = useTranslation();
-
-const changeLanguage = (lng) => {
-  i18n.changeLanguage(lng);
-  localStorage.setItem("language", lng);
-};
-
 
 
 const stagger = {
@@ -31,6 +24,12 @@ export default function Dashboard() {
   const { subscription, usageCount, isCategoryLocked, PLANS } = useSubscription();
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
+  const { i18n } = useTranslation();
+
+const changeLanguage = (lng) => {
+  i18n.changeLanguage(lng);
+  localStorage.setItem("language", lng);
+};
 
   const paymentStatus = searchParams.get('payment');
 
