@@ -119,7 +119,7 @@ export default function Dashboard() {
               variants={stagger}
             >
               {CATEGORIES.map((cat) => {
-                const isAddon = !!cat.isAddon;
+                const isAddon = !!cat.isAddon && subscription !== 'admin';
                 const locked = !isAddon && isCategoryLocked(cat.id);
                 const catName = t(`cat.${cat.id}.name`, { defaultValue: cat.name });
                 const catDesc = t(`cat.${cat.id}.desc`, { defaultValue: cat.description });
