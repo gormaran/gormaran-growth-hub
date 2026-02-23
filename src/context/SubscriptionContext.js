@@ -25,6 +25,11 @@ const PLANS = {
     dailyLimit: Infinity,
     categories: ['marketing', 'content', 'strategy', 'digital', 'ecommerce', 'agency', 'startup'],
   },
+  admin: {
+    name: 'Admin',
+    dailyLimit: Infinity,
+    categories: ['marketing', 'content', 'strategy', 'digital', 'ecommerce', 'agency', 'startup', 'automation'],
+  },
 };
 
 export function SubscriptionProvider({ children }) {
@@ -45,6 +50,7 @@ export function SubscriptionProvider({ children }) {
 
   function canUseTool(categoryId) {
     if (!currentUser) return false;
+    if (subscription === 'admin') return true;
     const plan = PLANS[subscription] || PLANS.free;
     if (!plan.categories.includes(categoryId)) return false;
     if (plan.dailyLimit !== Infinity && usageCount >= plan.dailyLimit) return false;
@@ -52,6 +58,7 @@ export function SubscriptionProvider({ children }) {
   }
 
   function isCategoryLocked(categoryId) {
+    if (subscription === 'admin') return false;
     const plan = PLANS[subscription] || PLANS.free;
     return !plan.categories.includes(categoryId);
   }
@@ -72,6 +79,7 @@ export function SubscriptionProvider({ children }) {
   }
 
   function isAtLimit() {
+    if (subscription === 'admin') return false;
     const plan = PLANS[subscription] || PLANS.free;
     return plan.dailyLimit !== Infinity && usageCount >= plan.dailyLimit;
   }

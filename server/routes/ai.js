@@ -36,9 +36,20 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
     return res.status(404).json({ error: `Tool "${toolId}" not found in category "${categoryId}"` });
   }
 
-  // Check subscription for premium categories
+  // Check subscription for premium categories (read from Firestore for accuracy)
   const freeCategoryIds = ['marketing', 'content'];
-  const userSubscription = req.user?.subscription || 'free';
+  let userSubscription = req.user?.subscription || 'free'; // fallback (used in dev mode)
+  try {
+    const adminSdk = require('firebase-admin');
+    if (adminSdk.apps.length > 0) {
+      const fsDb = adminSdk.firestore();
+      const userDoc = await fsDb.collection('users').doc(req.user.uid).get();
+      if (userDoc.exists) {
+        userSubscription = userDoc.data().subscription || 'free';
+      }
+    }
+  } catch (_) { /* use fallback */ }
+
   if (!freeCategoryIds.includes(categoryId) && userSubscription === 'free') {
     return res.status(403).json({
       error: 'This category requires a Pro or Business subscription.',
