@@ -1,0 +1,9 @@
+{
+  "dashboard.greeting": "Guten Morgen, {{name}} 👋",
+  "dashboard.subtitle": "Was möchten Sie heute erstellen? Wählen Sie eine Kategorie, um zu beginnen.",
+  "dailyRequests": "Tägliche KI-Anfragen",
+  "upgrade": "Upgraden",
+  "free": "Kostenlos",
+  "pro": "Pro",
+  "enterprise": "Enterprise"
+}
