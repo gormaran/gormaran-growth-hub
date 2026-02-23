@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import { CATEGORIES } from '../data/categories';
+import { useTranslation } from 'react-i18next';
 import './LandingPage.css';
 
 const fadeUp = {
@@ -32,43 +33,19 @@ function AnimatedSection({ children, className, delay = 0 }) {
 }
 
 const STATS = [
-  { value: '7', label: 'AI Categories', suffix: '' },
-  { value: '35', label: 'Specialized Tools', suffix: '+' },
-  { value: '99', label: 'Precision Rate', suffix: '%' },
-  { value: '10x', label: 'Faster Workflows', suffix: '' },
+  { value: '7', suffix: '', labelKey: 'landing.stats.categories' },
+  { value: '35', suffix: '+', labelKey: 'landing.stats.tools' },
+  { value: '99', suffix: '%', labelKey: 'landing.stats.precision' },
+  { value: '10x', suffix: '', labelKey: 'landing.stats.faster' },
 ];
 
 const FEATURES = [
-  {
-    icon: '🧠',
-    title: 'Category-Precise AI',
-    description: 'Each tool has a custom-engineered AI prompt designed by industry experts, delivering laser-focused output for your exact use case.',
-  },
-  {
-    icon: '⚡',
-    title: 'Real-Time Streaming',
-    description: 'See your content generate word-by-word with Claude AI. No waiting — start reading and editing immediately.',
-  },
-  {
-    icon: '🎯',
-    title: '35+ Specialized Tools',
-    description: 'From SEO keyword research to investor pitch decks — every tool is purpose-built, not a generic AI wrapper.',
-  },
-  {
-    icon: '🔒',
-    title: 'Enterprise Security',
-    description: 'Firebase authentication, encrypted API calls, and your API keys never touch the browser.',
-  },
-  {
-    icon: '📊',
-    title: 'Structured Outputs',
-    description: 'Every output is formatted with headers, tables, and bullet points — ready to copy and use immediately.',
-  },
-  {
-    icon: '🚀',
-    title: 'Built for Speed',
-    description: 'From idea to finished content in under 2 minutes. Stop spending days on tasks that take minutes.',
-  },
+  { icon: '🧠', idx: 0 },
+  { icon: '⚡', idx: 1 },
+  { icon: '🎯', idx: 2 },
+  { icon: '🔒', idx: 3 },
+  { icon: '📊', idx: 4 },
+  { icon: '🚀', idx: 5 },
 ];
 
 const TESTIMONIALS = [
@@ -93,6 +70,8 @@ const TESTIMONIALS = [
 ];
 
 export default function LandingPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="landing">
       {/* Hero Section */}
@@ -114,27 +93,27 @@ export default function LandingPage() {
           >
             <motion.div variants={fadeUp} transition={{ duration: 0.5 }}>
               <span className="landing__hero-badge">
-                ⚡ Powered by Claude AI
+                {t('landing.hero.badge', { defaultValue: '⚡ Powered by Claude AI' })}
               </span>
             </motion.div>
 
             <motion.h1 className="landing__hero-title" variants={fadeUp} transition={{ duration: 0.6, delay: 0.1 }}>
-              The AI Growth Hub
+              {t('landing.hero.title1', { defaultValue: 'The AI Growth Hub' })}
               <br />
-              <span className="gradient-text">Built for Results</span>
+              <span className="gradient-text">{t('landing.hero.title2', { defaultValue: 'Built for Results' })}</span>
             </motion.h1>
 
             <motion.p className="landing__hero-subtitle" variants={fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
-              7 AI-powered categories. 35+ precision-engineered tools. One platform to grow your business faster — from SEO and Google Ads to investor pitches and Amazon listings.
+              {t('landing.hero.subtitle', { defaultValue: '7 AI-powered categories. 35+ precision-engineered tools. One platform to grow your business faster.' })}
             </motion.p>
 
             <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.6, delay: 0.3 }}>
               <Link to="/auth?mode=register" className="btn btn-primary btn-lg landing__cta-btn">
-                Start Free — No Credit Card
+                {t('landing.hero.cta', { defaultValue: 'Start Free — No Credit Card' })}
                 <span className="landing__cta-arrow">→</span>
               </Link>
               <Link to="/pricing" className="btn btn-secondary btn-lg">
-                View Pricing
+                {t('landing.hero.viewPricing', { defaultValue: 'View Pricing' })}
               </Link>
             </motion.div>
 
@@ -144,7 +123,11 @@ export default function LandingPage() {
                   <div key={l} className="landing__avatar">{l}</div>
                 ))}
               </div>
-              <span>Join <strong>2,000+</strong> marketers & founders</span>
+              <span>
+                {t('landing.hero.joinPre', { defaultValue: 'Join' })}{' '}
+                <strong>{t('landing.hero.joinCount', { defaultValue: '2,000+' })}</strong>{' '}
+                {t('landing.hero.socialProof', { defaultValue: 'marketers & founders' })}
+              </span>
             </motion.div>
           </motion.div>
 
@@ -202,11 +185,11 @@ export default function LandingPage() {
             variants={stagger}
           >
             {STATS.map((stat) => (
-              <motion.div key={stat.label} className="landing__stat" variants={fadeUp}>
+              <motion.div key={stat.labelKey} className="landing__stat" variants={fadeUp}>
                 <div className="landing__stat-value">
                   <span className="gradient-text">{stat.value}</span>{stat.suffix}
                 </div>
-                <div className="landing__stat-label">{stat.label}</div>
+                <div className="landing__stat-label">{t(stat.labelKey)}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -218,13 +201,14 @@ export default function LandingPage() {
         <div className="container">
           <AnimatedSection>
             <div className="landing__badge-wrap">
-              <span className="badge badge-primary">7 Powerful Categories</span>
+              <span className="badge badge-primary">{t('landing.categories.badge', { defaultValue: '7 Powerful Categories' })}</span>
             </div>
             <h2 className="section-title" style={{ marginTop: '1rem' }}>
-              Every Tool You Need to <span className="gradient-text">Grow</span>
+              {t('landing.categories.titlePre', { defaultValue: 'Every Tool You Need to' })}{' '}
+              <span className="gradient-text">{t('landing.categories.titleHighlight', { defaultValue: 'Grow' })}</span>
             </h2>
             <p className="section-subtitle">
-              Each category is precision-tuned with expert AI prompts. Not generic AI — real expertise built into every tool.
+              {t('landing.categories.subtitle', { defaultValue: 'Each category is precision-tuned with expert AI prompts. Not generic AI — real expertise built into every tool.' })}
             </p>
           </AnimatedSection>
 
@@ -246,14 +230,14 @@ export default function LandingPage() {
                 <div className="landing__category-icon" style={{ background: `${cat.color}20`, borderColor: `${cat.color}40` }}>
                   {cat.icon}
                 </div>
-                <h3 className="landing__category-name">{cat.name}</h3>
-                <p className="landing__category-desc">{cat.description}</p>
+                <h3 className="landing__category-name">{t(`cat.${cat.id}.name`, { defaultValue: cat.name })}</h3>
+                <p className="landing__category-desc">{t(`cat.${cat.id}.desc`, { defaultValue: cat.description })}</p>
                 <div className="landing__category-tools">
                   {cat.tools.slice(0, 3).map((tool) => (
-                    <span key={tool.id} className="landing__tool-tag">{tool.icon} {tool.name}</span>
+                    <span key={tool.id} className="landing__tool-tag">{tool.icon} {t(`tool.${tool.id}.name`, { defaultValue: tool.name })}</span>
                   ))}
                   {cat.tools.length > 3 && (
-                    <span className="landing__tool-tag landing__tool-tag--more">+{cat.tools.length - 3} more</span>
+                    <span className="landing__tool-tag landing__tool-tag--more">+{cat.tools.length - 3} {t('landing.categories.more', { defaultValue: 'more' })}</span>
                   )}
                 </div>
               </motion.div>
@@ -266,9 +250,13 @@ export default function LandingPage() {
       <section className="landing__features section">
         <div className="container">
           <AnimatedSection>
-            <h2 className="section-title">Why <span className="gradient-text">Gormaran</span> is Different</h2>
+            <h2 className="section-title">
+              {t('landing.features.titlePre', { defaultValue: 'Why' })}{' '}
+              <span className="gradient-text">Gormaran</span>{' '}
+              {t('landing.features.titlePost', { defaultValue: 'is Different' })}
+            </h2>
             <p className="section-subtitle">
-              We didn't just add a chat box. Every tool is purpose-engineered with expert knowledge for precise, actionable output.
+              {t('landing.features.subtitle', { defaultValue: "We didn't just add a chat box. Every tool is purpose-engineered with expert knowledge for precise, actionable output." })}
             </p>
           </AnimatedSection>
 
@@ -280,10 +268,10 @@ export default function LandingPage() {
             variants={stagger}
           >
             {FEATURES.map((feature) => (
-              <motion.div key={feature.title} className="landing__feature-card" variants={fadeUp}>
+              <motion.div key={feature.idx} className="landing__feature-card" variants={fadeUp}>
                 <div className="landing__feature-icon">{feature.icon}</div>
-                <h3 className="landing__feature-title">{feature.title}</h3>
-                <p>{feature.description}</p>
+                <h3 className="landing__feature-title">{t(`landing.feature.${feature.idx}.title`)}</h3>
+                <p>{t(`landing.feature.${feature.idx}.desc`)}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -294,7 +282,10 @@ export default function LandingPage() {
       <section className="landing__testimonials section">
         <div className="container">
           <AnimatedSection>
-            <h2 className="section-title">Loved by <span className="gradient-text">Growth Teams</span></h2>
+            <h2 className="section-title">
+              {t('landing.testimonials.titlePre', { defaultValue: 'Loved by' })}{' '}
+              <span className="gradient-text">{t('landing.testimonials.titleHighlight', { defaultValue: 'Growth Teams' })}</span>
+            </h2>
           </AnimatedSection>
           <motion.div
             className="grid-3"
@@ -303,15 +294,15 @@ export default function LandingPage() {
             viewport={{ once: true, margin: '-60px' }}
             variants={stagger}
           >
-            {TESTIMONIALS.map((t) => (
-              <motion.div key={t.name} className="landing__testimonial" variants={fadeUp}>
+            {TESTIMONIALS.map((t2) => (
+              <motion.div key={t2.name} className="landing__testimonial" variants={fadeUp}>
                 <div className="landing__testimonial-stars">★★★★★</div>
-                <p className="landing__testimonial-text">"{t.text}"</p>
+                <p className="landing__testimonial-text">"{t2.text}"</p>
                 <div className="landing__testimonial-author">
-                  <div className="landing__testimonial-avatar">{t.avatar}</div>
+                  <div className="landing__testimonial-avatar">{t2.avatar}</div>
                   <div>
-                    <strong>{t.name}</strong>
-                    <small>{t.title}</small>
+                    <strong>{t2.name}</strong>
+                    <small>{t2.title}</small>
                   </div>
                 </div>
               </motion.div>
@@ -326,26 +317,27 @@ export default function LandingPage() {
           <AnimatedSection>
             <div className="landing__cta-card">
               <div className="landing__cta-orb" />
-              <span className="badge badge-primary" style={{ marginBottom: '1.5rem' }}>Get Started Today</span>
+              <span className="badge badge-primary" style={{ marginBottom: '1.5rem' }}>
+                {t('landing.cta.badge', { defaultValue: 'Get Started Today' })}
+              </span>
               <h2 className="landing__cta-title">
-                Stop Wasting Time on Manual Work.
+                {t('landing.cta.title', { defaultValue: 'Stop Wasting Time on Manual Work.' })}
                 <br />
-                <span className="gradient-text">Let AI Handle It.</span>
+                <span className="gradient-text">{t('landing.cta.titleHighlight', { defaultValue: 'Let AI Handle It.' })}</span>
               </h2>
               <p>
-                Join thousands of marketers, founders, and agencies growing faster with Gormaran.
-                Start free — no credit card required.
+                {t('landing.cta.subtitle', { defaultValue: 'Join thousands of marketers, founders, and agencies growing faster with Gormaran. Start free — no credit card required.' })}
               </p>
               <div className="landing__cta-actions">
                 <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
-                  Start Free Now →
+                  {t('landing.cta.startFree', { defaultValue: 'Start Free Now →' })}
                 </Link>
                 <Link to="/pricing" className="btn btn-secondary btn-lg">
-                  See Pricing
+                  {t('landing.cta.seePricing', { defaultValue: 'See Pricing' })}
                 </Link>
               </div>
               <small className="landing__cta-note">
-                Free plan includes 5 AI requests/day · No credit card required
+                {t('landing.cta.note', { defaultValue: 'Free plan includes 5 AI requests/day · No credit card required' })}
               </small>
             </div>
           </AnimatedSection>
