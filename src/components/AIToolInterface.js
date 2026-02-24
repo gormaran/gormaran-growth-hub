@@ -70,6 +70,7 @@ export default function AIToolInterface({ tool, categoryId }) {
   const [copied, setCopied] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const outputRef = useRef(null);
+  const outputPanelRef = useRef(null);
   const abortRef = useRef(false);
   const finalOutputRef = useRef('');
   const [history, setHistory] = useState([]);
@@ -159,6 +160,7 @@ export default function AIToolInterface({ tool, categoryId }) {
     finalOutputRef.current = '';
     setIsStreaming(true);
     abortRef.current = false;
+    setTimeout(() => outputPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     const capturedInputs = { ...inputs };
 
     await streamAIResponse({
@@ -306,7 +308,7 @@ export default function AIToolInterface({ tool, categoryId }) {
         </div>
 
         {/* Output Panel */}
-        <div className="ai-tool__panel ai-tool__output-panel">
+        <div className="ai-tool__panel ai-tool__output-panel" ref={outputPanelRef}>
           <div className="ai-tool__output-header">
             <h3 className="ai-tool__panel-title">
               {isStreaming ? (
