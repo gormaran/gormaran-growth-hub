@@ -273,7 +273,7 @@ export default function InstagramAuditSection() {
       toolId: 'instagram-audit',
       inputs: {
         bio,
-        username: username ? `@${username}` : niche,
+        username: [username ? `@${username}` : '', niche].filter(Boolean).join(' — ') || '(not provided)',
         goal,
         content_type: contentType,
         followers: followersLabel,
@@ -448,6 +448,9 @@ export default function InstagramAuditSection() {
                     <option key={i} value={i}>{f}</option>
                   ))}
                 </select>
+                <p className="ig-audit__hint">
+                  💡 {t('ig.followers.hint', { defaultValue: 'Visible on your profile page — no business account needed.' })}
+                </p>
               </div>
 
               {/* Follower history (collapsible) */}
