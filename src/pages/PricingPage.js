@@ -16,16 +16,17 @@ const PLAN_META = [
 
 // Comparison row value keys (text values that need translation use a key, icons/numbers stay as-is)
 const COMPARISON_ROWS = [
-  { idx: 0, free: '3/day', pro: 'unlimited', business: 'unlimited' },
-  { idx: 1, free: '✅', pro: '✅', business: '✅' },
-  { idx: 2, free: '✅', pro: '✅', business: '✅' },
-  { idx: 3, free: '❌', pro: '✅', business: '✅' },
-  { idx: 4, free: '❌', pro: '✅', business: '✅' },
-  { idx: 5, free: '❌', pro: '❌', business: '✅' },
-  { idx: 6, free: '❌', pro: '❌', business: '✅' },
-  { idx: 7, free: '❌', pro: '❌', business: '✅' },
-  { idx: 8, free: '1', pro: '1', business: '10' },
-  { idx: 9, free: 'email', pro: 'priority', business: 'dedicated' },
+  { idx: 0,  free: '3/day',  pro: 'unlimited', business: 'unlimited' },
+  { idx: 1,  free: '✅',     pro: '✅',        business: '✅' },
+  { idx: 2,  free: '✅',     pro: '✅',        business: '✅' },
+  { idx: 3,  free: '❌',     pro: '✅',        business: '✅' },
+  { idx: 4,  free: '❌',     pro: '✅',        business: '✅' },
+  { idx: 5,  free: '❌',     pro: '❌',        business: '✅' },
+  { idx: 6,  free: '❌',     pro: '❌',        business: '✅' },
+  { idx: 7,  free: '❌',     pro: '❌',        business: '✅' },
+  { idx: 8,  free: '1',      pro: '1',         business: '10' },
+  { idx: 9,  free: 'email',  pro: 'priority',  business: 'dedicated' },
+  { idx: 10, free: 'addon',  pro: 'addon',     business: 'addon' },
 ];
 
 const FAQ_COUNT = 6;
@@ -87,6 +88,7 @@ export default function PricingPage() {
     if (val === 'email')     return t('pricing.comparison.email',     { defaultValue: 'Email' });
     if (val === 'priority')  return t('pricing.comparison.priority',  { defaultValue: 'Priority' });
     if (val === 'dedicated') return t('pricing.comparison.dedicated', { defaultValue: 'Dedicated' });
+    if (val === 'addon')     return t('pricing.comparison.addon',     { defaultValue: '➕ Add-on' });
     return val;
   }
 
@@ -201,6 +203,56 @@ export default function PricingPage() {
                 </motion.div>
               );
             })}
+          </motion.div>
+        </div>
+
+        {/* N8n Add-on */}
+        <div className="container">
+          <motion.div
+            className="pricing__addon"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="pricing__addon-left">
+              <span className="badge badge-primary pricing__addon-badge">
+                {t('pricing.addon.badge', { defaultValue: '⚡ Add-on' })}
+              </span>
+              <h3 className="pricing__addon-title">
+                {t('pricing.addon.title', { defaultValue: 'N8n Automation' })}
+              </h3>
+              <p className="pricing__addon-desc">
+                {t('pricing.addon.desc', { defaultValue: 'Design powerful no-code automations using n8n — available to any plan.' })}
+              </p>
+              <ul className="pricing__addon-features">
+                {[0, 1, 2, 3].map((i) => (
+                  <li key={i}>✅ {t(`pricing.addon.feature.${i}`)}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="pricing__addon-right">
+              <div className="pricing__addon-price">
+                <span className="pricing__addon-amount">
+                  {t('pricing.addon.price', { defaultValue: '€10' })}
+                </span>
+                <span className="pricing__addon-period">
+                  {t('pricing.addon.period', { defaultValue: '/ 3 days' })}
+                </span>
+              </div>
+              <p className="pricing__addon-renew">
+                {t('pricing.addon.renew', { defaultValue: 'Renews every 3 days · Works with any plan' })}
+              </p>
+              <button
+                className="btn btn-primary pricing__plan-cta"
+                onClick={() => {
+                  if (!currentUser) navigate('/auth?mode=register');
+                }}
+              >
+                {t('pricing.addon.cta', { defaultValue: 'Get Add-on →' })}
+              </button>
+            </div>
           </motion.div>
         </div>
 
