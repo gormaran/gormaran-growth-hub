@@ -378,9 +378,20 @@ export default function InstagramAuditSection() {
                     onChange={(e) => setUsername(e.target.value.replace(/^@+/, ''))}
                   />
                 </div>
-                <p className="ig-audit__hint">
-                  {t('ig.username.hint', { defaultValue: 'Include @ so we can personalise the audit.' })}
-                </p>
+                {username ? (
+                  <a
+                    href={`https://www.instagram.com/${username}/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ig-audit__username-preview"
+                  >
+                    📸 instagram.com/{username} ↗
+                  </a>
+                ) : (
+                  <p className="ig-audit__hint">
+                    {t('ig.username.hint', { defaultValue: 'Type your username to verify your profile link.' })}
+                  </p>
+                )}
               </div>
 
               {/* Niche */}
