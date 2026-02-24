@@ -449,6 +449,24 @@
   font-style: italic;
 }
 
+.ig-audit__username-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #e1306c;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.ig-audit__username-preview:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+  color: #e1306c;
+}
+
 /* Small number input */
 .ig-audit__input--sm {
   padding: 0.5rem 0.7rem;
