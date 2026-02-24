@@ -194,6 +194,7 @@ export default function InstagramAuditSection() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const outputRef = useRef(null);
 
@@ -284,6 +285,13 @@ export default function InstagramAuditSection() {
       onDone: () => { setLoading(false); setDone(true); },
       onError: (msg) => { setError(msg); setLoading(false); },
     });
+  }
+
+  async function handleCopy() {
+    if (!output) return;
+    await navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   function handleClear() {
@@ -543,6 +551,21 @@ export default function InstagramAuditSection() {
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown>
                   </div>
                   {loading && output && <span className="ig-audit__cursor">▋</span>}
+
+                  {/* Copy button — shown once output exists */}
+                  {output && !loading && (
+                    <div className="ig-audit__output-controls">
+                      <button
+                        type="button"
+                        className="ig-audit__copy-btn"
+                        onClick={handleCopy}
+                      >
+                        {copied
+                          ? `✅ ${t('ui.copied', { defaultValue: 'Copied!' })}`
+                          : `📋 ${t('ui.copy', { defaultValue: 'Copy' })}`}
+                      </button>
+                    </div>
+                  )}
 
                   {/* Follow CTA — shown after audit completes */}
                   {done && (

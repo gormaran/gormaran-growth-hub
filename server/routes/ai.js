@@ -38,6 +38,7 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
 
   // Check subscription for premium categories (read from Firestore for accuracy)
   const freeCategoryIds = ['marketing', 'content'];
+  const proCategoryIds = [...freeCategoryIds, 'strategy', 'digital', 'creative'];
   let userSubscription = req.user?.subscription || 'free'; // fallback (used in dev mode)
   try {
     const adminSdk = require('firebase-admin');
@@ -50,9 +51,19 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
     }
   } catch (_) { /* use fallback */ }
 
-  if (!freeCategoryIds.includes(categoryId) && userSubscription === 'free') {
+  const isAdmin = userSubscription === 'admin';
+  const isBusiness = userSubscription === 'business' || isAdmin;
+  const isPro = userSubscription === 'pro' || isBusiness;
+
+  if (!isPro && !freeCategoryIds.includes(categoryId)) {
     return res.status(403).json({
       error: 'This category requires a Pro or Business subscription.',
+      upgradeRequired: true,
+    });
+  }
+  if (isPro && !isBusiness && !proCategoryIds.includes(categoryId)) {
+    return res.status(403).json({
+      error: 'This category requires a Business subscription.',
       upgradeRequired: true,
     });
   }
@@ -76,8 +87,8 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
 
   try {
     const stream = client.messages.stream({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 4096,
+      model: tool.model || 'claude-sonnet-4-6',
+      max_tokens: tool.maxTokens || 4096,
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],
     });

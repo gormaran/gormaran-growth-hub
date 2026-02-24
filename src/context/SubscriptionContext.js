@@ -18,17 +18,17 @@ const PLANS = {
   pro: {
     name: 'Pro',
     dailyLimit: Infinity,
-    categories: ['marketing', 'content', 'strategy', 'digital'],
+    categories: ['marketing', 'content', 'strategy', 'digital', 'creative'],
   },
   business: {
     name: 'Business',
     dailyLimit: Infinity,
-    categories: ['marketing', 'content', 'strategy', 'digital', 'ecommerce', 'agency', 'startup'],
+    categories: ['marketing', 'content', 'strategy', 'digital', 'creative', 'ecommerce', 'agency', 'startup', 'finance'],
   },
   admin: {
     name: 'Admin',
     dailyLimit: Infinity,
-    categories: ['marketing', 'content', 'strategy', 'digital', 'ecommerce', 'agency', 'startup', 'automation'],
+    categories: ['marketing', 'content', 'strategy', 'digital', 'creative', 'ecommerce', 'agency', 'startup', 'finance', 'automation'],
   },
 };
 
