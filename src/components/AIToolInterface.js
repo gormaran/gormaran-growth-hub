@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -136,7 +136,7 @@ export default function AIToolInterface({ tool, categoryId }) {
     setError('');
 
     if (!currentUser) {
-      setError('Please sign in to use this tool.');
+      setError(t('ui.signInRequired', { defaultValue: 'Please sign in or create a free account to use this tool.' }));
       return;
     }
 

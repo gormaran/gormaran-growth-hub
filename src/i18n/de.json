@@ -21,6 +21,7 @@
   "ui.proFeature": "Pro-Funktion",
   "ui.dailyLimitReached": "Tageslimit erreicht",
   "ui.upgradeNow": "Jetzt upgraden",
+  "ui.signInRequired": "Melden Sie sich an oder erstellen Sie ein kostenloses Konto, um dieses Tool zu nutzen.",
   "ui.aiToolCategories": "KI-Tool-Kategorien",
   "ui.tools": "Tools",
   "ui.open": "Öffnen →",

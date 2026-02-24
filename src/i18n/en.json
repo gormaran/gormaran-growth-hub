@@ -21,6 +21,7 @@
   "ui.proFeature": "Pro feature",
   "ui.dailyLimitReached": "Daily limit reached",
   "ui.upgradeNow": "Upgrade Now",
+  "ui.signInRequired": "Please sign in or create a free account to use this tool.",
   "ui.aiToolCategories": "AI Tool Categories",
   "ui.tools": "tools",
   "ui.open": "Open →",
