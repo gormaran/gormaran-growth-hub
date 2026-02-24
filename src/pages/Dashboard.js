@@ -204,7 +204,7 @@ export default function Dashboard() {
           >
             <span className="dashboard__tip-icon">💡</span>
             <p>
-              <strong>Pro tip:</strong> Each tool has custom-engineered AI prompts. Fill in all fields for the most precise, actionable output from Claude AI.
+              <strong>Pro tip:</strong> Each tool has custom-engineered AI prompts. Fill in all fields for the most precise, actionable output.
             </p>
           </motion.div>
         </div>

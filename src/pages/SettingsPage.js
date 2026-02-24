@@ -176,7 +176,7 @@ export default function SettingsPage() {
             <div className="settings__about">
               <span>⚡ <strong className="gradient-text">Gormaran AI Growth Hub</strong></span>
               <span>Version 1.0.0</span>
-              <span>Powered by Claude AI by Anthropic</span>
+              <span>Gormaran AI Growth Hub</span>
               <div className="settings__about-links">
                 <a href="#">Privacy Policy</a>
                 <span>·</span>

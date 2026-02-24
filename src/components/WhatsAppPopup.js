@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import './WhatsAppPopup.css';
 
 const WA_URL = 'https://chat.whatsapp.com/KiCrExfNBdcKrzTwybkneP';
@@ -7,6 +8,7 @@ const STORAGE_KEY = 'gormaran_wa_popup_dismissed';
 
 export default function WhatsAppPopup() {
   const [visible, setVisible] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (sessionStorage.getItem(STORAGE_KEY)) return;
@@ -29,7 +31,7 @@ export default function WhatsAppPopup() {
           exit={{ opacity: 0, y: 40, scale: 0.95 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         >
-          <button className="wa-popup__close" onClick={dismiss} aria-label="Cerrar">✕</button>
+          <button className="wa-popup__close" onClick={dismiss} aria-label="Close">✕</button>
 
           <div className="wa-popup__icon">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -39,9 +41,11 @@ export default function WhatsAppPopup() {
           </div>
 
           <div className="wa-popup__body">
-            <p className="wa-popup__title">Únete a la comunidad</p>
+            <p className="wa-popup__title">
+              {t('wa.title', { defaultValue: 'Join the community' })}
+            </p>
             <p className="wa-popup__subtitle">
-              Consejos de marketing, IA y crecimiento cada semana. Gratis, en WhatsApp.
+              {t('wa.subtitle', { defaultValue: 'Marketing tips, AI and growth every week. Free, on WhatsApp.' })}
             </p>
             <a
               href={WA_URL}
@@ -50,7 +54,7 @@ export default function WhatsAppPopup() {
               className="wa-popup__btn"
               onClick={dismiss}
             >
-              Unirme ahora →
+              {t('wa.cta', { defaultValue: 'Join now →' })}
             </a>
           </div>
         </motion.div>

@@ -392,7 +392,7 @@ export default function LandingPage() {
           >
             <motion.div variants={fadeUp} transition={{ duration: 0.5 }}>
               <span className="landing__hero-badge">
-                {t('landing.hero.badge', { defaultValue: '⚡ Powered by Claude AI' })}
+                {t('landing.hero.badge', { defaultValue: '⚡ AI-Powered Platform' })}
               </span>
             </motion.div>
 
