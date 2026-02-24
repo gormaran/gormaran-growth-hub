@@ -77,9 +77,9 @@ const CATEGORY_MIN_PLAN = {
   content:    'free',
   strategy:   'pro',
   digital:    'pro',
-  ecommerce:  'pro',
-  agency:     'pro',
-  startup:    'pro',
+  ecommerce:  'business',
+  agency:     'business',
+  startup:    'business',
   automation: 'business',
 };
 

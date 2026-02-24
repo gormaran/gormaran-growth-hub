@@ -18,7 +18,7 @@ const PLANS = {
   pro: {
     name: 'Pro',
     dailyLimit: Infinity,
-    categories: ['marketing', 'content', 'strategy', 'digital', 'ecommerce', 'agency', 'startup'],
+    categories: ['marketing', 'content', 'strategy', 'digital'],
   },
   business: {
     name: 'Business',
