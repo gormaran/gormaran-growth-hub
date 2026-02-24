@@ -5,6 +5,8 @@ import { CATEGORIES } from '../data/categories';
 import { useTranslation } from 'react-i18next';
 import './LandingPage.css';
 import './FlipCard.css';
+import { useAuth } from '../context/AuthContext';
+import { useSubscription } from '../context/SubscriptionContext';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -70,8 +72,139 @@ const TESTIMONIALS = [
   },
 ];
 
+const CATEGORY_MIN_PLAN = {
+  marketing:  'free',
+  content:    'free',
+  strategy:   'pro',
+  digital:    'pro',
+  ecommerce:  'pro',
+  agency:     'pro',
+  startup:    'pro',
+  automation: 'business',
+};
+
+function getVideoContent(catId) {
+  switch (catId) {
+    case 'marketing':
+      return (
+        <div className="fvc-bars">
+          {[65, 82, 58, 90, 74].map((h, i) => (
+            <div key={i} className="fvc-bar" style={{ '--bar-h': `${h}%`, '--bar-delay': `${i * 0.15}s` }} />
+          ))}
+        </div>
+      );
+    case 'content':
+      return (
+        <div className="fvc-typing">
+          {[90, 70, 85, 55, 80].map((w, i) => (
+            <div key={i} className="fvc-typing-line" style={{ '--tw': `${w}%`, '--td': `${i * 0.2}s` }} />
+          ))}
+        </div>
+      );
+    case 'strategy':
+      return (
+        <div className="fvc-swot">
+          {['S', 'W', 'O', 'T'].map((l, i) => (
+            <div key={l} className="fvc-swot-cell" style={{ '--td': `${i * 0.15}s` }}>
+              <span>{l}</span>
+            </div>
+          ))}
+        </div>
+      );
+    case 'digital':
+      return (
+        <div className="fvc-metrics">
+          {[['CTR', '4.2%'], ['ROAS', '3.8x'], ['Conv', '12%'], ['CPC', '$0.84']].map(([label, val], i) => (
+            <div key={label} className="fvc-metric-card" style={{ '--td': `${i * 0.12}s` }}>
+              <span className="fvc-metric-label">{label}</span>
+              <span className="fvc-metric-val">{val}</span>
+            </div>
+          ))}
+        </div>
+      );
+    case 'ecommerce':
+      return (
+        <div className="fvc-products">
+          {[['👟', '$89'], ['👜', '$149'], ['⌚', '$299']].map(([icon, price], i) => (
+            <div key={icon} className="fvc-product-card" style={{ '--td': `${i * 0.15}s` }}>
+              <span className="fvc-product-icon">{icon}</span>
+              <span className="fvc-product-price">{price}</span>
+            </div>
+          ))}
+        </div>
+      );
+    case 'agency':
+      return (
+        <div className="fvc-pipeline">
+          {['Lead', 'Prop.', 'Rev.', 'Signed'].map((stage, i) => (
+            <>
+              <div key={stage} className="fvc-stage" style={{ '--td': `${i * 0.15}s` }}>{stage}</div>
+              {i < 3 && <div key={`${stage}-arrow`} className="fvc-arrow">›</div>}
+            </>
+          ))}
+        </div>
+      );
+    case 'startup':
+      return (
+        <div className="fvc-kpi">
+          {[['MRR', '↑ 24%'], ['Users', '↑ 189'], ['Churn', '↓ 1.2%']].map(([label, val], i) => (
+            <div key={label} className="fvc-kpi-row" style={{ '--td': `${i * 0.18}s` }}>
+              <span className="fvc-kpi-label">{label}</span>
+              <span className="fvc-kpi-val">{val}</span>
+            </div>
+          ))}
+        </div>
+      );
+    case 'automation':
+      return (
+        <div className="fvc-nodes">
+          {['⚡', '🔗', '📤'].map((icon, i) => (
+            <>
+              <div key={icon} className="fvc-node" style={{ '--td': `${i * 0.2}s` }}>{icon}</div>
+              {i < 2 && <div key={`${icon}-conn`} className="fvc-connector" />}
+            </>
+          ))}
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
 function FlipCard({ cat, i }) {
   const { t } = useTranslation();
+  const { currentUser } = useAuth();
+  const { isCategoryLocked } = useSubscription();
+
+  const minPlan = CATEGORY_MIN_PLAN[cat.id] || 'pro';
+  const isLocked = currentUser ? isCategoryLocked(cat.id) : false;
+
+  let ctaKey, ctaTo, ctaLocked;
+  if (!currentUser) {
+    ctaKey = 'landing.categories.tryFree';
+    ctaTo = '/auth?mode=register';
+    ctaLocked = false;
+  } else if (!isLocked) {
+    ctaKey = 'landing.categories.openTool';
+    ctaTo = `/dashboard/${cat.id}`;
+    ctaLocked = false;
+  } else if (minPlan === 'business') {
+    ctaKey = 'landing.categories.availableBusiness';
+    ctaTo = '/pricing';
+    ctaLocked = true;
+  } else {
+    ctaKey = 'landing.categories.availablePro';
+    ctaTo = '/pricing';
+    ctaLocked = true;
+  }
+
+  const ctaDefaults = {
+    'landing.categories.tryFree': 'Try Free →',
+    'landing.categories.openTool': 'Open Tool →',
+    'landing.categories.availablePro': 'Available on Pro →',
+    'landing.categories.availableBusiness': 'Available on Business →',
+  };
+
   return (
     <motion.div
       className="flip-card-wrapper"
@@ -115,17 +248,11 @@ function FlipCard({ cat, i }) {
 
           {/* ── BACK ── */}
           <div className="flip-card__back">
-            {/* Animated "video" mockup */}
+            {/* Category-specific animated preview */}
             <div className="flip-card__video">
               <div className="flip-card__video-bg-icon">{cat.icon}</div>
-              <div className="flip-card__video-lines">
-                <div className="flip-card__vline" style={{ width: '82%' }} />
-                <div className="flip-card__vline" style={{ width: '67%' }} />
-                <div className="flip-card__vtable">
-                  <div /><div /><div />
-                </div>
-                <div className="flip-card__vline" style={{ width: '74%' }} />
-                <div className="flip-card__vline" style={{ width: '50%' }} />
+              <div className="flip-card__video-content">
+                {getVideoContent(cat.id)}
               </div>
               <div className="flip-card__play">▶</div>
             </div>
@@ -143,8 +270,11 @@ function FlipCard({ cat, i }) {
               ))}
             </div>
 
-            <Link to="/auth?mode=register" className="flip-card__cta-btn">
-              {t('landing.categories.tryFree', { defaultValue: 'Try Free →' })}
+            <Link
+              to={ctaTo}
+              className={`flip-card__cta-btn${ctaLocked ? ' flip-card__cta-btn--locked' : ''}`}
+            >
+              {t(ctaKey, { defaultValue: ctaDefaults[ctaKey] })}
             </Link>
           </div>
 
