@@ -21,9 +21,9 @@ const COMPARISON_ROWS = [
   { idx: 2, free: '✅', pro: '✅', business: '✅' },
   { idx: 3, free: '❌', pro: '✅', business: '✅' },
   { idx: 4, free: '❌', pro: '✅', business: '✅' },
-  { idx: 5, free: '❌', pro: '✅', business: '✅' },
-  { idx: 6, free: '❌', pro: '✅', business: '✅' },
-  { idx: 7, free: '❌', pro: '✅', business: '✅' },
+  { idx: 5, free: '❌', pro: '❌', business: '✅' },
+  { idx: 6, free: '❌', pro: '❌', business: '✅' },
+  { idx: 7, free: '❌', pro: '❌', business: '✅' },
   { idx: 8, free: '1', pro: '1', business: '10' },
   { idx: 9, free: 'email', pro: 'priority', business: 'dedicated' },
 ];
