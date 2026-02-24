@@ -109,6 +109,8 @@
   "tool.gtm-strategy.desc": "Develop a full GTM playbook covering ICP definition, positioning, channel strategy, launch timeline and first 100 customers plan",
   "tool.user-stories.name": "User Story Generator",
   "tool.user-stories.desc": "Generate complete Agile story packages with acceptance criteria, story points, MoSCoW priority and sprint planning",
+  "tool.instagram-audit.name": "Instagram Express Audit",
+  "tool.instagram-audit.desc": "Analyze your Instagram profile in 5 minutes and get the 3 priority actions to optimize your bio, content strategy, and CTA for faster growth",
   "tool.n8n-workflow.name": "N8n Workflow Designer",
   "tool.n8n-workflow.desc": "Design complete n8n automation workflows with triggers, nodes, logic conditions and step-by-step setup instructions",
 

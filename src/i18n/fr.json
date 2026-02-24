@@ -109,6 +109,8 @@
   "tool.gtm-strategy.desc": "Développez un playbook GTM complet avec définition ICP, positionnement, stratégie de canaux et plan des 100 premiers clients",
   "tool.user-stories.name": "Générateur de User Stories",
   "tool.user-stories.desc": "Générez des packages Agile complets avec critères d'acceptation, points de story, priorité MoSCoW et planification de sprint",
+  "tool.instagram-audit.name": "Audit Express Instagram",
+  "tool.instagram-audit.desc": "Analysez votre profil Instagram en 5 minutes et obtenez les 3 actions prioritaires pour optimiser votre bio, stratégie de contenu et CTA",
   "tool.n8n-workflow.name": "Concepteur de Workflows N8n",
   "tool.n8n-workflow.desc": "Concevez des workflows d'automatisation n8n complets avec déclencheurs, nœuds, conditions logiques et guide de configuration étape par étape",
 
@@ -309,6 +311,14 @@
   "input.email-campaign.goal.label": "Objectif de la Campagne",
   "input.email-campaign.goal.placeholder": "ex. Convertir les utilisateurs d'essai en abonnés payants",
   "input.email-campaign.tone.label": "Ton de Marque",
+
+  "input.instagram-audit.bio.label": "Votre Bio Instagram Actuelle",
+  "input.instagram-audit.bio.placeholder": "Collez ici votre bio Instagram actuelle...",
+  "input.instagram-audit.username.label": "Votre Niche / Type de Compte",
+  "input.instagram-audit.username.placeholder": "ex. coach fitness, blogueur voyage, agence marketing",
+  "input.instagram-audit.goal.label": "Objectif Principal",
+  "input.instagram-audit.content_type.label": "Type de Contenu que Vous Publiez",
+  "input.instagram-audit.followers.label": "Abonnés Actuels",
 
   "input.business-plan.business_name.label": "Nom de l'Entreprise",
   "input.business-plan.business_name.placeholder": "ex. TechFlow SaaS",
