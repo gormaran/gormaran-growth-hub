@@ -164,7 +164,7 @@ export default function PricingPage() {
                   </div>
 
                   <div className="pricing__plan-price">
-                    <span className="pricing__plan-amount">${plan.price}</span>
+                    <span className="pricing__plan-amount">€{plan.price}</span>
                     <div className="pricing__plan-period">
                       {plan.price === 0
                         ? t('pricing.forever', { defaultValue: 'forever free' })

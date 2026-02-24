@@ -35,7 +35,8 @@ export default function Footer() {
           </div>
 
           <div className="footer__col">
-            <h4>Legal</h4>
+            <h4>Gormaran</h4>
+            <a href="https://gormaran-marketing.com" target="_blank" rel="noopener noreferrer">gormaran-marketing.com</a>
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
             <a href="#">Cookie Policy</a>

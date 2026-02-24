@@ -7,6 +7,7 @@ import './LandingPage.css';
 import './FlipCard.css';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
+import WhatsAppPopup from '../components/WhatsAppPopup';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -540,6 +541,8 @@ export default function LandingPage() {
           </AnimatedSection>
         </div>
       </section>
+
+      <WhatsAppPopup />
     </div>
   );
 }
