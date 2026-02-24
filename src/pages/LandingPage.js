@@ -8,6 +8,7 @@ import './FlipCard.css';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import WhatsAppPopup from '../components/WhatsAppPopup';
+import InstagramAuditSection from '../components/InstagramAuditSection';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -500,6 +501,9 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Instagram Audit */}
+      <InstagramAuditSection />
 
       {/* Features */}
       <section className="landing__features section">

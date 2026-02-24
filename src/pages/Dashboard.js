@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { CATEGORIES } from '../data/categories';
 import { useTranslation } from 'react-i18next';
+import InstagramAuditSection from '../components/InstagramAuditSection';
 import './Dashboard.css';
 
 const stagger = {
@@ -155,7 +156,7 @@ export default function Dashboard() {
                     <p className="dashboard__cat-desc">{catDesc}</p>
 
                     <div className="dashboard__cat-tools">
-                      {cat.tools.map((tool) => (
+                      {cat.tools.filter((tool) => !tool.hidden).map((tool) => (
                         <span key={tool.id} className="dashboard__tool-chip">
                           {tool.icon} {t(`tool.${tool.id}.name`, { defaultValue: tool.name })}
                         </span>
@@ -186,6 +187,14 @@ export default function Dashboard() {
             </motion.div>
           </section>
 
+        </div>
+      </div>
+
+      {/* Instagram Audit standalone section */}
+      <InstagramAuditSection />
+
+      <div className="container">
+        <div className="dashboard">
           {/* Quick tip */}
           <motion.div
             className="dashboard__tip"
