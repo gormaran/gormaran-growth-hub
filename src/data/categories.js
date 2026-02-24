@@ -179,6 +179,7 @@ Use proven copywriting frameworks: AIDA, PAS (Problem-Agitate-Solution), and sto
         name: 'Instagram Express Audit',
         description: 'Analyze your Instagram profile in 5 minutes and get the 3 priority actions to optimize your bio, content strategy, and CTA for faster growth',
         icon: '📸',
+        hidden: true,
         inputs: [
           { id: 'bio', label: 'Your Current Instagram Bio', type: 'textarea', placeholder: 'Paste your current Instagram bio here...', required: true },
           { id: 'username', label: 'Your Niche / Type of Account', type: 'text', placeholder: 'e.g., fitness coach, travel blogger, marketing agency', required: true },
