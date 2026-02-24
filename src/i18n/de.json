@@ -132,6 +132,10 @@
   "landing.categories.titleHighlight": "Wachsen",
   "landing.categories.subtitle": "Jede Kategorie ist präzise auf Experten-KI-Prompts abgestimmt. Keine generische KI — echtes Fachwissen in jedem Tool integriert.",
   "landing.categories.more": "weitere",
+  "landing.categories.tryFree": "Kostenlos testen →",
+  "landing.categories.openTool": "Tool öffnen →",
+  "landing.categories.availablePro": "Verfügbar in Pro →",
+  "landing.categories.availableBusiness": "Verfügbar in Business →",
 
   "landing.features.titlePre": "Warum",
   "landing.features.titlePost": "Anders ist",

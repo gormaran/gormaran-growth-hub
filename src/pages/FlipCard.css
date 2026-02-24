@@ -262,6 +262,279 @@
   color: #fff;
 }
 
+/* ── Locked CTA button ─────────────────────── */
+.flip-card__cta-btn--locked {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.72rem;
+  opacity: 1;
+}
+
+.flip-card__cta-btn--locked:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary);
+  transform: none;
+}
+
+/* ── Category-specific video content ─────────── */
+.flip-card__video-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.8rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Marketing: Bar chart */
+.fvc-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 70px;
+  width: 100%;
+  padding: 0 0.5rem;
+}
+
+.fvc-bar {
+  flex: 1;
+  height: var(--bar-h, 60%);
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--cat-color, #6366f1) 80%, transparent),
+    color-mix(in srgb, var(--cat-color, #6366f1) 35%, transparent)
+  );
+  border-radius: 4px 4px 0 0;
+  animation: fvc-bar-pulse 2s ease-in-out infinite;
+  animation-delay: var(--bar-delay, 0s);
+  transform-origin: bottom;
+}
+
+@keyframes fvc-bar-pulse {
+  0%, 100% { opacity: 0.45; transform: scaleY(1); }
+  50%       { opacity: 0.9;  transform: scaleY(1.06); }
+}
+
+/* Content: Typing lines */
+.fvc-typing {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+
+.fvc-typing-line {
+  height: 8px;
+  width: var(--tw, 80%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--cat-color, #6366f1) 70%, transparent) 0%,
+    color-mix(in srgb, var(--cat-color, #6366f1) 20%, transparent) 100%
+  );
+  border-radius: 4px;
+  animation: fvc-type-in 2.4s ease-in-out infinite;
+  animation-delay: var(--td, 0s);
+}
+
+@keyframes fvc-type-in {
+  0%   { opacity: 0.3; transform: scaleX(0.4); transform-origin: left; }
+  50%  { opacity: 0.85; transform: scaleX(1);   transform-origin: left; }
+  100% { opacity: 0.3; transform: scaleX(1);    transform-origin: left; }
+}
+
+/* Strategy: SWOT grid */
+.fvc-swot {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  width: 78%;
+  height: 70px;
+}
+
+.fvc-swot-cell {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--cat-color, #6366f1) 40%, transparent);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--cat-color, #6366f1) 90%, white);
+  animation: fvc-fade-pulse 2.4s ease-in-out infinite;
+  animation-delay: var(--td, 0s);
+}
+
+@keyframes fvc-fade-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1;   }
+}
+
+/* Digital: Metrics 2×2 grid */
+.fvc-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  width: 90%;
+}
+
+.fvc-metric-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0.25rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: fvc-fade-pulse 2.2s ease-in-out infinite;
+  animation-delay: var(--td, 0s);
+}
+
+.fvc-metric-label {
+  font-size: 0.53rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.fvc-metric-val {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--cat-color, #6366f1) 90%, white);
+}
+
+/* Ecommerce: Product cards */
+.fvc-products {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.fvc-product-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  animation: fvc-product-float 2.5s ease-in-out infinite;
+  animation-delay: var(--td, 0s);
+}
+
+.fvc-product-icon { font-size: 1.2rem; }
+
+.fvc-product-price {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--cat-color, #6366f1) 90%, white);
+}
+
+@keyframes fvc-product-float {
+  0%, 100% { transform: translateY(0);   opacity: 0.55; }
+  50%       { transform: translateY(-4px); opacity: 1;   }
+}
+
+/* Agency: Pipeline stages */
+.fvc-pipeline {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.fvc-stage {
+  background: color-mix(in srgb, var(--cat-color, #6366f1) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cat-color, #6366f1) 50%, transparent);
+  border-radius: 5px;
+  padding: 0.3rem 0.35rem;
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--cat-color, #6366f1) 90%, white);
+  white-space: nowrap;
+  animation: fvc-fade-pulse 2.2s ease-in-out infinite;
+  animation-delay: var(--td, 0s);
+}
+
+.fvc-arrow {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* Startup: KPI rows */
+.fvc-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 88%;
+}
+
+.fvc-kpi-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 5px;
+  padding: 0.28rem 0.6rem;
+  animation: fvc-fade-pulse 2.3s ease-in-out infinite;
+  animation-delay: var(--td, 0s);
+}
+
+.fvc-kpi-label {
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.fvc-kpi-val {
+  font-size: 0.63rem;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--cat-color, #6366f1) 90%, white);
+}
+
+/* Automation: Workflow nodes */
+.fvc-nodes {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+
+.fvc-node {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--cat-color, #6366f1) 50%, transparent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  animation: fvc-node-glow 2.4s ease-in-out infinite;
+  animation-delay: var(--td, 0s);
+}
+
+@keyframes fvc-node-glow {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cat-color, #6366f1) 0%, transparent); opacity: 0.45; }
+  50%       { box-shadow: 0 0 0 5px color-mix(in srgb, var(--cat-color, #6366f1) 25%, transparent); opacity: 1;   }
+}
+
+.fvc-connector {
+  width: 18px;
+  height: 2px;
+  background: color-mix(in srgb, var(--cat-color, #6366f1) 50%, transparent);
+  border-radius: 1px;
+  animation: fvc-fade-pulse 2s ease-in-out infinite;
+}
+
 /* ── RESPONSIVE ────────────────────────────── */
 @media (max-width: 1200px) {
   .flip-card-wrapper { height: 340px; }

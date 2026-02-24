@@ -132,6 +132,10 @@
   "landing.categories.titleHighlight": "Grow",
   "landing.categories.subtitle": "Each category is precision-tuned with expert AI prompts. Not generic AI — real expertise built into every tool.",
   "landing.categories.more": "more",
+  "landing.categories.tryFree": "Try Free →",
+  "landing.categories.openTool": "Open Tool →",
+  "landing.categories.availablePro": "Available on Pro →",
+  "landing.categories.availableBusiness": "Available on Business →",
 
   "landing.features.titlePre": "Why",
   "landing.features.titlePost": "is Different",

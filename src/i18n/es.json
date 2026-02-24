@@ -132,6 +132,10 @@
   "landing.categories.titleHighlight": "Crecer",
   "landing.categories.subtitle": "Cada categoría está ajustada con precisión con prompts de IA expertos. No es IA genérica — expertise real integrado en cada herramienta.",
   "landing.categories.more": "más",
+  "landing.categories.tryFree": "Prueba Gratis →",
+  "landing.categories.openTool": "Abrir Herramienta →",
+  "landing.categories.availablePro": "Disponible en Plan Pro →",
+  "landing.categories.availableBusiness": "Disponible en Plan Business →",
 
   "landing.features.titlePre": "Por qué",
   "landing.features.titlePost": "es Diferente",
