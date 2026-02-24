@@ -180,22 +180,24 @@ function FlipCard({ cat, i }) {
   const isLocked = currentUser ? isCategoryLocked(cat.id) : false;
 
   let ctaKey, ctaTo, ctaLocked;
-  if (!currentUser) {
-    ctaKey = 'landing.categories.tryFree';
-    ctaTo = '/auth?mode=register';
-    ctaLocked = false;
-  } else if (!isLocked) {
+  if (currentUser && !isLocked) {
+    // logged in and has access → go directly to the tool
     ctaKey = 'landing.categories.openTool';
     ctaTo = `/dashboard/${cat.id}`;
     ctaLocked = false;
   } else if (minPlan === 'business') {
     ctaKey = 'landing.categories.availableBusiness';
-    ctaTo = '/pricing';
+    ctaTo = currentUser ? '/pricing' : '/auth?mode=register';
+    ctaLocked = true;
+  } else if (minPlan === 'pro') {
+    ctaKey = 'landing.categories.availablePro';
+    ctaTo = currentUser ? '/pricing' : '/auth?mode=register';
     ctaLocked = true;
   } else {
-    ctaKey = 'landing.categories.availablePro';
-    ctaTo = '/pricing';
-    ctaLocked = true;
+    // free category — invite to register
+    ctaKey = 'landing.categories.tryFree';
+    ctaTo = '/auth?mode=register';
+    ctaLocked = false;
   }
 
   const ctaDefaults = {
