@@ -6,6 +6,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 
+import './App.css';
+
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
@@ -30,7 +32,6 @@ function AnalyticsTracker() {
   return null;
 }
 
-import './App.css';
 
 function AppLayout({ children, hideFooter }) {
   return (
