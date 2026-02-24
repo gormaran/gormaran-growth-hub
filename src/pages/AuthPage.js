@@ -123,7 +123,7 @@ export default function AuthPage() {
             {[
               '✅ 7 AI-powered categories',
               '✅ 35+ precision-tuned tools',
-              '✅ Real-time Claude AI streaming',
+              '✅ Real-time AI streaming',
               '✅ Start free — no credit card',
             ].map((f) => (
               <div key={f} className="auth__left-feature">{f}</div>

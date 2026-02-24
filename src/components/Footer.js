@@ -45,7 +45,7 @@ export default function Footer() {
 
         <div className="footer__bottom">
           <p>© {new Date().getFullYear()} Gormaran AI Growth Hub. All rights reserved.</p>
-          <p>Powered by Claude AI</p>
+          <p>AI-Powered Growth Tools</p>
         </div>
       </div>
     </footer>
