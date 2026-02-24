@@ -21,6 +21,7 @@
   "ui.proFeature": "Fonction Pro",
   "ui.dailyLimitReached": "Limite quotidienne atteinte",
   "ui.upgradeNow": "Passer à Pro",
+  "ui.signInRequired": "Connectez-vous ou créez un compte gratuit pour utiliser cet outil.",
   "ui.aiToolCategories": "Catégories d'outils IA",
   "ui.tools": "outils",
   "ui.open": "Ouvrir →",
