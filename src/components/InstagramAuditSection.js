@@ -259,8 +259,9 @@ export default function InstagramAuditSection() {
       try {
         const cred = await signInAnonymously(auth);
         user = cred.user;
-      } catch {
-        setError(t('ig.error.required', { defaultValue: 'Authentication error. Please try again.' }));
+      } catch (anonErr) {
+        console.error('[Anonymous auth]', anonErr);
+        setError(t('ig.error.anon', { defaultValue: 'Could not start session. Please try registering for free to use this tool.' }));
         setLoading(false);
         return;
       }

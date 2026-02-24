@@ -325,6 +325,7 @@
   "ig.btn.generating": "Analyzing...",
   "ig.btn.clear": "Clear",
   "ig.error.required": "Please fill in: @username, bio and main goal.",
+  "ig.error.anon": "Could not start your session. Please register for free to use this tool.",
   "ig.placeholder.hint": "Fill in the form and get your personalized audit →",
   "ig.placeholder.example.label": "Effective bio example",
   "ig.placeholder.example.cta": "↓ Book your free session",

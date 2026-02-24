@@ -594,6 +594,7 @@
   "ig.btn.generating": "Analysiere...",
   "ig.btn.clear": "Löschen",
   "ig.error.required": "Bitte ausfüllen: @Benutzername, Bio und Hauptziel.",
+  "ig.error.anon": "Sitzung konnte nicht gestartet werden. Registrieren Sie sich kostenlos, um dieses Tool zu nutzen.",
   "ig.placeholder.hint": "Füllen Sie das Formular aus und erhalten Sie Ihr personalisiertes Audit →",
   "ig.placeholder.example.label": "Beispiel einer effektiven Bio",
   "ig.placeholder.example.cta": "↓ Buchen Sie Ihre kostenlose Sitzung",

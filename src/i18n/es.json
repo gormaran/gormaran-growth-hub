@@ -594,6 +594,7 @@
   "ig.btn.generating": "Analizando...",
   "ig.btn.clear": "Limpiar",
   "ig.error.required": "Rellena los campos obligatorios: @usuario, bio y objetivo.",
+  "ig.error.anon": "No se pudo iniciar sesión automáticamente. Regístrate gratis para usar esta herramienta.",
   "ig.placeholder.hint": "Rellena el formulario y obtén tu auditoría personalizada →",
   "ig.placeholder.example.label": "Ejemplo de bio eficaz",
   "ig.placeholder.example.cta": "↓ Reserva tu sesión gratuita",

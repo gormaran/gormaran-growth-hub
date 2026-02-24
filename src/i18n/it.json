@@ -594,6 +594,7 @@
   "ig.btn.generating": "Analizzando...",
   "ig.btn.clear": "Cancella",
   "ig.error.required": "Compila i campi obbligatori: @username, bio e obiettivo.",
+  "ig.error.anon": "Impossibile avviare la sessione. Registrati gratuitamente per usare questo strumento.",
   "ig.placeholder.hint": "Compila il modulo e ottieni il tuo audit personalizzato →",
   "ig.placeholder.example.label": "Esempio di bio efficace",
   "ig.placeholder.example.cta": "↓ Prenota la tua sessione gratuita",
