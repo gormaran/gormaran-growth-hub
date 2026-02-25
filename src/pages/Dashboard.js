@@ -143,7 +143,7 @@ export default function Dashboard() {
               animate="visible"
               variants={stagger}
             >
-              {CATEGORIES.map((cat) => {
+              {[...CATEGORIES.filter((c) => !c.isAddon), ...CATEGORIES.filter((c) => c.isAddon)].map((cat) => {
                 const isAddon = !!cat.isAddon && subscription !== 'admin';
                 const locked = !isAddon && isCategoryLocked(cat.id);
                 const catName = t(`cat.${cat.id}.name`, { defaultValue: cat.name });

@@ -507,10 +507,54 @@ export default function LandingPage() {
             viewport={{ once: true, margin: '-60px' }}
             variants={stagger}
           >
-            {CATEGORIES.map((cat, i) => (
+            {CATEGORIES.filter((cat) => !cat.isAddon).map((cat, i) => (
               <FlipCard key={cat.id} cat={cat} i={i} />
             ))}
           </motion.div>
+
+          {CATEGORIES.filter((cat) => cat.isAddon).map((cat) => (
+            <motion.div
+              key={cat.id}
+              className="landing__addon-block"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="landing__addon-left">
+                <span className="badge badge-primary landing__addon-badge">
+                  {t('pricing.addon.badge', { defaultValue: '⚡ Add-on' })}
+                </span>
+                <h3 className="landing__addon-title">
+                  {t('pricing.addon.title', { defaultValue: 'N8n Automation' })}
+                </h3>
+                <p className="landing__addon-desc">
+                  {t('pricing.addon.desc', { defaultValue: 'Design powerful no-code automations using n8n — available for any plan.' })}
+                </p>
+                <ul className="landing__addon-features">
+                  {[0, 1, 2, 3].map((i) => (
+                    <li key={i}>✅ {t(`pricing.addon.feature.${i}`)}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="landing__addon-right">
+                <div className="landing__addon-price">
+                  <span className="landing__addon-amount">
+                    {t('pricing.addon.price', { defaultValue: '€10' })}
+                  </span>
+                  <span className="landing__addon-period">
+                    {t('pricing.addon.period', { defaultValue: '/ 10 workflows' })}
+                  </span>
+                </div>
+                <p className="landing__addon-renew">
+                  {t('pricing.addon.renew', { defaultValue: 'No expiry · Works with any plan · Buy more when you need' })}
+                </p>
+                <Link to="/pricing" className="btn btn-primary">
+                  {t('pricing.addon.cta', { defaultValue: 'Get Add-on →' })}
+                </Link>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
