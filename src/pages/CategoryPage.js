@@ -10,7 +10,7 @@ import './CategoryPage.css';
 export default function CategoryPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
-  const { isCategoryLocked } = useSubscription();
+  const { isCategoryLocked, canUseSpecificTool } = useSubscription();
   const { t } = useTranslation();
 
   const category = getCategoryById(categoryId);
@@ -78,7 +78,7 @@ export default function CategoryPage() {
               <div className="category__sidebar-upgrade">
                 <span>🔒</span>
                 <div>
-                  <strong>{t('ui.proRequired', { defaultValue: 'Pro Required' })}</strong>
+                  <strong>{t('ui.upgradeRequired', { defaultValue: 'Upgrade Required' })}</strong>
                   <p>{t('ui.upgradeToUnlock', { defaultValue: 'Upgrade to unlock all tools' })}</p>
                 </div>
                 <Link to="/pricing" className="btn btn-primary btn-sm">
@@ -88,29 +88,33 @@ export default function CategoryPage() {
             )}
 
             <nav className="category__sidebar-nav">
-              {category.tools.map((tool) => (
-                <button
-                  key={tool.id}
-                  className={`category__tool-btn ${selectedTool?.id === tool.id ? 'active' : ''}`}
-                  onClick={() => setSelectedTool(tool)}
-                >
-                  <span className="category__tool-btn-icon">{tool.icon}</span>
-                  <div className="category__tool-btn-text">
-                    <span className="category__tool-btn-name">
-                      {t(`tool.${tool.id}.name`, { defaultValue: tool.name })}
-                    </span>
-                    <span className="category__tool-btn-desc">
-                      {t(`tool.${tool.id}.desc`, { defaultValue: tool.description })}
-                    </span>
-                  </div>
-                  {selectedTool?.id === tool.id && (
-                    <motion.div
-                      className="category__tool-active-indicator"
-                      layoutId="activeToolIndicator"
-                    />
-                  )}
-                </button>
-              ))}
+              {category.tools.map((tool) => {
+                const toolLocked = !canUseSpecificTool(categoryId, tool.id);
+                return (
+                  <button
+                    key={tool.id}
+                    className={`category__tool-btn ${selectedTool?.id === tool.id ? 'active' : ''} ${toolLocked ? 'category__tool-btn--locked' : ''}`}
+                    onClick={() => setSelectedTool(tool)}
+                  >
+                    <span className="category__tool-btn-icon">{tool.icon}</span>
+                    <div className="category__tool-btn-text">
+                      <span className="category__tool-btn-name">
+                        {t(`tool.${tool.id}.name`, { defaultValue: tool.name })}
+                      </span>
+                      <span className="category__tool-btn-desc">
+                        {t(`tool.${tool.id}.desc`, { defaultValue: tool.description })}
+                      </span>
+                    </div>
+                    {toolLocked && <span className="category__tool-btn-lock">🔒</span>}
+                    {selectedTool?.id === tool.id && (
+                      <motion.div
+                        className="category__tool-active-indicator"
+                        layoutId="activeToolIndicator"
+                      />
+                    )}
+                  </button>
+                );
+              })}
             </nav>
           </motion.aside>
 

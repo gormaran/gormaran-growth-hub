@@ -36,34 +36,47 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
     return res.status(404).json({ error: `Tool "${toolId}" not found in category "${categoryId}"` });
   }
 
-  // Check subscription for premium categories (read from Firestore for accuracy)
-  const freeCategoryIds = ['marketing', 'content'];
-  const proCategoryIds = [...freeCategoryIds, 'strategy', 'digital', 'creative'];
-  let userSubscription = req.user?.subscription || 'free'; // fallback (used in dev mode)
+  // Plan-based access control (read from Firestore for accuracy)
+  const PLAN_ACCESS = {
+    free:      { allowedTools: ['marketing:seo-keyword-research', 'marketing:seo-meta-tags'] },
+    grow:      { categories: ['marketing', 'content', 'digital'], allowedTools: ['strategy:business-plan'] },
+    scale:     { categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative'], allowedTools: ['strategy:business-plan'] },
+    evolution: { categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative', 'finance', 'startup', 'strategy'], allowedTools: [] },
+    admin:     { allAccess: true },
+  };
+  const TRIAL_DAYS = 14;
+
+  let userSubscription = req.user?.subscription || 'free';
+  let userCreatedAt = null;
   try {
     const adminSdk = require('firebase-admin');
     if (adminSdk.apps.length > 0) {
       const fsDb = adminSdk.firestore();
       const userDoc = await fsDb.collection('users').doc(req.user.uid).get();
       if (userDoc.exists) {
-        userSubscription = userDoc.data().subscription || 'free';
+        const data = userDoc.data();
+        userSubscription = data.subscription || 'free';
+        userCreatedAt = data.createdAt?.toMillis?.() || null;
       }
     }
   } catch (_) { /* use fallback */ }
 
-  const isAdmin = userSubscription === 'admin';
-  const isBusiness = userSubscription === 'business' || isAdmin;
-  const isPro = userSubscription === 'pro' || isBusiness;
+  const plan = PLAN_ACCESS[userSubscription] || PLAN_ACCESS.free;
 
-  if (!isPro && !freeCategoryIds.includes(categoryId)) {
+  // Check trial: free users within 14 days get full access
+  const inTrial = userSubscription === 'free'
+    && userCreatedAt !== null
+    && (Date.now() - userCreatedAt) < TRIAL_DAYS * 24 * 60 * 60 * 1000;
+
+  const toolKey = `${categoryId}:${toolId}`;
+  const hasAccess = plan.allAccess
+    || inTrial
+    || plan.categories?.includes(categoryId)
+    || plan.allowedTools?.includes(toolKey);
+
+  if (!hasAccess) {
     return res.status(403).json({
-      error: 'This category requires a Pro or Business subscription.',
-      upgradeRequired: true,
-    });
-  }
-  if (isPro && !isBusiness && !proCategoryIds.includes(categoryId)) {
-    return res.status(403).json({
-      error: 'This category requires a Business subscription.',
+      error: 'This tool is not available on your current plan. Upgrade to access it.',
       upgradeRequired: true,
     });
   }

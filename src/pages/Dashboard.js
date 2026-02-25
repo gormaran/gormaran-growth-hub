@@ -20,16 +20,14 @@ const fadeUp = {
 
 export default function Dashboard() {
   const { currentUser } = useAuth();
-  const { subscription, usageCount, isCategoryLocked, PLANS } = useSubscription();
+  const { subscription, isCategoryLocked, isInTrial, trialDaysRemaining } = useSubscription();
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
 
   const paymentStatus = searchParams.get('payment');
-
-  const plan = PLANS[subscription] || PLANS.free;
-  const usagePercent = plan.dailyLimit !== Infinity
-    ? Math.min(100, (usageCount / plan.dailyLimit) * 100)
-    : 0;
+  const inTrial = isInTrial();
+  const daysLeft = trialDaysRemaining();
+  const trialPct = Math.round((daysLeft / 14) * 100);
 
   return (
     <div className="page">
@@ -42,7 +40,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              🎉 Payment successful! Your plan has been upgraded. Welcome to {subscription === 'pro' ? 'Pro' : 'Business'}!
+              🎉 {t('dashboard.paymentSuccess', { plan: subscription.charAt(0).toUpperCase() + subscription.slice(1), defaultValue: `Payment successful! Welcome to ${subscription.charAt(0).toUpperCase() + subscription.slice(1)}!` })}
             </motion.div>
           )}
 
@@ -63,14 +61,20 @@ export default function Dashboard() {
             <div className="dashboard__header-right">
               <div className="dashboard__plan-badge">
                 <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
-                  {subscription === 'free'
+                  {subscription === 'free' && inTrial
+                    ? `🎁 ${t('ui.freeTrialBadge', { defaultValue: 'Free Trial' })} · ${t('ui.trialDaysLeft', { count: daysLeft, defaultValue: `${daysLeft} days left` })}`
+                    : subscription === 'free'
                     ? t('ui.freePlan', { defaultValue: 'Free Plan' })
-                    : subscription === 'pro'
-                    ? `⭐ ${t('ui.proPlan', { defaultValue: 'Pro Plan' })}`
-                    : `💎 ${t('ui.businessPlan', { defaultValue: 'Business Plan' })}`}
+                    : subscription === 'grow'
+                    ? `⭐ ${t('ui.growPlan', { defaultValue: 'Grow Plan' })}`
+                    : subscription === 'scale'
+                    ? `💎 ${t('ui.scalePlan', { defaultValue: 'Scale Plan' })}`
+                    : subscription === 'evolution'
+                    ? `🚀 ${t('ui.evolutionPlan', { defaultValue: 'Evolution Plan' })}`
+                    : `✅ ${subscription}`}
                 </span>
               </div>
-              {subscription === 'free' && (
+              {(subscription === 'free' || subscription === 'grow') && (
                 <Link to="/pricing" className="btn btn-primary btn-sm">
                   {t('ui.upgrade', { defaultValue: 'Upgrade' })} ↗
                 </Link>
@@ -78,8 +82,8 @@ export default function Dashboard() {
             </div>
           </motion.div>
 
-          {/* Usage bar (free users) */}
-          {subscription === 'free' && (
+          {/* Trial countdown (free users in trial) */}
+          {subscription === 'free' && inTrial && (
             <motion.div
               className="dashboard__usage"
               initial={{ opacity: 0, y: 16 }}
@@ -87,22 +91,31 @@ export default function Dashboard() {
               transition={{ delay: 0.1 }}
             >
               <div className="dashboard__usage-info">
-                <span>{t('dailyRequests', { defaultValue: 'Daily AI Requests' })}</span>
+                <span>🎁 {t('dashboard.trialActive', { defaultValue: 'Free trial — full access active' })}</span>
                 <span className="dashboard__usage-count">
-                  <strong>{usageCount}</strong> / {plan.dailyLimit} {t('ui.used', { defaultValue: 'used' })}
+                  <strong>{daysLeft}</strong> {t('ui.trialDaysLeft', { count: daysLeft, defaultValue: `${daysLeft} days left` })}
                 </span>
               </div>
               <div className="dashboard__usage-bar">
-                <div
-                  className="dashboard__usage-fill"
-                  style={{ width: `${usagePercent}%` }}
-                />
+                <div className="dashboard__usage-fill" style={{ width: `${trialPct}%` }} />
               </div>
               <p className="dashboard__usage-note">
-                {usageCount >= plan.dailyLimit
-                  ? `🚫 ${t('ui.dailyLimitReached', { defaultValue: 'Daily limit reached' })} — `
-                  : `${plan.dailyLimit - usageCount} ${t('ui.requestsRemaining', { defaultValue: 'requests remaining today' })} — `}
-                <Link to="/pricing">{t('ui.upgradeForUnlimited', { defaultValue: 'Upgrade to Pro for unlimited access' })}</Link>
+                {t('dashboard.trialNote', { defaultValue: 'After your trial, only Keyword Research & Meta Tags remain free. ' })}
+                <Link to="/pricing">{t('ui.upgradeForUnlimited', { defaultValue: 'Upgrade for unlimited access' })}</Link>
+              </p>
+            </motion.div>
+          )}
+          {/* Post-trial notice for free users */}
+          {subscription === 'free' && !inTrial && (
+            <motion.div
+              className="dashboard__usage"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <p className="dashboard__usage-note" style={{ margin: 0 }}>
+                🔒 {t('dashboard.trialEnded', { defaultValue: 'Your free trial has ended. Only Keyword Research & Meta Tags are available. ' })}
+                <Link to="/pricing">{t('ui.upgrade', { defaultValue: 'Upgrade' })} →</Link>
               </p>
             </motion.div>
           )}

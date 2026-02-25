@@ -77,7 +77,7 @@ export default function AIToolInterface({ tool, categoryId }) {
   const [historyOpen, setHistoryOpen] = useState(false);
 
   const { currentUser } = useAuth();
-  const { canUseTool, trackUsage, isAtLimit, subscription } = useSubscription();
+  const { canUseSpecificTool, trackUsage, subscription } = useSubscription();
   const { t, i18n } = useTranslation();
 
   // Reset when tool changes
@@ -141,12 +141,8 @@ export default function AIToolInterface({ tool, categoryId }) {
       return;
     }
 
-    if (!canUseTool(categoryId)) {
-      if (isAtLimit()) {
-        setError(t('ui.dailyLimitText', { limit: 3, defaultValue: "Daily usage limit reached. Upgrade to Pro for unlimited access." }));
-      } else {
-        setError(t('ui.proOnlyText', { defaultValue: 'This category is available on Pro and Business plans.' }));
-      }
+    if (!canUseSpecificTool(categoryId, tool.id)) {
+      setError(t('ui.upgradeRequired', { defaultValue: 'This tool requires an upgrade. Visit the pricing page to see your options.' }));
       return;
     }
 
@@ -217,9 +213,6 @@ export default function AIToolInterface({ tool, categoryId }) {
     setHistory(updated);
   }
 
-  const locked = !canUseTool(categoryId) && !isAtLimit();
-  const atLimit = isAtLimit() && subscription === 'free';
-
   if (!tool) {
     return (
       <div className="ai-tool__empty">
@@ -247,16 +240,12 @@ export default function AIToolInterface({ tool, categoryId }) {
       </div>
 
       {/* Upgrade notice */}
-      {(locked || atLimit) && (
+      {!canUseSpecificTool(categoryId, tool.id) && (
         <div className="ai-tool__upgrade">
           <div className="ai-tool__upgrade-icon">🔒</div>
           <div>
-            <strong>{atLimit ? t('ui.dailyLimitReached', { defaultValue: 'Daily limit reached' }) : t('ui.proFeature', { defaultValue: 'Pro feature' })}</strong>
-            <p>
-              {atLimit
-                ? t('ui.dailyLimitText', { limit: 3, defaultValue: "You've used all 3 free daily requests. Upgrade to Pro for unlimited access." })
-                : t('ui.proOnlyText', { defaultValue: 'This category is available on Pro and Business plans.' })}
-            </p>
+            <strong>{t('ui.proFeature', { defaultValue: 'Pro feature' })}</strong>
+            <p>{t('ui.proOnlyText', { defaultValue: 'This tool is available on Grow plan and above.' })}</p>
           </div>
           <Link to="/pricing" className="btn btn-primary btn-sm">{t('ui.upgradeNow', { defaultValue: 'Upgrade Now' })}</Link>
         </div>
@@ -292,7 +281,7 @@ export default function AIToolInterface({ tool, categoryId }) {
                 <button
                   type="submit"
                   className="btn btn-primary"
-                  disabled={locked || atLimit}
+                  disabled={!canUseSpecificTool(categoryId, tool.id)}
                 >
                   <span>✨</span>
                   {t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}

@@ -9,26 +9,33 @@ export function useSubscription() {
   return useContext(SubscriptionContext);
 }
 
-const PLANS = {
+const TRIAL_DAYS = 14;
+
+export const PLANS = {
   free: {
     name: 'Free',
-    dailyLimit: 3,
-    categories: ['marketing', 'content'],
+    trialDays: TRIAL_DAYS,
+    // After trial ends, only these specific tools are accessible:
+    allowedTools: ['marketing:seo-keyword-research', 'marketing:seo-meta-tags'],
   },
-  pro: {
-    name: 'Pro',
-    dailyLimit: Infinity,
-    categories: ['marketing', 'content', 'strategy', 'digital', 'creative'],
+  grow: {
+    name: 'Grow',
+    categories: ['marketing', 'content', 'digital'],
+    allowedTools: ['strategy:business-plan'],
   },
-  business: {
-    name: 'Business',
-    dailyLimit: Infinity,
-    categories: ['marketing', 'content', 'strategy', 'digital', 'creative', 'ecommerce', 'agency', 'startup', 'finance'],
+  scale: {
+    name: 'Scale',
+    categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative'],
+    allowedTools: ['strategy:business-plan'],
+  },
+  evolution: {
+    name: 'Evolution',
+    categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative', 'finance', 'startup', 'strategy'],
+    allowedTools: [],
   },
   admin: {
     name: 'Admin',
-    dailyLimit: Infinity,
-    categories: ['marketing', 'content', 'strategy', 'digital', 'creative', 'ecommerce', 'agency', 'startup', 'finance', 'automation'],
+    allAccess: true,
   },
 };
 
@@ -48,19 +55,65 @@ export function SubscriptionProvider({ children }) {
     }
   }, [userProfile]);
 
+  // --- Trial helpers ---
+
+  function getCreatedAtMs() {
+    const createdAt = userProfile?.createdAt;
+    if (!createdAt) return null;
+    if (typeof createdAt.toMillis === 'function') return createdAt.toMillis();
+    return new Date(createdAt).getTime();
+  }
+
+  function isInTrial() {
+    if (subscription !== 'free') return false;
+    const ms = getCreatedAtMs();
+    if (!ms) return false;
+    return (Date.now() - ms) < TRIAL_DAYS * 24 * 60 * 60 * 1000;
+  }
+
+  function trialDaysRemaining() {
+    if (subscription !== 'free') return 0;
+    const ms = getCreatedAtMs();
+    if (!ms) return 0;
+    const elapsed = Date.now() - ms;
+    const remaining = TRIAL_DAYS * 24 * 60 * 60 * 1000 - elapsed;
+    return remaining > 0 ? Math.ceil(remaining / (24 * 60 * 60 * 1000)) : 0;
+  }
+
+  // --- Access functions ---
+
+  function getPlan() {
+    return PLANS[subscription] || PLANS.free;
+  }
+
+  function canUseSpecificTool(categoryId, toolId) {
+    if (!currentUser) return false;
+    const plan = getPlan();
+    if (plan.allAccess) return true;
+    if (isInTrial()) return true;
+    if (plan.categories?.includes(categoryId)) return true;
+    if (plan.allowedTools?.includes(`${categoryId}:${toolId}`)) return true;
+    return false;
+  }
+
+  // Category-level check — true if user can access ANY tool in the category
   function canUseTool(categoryId) {
     if (!currentUser) return false;
-    if (subscription === 'admin') return true;
-    const plan = PLANS[subscription] || PLANS.free;
-    if (!plan.categories.includes(categoryId)) return false;
-    if (plan.dailyLimit !== Infinity && usageCount >= plan.dailyLimit) return false;
-    return true;
+    const plan = getPlan();
+    if (plan.allAccess) return true;
+    if (isInTrial()) return true;
+    if (plan.categories?.includes(categoryId)) return true;
+    if (plan.allowedTools?.some((t) => t.startsWith(`${categoryId}:`))) return true;
+    return false;
   }
 
   function isCategoryLocked(categoryId) {
-    if (subscription === 'admin') return false;
-    const plan = PLANS[subscription] || PLANS.free;
-    return !plan.categories.includes(categoryId);
+    const plan = getPlan();
+    if (plan.allAccess) return false;
+    if (isInTrial()) return false;
+    if (plan.categories?.includes(categoryId)) return false;
+    if (plan.allowedTools?.some((t) => t.startsWith(`${categoryId}:`))) return false;
+    return true;
   }
 
   async function trackUsage() {
@@ -78,21 +131,17 @@ export function SubscriptionProvider({ children }) {
     return PLANS[subscription] || PLANS.free;
   }
 
-  function isAtLimit() {
-    if (subscription === 'admin') return false;
-    const plan = PLANS[subscription] || PLANS.free;
-    return plan.dailyLimit !== Infinity && usageCount >= plan.dailyLimit;
-  }
-
   const value = {
     subscription,
     usageCount,
     checkingSubscription,
     canUseTool,
+    canUseSpecificTool,
     isCategoryLocked,
+    isInTrial,
+    trialDaysRemaining,
     trackUsage,
     getPlanLimits,
-    isAtLimit,
     PLANS,
     refreshUserProfile,
   };
