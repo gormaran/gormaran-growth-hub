@@ -149,10 +149,49 @@ export default function Dashboard() {
                 const catName = t(`cat.${cat.id}.name`, { defaultValue: cat.name });
                 const catDesc = t(`cat.${cat.id}.desc`, { defaultValue: cat.description });
 
+                if (isAddon) {
+                  return (
+                    <motion.div
+                      key={cat.id}
+                      className="dashboard__addon-card"
+                      variants={fadeUp}
+                    >
+                      <div className="dashboard__addon-left">
+                        <span className="badge badge-primary dashboard__addon-badge">
+                          {t('pricing.addon.badge', { defaultValue: '⚡ Add-on' })}
+                        </span>
+                        <h3 className="dashboard__addon-title">{catName}</h3>
+                        <p className="dashboard__addon-desc">{catDesc}</p>
+                        <ul className="dashboard__addon-features">
+                          {[0, 1, 2, 3].map((i) => (
+                            <li key={i}>✅ {t(`pricing.addon.feature.${i}`)}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="dashboard__addon-right">
+                        <div className="dashboard__addon-price">
+                          <span className="dashboard__addon-amount">
+                            {t('pricing.addon.price', { defaultValue: '€10' })}
+                          </span>
+                          <span className="dashboard__addon-period">
+                            {t('pricing.addon.period', { defaultValue: '/ 10 workflows' })}
+                          </span>
+                        </div>
+                        <p className="dashboard__addon-renew">
+                          {t('pricing.addon.renew', { defaultValue: 'No expiry · Works with any plan · Buy more when you need' })}
+                        </p>
+                        <Link to="/pricing" className="btn btn-primary">
+                          {t('pricing.addon.cta', { defaultValue: 'Get Add-on →' })}
+                        </Link>
+                      </div>
+                    </motion.div>
+                  );
+                }
+
                 return (
                   <motion.div
                     key={cat.id}
-                    className={`dashboard__cat-card ${locked ? 'dashboard__cat-card--locked' : ''} ${isAddon ? 'dashboard__cat-card--addon' : ''}`}
+                    className={`dashboard__cat-card ${locked ? 'dashboard__cat-card--locked' : ''}`}
                     variants={fadeUp}
                     whileHover={{ y: -6, scale: 1.01 }}
                   >
@@ -171,9 +210,6 @@ export default function Dashboard() {
                       {locked && (
                         <span className="dashboard__cat-lock">🔒 {CATEGORY_MIN_TIER[cat.id] || 'Grow'}</span>
                       )}
-                      {isAddon && (
-                        <span className="dashboard__cat-addon-badge">🔌 Add-on</span>
-                      )}
                     </div>
 
                     <h3 className="dashboard__cat-name">{catName}</h3>
@@ -191,11 +227,7 @@ export default function Dashboard() {
                       <span className="dashboard__cat-count">
                         {cat.tools.length} {t('ui.tools', { defaultValue: 'tools' })}
                       </span>
-                      {isAddon ? (
-                        <Link to="/pricing" className="btn btn-addon btn-sm">
-                          {t('ui.addonBuy', { defaultValue: 'Add-on · €10' })}
-                        </Link>
-                      ) : locked ? (
+                      {locked ? (
                         <Link to="/pricing" className="btn btn-secondary btn-sm">
                           {t('ui.upgrade', { defaultValue: 'Upgrade' })}
                         </Link>
