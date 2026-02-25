@@ -26,6 +26,8 @@ const allowedOrigins = [
   "http://127.0.0.1:3000",
   "https://gormaran-growth-hub-1.onrender.com", // frontend
   "https://gormaran-growth-hub.onrender.com",   // backend
+  "https://gormaran.io",
+  "https://www.gormaran.io",
 ];
 
 app.use(
