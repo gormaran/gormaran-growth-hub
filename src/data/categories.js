@@ -1457,7 +1457,7 @@ For each story:
   },
   {
     id: 'automation',
-    name: 'N8n Automation',
+    name: 'n8n Automation',
     description: 'Design powerful no-code automations for your business using n8n',
     icon: '⚡',
     gradient: 'from-cyan-600 to-teal-600',
@@ -1467,7 +1467,7 @@ For each story:
     tools: [
       {
         id: 'n8n-workflow',
-        name: 'N8n Workflow Designer',
+        name: 'n8n Workflow Designer',
         description: 'Design complete n8n automation workflows with triggers, nodes, logic conditions and step-by-step setup instructions',
         icon: '🔄',
         inputs: [

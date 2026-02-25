@@ -526,7 +526,7 @@ export default function LandingPage() {
                   {t('pricing.addon.badge', { defaultValue: '⚡ Add-on' })}
                 </span>
                 <h3 className="landing__addon-title">
-                  {t('pricing.addon.title', { defaultValue: 'N8n Automation' })}
+                  {t('pricing.addon.title', { defaultValue: 'n8n Automation' })}
                 </h3>
                 <p className="landing__addon-desc">
                   {t('pricing.addon.desc', { defaultValue: 'Design powerful no-code automations using n8n — available for any plan.' })}

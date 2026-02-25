@@ -233,7 +233,7 @@
   letter-spacing: 0.02em;
 }
 
-/* N8n Add-on card — full-width, matches pricing page add-on block */
+/* n8n Add-on card — full-width, matches pricing page add-on block */
 .dashboard__addon-card {
   grid-column: 1 / -1;
   display: flex;
