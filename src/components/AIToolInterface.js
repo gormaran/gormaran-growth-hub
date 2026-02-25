@@ -203,6 +203,23 @@ export default function AIToolInterface({ tool, categoryId }) {
     finalOutputRef.current = '';
   }
 
+  function extractJson(text) {
+    const match = text.match(/```json\s*([\s\S]*?)```/);
+    return match ? match[1].trim() : null;
+  }
+
+  function handleDownloadJson() {
+    const json = extractJson(output);
+    if (!json) return;
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${tool.id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   function saveToHistory(queryInputs, queryOutput) {
     if (!tool?.id || !queryOutput) return;
     const entry = { id: Date.now(), timestamp: new Date().toISOString(), inputs: queryInputs, output: queryOutput };
@@ -321,6 +338,14 @@ export default function AIToolInterface({ tool, categoryId }) {
                 >
                   {copied ? `✅ ${t('ui.copied', { defaultValue: 'Copied!' })}` : `📋 ${t('ui.copy', { defaultValue: 'Copy' })}`}
                 </button>
+                {!isStreaming && extractJson(output) && (
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={handleDownloadJson}
+                  >
+                    ⬇️ {t('ui.downloadJson', { defaultValue: 'Download JSON' })}
+                  </button>
+                )}
               </div>
             )}
           </div>
