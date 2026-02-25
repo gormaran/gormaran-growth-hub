@@ -233,11 +233,96 @@
   letter-spacing: 0.02em;
 }
 
-.dashboard__cat-card--addon {
-  border-color: rgba(8,145,178,0.25);
+/* N8n Add-on card — full-width, matches pricing page add-on block */
+.dashboard__addon-card {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  background: linear-gradient(135deg, rgba(99,102,241,0.07), rgba(139,92,246,0.04));
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem 2.5rem;
+}
+
+.dashboard__addon-badge { margin-bottom: 0.75rem; }
+
+.dashboard__addon-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.dashboard__addon-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  max-width: 420px;
+  margin-bottom: 1rem;
+}
+
+.dashboard__addon-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dashboard__addon-features li {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.dashboard__addon-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+  min-width: 180px;
+  text-align: center;
+}
+
+.dashboard__addon-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.dashboard__addon-amount {
+  font-size: 2.4rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dashboard__addon-period {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.dashboard__addon-renew {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
 }
 
 @media (max-width: 640px) {
   .dashboard__grid { grid-template-columns: 1fr; }
   .dashboard__header { flex-direction: column; }
+  .dashboard__addon-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+  }
+  .dashboard__addon-right {
+    align-items: flex-start;
+    text-align: left;
+    width: 100%;
+  }
 }
