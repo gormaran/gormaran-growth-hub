@@ -8,6 +8,17 @@ import { useTranslation } from 'react-i18next';
 import InstagramAuditSection from '../components/InstagramAuditSection';
 import './Dashboard.css';
 
+const CATEGORY_MIN_TIER = {
+  content:    'Grow',
+  strategy:   'Grow',
+  digital:    'Grow',
+  ecommerce:  'Scale',
+  agency:     'Scale',
+  creative:   'Scale',
+  startup:    'Evolution',
+  finance:    'Evolution',
+};
+
 const stagger = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.08 } },
@@ -158,7 +169,7 @@ export default function Dashboard() {
                         {cat.icon}
                       </div>
                       {locked && (
-                        <span className="dashboard__cat-lock">🔒 Pro</span>
+                        <span className="dashboard__cat-lock">🔒 {CATEGORY_MIN_TIER[cat.id] || 'Grow'}</span>
                       )}
                       {isAddon && (
                         <span className="dashboard__cat-addon-badge">🔌 Add-on</span>
