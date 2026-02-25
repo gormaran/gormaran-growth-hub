@@ -145,12 +145,12 @@ export default function PricingPage() {
               return (
                 <motion.div
                   key={plan.id}
-                  className={`pricing__plan ${plan.highlight ? 'pricing__plan--highlight' : ''} ${subscription === plan.id ? 'pricing__plan--current' : ''}`}
+                  className={`pricing__plan pricing__plan--${plan.id} ${subscription === plan.id ? 'pricing__plan--current' : ''}`}
                   variants={fadeUp}
-                  whileHover={{ y: plan.highlight ? -8 : -4 }}
+                  whileHover={{ y: -6 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                 >
-                  {plan.highlight && <div className="pricing__plan-glow" />}
+                  <div className="pricing__plan-glow" />
 
                   {plan.hasBadge && subscription !== plan.id && (
                     <div className="pricing__plan-badge">
@@ -179,7 +179,7 @@ export default function PricingPage() {
                   </div>
 
                   <button
-                    className={`btn ${plan.highlight ? 'btn-primary' : 'btn-secondary'} pricing__plan-cta`}
+                    className={`btn btn-secondary pricing__plan-cta`}
                     onClick={() => handlePlanSelect(plan)}
                     disabled={subscription === plan.id || loadingPlan === plan.id}
                   >
@@ -277,20 +277,20 @@ export default function PricingPage() {
                 <thead>
                   <tr>
                     <th>{t('pricing.comparison.featureCol', { defaultValue: 'Feature' })}</th>
-                    <th>{t('pricing.plan.free.name', { defaultValue: 'Free' })}</th>
-                    <th className="pricing__th--highlight">{t('pricing.plan.grow.name', { defaultValue: 'Grow' })}</th>
-                    <th>{t('pricing.plan.scale.name', { defaultValue: 'Scale' })}</th>
-                    <th>{t('pricing.plan.evolution.name', { defaultValue: 'Evolution' })}</th>
+                    <th className="pricing__th--free">{t('pricing.plan.free.name', { defaultValue: 'Free' })}</th>
+                    <th className="pricing__th--grow">{t('pricing.plan.grow.name', { defaultValue: 'Grow' })}</th>
+                    <th className="pricing__th--scale">{t('pricing.plan.scale.name', { defaultValue: 'Scale' })}</th>
+                    <th className="pricing__th--evolution">{t('pricing.plan.evolution.name', { defaultValue: 'Evolution' })}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {COMPARISON_ROWS.map((row) => (
                     <tr key={row.idx}>
                       <td>{t(`pricing.comparison.row.${row.idx}`)}</td>
-                      <td>{translateVal(row.free)}</td>
-                      <td className="pricing__td--highlight">{translateVal(row.grow)}</td>
-                      <td>{translateVal(row.scale)}</td>
-                      <td>{translateVal(row.evolution)}</td>
+                      <td className="pricing__td--free">{translateVal(row.free)}</td>
+                      <td className="pricing__td--grow">{translateVal(row.grow)}</td>
+                      <td className="pricing__td--scale">{translateVal(row.scale)}</td>
+                      <td className="pricing__td--evolution">{translateVal(row.evolution)}</td>
                     </tr>
                   ))}
                 </tbody>

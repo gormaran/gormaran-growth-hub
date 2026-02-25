@@ -38,8 +38,8 @@ function AnimatedSection({ children, className, delay = 0 }) {
 }
 
 const STATS = [
-  { value: '7', suffix: '', labelKey: 'landing.stats.categories' },
-  { value: '35', suffix: '+', labelKey: 'landing.stats.tools' },
+  { value: '10', suffix: '', labelKey: 'landing.stats.categories' },
+  { value: '32', suffix: '', labelKey: 'landing.stats.tools' },
   { value: '99', suffix: '%', labelKey: 'landing.stats.precision' },
   { value: '10x', suffix: '', labelKey: 'landing.stats.faster' },
 ];
@@ -76,13 +76,15 @@ const TESTIMONIALS = [
 
 const CATEGORY_MIN_PLAN = {
   marketing:  'free',
-  content:    'free',
-  strategy:   'pro',
-  digital:    'pro',
-  ecommerce:  'business',
-  agency:     'business',
-  startup:    'business',
-  automation: 'business',
+  content:    'grow',
+  strategy:   'grow',
+  digital:    'grow',
+  ecommerce:  'scale',
+  agency:     'scale',
+  creative:   'scale',
+  startup:    'evolution',
+  finance:    'evolution',
+  automation: 'addon',
 };
 
 function getVideoContent(catId) {
@@ -187,13 +189,21 @@ function FlipCard({ cat, i }) {
     ctaKey = 'landing.categories.openTool';
     ctaTo = `/dashboard/${cat.id}`;
     ctaLocked = false;
-  } else if (minPlan === 'business') {
-    ctaKey = 'landing.categories.availableBusiness';
+  } else if (minPlan === 'evolution') {
+    ctaKey = 'landing.categories.availableEvolution';
     ctaTo = currentUser ? '/pricing' : '/auth?mode=register';
     ctaLocked = true;
-  } else if (minPlan === 'pro') {
-    ctaKey = 'landing.categories.availablePro';
+  } else if (minPlan === 'scale') {
+    ctaKey = 'landing.categories.availableScale';
     ctaTo = currentUser ? '/pricing' : '/auth?mode=register';
+    ctaLocked = true;
+  } else if (minPlan === 'grow') {
+    ctaKey = 'landing.categories.availableGrow';
+    ctaTo = currentUser ? '/pricing' : '/auth?mode=register';
+    ctaLocked = true;
+  } else if (minPlan === 'addon') {
+    ctaKey = 'landing.categories.availableAddon';
+    ctaTo = '/pricing';
     ctaLocked = true;
   } else {
     // free category — invite to register
@@ -205,8 +215,10 @@ function FlipCard({ cat, i }) {
   const ctaDefaults = {
     'landing.categories.tryFree': 'Try Free →',
     'landing.categories.openTool': 'Open Tool →',
-    'landing.categories.availablePro': 'Available on Pro →',
-    'landing.categories.availableBusiness': 'Available on Business →',
+    'landing.categories.availableGrow': 'Available on Grow →',
+    'landing.categories.availableScale': 'Available on Scale →',
+    'landing.categories.availableEvolution': 'Available on Evolution →',
+    'landing.categories.availableAddon': 'Add-on →',
   };
 
   return (

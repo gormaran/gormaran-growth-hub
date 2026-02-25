@@ -7,7 +7,6 @@
   "free": "Kostenlos",
   "pro": "Pro",
   "enterprise": "Enterprise",
-
   "ui.generateWithAI": "Mit KI generieren",
   "ui.stopGenerating": "Generierung stoppen",
   "ui.clear": "Löschen",
@@ -44,7 +43,6 @@
   "ui.used": "verwendet",
   "ui.requestsRemaining": "verbleibende Anfragen heute",
   "ui.upgradeForUnlimited": "Auf Pro upgraden für unbegrenzten Zugriff",
-
   "cat.marketing.name": "Marketing & Wachstum",
   "cat.marketing.desc": "SEO, Copywriting, Social Media, Anzeigen und E-Mail-Kampagnen",
   "cat.strategy.name": "Unternehmensstrategie",
@@ -61,7 +59,6 @@
   "cat.startup.desc": "Investoren-Pitch, Produkt-Roadmap, User Stories und Go-to-Market-Strategie",
   "cat.automation.name": "N8n-Automatisierung",
   "cat.automation.desc": "Entwerfen Sie leistungsstarke No-Code-Automatisierungen für Ihr Unternehmen mit n8n",
-
   "tool.seo-keyword-research.name": "Keyword-Recherche",
   "tool.seo-keyword-research.desc": "Entdecken Sie Traffic-starke Keywords mit geringem Wettbewerb, um bei Google zu ranken und gezielten organischen Traffic zu generieren",
   "tool.seo-meta-tags.name": "Meta-Tags-Generator",
@@ -114,7 +111,6 @@
   "tool.instagram-audit.desc": "Analysieren Sie Ihr Instagram-Profil in 5 Minuten und erhalten Sie die 3 Prioritätsmaßnahmen zur Optimierung Ihrer Bio, Content-Strategie und CTA",
   "tool.n8n-workflow.name": "N8n-Workflow-Designer",
   "tool.n8n-workflow.desc": "Entwerfen Sie vollständige n8n-Automatisierungs-Workflows mit Triggern, Nodes, Logikbedingungen und schrittweisen Einrichtungsanweisungen",
-
   "cat.creative.name": "Kreativ-Studio",
   "cat.creative.desc": "Markenidentität, Fotodirektion und Videoproduktionsplanung",
   "tool.brand-identity.name": "Markenidentitäts-Leitfaden",
@@ -123,7 +119,6 @@
   "tool.photo-direction.desc": "Erhalten Sie einen vollständigen Fotografie-Brief mit Shot-List, Beleuchtungsguide, Kompositionsregeln und Post-Processing-Richtlinien",
   "tool.video-production.name": "Videoproduktionsplan",
   "tool.video-production.desc": "Erstellen Sie einen vollständigen Videoproduktions-Brief mit Kreativkonzept, Shot-List, Drehbuch-Entwurf und Distributionsstrategie",
-
   "cat.finance.name": "Finanzen & Investment",
   "cat.finance.desc": "Finanzprognosen, Investitionsanalyse und Cashflow-Optimierung",
   "tool.financial-forecast.name": "Finanzprognose",
@@ -132,7 +127,6 @@
   "tool.investment-analysis.desc": "Erhalten Sie eine vollständige Investitionsthese, Risikomatrix, Due-Diligence-Checkliste und Go/No-Go-Empfehlung",
   "tool.cash-flow-optimizer.name": "Cashflow-Optimierer",
   "tool.cash-flow-optimizer.desc": "Diagnostizieren Sie Cashflow-Probleme und erhalten Sie einen 30-60-90-Tage-Aktionsplan zur Stabilisierung und Verbesserung Ihrer Liquidität",
-
   "landing.hero.badge": "⚡ KI-Plattform",
   "landing.hero.title1": "Die KI-Plattform spezialisiert auf Marketing zum",
   "landing.hero.title2": "Wachstum Ihres Unternehmens",
@@ -142,22 +136,17 @@
   "landing.hero.joinPre": "Schließen Sie sich",
   "landing.hero.joinCount": "2.000+",
   "landing.hero.socialProof": "Marketern & Gründern an",
-
   "landing.stats.categories": "KI-Kategorien",
   "landing.stats.tools": "Spezialisierte Tools",
   "landing.stats.precision": "Präzisionsrate",
   "landing.stats.faster": "Schnellere Workflows",
-
-  "landing.categories.badge": "7 Leistungsstarke Kategorien",
+  "landing.categories.badge": "10 Leistungsstarke Kategorien",
   "landing.categories.titlePre": "Alle Tools die Sie brauchen um zu",
   "landing.categories.titleHighlight": "Wachsen",
   "landing.categories.subtitle": "Jede Kategorie ist präzise auf Experten-KI-Prompts abgestimmt. Keine generische KI — echtes Fachwissen in jedem Tool integriert.",
   "landing.categories.more": "weitere",
   "landing.categories.tryFree": "Kostenlos testen →",
   "landing.categories.openTool": "Tool öffnen →",
-  "landing.categories.availablePro": "Verfügbar in Pro →",
-  "landing.categories.availableBusiness": "Verfügbar in Business →",
-
   "landing.features.titlePre": "Warum",
   "landing.features.titlePost": "Anders ist",
   "landing.features.subtitle": "Wir haben nicht einfach einen Chat hinzugefügt. Jedes Tool ist mit Expertenwissen für präzise, umsetzbare Ergebnisse entwickelt.",
@@ -173,10 +162,8 @@
   "landing.feature.4.desc": "Jedes Ergebnis ist mit Überschriften, Tabellen und Aufzählungszeichen formatiert — bereit zum Kopieren und sofortigen Verwenden.",
   "landing.feature.5.title": "Gebaut für Geschwindigkeit",
   "landing.feature.5.desc": "Von der Idee zum fertigen Inhalt in weniger als 2 Minuten. Hören Sie auf, Tage für Aufgaben zu verschwenden, die Minuten dauern.",
-
   "landing.testimonials.titlePre": "Geliebt von",
   "landing.testimonials.titleHighlight": "Wachstumsteams",
-
   "landing.cta.badge": "Heute Starten",
   "landing.cta.title": "Verschwenden Sie keine Zeit mehr mit manueller Arbeit.",
   "landing.cta.titleHighlight": "Lassen Sie die KI das erledigen.",
@@ -184,7 +171,6 @@
   "landing.cta.startFree": "Jetzt kostenlos starten →",
   "landing.cta.seePricing": "Preise ansehen",
   "landing.cta.note": "14-tägige kostenlose Testphase · Keine Kreditkarte erforderlich",
-
   "ui.freeTrialBadge": "Kostenlose Testphase",
   "ui.trialDaysLeft": "{{count}} Tage verbleibend",
   "ui.trialExpired": "Testphase beendet",
@@ -196,7 +182,6 @@
   "dashboard.trialActive": "Kostenlose Testphase — Vollzugang aktiv",
   "dashboard.trialNote": "Nach Ihrer Testphase bleiben nur Keyword-Recherche & Meta-Tags kostenlos. ",
   "dashboard.trialEnded": "Ihre kostenlose Testphase ist abgelaufen. Nur Keyword-Recherche & Meta-Tags sind verfügbar. ",
-
   "pricing.hero.badge": "Einfache, Transparente Preise",
   "pricing.hero.titlePre": "Wählen Sie Ihren",
   "pricing.hero.titleHighlight": "Wachstumsplan",
@@ -207,7 +192,6 @@
   "pricing.signUpToStart": "Registrieren zum Starten",
   "pricing.downgrade": "Downgraden",
   "pricing.processing": "Verarbeitung...",
-
   "pricing.plan.free.name": "Kostenlos",
   "pricing.plan.free.desc": "Probieren Sie alles 14 Tage kostenlos, behalten Sie dann 2 Kern-Tools",
   "pricing.plan.free.cta": "Kostenlose Testphase Starten",
@@ -215,11 +199,10 @@
   "pricing.plan.free.feature.1": "Keyword-Recherche-Tool",
   "pricing.plan.free.feature.2": "Meta-Tags-Generator-Tool",
   "pricing.plan.free.feature.3": "Echtzeit KI Streaming",
-  "pricing.plan.free.locked.0": "Content-Erstellungs-Tools",
-  "pricing.plan.free.locked.1": "Digital-Marketing-Tools",
-  "pricing.plan.free.locked.2": "E-Commerce-Wachstums-Tools",
-  "pricing.plan.free.locked.3": "Finanzen & Investment-Tools",
-
+  "pricing.plan.free.locked.0": "Content Creation & Digitales Marketing",
+  "pricing.plan.free.locked.1": "Strategie, E-Commerce & Agenturen",
+  "pricing.plan.free.locked.2": "Kreativstudio-Tools",
+  "pricing.plan.free.locked.3": "Finanzen & Startup-Tools",
   "pricing.plan.grow.name": "Grow",
   "pricing.plan.grow.badge": "⭐ Beliebteste",
   "pricing.plan.grow.desc": "Alles was Sie brauchen, um Ihre Marke online zu wachsen",
@@ -231,32 +214,29 @@
   "pricing.plan.grow.feature.4": "Geschäftsplan-Builder",
   "pricing.plan.grow.feature.5": "Echtzeit-Streaming & Kopieren",
   "pricing.plan.grow.feature.6": "Prioritätssupport",
-
   "pricing.plan.scale.name": "Scale",
   "pricing.plan.scale.badge": "💎 Bestes Preis-Leistungs-Verhältnis",
   "pricing.plan.scale.desc": "Für E-Commerce, Agenturen und kreative Teams",
   "pricing.plan.scale.cta": "Scale-Plan Starten",
   "pricing.plan.scale.feature.0": "Alles in Grow, plus:",
-  "pricing.plan.scale.feature.1": "E-Commerce-Wachstum (alle Tools)",
-  "pricing.plan.scale.feature.2": "Agentur-Tools (alle)",
-  "pricing.plan.scale.feature.3": "Markenidentitäts-Leitfaden",
-  "pricing.plan.scale.feature.4": "Fotodirektions-Brief",
-  "pricing.plan.scale.feature.5": "Videoproduktionsplan",
-  "pricing.plan.scale.feature.6": "Prioritätssupport",
-
+  "pricing.plan.scale.feature.1": "E-Commerce Wachstum (alle Tools)",
+  "pricing.plan.scale.feature.2": "Agentur-Tools (alle Tools)",
+  "pricing.plan.scale.feature.3": "Kreativstudio (alle Tools)",
+  "pricing.plan.scale.feature.4": "Business-Plan-Builder",
+  "pricing.plan.scale.feature.5": "Prioritäts-Support",
+  "pricing.plan.scale.feature.6": "N8n-Automatisierung (Add-on verfügbar)",
   "pricing.plan.evolution.name": "Evolution",
   "pricing.plan.evolution.badge": "🚀 Vollzugang",
   "pricing.plan.evolution.desc": "Komplettes Toolkit für Gründer und ernsthafte Betreiber",
   "pricing.plan.evolution.cta": "Evolution-Plan Starten",
   "pricing.plan.evolution.feature.0": "Alles in Scale, plus:",
   "pricing.plan.evolution.feature.1": "Finanzen & Investment (alle Tools)",
-  "pricing.plan.evolution.feature.2": "Startup-Launchpad (alle Tools)",
-  "pricing.plan.evolution.feature.3": "Marktanalyse",
-  "pricing.plan.evolution.feature.4": "Wettbewerbsforschung",
-  "pricing.plan.evolution.feature.5": "SWOT-Analyse",
-  "pricing.plan.evolution.feature.6": "Dedizierter Account-Manager",
-  "pricing.plan.evolution.feature.7": "Frühzeitiger Zugang zu neuen Tools",
-
+  "pricing.plan.evolution.feature.2": "Startup Launchpad (alle Tools)",
+  "pricing.plan.evolution.feature.3": "Vollständiger Strategie-Zugang (alle Tools)",
+  "pricing.plan.evolution.feature.4": "Marktanalyse & SWOT",
+  "pricing.plan.evolution.feature.5": "Dedizierter Account Manager",
+  "pricing.plan.evolution.feature.6": "Frühzeitiger Zugang zu neuen Tools",
+  "pricing.plan.evolution.feature.7": "N8n-Automatisierung (Add-on verfügbar)",
   "pricing.comparison.title": "Vollständiger Funktionsvergleich",
   "pricing.comparison.featureCol": "Funktion",
   "pricing.comparison.row.0": "KI-Anfragen",
@@ -289,7 +269,6 @@
   "pricing.addon.feature.2": "Schritt-für-Schritt-Anleitungen",
   "pricing.addon.feature.3": "JSON-fertige Workflows, kein Ablauf",
   "pricing.addon.cta": "Add-on erwerben →",
-
   "pricing.faq.title": "Häufig Gestellte Fragen",
   "pricing.faq.0.q": "Kann ich jederzeit kündigen?",
   "pricing.faq.0.a": "Ja, absolut. Kündigen Sie jederzeit über Ihre Kontoeinstellungen. Keine Kündigungsgebühren, keine Fragen.",
@@ -303,14 +282,11 @@
   "pricing.faq.4.a": "Ja! Starten Sie mit dem kostenlosen Plan und upgraden Sie jederzeit. Ihre früheren Ergebnisse sind nicht betroffen.",
   "pricing.faq.5.q": "Bieten Sie Rückerstattungen an?",
   "pricing.faq.5.a": "Ja, wir bieten eine 7-tägige Geld-zurück-Garantie auf alle bezahlten Pläne. Kontaktieren Sie den Support für eine vollständige Rückerstattung.",
-
   "pricing.cta.titlePre": "Bereit",
   "pricing.cta.titleHighlight": "Loszulegen?",
   "pricing.cta.subtitle": "Schließen Sie sich Tausenden von Marketern, Gründern und Agenturen an, die mit KI wachsen.",
   "pricing.cta.btn": "Heute kostenlos starten →",
-
   "ui.selectOption": "Option auswählen...",
-
   "input.seo-keyword-research.keyword.label": "Ziel-Keyword / Thema",
   "input.seo-keyword-research.keyword.placeholder": "z.B. E-Mail-Marketing-Automatisierung",
   "input.seo-keyword-research.industry.label": "Branche / Nische",
@@ -320,7 +296,6 @@
   "input.seo-keyword-research.audience.placeholder": "z.B. Kleinunternehmer, Marketing-Manager",
   "input.seo-keyword-research.competitor.label": "Haupt-Konkurrenten-URL (optional)",
   "input.seo-keyword-research.competitor.placeholder": "https://konkurrent.de",
-
   "input.seo-meta-tags.page_topic.label": "Seitenthema / Produkt",
   "input.seo-meta-tags.page_topic.placeholder": "z.B. Projektmanagement-Software für Remote-Teams",
   "input.seo-meta-tags.primary_keyword.label": "Haupt-Keyword",
@@ -330,7 +305,6 @@
   "input.seo-meta-tags.usp.label": "Einzigartiges Verkaufsargument",
   "input.seo-meta-tags.usp.placeholder": "z.B. KI-gestützt, #1 bewertet, kostenlose Testversion",
   "input.seo-meta-tags.page_type.label": "Seitentyp",
-
   "input.copywriting-headlines.product.label": "Produkt / Dienstleistung / Inhalt",
   "input.copywriting-headlines.product.placeholder": "z.B. CRM-Software für Vertriebsteams",
   "input.copywriting-headlines.benefit.label": "Hauptvorteil / Ergebnis",
@@ -339,7 +313,6 @@
   "input.copywriting-headlines.audience.placeholder": "z.B. B2B-Vertriebsleiter",
   "input.copywriting-headlines.medium.label": "Wo wird es verwendet?",
   "input.copywriting-headlines.tone.label": "Ton",
-
   "input.social-media-captions.topic.label": "Thema / Beitragskonzept",
   "input.social-media-captions.topic.placeholder": "z.B. Launch unserer neuen Produktfunktion",
   "input.social-media-captions.brand_voice.label": "Markenstimme",
@@ -347,7 +320,6 @@
   "input.social-media-captions.goal.label": "Beitragsziel",
   "input.social-media-captions.extra_context.label": "Zusätzlicher Kontext (optional)",
   "input.social-media-captions.extra_context.placeholder": "Wichtige Botschaften, Statistiken oder Details zum Einbeziehen?",
-
   "input.email-campaign.campaign_type.label": "Kampagnentyp",
   "input.email-campaign.product.label": "Produkt / Dienstleistung",
   "input.email-campaign.product.placeholder": "z.B. Online-Kurs über Social-Media-Marketing",
@@ -356,7 +328,6 @@
   "input.email-campaign.goal.label": "Kampagnenziel",
   "input.email-campaign.goal.placeholder": "z.B. Testnutzer in zahlende Abonnenten umwandeln",
   "input.email-campaign.tone.label": "Markenton",
-
   "input.instagram-audit.bio.label": "Ihre Aktuelle Instagram Bio",
   "input.instagram-audit.bio.placeholder": "Fügen Sie hier Ihre aktuelle Instagram Bio ein...",
   "input.instagram-audit.username.label": "Ihre Nische / Kontotyp",
@@ -364,7 +335,6 @@
   "input.instagram-audit.goal.label": "Hauptziel",
   "input.instagram-audit.content_type.label": "Art des Inhalts, den Sie Veröffentlichen",
   "input.instagram-audit.followers.label": "Aktuelle Follower",
-
   "input.business-plan.business_name.label": "Unternehmensname",
   "input.business-plan.business_name.placeholder": "z.B. TechFlow SaaS",
   "input.business-plan.industry.label": "Branche",
@@ -376,7 +346,6 @@
   "input.business-plan.revenue_model.label": "Einnahmenmodell",
   "input.business-plan.revenue_model.placeholder": "z.B. Monatliches SaaS-Abonnement, 49-199€/Monat",
   "input.business-plan.stage.label": "Unternehmensphase",
-
   "input.market-analysis.market.label": "Markt / Branche",
   "input.market-analysis.market.placeholder": "z.B. KI-Schreibtools-Markt",
   "input.market-analysis.geography.label": "Geografischer Fokus",
@@ -385,7 +354,6 @@
   "input.market-analysis.customer_segment.placeholder": "z.B. Marketing-Teams in mittelständischen Unternehmen",
   "input.market-analysis.current_size.label": "Bekannte Marktdaten (optional)",
   "input.market-analysis.current_size.placeholder": "z.B. Markt auf 5 Mrd. $ in 2023 geschätzt",
-
   "input.competitor-research.your_product.label": "Ihr Produkt / Ihre Dienstleistung",
   "input.competitor-research.your_product.placeholder": "z.B. KI-gestütztes Projektmanagement-Tool",
   "input.competitor-research.competitors.label": "Hauptkonkurrenten (bis zu 4)",
@@ -394,14 +362,12 @@
   "input.competitor-research.differentiator.placeholder": "z.B. KI-Autoprorisierung spart 5 Stunden/Woche",
   "input.competitor-research.target_customer.label": "Zielkunde",
   "input.competitor-research.target_customer.placeholder": "z.B. Startup-Gründer und kleine Teams",
-
   "input.swot-analysis.company.label": "Unternehmens- / Produktname",
   "input.swot-analysis.company.placeholder": "z.B. GrowthApp",
   "input.swot-analysis.description.label": "Unternehmensbeschreibung",
   "input.swot-analysis.description.placeholder": "Beschreiben Sie Ihr Unternehmen, was Sie tun und Ihre aktuelle Situation",
   "input.swot-analysis.goal.label": "Strategisches Ziel",
   "input.swot-analysis.goal.placeholder": "z.B. 1M€ ARR in 12 Monaten erreichen",
-
   "input.blog-post.topic.label": "Blog-Thema / Titel",
   "input.blog-post.topic.placeholder": "z.B. Wie man 2025 eine E-Mail-Liste von Grund auf aufbaut",
   "input.blog-post.keyword.label": "Ziel-SEO-Keyword",
@@ -412,7 +378,6 @@
   "input.blog-post.tone.label": "Schreibton",
   "input.blog-post.cta.label": "Handlungsaufforderung (optional)",
   "input.blog-post.cta.placeholder": "z.B. Laden Sie unser kostenloses E-Mail-Vorlagen-Kit herunter",
-
   "input.video-script.video_type.label": "Videotyp",
   "input.video-script.topic.label": "Videothema / Titel",
   "input.video-script.topic.placeholder": "z.B. Wie ich meine E-Mail-Liste in 6 Monaten auf 10.000 ausgebaut habe",
@@ -421,7 +386,6 @@
   "input.video-script.audience.placeholder": "z.B. Anfänger-YouTuber, die ihren Kanal ausbauen möchten",
   "input.video-script.cta.label": "Endziel / CTA",
   "input.video-script.cta.placeholder": "z.B. Abonnieren, Website besuchen, Produkt kaufen",
-
   "input.newsletter.newsletter_name.label": "Newsletter-Name",
   "input.newsletter.newsletter_name.placeholder": "z.B. Der Wachstums-Weekly",
   "input.newsletter.topic.label": "Hauptthema / Konzept",
@@ -431,7 +395,6 @@
   "input.newsletter.style.label": "Newsletter-Stil",
   "input.newsletter.sections.label": "Reguläre Abschnitte (optional)",
   "input.newsletter.sections.placeholder": "z.B. Tipp der Woche, Tool-Spotlight, Zitat",
-
   "input.google-ads.product.label": "Produkt / Dienstleistung",
   "input.google-ads.product.placeholder": "z.B. Cloud-basierte Buchhaltungssoftware für Kleinunternehmen",
   "input.google-ads.landing_page.label": "Landingpage-URL (oder Thema)",
@@ -442,7 +405,6 @@
   "input.google-ads.campaign_goal.label": "Kampagnenziel",
   "input.google-ads.usp.label": "Einzigartige Verkaufsargumente (3)",
   "input.google-ads.usp.placeholder": "z.B. 30 Tage kostenlos testen, Keine Verträge, 24/7 Support",
-
   "input.meta-ads.product.label": "Produkt / Dienstleistung",
   "input.meta-ads.product.placeholder": "z.B. Online-Fitness-Coaching-Programm",
   "input.meta-ads.target_audience.label": "Zielgruppe",
@@ -452,7 +414,6 @@
   "input.meta-ads.objective.label": "Kampagnenziel",
   "input.meta-ads.budget.label": "Tagesbudget",
   "input.meta-ads.funnel_stage.label": "Funnel-Stufe",
-
   "input.landing-page.product.label": "Produkt / Dienstleistung",
   "input.landing-page.product.placeholder": "z.B. SaaS-Projektmanagement-Tool",
   "input.landing-page.offer.label": "Hauptangebot / CTA",
@@ -465,7 +426,6 @@
   "input.landing-page.pain_points.placeholder": "z.B. Projekte laufen immer über\nTeams haben keine Transparenz\nZu viele Tools zu verwalten",
   "input.landing-page.social_proof.label": "Verfügbarer Social Proof",
   "input.landing-page.social_proof.placeholder": "z.B. 2.500 Kunden, 4,8/5 Sterne, in Forbes vorgestellt",
-
   "input.amazon-listing.product_name.label": "Produktname",
   "input.amazon-listing.product_name.placeholder": "z.B. Isolierte Edelstahl-Wasserflasche",
   "input.amazon-listing.category.label": "Amazon-Kategorie",
@@ -478,7 +438,6 @@
   "input.amazon-listing.price.placeholder": "z.B. 24,99 €",
   "input.amazon-listing.competitors.label": "Konkurrenten-ASINs / Produkte (optional)",
   "input.amazon-listing.competitors.placeholder": "z.B. ASIN: B08XXXXX oder Produktname des Konkurrenten",
-
   "input.product-description.product.label": "Produktname",
   "input.product-description.product.placeholder": "z.B. Handgefertigtes Ledernotizbuch",
   "input.product-description.features.label": "Produkteigenschaften und Details",
@@ -487,7 +446,6 @@
   "input.product-description.audience.placeholder": "z.B. Kreative und Journaling-Enthusiasten als Geschenk",
   "input.product-description.platform.label": "Plattform",
   "input.product-description.price_tier.label": "Preiskategorie",
-
   "input.cro-audit.page_type.label": "Seitentyp",
   "input.cro-audit.current_cr.label": "Aktuelle Konversionsrate",
   "input.cro-audit.current_cr.placeholder": "z.B. 1,5% oder unbekannt",
@@ -497,7 +455,6 @@
   "input.cro-audit.avg_order.placeholder": "z.B. 65 €",
   "input.cro-audit.main_issue.label": "Vermutetes Problem",
   "input.cro-audit.main_issue.placeholder": "z.B. Hohe Absprungrate, viele Warenkörbe aber wenige Käufe",
-
   "input.client-proposal.agency_name.label": "Name Ihrer Agentur",
   "input.client-proposal.agency_name.placeholder": "z.B. Pixel Growth Agency",
   "input.client-proposal.client_name.label": "Kundenname / Unternehmen",
@@ -509,7 +466,6 @@
   "input.client-proposal.budget.label": "Vorgeschlagenes Budget / Retainer",
   "input.client-proposal.budget.placeholder": "z.B. 3.500 €/Monat oder 42.000 €/Jahr",
   "input.client-proposal.duration.label": "Vertragsdauer",
-
   "input.client-report.agency_name.label": "Agenturname",
   "input.client-report.agency_name.placeholder": "z.B. Pixel Growth Agency",
   "input.client-report.client_name.label": "Kundenname",
@@ -522,7 +478,6 @@
   "input.client-report.metrics.placeholder": "Fügen Sie Ihre tatsächlichen Zahlen ein:\nz.B. Organischer Traffic: 12.500 (+32%)",
   "input.client-report.highlights.label": "Wichtigste Erfolge dieses Monats",
   "input.client-report.highlights.placeholder": "Was waren die größten Errungenschaften?",
-
   "input.case-study.client_name.label": "Kunden- / Unternehmensname",
   "input.case-study.client_name.placeholder": "z.B. BlueSky Retail Co. (real oder anonymisiert)",
   "input.case-study.industry.label": "Kundenbranche",
@@ -535,7 +490,6 @@
   "input.case-study.results.placeholder": "Konkrete Zahlen: z.B. +250% Traffic, 3x Leads, +180K€ Umsatz",
   "input.case-study.duration.label": "Zeitrahmen bis zu den Ergebnissen",
   "input.case-study.duration.placeholder": "z.B. 6 Monate",
-
   "input.investor-pitch.company.label": "Unternehmensname",
   "input.investor-pitch.company.placeholder": "z.B. DataFlow AI",
   "input.investor-pitch.one_liner.label": "Einzeiliger Beschreibung",
@@ -548,7 +502,6 @@
   "input.investor-pitch.traction.placeholder": "z.B. 50K€ ARR, 120 zahlende Kunden, 40% monatliches Wachstum",
   "input.investor-pitch.ask.label": "Finanzierungsanfrage",
   "input.investor-pitch.ask.placeholder": "z.B. Wir suchen 1,5M€ Seed bei 8M€ Pre-Money-Bewertung",
-
   "input.gtm-strategy.product.label": "Produkt / Dienstleistung",
   "input.gtm-strategy.product.placeholder": "z.B. B2B SaaS-Projektmanagement-Tool",
   "input.gtm-strategy.target_customer.label": "Zielkunde (ICP)",
@@ -558,7 +511,6 @@
   "input.gtm-strategy.budget.label": "Startbudget",
   "input.gtm-strategy.timeline.label": "Startzeitplan",
   "input.gtm-strategy.current_stage.label": "Aktuelle Phase",
-
   "input.user-stories.product.label": "Produkt / Funktion",
   "input.user-stories.product.placeholder": "z.B. Benutzer-Onboarding-Flow für B2B SaaS",
   "input.user-stories.user_type.label": "Benutzertyp(en)",
@@ -568,7 +520,6 @@
   "input.user-stories.tech_stack.label": "Tech-Stack / Einschränkungen (optional)",
   "input.user-stories.tech_stack.placeholder": "z.B. React-Frontend, Node.js-Backend, PostgreSQL",
   "input.user-stories.sprint_length.label": "Sprint-Länge",
-
   "input.n8n-workflow.goal.label": "Automatisierungsziel",
   "input.n8n-workflow.goal.placeholder": "z.B. Wenn ein neuer Lead mein Typeform ausfüllt, ihn zu HubSpot hinzufügen, Slack-Benachrichtigung senden und Aufgabe in Notion erstellen",
   "input.n8n-workflow.apps.label": "Apps / Dienste zum Verbinden",
@@ -577,11 +528,9 @@
   "input.n8n-workflow.trigger.placeholder": "z.B. Neues Formular eingereicht, neue E-Mail, täglich um 9 Uhr geplant",
   "input.n8n-workflow.frequency.label": "Häufigkeit",
   "input.n8n-workflow.complexity.label": "Workflow-Komplexität",
-
   "wa.title": "Treten Sie der Community bei",
   "wa.subtitle": "Marketing-Tipps, KI und Wachstum jede Woche. Kostenlos, auf WhatsApp.",
   "wa.cta": "Jetzt beitreten →",
-
   "ig.badge": "📸 5-Min-Audit",
   "ig.title": "Instagram Express",
   "ig.titleHighlight": "Audit",
@@ -651,5 +600,9 @@
   "ig.placeholder.action.4": "Generische CTAs durch spezifische ersetzen",
   "ig.follow.title": "Mehr Instagram-Wachstumsstrategien?",
   "ig.follow.text": "Folgen Sie uns für wöchentliche Wachstumsstrategien.",
-  "ig.follow.cta": "@gormaran_marketing folgen →"
+  "ig.follow.cta": "@gormaran_marketing folgen →",
+  "landing.categories.availableGrow": "Verfügbar in Grow →",
+  "landing.categories.availableScale": "Verfügbar in Scale →",
+  "landing.categories.availableEvolution": "Verfügbar in Evolution →",
+  "landing.categories.availableAddon": "Add-on →"
 }
