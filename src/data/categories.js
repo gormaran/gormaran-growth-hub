@@ -1473,7 +1473,7 @@ For each story:
         inputs: [
           { id: 'goal', label: 'Automation Goal', type: 'textarea', placeholder: 'e.g., When a new lead fills out my Typeform, add them to HubSpot, send a Slack notification and create a task in Notion', required: true },
           { id: 'apps', label: 'Apps / Services to Connect', type: 'text', placeholder: 'e.g., Gmail, Slack, HubSpot, Notion, Google Sheets', required: true },
-          { id: 'trigger', label: 'Trigger Event', type: 'text', placeholder: 'e.g., New form submission, new email, scheduled daily at 9am', required: true },
+          { id: 'trigger', label: 'Trigger Event', type: 'select', options: ['Webhook (HTTP request received)', 'Schedule / Cron (time-based)', 'Manual trigger (on demand)', 'New email received (Gmail / IMAP)', 'New form submission (Typeform, Tally, Google Forms)', 'New row in Google Sheets or Airtable', 'New file in Google Drive or Dropbox', 'New lead in CRM (HubSpot, Salesforce, Pipedrive)', 'New message in Slack or Microsoft Teams', 'New order (Shopify, WooCommerce)', 'New subscriber (Mailchimp, ActiveCampaign)', 'New GitHub event (push, PR, issue)', 'New chat message (Telegram, WhatsApp)', 'New calendar event (Google Calendar)', 'Database change (MySQL, PostgreSQL)'], required: true },
           { id: 'frequency', label: 'How Often', type: 'select', options: ['Real-time (webhook)', 'Every hour', 'Daily', 'Weekly', 'On demand'] },
           { id: 'complexity', label: 'Workflow Complexity', type: 'select', options: ['Simple (2-3 nodes)', 'Medium (4-7 nodes)', 'Complex (8+ nodes with branches)'] },
         ],
