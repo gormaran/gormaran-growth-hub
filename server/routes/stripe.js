@@ -10,8 +10,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder'
 
 // POST /api/stripe/create-checkout — Create Stripe Checkout Session
 router.post('/create-checkout', verifyToken, async (req, res) => {
-  const { priceId } = req.body;
+  const { priceId, mode: checkoutMode } = req.body;
   const user = req.user;
+  const mode = checkoutMode === 'payment' ? 'payment' : 'subscription';
 
   if (!priceId) {
     return res.status(400).json({ error: 'Missing priceId' });
@@ -22,23 +23,20 @@ router.post('/create-checkout', verifyToken, async (req, res) => {
   }
 
   try {
-    const session = await stripe.checkout.sessions.create({
-  payment_method_types: ['card'],
-  mode: 'subscription',
-  line_items: [{ price: priceId, quantity: 1 }],
-  success_url: `${process.env.FRONTEND_URL}/dashboard?payment=success`,
-  cancel_url: `${process.env.FRONTEND_URL}/pricing?payment=cancelled`,
-  client_reference_id: user.uid,
-  metadata: {
-    firebaseUid: user.uid,
-  },
-  subscription_data: {
-    metadata: {
-      firebaseUid: user.uid,
-    },
-  },
-  allow_promotion_codes: true,
-});
+    const sessionParams = {
+      payment_method_types: ['card'],
+      mode,
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${process.env.FRONTEND_URL}/dashboard?payment=success`,
+      cancel_url: `${process.env.FRONTEND_URL}/pricing?payment=cancelled`,
+      client_reference_id: user.uid,
+      metadata: { firebaseUid: user.uid },
+      allow_promotion_codes: true,
+    };
+    if (mode === 'subscription') {
+      sessionParams.subscription_data = { metadata: { firebaseUid: user.uid } };
+    }
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     res.json({ url: session.url, sessionId: session.id });
   } catch (err) {
