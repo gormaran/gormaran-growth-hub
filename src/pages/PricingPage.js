@@ -12,7 +12,7 @@ const PLAN_META = [
   { id: 'free',      price: 0,   featureCount: 4, lockedCount: 4, hasBadge: false, highlight: false, priceId: null },
   { id: 'grow',      price: 19,  featureCount: 7, lockedCount: 0, hasBadge: true,  highlight: true,  priceId: process.env.REACT_APP_STRIPE_GROW_PRICE_ID },
   { id: 'scale',     price: 49,  featureCount: 7, lockedCount: 0, hasBadge: true,  highlight: false, priceId: process.env.REACT_APP_STRIPE_SCALE_PRICE_ID },
-  { id: 'evolution', price: 99,  featureCount: 8, lockedCount: 0, hasBadge: true,  highlight: false, priceId: process.env.REACT_APP_STRIPE_EVOLUTION_PRICE_ID },
+  { id: 'evolution', price: 129,  featureCount: 8, lockedCount: 0, hasBadge: true,  highlight: false, priceId: process.env.REACT_APP_STRIPE_EVOLUTION_PRICE_ID },
 ];
 
 // Comparison table — 4 columns: free, grow, scale, evolution
