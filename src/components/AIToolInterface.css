@@ -69,6 +69,7 @@
 .ai-tool__layout {
   display: grid;
   grid-template-columns: 380px 1fr;
+  grid-template-rows: 1fr;   /* row height = available space, not content height */
   gap: 1.5rem;
   flex: 1;
   min-height: 0;
@@ -82,6 +83,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-height: 0;  /* allow flex children to shrink and scroll */
+  overflow: hidden;
 }
 
 .ai-tool__panel-title {
