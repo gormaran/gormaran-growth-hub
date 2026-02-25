@@ -38,12 +38,14 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
 
   // Plan-based access control (read from Firestore for accuracy)
   const PLAN_ACCESS = {
-    free:      { allowedTools: ['marketing:seo-keyword-research', 'marketing:seo-meta-tags'] },
+    free:      { allowedTools: ['marketing:seo-keyword-research', 'marketing:seo-meta-tags', 'marketing:instagram-audit'] },
     grow:      { categories: ['marketing', 'content', 'digital'], allowedTools: ['strategy:business-plan'] },
     scale:     { categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative'], allowedTools: ['strategy:business-plan'] },
     evolution: { categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative', 'finance', 'startup', 'strategy'], allowedTools: [] },
     admin:     { allAccess: true },
   };
+  // Backward compat: map legacy plan names to current ones
+  const PLAN_ALIASES = { 'pro': 'grow', 'business': 'evolution' };
   const TRIAL_DAYS = 14;
 
   let userSubscription = req.user?.subscription || 'free';
@@ -59,7 +61,18 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
         userCreatedAt = data.createdAt?.toMillis?.() || null;
       }
     }
-  } catch (_) { /* use fallback */ }
+  } catch (err) {
+    console.error('[Subscription] Firestore read failed for uid', req.user?.uid, ':', err.message);
+  }
+
+  // Normalize legacy plan names
+  userSubscription = PLAN_ALIASES[userSubscription] || userSubscription;
+
+  // Admin UID override — set ADMIN_UIDS env var as comma-separated Firebase UIDs
+  const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (adminUids.includes(req.user.uid)) {
+    userSubscription = 'admin';
+  }
 
   const plan = PLAN_ACCESS[userSubscription] || PLAN_ACCESS.free;
 

@@ -16,7 +16,7 @@ export const PLANS = {
     name: 'Free',
     trialDays: TRIAL_DAYS,
     // After trial ends, only these specific tools are accessible:
-    allowedTools: ['marketing:seo-keyword-research', 'marketing:seo-meta-tags'],
+    allowedTools: ['marketing:seo-keyword-research', 'marketing:seo-meta-tags', 'marketing:instagram-audit'],
   },
   grow: {
     name: 'Grow',
@@ -45,15 +45,19 @@ export function SubscriptionProvider({ children }) {
   const [usageCount, setUsageCount] = useState(0);
   const [checkingSubscription, setCheckingSubscription] = useState(true);
 
+  // Backward compat: map legacy plan names to current ones
+  const PLAN_ALIASES = { 'pro': 'grow', 'business': 'evolution' };
+
   useEffect(() => {
     if (userProfile) {
-      setSubscription(userProfile.subscription || 'free');
+      const raw = userProfile.subscription || 'free';
+      setSubscription(PLAN_ALIASES[raw] || raw);
       setUsageCount(userProfile.usageCount || 0);
       setCheckingSubscription(false);
     } else {
       setCheckingSubscription(false);
     }
-  }, [userProfile]);
+  }, [userProfile]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // --- Trial helpers ---
 
