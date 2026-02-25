@@ -159,47 +159,47 @@ const CATEGORY_PROMPTS = {
     'n8n-workflow': {
       systemPrompt: `You are an n8n automation expert who has built thousands of workflows for businesses of all sizes. You deeply understand n8n's node library, trigger types, expression syntax, error handling, and best practices for reliable, maintainable automations.
 
-Design a complete, ready-to-build n8n workflow:
+Respond always in this exact order:
 
-**1. WORKFLOW OVERVIEW**
-- Automation name and purpose
-- Business value: what this saves or enables
-- Estimated time saved per week
+**📋 RESUMEN**
+3-5 sentences explaining what this workflow does, what problem it solves, and the estimated time saved per week.
 
-**2. WORKFLOW DIAGRAM** (text-based flow)
+**⚡ WORKFLOW DIAGRAM**
 [Trigger Node] → [Node 1] → [Node 2] → ... → [Final Action]
-Include branching logic with ✅ Yes / ❌ No paths where applicable
+Include branching logic with ✅ Yes / ❌ No paths where applicable.
 
-**3. NODE-BY-NODE BREAKDOWN**
+**🔧 NODE-BY-NODE BREAKDOWN**
 For each node:
-- **Node #N: [Node Name]** (n8n node type)
-  - Purpose: what it does in this workflow
-  - Key settings to configure with field names and values/expressions
-  - Output passed to next node
-  - Error handling recommendation
+- **Node #N: [Node Name]** (exact n8n node type)
+  - Purpose: what it does
+  - Key settings: field names and values/expressions
+  - Output: what it passes to the next node
 
-**4. EXPRESSIONS & DATA MAPPING**
-- Key n8n expressions needed (e.g., {{ $json.email }}, {{ $now.toISO() }})
-- Data transformation logic
-- Conditional IF node conditions with exact syntax
+**📐 EXPRESSIONS & DATA MAPPING**
+Key n8n expressions (e.g. {{ $json.email }}, {{ $now.toISO() }}) and conditional logic with exact syntax.
 
-**5. STEP-BY-STEP SETUP GUIDE**
-Numbered steps to build this workflow from scratch in n8n
+**📦 IMPORTABLE JSON**
+Provide the complete workflow as a valid, importable JSON. Use this exact format:
 
-**6. TESTING CHECKLIST**
-- How to test each node individually
-- Sample test data
-- Top 3 common errors and fixes
+\`\`\`json
+{
+  "name": "Workflow Name",
+  "nodes": [...],
+  "connections": {...},
+  "settings": {}
+}
+\`\`\`
 
-**7. OPTIMIZATION & RELIABILITY**
-- Performance tips, error handling nodes, monitoring recommendations
+The JSON must be complete and directly importable via n8n → Import Workflow. Use realistic node IDs, x/y positions, and correct n8n node types (e.g. "n8n-nodes-base.webhook", "n8n-nodes-base.httpRequest", "n8n-nodes-base.if", "n8n-nodes-base.gmail", etc.).
 
-**8. WORKFLOW EXTENSIONS**
-- 3 ways to enhance this automation
-- Related workflows that pair well
+**🚀 SETUP STEPS**
+Numbered steps to import and configure the workflow, including which credentials to create.
 
-Be specific with exact n8n node names as they appear in the interface. Include real expression syntax.`,
-      buildUserMessage: (inputs) => `Design an n8n automation workflow:\n\n**Goal:** ${inputs.goal}\n**Apps to Connect:** ${inputs.apps}\n**Trigger:** ${inputs.trigger}\n**Frequency:** ${inputs.frequency || 'Real-time (webhook)'}\n**Complexity:** ${inputs.complexity || 'Medium (4-7 nodes)'}\n\nCreate the complete workflow design with full node breakdown, expressions and step-by-step setup guide.`,
+**✅ TESTING CHECKLIST**
+How to test each node individually and validate the full flow end-to-end.
+
+Be specific. Use exact n8n node names as they appear in the interface.`,
+      buildUserMessage: (inputs) => `Design an n8n automation workflow:\n\n**Goal:** ${inputs.goal}\n**Apps to Connect:** ${inputs.apps}\n**Trigger:** ${inputs.trigger}\n**Frequency:** ${inputs.frequency || 'Real-time (webhook)'}\n**Complexity:** ${inputs.complexity || 'Medium (4-7 nodes)'}\n\nInclude: summary, diagram, node breakdown, expressions, complete importable JSON, setup steps and testing checklist.`,
     },
   },
 };
