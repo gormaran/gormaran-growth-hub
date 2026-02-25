@@ -48,31 +48,35 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
   const PLAN_ALIASES = { 'pro': 'grow', 'business': 'evolution' };
   const TRIAL_DAYS = 14;
 
+  // Admin UID override — checked FIRST, bypasses Firestore entirely
+  const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const isAdminUid = adminUids.includes(req.user?.uid);
+
   let userSubscription = req.user?.subscription || 'free';
   let userCreatedAt = null;
-  try {
-    const adminSdk = require('firebase-admin');
-    if (adminSdk.apps.length > 0) {
-      const fsDb = adminSdk.firestore();
-      const userDoc = await fsDb.collection('users').doc(req.user.uid).get();
-      if (userDoc.exists) {
-        const data = userDoc.data();
-        userSubscription = data.subscription || 'free';
-        userCreatedAt = data.createdAt?.toMillis?.() || null;
+
+  if (!isAdminUid) {
+    try {
+      const adminSdk = require('firebase-admin');
+      if (adminSdk.apps.length > 0) {
+        const fsDb = adminSdk.firestore();
+        const userDoc = await fsDb.collection('users').doc(req.user.uid).get();
+        if (userDoc.exists) {
+          const data = userDoc.data();
+          userSubscription = data.subscription || 'free';
+          userCreatedAt = data.createdAt?.toMillis?.() || null;
+        }
       }
+    } catch (err) {
+      console.error('[Subscription] Firestore read failed for uid', req.user?.uid, ':', err.message);
     }
-  } catch (err) {
-    console.error('[Subscription] Firestore read failed for uid', req.user?.uid, ':', err.message);
-  }
-
-  // Normalize legacy plan names
-  userSubscription = PLAN_ALIASES[userSubscription] || userSubscription;
-
-  // Admin UID override — set ADMIN_UIDS env var as comma-separated Firebase UIDs
-  const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
-  if (adminUids.includes(req.user.uid)) {
+    // Normalize legacy plan names
+    userSubscription = PLAN_ALIASES[userSubscription] || userSubscription;
+  } else {
     userSubscription = 'admin';
   }
+
+  console.log('[Access]', { uid: req.user?.uid, subscription: userSubscription, tool: `${categoryId}:${toolId}`, isAdminUid });
 
   const plan = PLAN_ACCESS[userSubscription] || PLAN_ACCESS.free;
 
