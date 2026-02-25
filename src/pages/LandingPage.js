@@ -187,7 +187,7 @@ function FlipCard({ cat, i }) {
   if (currentUser && !isLocked) {
     // logged in and has access → go directly to the tool
     ctaKey = 'landing.categories.openTool';
-    ctaTo = `/dashboard/${cat.id}`;
+    ctaTo = `/category/${cat.id}`;
     ctaLocked = false;
   } else if (minPlan === 'evolution') {
     ctaKey = 'landing.categories.availableEvolution';
