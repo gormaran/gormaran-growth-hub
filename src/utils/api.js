@@ -65,7 +65,7 @@ export async function streamAIResponse({ categoryId, toolId, inputs, onChunk, on
 }
 
 // Create Stripe checkout session
-export async function createCheckoutSession(priceId) {
+export async function createCheckoutSession(priceId, mode = 'subscription') {
   const authHeaders = await getAuthHeader();
   const response = await fetch(`${API_URL}/api/stripe/create-checkout`, {
     method: 'POST',
@@ -73,7 +73,7 @@ export async function createCheckoutSession(priceId) {
       'Content-Type': 'application/json',
       ...authHeaders,
     },
-    body: JSON.stringify({ priceId }),
+    body: JSON.stringify({ priceId, mode }),
   });
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));

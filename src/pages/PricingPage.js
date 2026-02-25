@@ -51,6 +51,27 @@ export default function PricingPage() {
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [error, setError] = useState('');
 
+  async function handleAddonSelect() {
+    if (!currentUser) {
+      navigate('/auth?mode=register');
+      return;
+    }
+    const addonPriceId = process.env.REACT_APP_STRIPE_N8N_ADDON_PRICE_ID;
+    if (!addonPriceId || addonPriceId === 'undefined') {
+      setError('N8n add-on payment is not configured yet. Please add REACT_APP_STRIPE_N8N_ADDON_PRICE_ID to your environment variables.');
+      return;
+    }
+    setError('');
+    setLoadingPlan('addon');
+    try {
+      const { url } = await createCheckoutSession(addonPriceId, 'payment');
+      window.location.href = url;
+    } catch (err) {
+      setError(err.message || 'Failed to start checkout. Please try again.');
+    }
+    setLoadingPlan(null);
+  }
+
   async function handlePlanSelect(plan) {
     if (plan.id === 'free') {
       navigate('/auth?mode=register');
@@ -250,11 +271,10 @@ export default function PricingPage() {
               </p>
               <button
                 className="btn btn-primary pricing__plan-cta"
-                onClick={() => {
-                  if (!currentUser) navigate('/auth?mode=register');
-                }}
+                onClick={handleAddonSelect}
+                disabled={loadingPlan === 'addon'}
               >
-                {t('pricing.addon.cta', { defaultValue: 'Get Add-on →' })}
+                {loadingPlan === 'addon' ? '...' : t('pricing.addon.cta', { defaultValue: 'Get Add-on →' })}
               </button>
             </div>
           </motion.div>
