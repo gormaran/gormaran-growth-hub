@@ -180,6 +180,7 @@
   font-size: 1.25rem;
   font-weight: 800;
   margin-bottom: 0.25rem;
+  padding-right: 6.5rem; /* space for the absolute-positioned badge */
 }
 
 .pricing__plan-desc {
@@ -431,12 +432,10 @@
   border-color: #2563eb !important;
 }
 
-/* EVOLUTION — purple-to-gold gradient border */
+/* EVOLUTION — purple border + subtle tint (same pattern as other tiers) */
 .pricing__plan--evolution {
-  border: 2px solid transparent;
-  background:
-    linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-    linear-gradient(135deg, #8b5cf6, #f59e0b) border-box;
+  border-color: rgba(139, 92, 246, 0.45);
+  background: linear-gradient(145deg, rgba(139,92,246,0.07), rgba(245,158,11,0.03));
 }
 .pricing__plan--evolution .pricing__plan-glow {
   background: radial-gradient(circle, rgba(139,92,246,0.3), transparent 70%);
