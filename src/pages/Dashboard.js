@@ -144,12 +144,11 @@ export default function Dashboard() {
               variants={stagger}
             >
               {[...CATEGORIES.filter((c) => !c.isAddon), ...CATEGORIES.filter((c) => c.isAddon)].map((cat) => {
-                const isAddon = !!cat.isAddon && subscription !== 'admin';
-                const locked = !isAddon && isCategoryLocked(cat.id);
+                const locked = isCategoryLocked(cat.id);
                 const catName = t(`cat.${cat.id}.name`, { defaultValue: cat.name });
                 const catDesc = t(`cat.${cat.id}.desc`, { defaultValue: cat.description });
 
-                if (isAddon) {
+                if (cat.isAddon) {
                   return (
                     <motion.div
                       key={cat.id}
@@ -180,9 +179,15 @@ export default function Dashboard() {
                         <p className="dashboard__addon-renew">
                           {t('pricing.addon.renew', { defaultValue: 'No expiry · Works with any plan · Buy more when you need' })}
                         </p>
-                        <Link to="/pricing" className="btn btn-primary">
-                          {t('pricing.addon.cta', { defaultValue: 'Get Add-on →' })}
-                        </Link>
+                        {subscription === 'admin' ? (
+                          <Link to={`/category/${cat.id}`} className="btn btn-primary">
+                            {t('ui.open', { defaultValue: 'Open →' })}
+                          </Link>
+                        ) : (
+                          <Link to="/pricing" className="btn btn-primary">
+                            {t('pricing.addon.cta', { defaultValue: 'Get Add-on →' })}
+                          </Link>
+                        )}
                       </div>
                     </motion.div>
                   );
