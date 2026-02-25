@@ -121,6 +121,11 @@
   margin-bottom: 4rem;
 }
 
+.pricing__plans--4 {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
 .pricing__plan {
   position: relative;
   background: var(--bg-card);
@@ -346,7 +351,12 @@
 
 .pricing__cta-card p { max-width: 400px; }
 
+@media (max-width: 1100px) {
+  .pricing__plans--4 { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 900px) {
   .pricing__plans { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto 4rem; }
+  .pricing__plans--4 { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto 4rem; }
   .pricing__faq-grid { grid-template-columns: 1fr; }
 }

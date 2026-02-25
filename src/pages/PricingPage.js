@@ -9,24 +9,26 @@ import './PricingPage.css';
 
 // Plan metadata — only non-translatable values here
 const PLAN_META = [
-  { id: 'free',     price: 0,  featureCount: 5, lockedCount: 5, hasBadge: false, highlight: false, priceId: null },
-  { id: 'pro',      price: 29, featureCount: 7, lockedCount: 0, hasBadge: true,  highlight: true,  priceId: process.env.REACT_APP_STRIPE_PRO_PRICE_ID },
-  { id: 'business', price: 79, featureCount: 7, lockedCount: 0, hasBadge: true,  highlight: false, priceId: process.env.REACT_APP_STRIPE_BUSINESS_PRICE_ID },
+  { id: 'free',      price: 0,   featureCount: 4, lockedCount: 4, hasBadge: false, highlight: false, priceId: null },
+  { id: 'grow',      price: 19,  featureCount: 7, lockedCount: 0, hasBadge: true,  highlight: true,  priceId: process.env.REACT_APP_STRIPE_GROW_PRICE_ID },
+  { id: 'scale',     price: 49,  featureCount: 7, lockedCount: 0, hasBadge: true,  highlight: false, priceId: process.env.REACT_APP_STRIPE_SCALE_PRICE_ID },
+  { id: 'evolution', price: 99,  featureCount: 8, lockedCount: 0, hasBadge: true,  highlight: false, priceId: process.env.REACT_APP_STRIPE_EVOLUTION_PRICE_ID },
 ];
 
-// Comparison row value keys (text values that need translation use a key, icons/numbers stay as-is)
+// Comparison table — 4 columns: free, grow, scale, evolution
 const COMPARISON_ROWS = [
-  { idx: 0,  free: '3/day',  pro: 'unlimited', business: 'unlimited' },
-  { idx: 1,  free: '✅',     pro: '✅',        business: '✅' },
-  { idx: 2,  free: '✅',     pro: '✅',        business: '✅' },
-  { idx: 3,  free: '❌',     pro: '✅',        business: '✅' },
-  { idx: 4,  free: '❌',     pro: '✅',        business: '✅' },
-  { idx: 5,  free: '❌',     pro: '❌',        business: '✅' },
-  { idx: 6,  free: '❌',     pro: '❌',        business: '✅' },
-  { idx: 7,  free: '❌',     pro: '❌',        business: '✅' },
-  { idx: 8,  free: '1',      pro: '1',         business: '10' },
-  { idx: 9,  free: 'email',  pro: 'priority',  business: 'dedicated' },
-  { idx: 10, free: 'addon',  pro: 'addon',     business: 'addon' },
+  { idx: 0,  free: 'trial',    grow: 'unlimited', scale: 'unlimited', evolution: 'unlimited' },
+  { idx: 1,  free: '⚠️',      grow: '✅',        scale: '✅',        evolution: '✅' },
+  { idx: 2,  free: '❌',       grow: '✅',        scale: '✅',        evolution: '✅' },
+  { idx: 3,  free: '❌',       grow: '✅',        scale: '✅',        evolution: '✅' },
+  { idx: 4,  free: '❌',       grow: 'partial',   scale: 'partial',   evolution: '✅' },
+  { idx: 5,  free: '❌',       grow: '❌',        scale: '✅',        evolution: '✅' },
+  { idx: 6,  free: '❌',       grow: '❌',        scale: '✅',        evolution: '✅' },
+  { idx: 7,  free: '❌',       grow: '❌',        scale: '✅',        evolution: '✅' },
+  { idx: 8,  free: '❌',       grow: '❌',        scale: '❌',        evolution: '✅' },
+  { idx: 9,  free: '❌',       grow: '❌',        scale: '❌',        evolution: '✅' },
+  { idx: 10, free: 'email',    grow: 'priority',  scale: 'priority',  evolution: 'dedicated' },
+  { idx: 11, free: 'addon',    grow: 'addon',     scale: 'addon',     evolution: 'addon' },
 ];
 
 const FAQ_COUNT = 6;
@@ -85,6 +87,8 @@ export default function PricingPage() {
 
   function translateVal(val) {
     if (val === 'unlimited') return t('pricing.comparison.unlimited', { defaultValue: 'Unlimited' });
+    if (val === 'trial')     return t('pricing.comparison.trial',     { defaultValue: '14-day trial' });
+    if (val === 'partial')   return t('pricing.comparison.partial',   { defaultValue: '1 tool' });
     if (val === 'email')     return t('pricing.comparison.email',     { defaultValue: 'Email' });
     if (val === 'priority')  return t('pricing.comparison.priority',  { defaultValue: 'Priority' });
     if (val === 'dedicated') return t('pricing.comparison.dedicated', { defaultValue: 'Dedicated' });
@@ -125,7 +129,7 @@ export default function PricingPage() {
         {/* Plans */}
         <div className="container">
           <motion.div
-            className="pricing__plans"
+            className="pricing__plans pricing__plans--4"
             initial="hidden"
             animate="visible"
             variants={stagger}
@@ -223,7 +227,7 @@ export default function PricingPage() {
                 {t('pricing.addon.title', { defaultValue: 'N8n Automation' })}
               </h3>
               <p className="pricing__addon-desc">
-                {t('pricing.addon.desc', { defaultValue: 'Design powerful no-code automations using n8n — available to any plan.' })}
+                {t('pricing.addon.desc', { defaultValue: 'Design powerful no-code automations using n8n — available for any plan.' })}
               </p>
               <ul className="pricing__addon-features">
                 {[0, 1, 2, 3].map((i) => (
@@ -238,11 +242,11 @@ export default function PricingPage() {
                   {t('pricing.addon.price', { defaultValue: '€10' })}
                 </span>
                 <span className="pricing__addon-period">
-                  {t('pricing.addon.period', { defaultValue: '/ 3 days' })}
+                  {t('pricing.addon.period', { defaultValue: '/ 10 workflows' })}
                 </span>
               </div>
               <p className="pricing__addon-renew">
-                {t('pricing.addon.renew', { defaultValue: 'Renews every 3 days · Works with any plan' })}
+                {t('pricing.addon.renew', { defaultValue: 'No expiry · Works with any plan · Buy more when you need' })}
               </p>
               <button
                 className="btn btn-primary pricing__plan-cta"
@@ -274,8 +278,9 @@ export default function PricingPage() {
                   <tr>
                     <th>{t('pricing.comparison.featureCol', { defaultValue: 'Feature' })}</th>
                     <th>{t('pricing.plan.free.name', { defaultValue: 'Free' })}</th>
-                    <th className="pricing__th--highlight">Pro</th>
-                    <th>{t('pricing.plan.business.name', { defaultValue: 'Business' })}</th>
+                    <th className="pricing__th--highlight">{t('pricing.plan.grow.name', { defaultValue: 'Grow' })}</th>
+                    <th>{t('pricing.plan.scale.name', { defaultValue: 'Scale' })}</th>
+                    <th>{t('pricing.plan.evolution.name', { defaultValue: 'Evolution' })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -283,8 +288,9 @@ export default function PricingPage() {
                     <tr key={row.idx}>
                       <td>{t(`pricing.comparison.row.${row.idx}`)}</td>
                       <td>{translateVal(row.free)}</td>
-                      <td className="pricing__td--highlight">{translateVal(row.pro)}</td>
-                      <td>{translateVal(row.business)}</td>
+                      <td className="pricing__td--highlight">{translateVal(row.grow)}</td>
+                      <td>{translateVal(row.scale)}</td>
+                      <td>{translateVal(row.evolution)}</td>
                     </tr>
                   ))}
                 </tbody>
