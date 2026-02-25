@@ -48,7 +48,15 @@ export function SubscriptionProvider({ children }) {
   // Backward compat: map legacy plan names to current ones
   const PLAN_ALIASES = { 'pro': 'grow', 'business': 'evolution' };
 
+  // Admin UID override — mirrors server-side ADMIN_UIDS check
+  const ADMIN_UIDS = (process.env.REACT_APP_ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
+
   useEffect(() => {
+    if (ADMIN_UIDS.includes(currentUser?.uid)) {
+      setSubscription('admin');
+      setCheckingSubscription(false);
+      return;
+    }
     if (userProfile) {
       const raw = userProfile.subscription || 'free';
       setSubscription(PLAN_ALIASES[raw] || raw);
@@ -57,7 +65,7 @@ export function SubscriptionProvider({ children }) {
     } else {
       setCheckingSubscription(false);
     }
-  }, [userProfile]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [userProfile, currentUser]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // --- Trial helpers ---
 
