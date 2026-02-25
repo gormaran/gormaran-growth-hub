@@ -101,8 +101,9 @@ router.get('/subscription', verifyToken, async (req, res) => {
     const priceId = sub.items.data[0].price.id;
 
     let plan = 'free';
-    if (priceId === process.env.STRIPE_PRO_PRICE_ID) plan = 'pro';
-    if (priceId === process.env.STRIPE_BUSINESS_PRICE_ID) plan = 'business';
+    if (priceId === process.env.STRIPE_GROW_PRICE_ID) plan = 'grow';
+    if (priceId === process.env.STRIPE_SCALE_PRICE_ID) plan = 'scale';
+    if (priceId === process.env.STRIPE_EVOLUTION_PRICE_ID) plan = 'evolution';
 
     res.json({
       subscription: plan,
@@ -151,8 +152,9 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       if (firebaseUid) {
         const priceId = sub.items.data[0]?.price?.id;
         let plan = 'free';
-        if (priceId === process.env.STRIPE_PRO_PRICE_ID) plan = 'pro';
-        if (priceId === process.env.STRIPE_BUSINESS_PRICE_ID) plan = 'business';
+        if (priceId === process.env.STRIPE_GROW_PRICE_ID) plan = 'grow';
+        if (priceId === process.env.STRIPE_SCALE_PRICE_ID) plan = 'scale';
+        if (priceId === process.env.STRIPE_EVOLUTION_PRICE_ID) plan = 'evolution';
         if (sub.status !== 'active') plan = 'free';
         await updateUserSubscription(firebaseUid, sub.id, plan);
       }
