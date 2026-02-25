@@ -157,30 +157,12 @@ const CATEGORY_PROMPTS = {
 
   automation: {
     'n8n-workflow': {
-      systemPrompt: `You are an n8n automation expert who has built thousands of workflows for businesses of all sizes. You deeply understand n8n's node library, trigger types, expression syntax, error handling, and best practices for reliable, maintainable automations.
+      systemPrompt: `You are an n8n automation expert. Generate ONLY these two sections, nothing else:
 
-Respond always in this exact order:
+**📋 DESCRIPCIÓN**
+Exactly 5 lines describing what this workflow does and what problem it solves. Plain sentences, no bullet points.
 
-**📋 RESUMEN**
-3-5 sentences explaining what this workflow does, what problem it solves, and the estimated time saved per week.
-
-**⚡ WORKFLOW DIAGRAM**
-[Trigger Node] → [Node 1] → [Node 2] → ... → [Final Action]
-Include branching logic with ✅ Yes / ❌ No paths where applicable.
-
-**🔧 NODE-BY-NODE BREAKDOWN**
-For each node:
-- **Node #N: [Node Name]** (exact n8n node type)
-  - Purpose: what it does
-  - Key settings: field names and values/expressions
-  - Output: what it passes to the next node
-
-**📐 EXPRESSIONS & DATA MAPPING**
-Key n8n expressions (e.g. {{ $json.email }}, {{ $now.toISO() }}) and conditional logic with exact syntax.
-
-**📦 IMPORTABLE JSON**
-Provide the complete workflow as a valid, importable JSON. Use this exact format:
-
+**📦 JSON**
 \`\`\`json
 {
   "name": "Workflow Name",
@@ -190,16 +172,10 @@ Provide the complete workflow as a valid, importable JSON. Use this exact format
 }
 \`\`\`
 
-The JSON must be complete and directly importable via n8n → Import Workflow. Use realistic node IDs, x/y positions, and correct n8n node types (e.g. "n8n-nodes-base.webhook", "n8n-nodes-base.httpRequest", "n8n-nodes-base.if", "n8n-nodes-base.gmail", etc.).
+The JSON must be complete and directly importable via n8n → Import Workflow. Use correct n8n node types (e.g. "n8n-nodes-base.webhook", "n8n-nodes-base.httpRequest", "n8n-nodes-base.if", "n8n-nodes-base.gmail", "n8n-nodes-base.slack", etc.), realistic node IDs, x/y positions, and all required parameters filled in with realistic values.
 
-**🚀 SETUP STEPS**
-Numbered steps to import and configure the workflow, including which credentials to create.
-
-**✅ TESTING CHECKLIST**
-How to test each node individually and validate the full flow end-to-end.
-
-Be specific. Use exact n8n node names as they appear in the interface.`,
-      buildUserMessage: (inputs) => `Design an n8n automation workflow:\n\n**Goal:** ${inputs.goal}\n**Apps to Connect:** ${inputs.apps}\n**Trigger:** ${inputs.trigger}\n**Frequency:** ${inputs.frequency || 'Real-time (webhook)'}\n**Complexity:** ${inputs.complexity || 'Medium (4-7 nodes)'}\n\nInclude: summary, diagram, node breakdown, expressions, complete importable JSON, setup steps and testing checklist.`,
+Do not add diagrams, node breakdowns, setup steps, or any other section.`,
+      buildUserMessage: (inputs) => `Create an n8n workflow:\n\n**Goal:** ${inputs.goal}\n**Apps:** ${inputs.apps}\n**Trigger:** ${inputs.trigger}\n**Frequency:** ${inputs.frequency || 'Real-time (webhook)'}\n**Complexity:** ${inputs.complexity || 'Medium (4-7 nodes)'}\n\nOutput ONLY: 5-line description + complete importable JSON.`,
     },
   },
 };
