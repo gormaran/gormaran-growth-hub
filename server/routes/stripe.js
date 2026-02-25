@@ -182,6 +182,12 @@ async function updateUserSubscription(uid, subscriptionId, plan) {
     // Only update if firebase is initialized
     if (admin.apps.length > 0) {
       const db = admin.firestore();
+      // Never overwrite admin subscription — admin access is manually assigned
+      const existing = await db.collection('users').doc(uid).get();
+      if (existing.exists && existing.data().subscription === 'admin') {
+        console.log(`[Webhook] Skipping update for admin user ${uid}`);
+        return;
+      }
       await db.collection('users').doc(uid).update({
         subscription: plan,
         stripeSubscriptionId: subscriptionId,
