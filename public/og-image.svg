@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f1a"/>
+      <stop offset="100%" stop-color="#1a1040"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="glyph" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle grid -->
+  <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+    <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(99,102,241,0.06)" stroke-width="1"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Glow orb left -->
+  <ellipse cx="200" cy="200" rx="280" ry="280" fill="#6366f1" opacity="0.08"/>
+  <!-- Glow orb right -->
+  <ellipse cx="1050" cy="450" rx="220" ry="220" fill="#a78bfa" opacity="0.07"/>
+
+  <!-- Logo icon -->
+  <rect x="80" y="60" width="90" height="90" rx="22" fill="url(#accent)"/>
+  <text x="125" y="133" font-family="Georgia, serif" font-size="62" font-weight="bold" fill="white" text-anchor="middle">G</text>
+
+  <!-- Brand name -->
+  <text x="192" y="97" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="36" font-weight="800" fill="white" letter-spacing="-1">Gormaran</text>
+  <text x="192" y="136" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="19" font-weight="500" fill="#a5b4fc">AI Growth Hub</text>
+
+  <!-- Divider -->
+  <rect x="80" y="195" width="1040" height="1" fill="rgba(99,102,241,0.25)"/>
+
+  <!-- Main headline -->
+  <text x="80" y="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="68" font-weight="900" fill="white" letter-spacing="-2">The AI Growth Hub</text>
+  <text x="80" y="385" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="68" font-weight="900" letter-spacing="-2">
+    <tspan fill="url(#glyph)">Built for Results</tspan>
+  </text>
+
+  <!-- Subtitle -->
+  <text x="80" y="455" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="26" fill="#94a3b8" letter-spacing="0">35+ AI-powered tools · Marketing · Strategy · Content · Growth</text>
+
+  <!-- Pills -->
+  <rect x="80" y="510" width="180" height="44" rx="22" fill="rgba(99,102,241,0.2)" stroke="rgba(99,102,241,0.4)" stroke-width="1"/>
+  <text x="170" y="538" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" fill="#a5b4fc" text-anchor="middle" font-weight="600">Free Plan</text>
+
+  <rect x="276" y="510" width="220" height="44" rx="22" fill="rgba(99,102,241,0.2)" stroke="rgba(99,102,241,0.4)" stroke-width="1"/>
+  <text x="386" y="538" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" fill="#a5b4fc" text-anchor="middle" font-weight="600">No Credit Card</text>
+
+  <rect x="512" y="510" width="240" height="44" rx="22" fill="rgba(99,102,241,0.2)" stroke="rgba(99,102,241,0.4)" stroke-width="1"/>
+  <text x="632" y="538" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" fill="#a5b4fc" text-anchor="middle" font-weight="600">10 Categories</text>
+
+  <!-- Domain -->
+  <text x="1120" y="595" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" fill="rgba(148,163,184,0.5)" text-anchor="end">gormaran.io</text>
+</svg>
