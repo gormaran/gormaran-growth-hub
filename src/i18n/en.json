@@ -44,6 +44,10 @@
   "ui.used": "used",
   "ui.requestsRemaining": "requests remaining today",
   "ui.upgradeForUnlimited": "Upgrade for unlimited access",
+  "footer.brand.desc": "The AI-powered growth hub for freelances, marketers, agencies and founders. Built to help you move faster and grow smarter.",
+  "footer.product.title": "Product", "footer.product.pricing": "Pricing", "footer.product.dashboard": "Dashboard", "footer.product.getStarted": "Get Started",
+  "footer.tools.title": "Tools",
+  "footer.legal.privacy": "Privacy Policy", "footer.legal.terms": "Terms of Service", "footer.legal.cookies": "Cookie Policy",
 
   "cat.marketing.name": "Marketing & Growth",
   "cat.marketing.desc": "SEO, copywriting, social media, ads, and email campaigns",

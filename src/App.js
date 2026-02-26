@@ -14,6 +14,9 @@ import Dashboard from './pages/Dashboard';
 import CategoryPage from './pages/CategoryPage';
 import PricingPage from './pages/PricingPage';
 import SettingsPage from './pages/SettingsPage';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CookiePolicy from './pages/CookiePolicy';
 
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -104,6 +107,11 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Legal pages */}
+            <Route path="/privacy-policy" element={<AppLayout><PrivacyPolicy /></AppLayout>} />
+            <Route path="/terms-of-service" element={<AppLayout><TermsOfService /></AppLayout>} />
+            <Route path="/cookie-policy" element={<AppLayout><CookiePolicy /></AppLayout>} />
 
             {/* Catch all */}
             <Route path="*" element={<Navigate to="/" replace />} />
