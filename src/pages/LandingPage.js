@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { CATEGORIES } from '../data/categories';
@@ -8,7 +8,7 @@ import './FlipCard.css';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import WhatsAppPopup from '../components/WhatsAppPopup';
-import InstagramAuditSection from '../components/InstagramAuditSection';
+const InstagramAuditSection = lazy(() => import('../components/InstagramAuditSection'));
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -17,12 +17,12 @@ const fadeUp = {
 
 const stagger = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.06 } },
 };
 
 function AnimatedSection({ children, className, delay = 0 }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const inView = useInView(ref, { once: true, margin: '-20px' });
   return (
     <motion.div
       ref={ref}
@@ -30,7 +30,7 @@ function AnimatedSection({ children, className, delay = 0 }) {
       initial="hidden"
       animate={inView ? 'visible' : 'hidden'}
       variants={fadeUp}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay }}
     >
       {children}
     </motion.div>
@@ -225,7 +225,7 @@ function FlipCard({ cat, i }) {
     <motion.div
       className="flip-card-wrapper"
       variants={fadeUp}
-      transition={{ duration: 0.5, delay: i * 0.05 }}
+      transition={{ duration: 0.35, delay: i * 0.04 }}
     >
       <div className="flip-card" style={{ '--cat-color': cat.color }}>
         <div className="flip-card__inner">
@@ -469,7 +469,7 @@ export default function LandingPage() {
             className="landing__stats-grid"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
+            viewport={{ once: true, margin: '-20px' }}
             variants={stagger}
           >
             {STATS.map((stat) => (
@@ -504,7 +504,7 @@ export default function LandingPage() {
             className="landing__categories-grid"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-60px' }}
+            viewport={{ once: true, margin: '-20px' }}
             variants={stagger}
           >
             {CATEGORIES.filter((cat) => !cat.isAddon).map((cat, i) => (
@@ -518,7 +518,7 @@ export default function LandingPage() {
               className="landing__addon-block"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
+              viewport={{ once: true, margin: '-20px' }}
               transition={{ duration: 0.5 }}
             >
               <div className="landing__addon-left">
@@ -559,7 +559,9 @@ export default function LandingPage() {
       </section>
 
       {/* Instagram Audit */}
-      <InstagramAuditSection />
+      <Suspense fallback={null}>
+        <InstagramAuditSection />
+      </Suspense>
 
       {/* Features */}
       <section className="landing__features section">
@@ -579,7 +581,7 @@ export default function LandingPage() {
             className="grid-3"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-60px' }}
+            viewport={{ once: true, margin: '-20px' }}
             variants={stagger}
           >
             {FEATURES.map((feature) => (
@@ -606,7 +608,7 @@ export default function LandingPage() {
             className="grid-3"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-60px' }}
+            viewport={{ once: true, margin: '-20px' }}
             variants={stagger}
           >
             {TESTIMONIALS.map((t2) => (

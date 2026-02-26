@@ -542,8 +542,31 @@
 
 @media (max-width: 640px) {
   .flip-card-wrapper { height: auto; min-height: 300px; }
-
-  /* On mobile: tap to flip using a checkbox hack or just show both */
-  /* Simple approach: always show front, make cards taller with tap support */
   .flip-card { height: 300px; }
+
+  /* ── Mobile performance: kill all continuous CSS animations ── */
+  /* These run on every visible card simultaneously — huge GPU cost */
+  .fvc-bar,
+  .fvc-typing-line,
+  .fvc-swot-cell,
+  .fvc-metric-card,
+  .fvc-product-card,
+  .fvc-stage,
+  .fvc-kpi-row,
+  .fvc-node,
+  .fvc-connector,
+  .flip-card__vline,
+  .flip-card__vtable > div {
+    animation: none;
+    opacity: 0.65;
+  }
+  /* Back face decorative animations */
+  .flip-card__video-bg-icon { animation: none; opacity: 0.06; }
+  .flip-card__play { animation: none; }
+  /* Front face hint rotation */
+  .flip-card__hint-icon { animation: none; }
+
+  /* Remove 3D perspective overhead — no hover-flip on touch anyway */
+  .flip-card { perspective: none; }
+  .flip-card__inner { transition: none; }
 }

@@ -654,4 +654,18 @@
     text-align: left;
     width: 100%;
   }
+
+  /* ── Mobile GPU performance ── */
+  /* Reduce orb blur drastically — blur(80px) is very expensive on mobile GPUs */
+  .landing__orb {
+    filter: blur(20px) !important;
+    animation: none !important;
+    opacity: 0.08;
+  }
+  /* Grid pattern mask-image is GPU-heavy — hide on mobile */
+  .landing__grid-pattern { display: none; }
+  /* Hero preview shimmer lines — minimal animation */
+  .landing__preview-line { animation: none; opacity: 0.6; }
+  .preview-dot { animation: none; opacity: 0.5; }
+  .preview-generating-text { animation: none; opacity: 0.5; }
 }
