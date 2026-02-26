@@ -35,9 +35,11 @@
   flex-shrink: 0;
 }
 
-.navbar__logo-icon {
-  font-size: 1.5rem;
-  filter: drop-shadow(0 0 8px rgba(99,102,241,0.6));
+.navbar__logo-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(99,102,241,0.5));
 }
 
 .navbar__logo-text {
