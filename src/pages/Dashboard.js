@@ -73,7 +73,7 @@ export default function Dashboard() {
               <div className="dashboard__plan-badge">
                 <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
                   {subscription === 'free' && inTrial
-                    ? `🎁 ${t('ui.freeTrialBadge', { defaultValue: 'Free Trial' })} · ${t('ui.trialDaysLeft', { count: daysLeft, defaultValue: `${daysLeft} days left` })}`
+                    ? `🎁 ${t('ui.freeTrialBadge', { defaultValue: 'Free Trial' })} · ${daysLeft} / 14 ${t('ui.trialDaysLeft', { defaultValue: 'days left' })}`
                     : subscription === 'free'
                     ? t('ui.freePlan', { defaultValue: 'Free Plan' })
                     : subscription === 'grow'
@@ -104,7 +104,7 @@ export default function Dashboard() {
               <div className="dashboard__usage-info">
                 <span>🎁 {t('dashboard.trialActive', { defaultValue: 'Free trial — full access active' })}</span>
                 <span className="dashboard__usage-count">
-                  <strong>{daysLeft}</strong> {t('ui.trialDaysLeft', { count: daysLeft, defaultValue: `${daysLeft} days left` })}
+                  <strong>{daysLeft} / 14</strong> {t('ui.trialDaysLeft', { defaultValue: 'days left' })}
                 </span>
               </div>
               <div className="dashboard__usage-bar">
