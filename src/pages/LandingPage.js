@@ -729,6 +729,8 @@ export default function LandingPage() {
               </h2>
               <p className="landing__cta-full-subtitle">
                 {t('landing.cta.subtitle')}
+                <br />
+                {t('landing.cta.subtitleNote')}
               </p>
               <div className="landing__cta-actions">
                 <Link to="/auth?mode=register" className="btn btn-primary btn-lg landing__cta-btn">
