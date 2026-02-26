@@ -721,10 +721,10 @@ export default function LandingPage() {
                 {t('landing.cta.badge', { defaultValue: 'Get Started Today' })}
               </span>
               <h2 className="landing__cta-full-title">
-                {t('landing.cta.title', { defaultValue: 'Stop Wasting Time on Manual Work.' })}
+                {t('landing.cta.title', { defaultValue: 'Stop wasting time on manual work.' })}
                 <br />
                 <span className="gradient-text">
-                  {t('landing.cta.titleHighlight', { defaultValue: 'Let AI Handle It.' })}
+                  {t('landing.cta.titleHighlight', { defaultValue: 'Let AI handle it.' })}
                 </span>
               </h2>
               <p className="landing__cta-full-subtitle">
