@@ -284,28 +284,132 @@ function HowItWorks() {
   );
 }
 
-// ── Plans ─────────────────────────────────────────────────────────
-const PLANS = [
+// ── Plan category / tool data ─────────────────────────────────────
+const GROW_CATS = [
   {
-    name: 'Grow',
-    price: '€19',
-    toolKeys:    ['landing.plans.grow.tool1',  'landing.plans.grow.tool2',  'landing.plans.grow.tool3'],
-    benefitKeys: ['landing.plans.grow.benefit1','landing.plans.grow.benefit2','landing.plans.grow.benefit3'],
+    nameKey: 'cat.marketing.name', emoji: '📈',
+    tools: ['tool.seo-keyword-research.name','tool.seo-meta-tags.name','tool.copywriting-headlines.name','tool.social-media-captions.name','tool.email-campaign.name','tool.press-release.name'],
   },
   {
-    name: 'Scale',
-    price: '€49',
-    toolKeys:    ['landing.plans.scale.tool1',  'landing.plans.scale.tool2',  'landing.plans.scale.tool3'],
-    benefitKeys: ['landing.plans.scale.benefit1','landing.plans.scale.benefit2','landing.plans.scale.benefit3'],
-    featured: true,
+    nameKey: 'cat.content.name', emoji: '✍️',
+    tools: ['tool.blog-post.name','tool.newsletter.name','tool.video-script.name'],
   },
   {
-    name: 'Evolution',
-    price: '€99',
-    toolKeys:    ['landing.plans.evo.tool1',  'landing.plans.evo.tool2',  'landing.plans.evo.tool3'],
-    benefitKeys: ['landing.plans.evo.benefit1','landing.plans.evo.benefit2','landing.plans.evo.benefit3'],
+    nameKey: 'cat.digital.name', emoji: '🛠️',
+    tools: ['tool.google-ads.name','tool.meta-ads.name','tool.landing-page.name'],
+  },
+  {
+    nameKey: 'cat.strategy.name', emoji: '🎯',
+    tools: ['tool.business-plan.name'],
   },
 ];
+
+const SCALE_EXTRA_CATS = [
+  {
+    nameKey: 'cat.ecommerce.name', emoji: '🛒',
+    tools: ['tool.amazon-listing.name','tool.product-description.name','tool.cro-audit.name'],
+  },
+  {
+    nameKey: 'cat.agency.name', emoji: '🏢',
+    tools: ['tool.client-proposal.name','tool.client-report.name','tool.case-study.name'],
+  },
+  {
+    nameKey: 'cat.creative.name', emoji: '🎨',
+    tools: ['tool.brand-identity.name','tool.photo-direction.name','tool.video-production.name'],
+  },
+];
+
+const EVO_EXTRA_CATS = [
+  {
+    nameKey: 'cat.strategy.name', emoji: '🎯',
+    tools: ['tool.market-analysis.name','tool.competitor-research.name','tool.swot-analysis.name'],
+  },
+  {
+    nameKey: 'cat.finance.name', emoji: '💰',
+    tools: ['tool.financial-forecast.name','tool.investment-analysis.name','tool.cash-flow-optimizer.name'],
+  },
+  {
+    nameKey: 'cat.startup.name', emoji: '🚀',
+    tools: ['tool.investor-pitch.name','tool.gtm-strategy.name','tool.user-stories.name'],
+  },
+];
+
+// ── Plans ─────────────────────────────────────────────────────────
+const PLANS = [
+  { name: 'Grow',      price: '€19', descKey: 'landing.plans.grow.desc',  featured: false, categories: GROW_CATS,        includesKey: null },
+  { name: 'Scale',     price: '€49', descKey: 'landing.plans.scale.desc', featured: true,  categories: SCALE_EXTRA_CATS, includesKey: 'landing.plans.scale.includes' },
+  { name: 'Evolution', price: '€99', descKey: 'landing.plans.evo.desc',   featured: false, categories: EVO_EXTRA_CATS,   includesKey: 'landing.plans.evo.includes' },
+];
+
+// ── Plan Flip Card ────────────────────────────────────────────────
+function PlanFlipCard({ plan }) {
+  const { t } = useTranslation();
+  const [flipped, setFlipped] = useState(false);
+  return (
+    <div
+      className={`landing__plan-flip${plan.featured ? ' landing__plan-flip--featured' : ''}${flipped ? ' is-flipped' : ''}`}
+      onClick={() => setFlipped((f) => !f)}
+    >
+      <div className="landing__plan-flip__inner">
+        {/* ── Front ── */}
+        <div className="landing__plan-flip__front">
+          <div className="landing__plan-name">{plan.name}</div>
+          <div className="landing__plan-price">
+            {plan.price}
+            <span className="landing__plan-period">{t('landing.plans.perMonth')}</span>
+          </div>
+          <p className="landing__plan-flip__desc">{t(plan.descKey)}</p>
+          <span className="landing__plan-flip__hint">
+            <span className="landing__plan-flip__hint-icon">↻</span>
+            {t('landing.plans.flip.hint', { defaultValue: 'Hover to see all tools' })}
+          </span>
+          <Link
+            to="/pricing"
+            className="btn btn-secondary landing__plan-cta"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {t('landing.plans.cta')}
+          </Link>
+        </div>
+
+        {/* ── Back ── */}
+        <div className="landing__plan-flip__back">
+          <div className="landing__plan-flip__back-title">
+            {t('landing.plans.backTitle', { defaultValue: 'Included Tools' })}
+          </div>
+          {plan.includesKey && (
+            <div className="landing__plan-flip__includes">
+              {t(plan.includesKey)}
+            </div>
+          )}
+          <div className="landing__plan-flip__categories">
+            {plan.categories.map((cat) => (
+              <div key={cat.nameKey} className="landing__plan-flip__cat">
+                <div className="landing__plan-flip__cat-name">
+                  {cat.emoji} {t(cat.nameKey)}
+                </div>
+                <div className="landing__plan-flip__tools">
+                  {cat.tools.map((toolKey) => (
+                    <span key={toolKey} className="landing__plan-flip__tool">
+                      {t(toolKey)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <Link
+            to="/pricing"
+            className="btn btn-primary landing__plan-flip__back-cta"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {t('landing.plans.cta')}
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── Instagram Compact ─────────────────────────────────────────────
 const IG_ACTIONS = [
@@ -560,27 +664,8 @@ export default function LandingPage() {
             variants={stagger}
           >
             {PLANS.map((plan) => (
-              <motion.div
-                key={plan.name}
-                className={`landing__plan-card${plan.featured ? ' landing__plan-card--featured' : ''}`}
-                variants={fadeUp}
-              >
-                <div className="landing__plan-name">{plan.name}</div>
-                <div className="landing__plan-price">
-                  {plan.price}
-                  <span className="landing__plan-period">{t('landing.plans.perMonth')}</span>
-                </div>
-                <ul className="landing__plan-tools">
-                  {plan.toolKeys.map((key, i) => (
-                    <li key={key}>
-                      <div className="landing__plan-tool-name">{t(key)}</div>
-                      <div className="landing__plan-tool-benefit">{t(plan.benefitKeys[i])}</div>
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/pricing" className="btn btn-secondary landing__plan-cta">
-                  {t('landing.plans.cta')}
-                </Link>
+              <motion.div key={plan.name} variants={fadeUp}>
+                <PlanFlipCard plan={plan} />
               </motion.div>
             ))}
           </motion.div>
@@ -655,21 +740,6 @@ export default function LandingPage() {
               <p className="landing__cta-note">
                 {t('landing.cta.note', { defaultValue: '14-day free trial · No credit card required' })}
               </p>
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
-
-      {/* ── SECTION 9: CTA Final ── */}
-      <section className="landing__cta section">
-        <div className="container">
-          <AnimatedSection>
-            <div className="landing__cta-card">
-              <div className="landing__cta-orb" />
-              <Link to="/auth?mode=register" className="btn btn-primary btn-lg landing__cta-main-btn">
-                {t('landing.cta.main')}
-                <span className="landing__cta-arrow">→</span>
-              </Link>
             </div>
           </AnimatedSection>
         </div>
