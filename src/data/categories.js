@@ -175,6 +175,60 @@ Use proven copywriting frameworks: AIDA, PAS (Problem-Agitate-Solution), and sto
           `Create a complete email campaign:\n\n**Campaign Type:** ${inputs.campaign_type}\n**Product/Service:** ${inputs.product}\n**Audience:** ${inputs.audience || 'General subscribers'}\n**Goal:** ${inputs.goal || 'Increase engagement'}\n**Brand Tone:** ${inputs.tone || 'Professional'}\n\nCreate the full campaign with all emails and supporting materials.`,
       },
       {
+        id: 'press-release',
+        name: 'Press Release Generator',
+        description: 'Create professional, journalist-ready press releases for product launches, milestones, partnerships and company news',
+        icon: '📰',
+        inputs: [
+          { id: 'company', label: 'Company / Brand Name', type: 'text', placeholder: 'e.g., Acme Corp', required: true },
+          { id: 'news_type', label: 'Type of News', type: 'select', options: ['Product Launch', 'Partnership / Collaboration', 'Funding Round', 'Company Milestone', 'Event / Award', 'New Hire / Executive Appointment', 'Company Rebrand', 'Other Announcement'], required: true },
+          { id: 'headline', label: 'Main Announcement (one sentence)', type: 'text', placeholder: 'e.g., Acme Corp launches AI-powered project management tool', required: true },
+          { id: 'details', label: 'Key Details & Facts', type: 'textarea', placeholder: 'Include dates, numbers, quotes from key people, relevant context...', required: true },
+          { id: 'spokesperson', label: 'Spokesperson Name & Title', type: 'text', placeholder: 'e.g., Jane Smith, CEO of Acme Corp' },
+          { id: 'language', label: 'Output Language', type: 'select', options: ['English', 'Español', 'Français', 'Deutsch', 'Italiano'] },
+        ],
+        systemPrompt: `You are a seasoned PR professional and journalist with 20+ years of experience writing press releases for Fortune 500 companies, startups, and agencies. You understand exactly what journalists look for and how to structure news that gets picked up by media outlets.
+
+Write a complete, professional press release following standard AP style and industry best practices. Structure it as follows:
+
+**FOR IMMEDIATE RELEASE**
+
+**[COMPELLING HEADLINE — Active voice, newsworthy, under 15 words]**
+**[Subheadline — Adds detail or quantifies the impact]**
+
+**[City, Date]** — [Lead paragraph: Who, What, When, Where, Why — the most newsworthy angle in 40-60 words]
+
+[Body paragraph 1: Expand on the announcement with context and significance]
+
+[Quote from spokesperson: Make it meaningful and specific, not generic. Should add perspective or emotion.]
+
+[Body paragraph 2: Supporting details, data points, or background information]
+
+[Optional second quote or industry validation]
+
+[Boilerplate: Standard "About [Company]" paragraph — 3-4 sentences on what the company does, when it was founded, its mission, and website URL]
+
+**###** (signals end of release)
+
+**Media Contact:**
+[Name]
+[Title]
+[Email]
+[Phone]
+
+---
+
+After the press release, provide:
+
+**📋 Distribution Checklist** — 5 recommended wire services or media outlets to target based on the type of news
+**📧 Pitch Email** — A 150-word personalized pitch email to send alongside the press release to journalists
+**🔍 SEO Version** — An adapted headline and opening paragraph optimized for web search and online distribution
+
+Always respond in the language specified by the user. If no language is specified, respond in English.`,
+        buildUserMessage: (inputs) =>
+          `Write a professional press release in ${inputs.language || 'English'}:\n\n**Company:** ${inputs.company}\n**Type of News:** ${inputs.news_type}\n**Main Announcement:** ${inputs.headline}\n**Key Details & Facts:** ${inputs.details}\n**Spokesperson:** ${inputs.spokesperson || 'Not specified'}\n\nProvide the complete press release, distribution checklist, pitch email, and SEO version. Respond entirely in ${inputs.language || 'English'}.`,
+      },
+      {
         id: 'instagram-audit',
         name: 'Instagram Express Audit',
         description: 'Analyze your Instagram profile in 5 minutes and get the 3 priority actions to optimize your bio, content strategy, and CTA for faster growth',
