@@ -102,18 +102,25 @@ function HeroPreview() {
   );
 }
 
-// ── Problem Section ──────────────────────────────────────────────
-const PROBLEM_CARDS = [
-  { icon: '⏳', key: 'landing.problem.card1' },
-  { icon: '📉', key: 'landing.problem.card2' },
-  { icon: '📄', key: 'landing.problem.card3' },
+// ── Stats ─────────────────────────────────────────────────────────
+const STATS = [
+  { value: '10', unit: '',  labelKey: 'landing.stats.categories' },
+  { value: '32', unit: '+', labelKey: 'landing.stats.tools' },
+  { value: '99', unit: '%', labelKey: 'landing.stats.precision' },
+  { value: '10', unit: 'x', labelKey: 'landing.stats.faster' },
 ];
 
-// ── How It Works ─────────────────────────────────────────────────
+// ── How It Works (3-panel dashboard mockup) ───────────────────────
 const HOW_TABS = [
   {
-    tabKey: 'landing.how.tab1.label',
-    toolKey: 'landing.how.tab1.tool',
+    tabKey:      'landing.how.tab1.label',
+    category:    '✍️ Content Creation',
+    sidebarTools: ['📧 Newsletter Writer', '📝 Blog Post Writer', '🎥 Video Script'],
+    tool:        '📧 Newsletter Writer',
+    inputs: [
+      { label: 'Topic',    value: 'AI tools for small businesses' },
+      { label: 'Audience', value: 'Marketers & Founders' },
+    ],
     benefitKey: 'landing.how.tab1.benefit',
     output: `Subject: The tool saving marketers 2h/week
 
@@ -132,8 +139,14 @@ Full breakdown inside.
 Ready-to-use templates included.`,
   },
   {
-    tabKey: 'landing.how.tab2.label',
-    toolKey: 'landing.how.tab2.tool',
+    tabKey:      'landing.how.tab2.label',
+    category:    '🛠️ Digital Tools',
+    sidebarTools: ['🔍 Google Ads', '📱 Meta Ads', '🎯 Landing Page'],
+    tool:        '🔍 Google Ads Creator',
+    inputs: [
+      { label: 'Product', value: 'AI Marketing Platform' },
+      { label: 'Goal',    value: 'Lead Generation' },
+    ],
     benefitKey: 'landing.how.tab2.benefit',
     output: `CAMPAIGN: AI Marketing Platform
 GOAL: Lead Generation
@@ -153,8 +166,14 @@ Description 2:
 Results in minutes, not hours.`,
   },
   {
-    tabKey: 'landing.how.tab3.label',
-    toolKey: 'landing.how.tab3.tool',
+    tabKey:      'landing.how.tab3.label',
+    category:    '🏢 Agency Tools',
+    sidebarTools: ['📋 Client Proposal', '📊 Client Report', '📌 Case Study'],
+    tool:        '📋 Client Proposal',
+    inputs: [
+      { label: 'Client',  value: 'Pixel Growth Agency' },
+      { label: 'Service', value: 'Social Media Management' },
+    ],
     benefitKey: 'landing.how.tab3.benefit',
     output: `CLIENT PROPOSAL
 ━━━━━━━━━━━━━━━━━━━━━━━━
@@ -219,13 +238,43 @@ function HowItWorks() {
         >
           <div className="landing__how-mockup-header">
             <div className="landing__how-mockup-dots"><span /><span /><span /></div>
-            <span className="landing__how-mockup-toolname">✨ {t(current.toolKey)}</span>
+            <span className="landing__how-mockup-title">Gormaran AI Growth Hub</span>
           </div>
-          <div className="landing__how-mockup-body">
-            <div className="landing__how-mockup-label">AI Output</div>
-            <pre className="landing__how-mockup-output">
-              {typed}<span className="landing__cursor" />
-            </pre>
+          <div className="landing__how-mockup-panels">
+            {/* Left: tool sidebar */}
+            <div className="landing__how-panel-sidebar">
+              <div className="landing__how-sidebar-category">{current.category}</div>
+              {current.sidebarTools.map((tool, i) => (
+                <div key={i} className={`landing__how-sidebar-tool${i === 0 ? ' active' : ''}`}>
+                  {tool}
+                </div>
+              ))}
+            </div>
+
+            {/* Center: input form */}
+            <div className="landing__how-panel-form">
+              <div className="landing__how-form-toolname">{current.tool}</div>
+              {current.inputs.map((inp, i) => (
+                <div key={i} className="landing__how-form-field">
+                  <div className="landing__how-form-label">{inp.label}</div>
+                  <div className="landing__how-form-value">{inp.value}</div>
+                </div>
+              ))}
+              <div className="landing__how-form-generate">
+                <span className="preview-dot" />
+                <span className="preview-dot" style={{ animationDelay: '0.18s' }} />
+                <span className="preview-dot" style={{ animationDelay: '0.36s' }} />
+                <span>Generating…</span>
+              </div>
+            </div>
+
+            {/* Right: AI output */}
+            <div className="landing__how-panel-output">
+              <div className="landing__how-output-label">AI Output</div>
+              <pre className="landing__how-mockup-output">
+                {typed}<span className="landing__cursor" />
+              </pre>
+            </div>
           </div>
         </motion.div>
       </AnimatePresence>
@@ -240,20 +289,85 @@ const PLANS = [
   {
     name: 'Grow',
     price: '€19',
-    toolKeys: ['landing.plans.grow.tool1', 'landing.plans.grow.tool2', 'landing.plans.grow.tool3'],
+    toolKeys:    ['landing.plans.grow.tool1',  'landing.plans.grow.tool2',  'landing.plans.grow.tool3'],
+    benefitKeys: ['landing.plans.grow.benefit1','landing.plans.grow.benefit2','landing.plans.grow.benefit3'],
   },
   {
     name: 'Scale',
     price: '€49',
-    toolKeys: ['landing.plans.scale.tool1', 'landing.plans.scale.tool2', 'landing.plans.scale.tool3'],
+    toolKeys:    ['landing.plans.scale.tool1',  'landing.plans.scale.tool2',  'landing.plans.scale.tool3'],
+    benefitKeys: ['landing.plans.scale.benefit1','landing.plans.scale.benefit2','landing.plans.scale.benefit3'],
     featured: true,
   },
   {
     name: 'Evolution',
     price: '€99',
-    toolKeys: ['landing.plans.evo.tool1', 'landing.plans.evo.tool2', 'landing.plans.evo.tool3'],
+    toolKeys:    ['landing.plans.evo.tool1',  'landing.plans.evo.tool2',  'landing.plans.evo.tool3'],
+    benefitKeys: ['landing.plans.evo.benefit1','landing.plans.evo.benefit2','landing.plans.evo.benefit3'],
   },
 ];
+
+// ── Instagram Compact ─────────────────────────────────────────────
+const IG_ACTIONS = [
+  'landing.ig.action.0',
+  'landing.ig.action.1',
+  'landing.ig.action.2',
+];
+
+function InstagramCompact() {
+  const { t } = useTranslation();
+  return (
+    <section className="landing__ig-compact section">
+      <div className="container">
+        <div className="landing__ig-compact-inner">
+          <motion.div
+            className="landing__ig-compact-text"
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <span className="landing__ig-compact-badge">
+              {t('landing.ig.badge', { defaultValue: '📸 Free Tool' })}
+            </span>
+            <h2 className="landing__ig-compact-title">
+              {t('landing.ig.title', { defaultValue: 'Instagram Express Audit' })}
+            </h2>
+            <p className="landing__ig-compact-subtitle">
+              {t('landing.ig.subtitle', { defaultValue: 'Analyze your profile in 5 minutes and get 3 priority actions to grow faster.' })}
+            </p>
+            <Link to="/dashboard" className="btn btn-primary">
+              {t('landing.ig.cta', { defaultValue: 'Audit My Profile →' })}
+            </Link>
+          </motion.div>
+
+          <motion.div
+            className="landing__ig-compact-preview"
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <div className="landing__ig-score-ring">
+              <div className="landing__ig-score-inner">
+                <span className="landing__ig-score-num">72</span>
+                <span className="landing__ig-score-label">/100</span>
+              </div>
+            </div>
+            <div className="landing__ig-compact-actions">
+              {IG_ACTIONS.map((key, i) => (
+                <div key={i} className="landing__ig-action-item">
+                  <span className="landing__ig-action-num">{i + 1}</span>
+                  <span>{t(key, { defaultValue: ['Optimise bio with a keyword', 'Add a clear, strategic CTA link', 'Pin your best authority post'][i] })}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 // ── Testimonials ─────────────────────────────────────────────────
 const TESTIMONIALS = [
@@ -359,20 +473,22 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 2: Problem ── */}
-      <section className="landing__problem section">
+      {/* ── SECTION 2: Stats ── */}
+      <section className="landing__stats">
         <div className="container">
           <motion.div
-            className="landing__problem-grid"
+            className="landing__stats-grid"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-20px' }}
+            viewport={{ once: true }}
             variants={stagger}
           >
-            {PROBLEM_CARDS.map((card) => (
-              <motion.div key={card.key} className="landing__problem-card" variants={fadeUp}>
-                <div className="landing__problem-icon">{card.icon}</div>
-                <p className="landing__problem-text">{t(card.key)}</p>
+            {STATS.map((stat) => (
+              <motion.div key={stat.labelKey} className="landing__stat-item" variants={fadeUp}>
+                <div className="landing__stat-value">
+                  <span className="gradient-text">{stat.value}{stat.unit}</span>
+                </div>
+                <div className="landing__stat-label">{t(stat.labelKey)}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -391,7 +507,44 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 4: Plans ── */}
+      {/* ── SECTION 4: Why Different ── */}
+      <section className="landing__features section">
+        <div className="container">
+          <AnimatedSection>
+            <h2 className="section-title">
+              {t('landing.features.titlePre', { defaultValue: 'Why' })}{' '}
+              <span className="gradient-text">Gormaran</span>{' '}
+              {t('landing.features.titlePost', { defaultValue: 'is Different' })}
+            </h2>
+            <p className="section-subtitle">
+              {t('landing.features.subtitle')}
+            </p>
+          </AnimatedSection>
+          <motion.div
+            className="grid-3"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-20px' }}
+            variants={stagger}
+          >
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <motion.div key={i} className="landing__feature-card" variants={fadeUp}>
+                <div className="landing__feature-icon">
+                  {['🎯', '⚡', '🛠️', '🔒', '📊', '🚀'][i]}
+                </div>
+                <h3 className="landing__feature-title">
+                  {t(`landing.feature.${i}.title`)}
+                </h3>
+                <p className="text-muted" style={{ fontSize: '0.875rem', lineHeight: 1.6 }}>
+                  {t(`landing.feature.${i}.desc`)}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── SECTION 5: Plans ── */}
       <section className="landing__plans section">
         <div className="container">
           <AnimatedSection>
@@ -418,8 +571,11 @@ export default function LandingPage() {
                   <span className="landing__plan-period">{t('landing.plans.perMonth')}</span>
                 </div>
                 <ul className="landing__plan-tools">
-                  {plan.toolKeys.map((key) => (
-                    <li key={key}>{t(key)}</li>
+                  {plan.toolKeys.map((key, i) => (
+                    <li key={key}>
+                      <div className="landing__plan-tool-name">{t(key)}</div>
+                      <div className="landing__plan-tool-benefit">{t(plan.benefitKeys[i])}</div>
+                    </li>
                   ))}
                 </ul>
                 <Link to="/pricing" className="btn btn-secondary landing__plan-cta">
@@ -431,7 +587,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 5: Social Proof ── */}
+      {/* ── SECTION 6: Instagram Compact ── */}
+      <InstagramCompact />
+
+      {/* ── SECTION 7: Social Proof ── */}
       <section className="landing__testimonials section">
         <div className="container">
           <AnimatedSection>
@@ -466,7 +625,42 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 6: CTA Final ── */}
+      {/* ── SECTION 8: Stop Wasting Time ── */}
+      <section className="landing__cta-full section">
+        <div className="container">
+          <AnimatedSection>
+            <div className="landing__cta-full-card">
+              <div className="landing__cta-orb" />
+              <span className="landing__cta-full-badge">
+                {t('landing.cta.badge', { defaultValue: 'Get Started Today' })}
+              </span>
+              <h2 className="landing__cta-full-title">
+                {t('landing.cta.title', { defaultValue: 'Stop Wasting Time on Manual Work.' })}{' '}
+                <span className="gradient-text">
+                  {t('landing.cta.titleHighlight', { defaultValue: 'Let AI Handle It.' })}
+                </span>
+              </h2>
+              <p className="landing__cta-full-subtitle">
+                {t('landing.cta.subtitle')}
+              </p>
+              <div className="landing__cta-actions">
+                <Link to="/auth?mode=register" className="btn btn-primary btn-lg landing__cta-btn">
+                  {t('landing.cta.startFree', { defaultValue: 'Start Free Now →' })}
+                  <span className="landing__cta-arrow">→</span>
+                </Link>
+                <Link to="/pricing" className="btn btn-secondary btn-lg">
+                  {t('landing.cta.seePricing', { defaultValue: 'See Pricing' })}
+                </Link>
+              </div>
+              <p className="landing__cta-note">
+                {t('landing.cta.note', { defaultValue: '14-day free trial · No credit card required' })}
+              </p>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* ── SECTION 9: CTA Final ── */}
       <section className="landing__cta section">
         <div className="container">
           <AnimatedSection>
