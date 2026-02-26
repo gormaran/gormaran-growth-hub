@@ -1223,7 +1223,7 @@
   background: linear-gradient(160deg, rgba(99,102,241,0.08), var(--bg-surface));
   border: 1px solid rgba(99,102,241,0.25);
   border-radius: var(--border-radius-xl);
-  padding: 5rem 3rem;
+  padding: 4rem 3rem;
   overflow: hidden;
 }
 
