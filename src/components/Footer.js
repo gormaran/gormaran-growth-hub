@@ -17,7 +17,6 @@ export default function Footer() {
             </Link>
             <p>{t('footer.brand.desc', { defaultValue: 'The AI-powered growth hub for freelances, marketers, agencies and founders. Built to help you move faster and grow smarter.' })}</p>
             <div className="footer__social">
-              <a href="https://x.com/gormaran_io" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="footer__social-link">𝕏</a>
               <a href="https://www.linkedin.com/in/gabrielaormazabal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="footer__social-link">in</a>
               <a href="https://www.instagram.com/gormaran_marketing/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="footer__social-link">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
