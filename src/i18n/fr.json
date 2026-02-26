@@ -176,7 +176,7 @@
   "landing.cta.seePricing": "Voir les Tarifs",
   "landing.cta.note": "Essai gratuit de 14 jours · Sans carte de crédit",
   "ui.freeTrialBadge": "Essai Gratuit",
-  "ui.trialDaysLeft": "{{count}} jours restants",
+  "ui.trialDaysLeft": "jours restants",
   "ui.trialExpired": "Essai terminé",
   "ui.growPlan": "Plan Grow",
   "ui.scalePlan": "Plan Scale",

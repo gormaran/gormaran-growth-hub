@@ -176,7 +176,7 @@
   "landing.cta.seePricing": "Preise ansehen",
   "landing.cta.note": "14-tägige kostenlose Testphase · Keine Kreditkarte erforderlich",
   "ui.freeTrialBadge": "Kostenlose Testphase",
-  "ui.trialDaysLeft": "{{count}} Tage verbleibend",
+  "ui.trialDaysLeft": "Tage verbleibend",
   "ui.trialExpired": "Testphase beendet",
   "ui.growPlan": "Grow-Plan",
   "ui.scalePlan": "Scale-Plan",

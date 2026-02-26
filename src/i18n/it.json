@@ -176,7 +176,7 @@
   "landing.cta.seePricing": "Vedi i Prezzi",
   "landing.cta.note": "Prova gratuita di 14 giorni · Nessuna carta di credito richiesta",
   "ui.freeTrialBadge": "Prova Gratuita",
-  "ui.trialDaysLeft": "{{count}} giorni rimanenti",
+  "ui.trialDaysLeft": "giorni rimanenti",
   "ui.trialExpired": "Prova terminata",
   "ui.growPlan": "Piano Grow",
   "ui.scalePlan": "Piano Scale",

@@ -192,7 +192,7 @@
   "landing.cta.note": "14-day free trial · No credit card required",
 
   "ui.freeTrialBadge": "Free Trial",
-  "ui.trialDaysLeft": "{{count}} days left",
+  "ui.trialDaysLeft": "days left",
   "ui.trialExpired": "Trial ended",
   "ui.growPlan": "Grow Plan",
   "ui.scalePlan": "Scale Plan",
