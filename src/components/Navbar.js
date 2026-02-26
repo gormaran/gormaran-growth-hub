@@ -73,7 +73,7 @@ export default function Navbar() {
       <div className="navbar__inner">
         {/* Logo */}
         <Link to="/" className="navbar__logo">
-          <span className="navbar__logo-icon">⚡</span>
+          <img src="/TP-favicon-gormaran-SaaS.png" alt="Gormaran" className="navbar__logo-img" />
           <span className="navbar__logo-text">
             <span className="gradient-text">Gormaran</span>
             <span className="navbar__logo-sub">AI Growth Hub</span>

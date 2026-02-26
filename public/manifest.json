@@ -3,9 +3,9 @@
   "name": "Gormaran AI Growth Hub",
   "icons": [
     {
-      "src": "favicon-gormaran-SaaS.png",
+      "src": "TP-favicon-gormaran-SaaS.png",
       "type": "image/png",
-      "sizes": "1024x1024"
+      "sizes": "2000x2000"
     }
   ],
   "start_url": ".",
