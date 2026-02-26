@@ -473,27 +473,60 @@ function InstagramCompact() {
   );
 }
 
-// ── Testimonials ─────────────────────────────────────────────────
-const TESTIMONIALS = [
+// ── Client Logos ──────────────────────────────────────────────────
+const CLIENTS = [
   {
-    text: 'Gormaran cut our content production time by 70%. The category-specific prompts are unreal — it actually understands what we need.',
-    name: 'Sarah K.',
-    title: 'Head of Marketing, TechFlow',
-    avatar: 'S',
+    name: 'Ormaran Paisajismo',
+    url: 'https://www.ormaran-paisajismo.com',
+    logo: null,
   },
   {
-    text: 'As a startup founder, I used the Investor Pitch tool to refine my deck. The Q&A prep section alone was worth 10x the subscription.',
-    name: 'Marcus T.',
-    title: 'Founder, LaunchPad AI',
-    avatar: 'M',
+    name: 'La Rioja Alta',
+    url: 'https://www.riojalta.com',
+    logo: 'https://www.riojalta.com/static/images/__logos/grupo-RA-desk.svg',
   },
   {
-    text: 'My agency uses the Proposal Generator and Client Report tools every week. Our clients love the professionalism of the output.',
-    name: 'Olivia R.',
-    title: 'CEO, Pixel Growth Agency',
-    avatar: 'O',
+    name: 'Grupo Agromotor',
+    url: 'https://www.grupoagromotor.com',
+    logo: null,
+  },
+  {
+    name: 'Just Drive',
+    url: 'https://www.just-drive.es',
+    logo: 'https://www.just-drive.es/wp-content/themes/just-drive/assets/images/logo-dark-n.png',
   },
 ];
+
+function ClientLogos() {
+  const { t } = useTranslation();
+  return (
+    <section className="landing__clients section">
+      <div className="container">
+        <p className="landing__clients-label">
+          {t('landing.clients.title', { defaultValue: 'Trusted by real businesses' })}
+        </p>
+        <div className="landing__clients-strip">
+          {CLIENTS.map((c) => (
+            <a
+              key={c.name}
+              href={c.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="landing__client-logo"
+              aria-label={c.name}
+            >
+              {c.logo ? (
+                <img src={c.logo} alt={c.name} />
+              ) : (
+                <span className="landing__client-name">{c.name}</span>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 // ── Main Component ───────────────────────────────────────────────
 export default function LandingPage() {
@@ -611,7 +644,31 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 4: Why Different ── */}
+      {/* ── SECTION 4: Plans ── */}
+      <section className="landing__plans section">
+        <div className="container">
+          <AnimatedSection>
+            <h2 className="section-title">
+              {t('landing.plans.title')}
+            </h2>
+          </AnimatedSection>
+          <motion.div
+            className="landing__plans-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-20px' }}
+            variants={stagger}
+          >
+            {PLANS.map((plan) => (
+              <motion.div key={plan.name} variants={fadeUp}>
+                <PlanFlipCard plan={plan} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── SECTION 5: Why Different ── */}
       <section className="landing__features section">
         <div className="container">
           <AnimatedSection>
@@ -648,67 +705,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 5: Plans ── */}
-      <section className="landing__plans section">
-        <div className="container">
-          <AnimatedSection>
-            <h2 className="section-title">
-              {t('landing.plans.title')}
-            </h2>
-          </AnimatedSection>
-          <motion.div
-            className="landing__plans-grid"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-20px' }}
-            variants={stagger}
-          >
-            {PLANS.map((plan) => (
-              <motion.div key={plan.name} variants={fadeUp}>
-                <PlanFlipCard plan={plan} />
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* ── SECTION 6: Instagram Compact ── */}
       <InstagramCompact />
 
-      {/* ── SECTION 7: Social Proof ── */}
-      <section className="landing__testimonials section">
-        <div className="container">
-          <AnimatedSection>
-            <h2 className="section-title">
-              {t('landing.testimonials.titlePre', { defaultValue: 'Trusted by' })}{' '}
-              <span className="gradient-text">
-                {t('landing.testimonials.titleHighlight', { defaultValue: '70+ marketers & founders' })}
-              </span>
-            </h2>
-          </AnimatedSection>
-          <motion.div
-            className="grid-3"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-20px' }}
-            variants={stagger}
-          >
-            {TESTIMONIALS.map((t2) => (
-              <motion.div key={t2.name} className="landing__testimonial" variants={fadeUp}>
-                <div className="landing__testimonial-stars">★★★★★</div>
-                <p className="landing__testimonial-text">"{t2.text}"</p>
-                <div className="landing__testimonial-author">
-                  <div className="landing__testimonial-avatar">{t2.avatar}</div>
-                  <div>
-                    <strong>{t2.name}</strong>
-                    <small>{t2.title}</small>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      {/* ── SECTION 7: Client Logos ── */}
+      <ClientLogos />
 
       {/* ── SECTION 8: Stop Wasting Time ── */}
       <section className="landing__cta-full section">

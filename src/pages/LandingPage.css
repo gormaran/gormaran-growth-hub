@@ -443,6 +443,59 @@
   margin-bottom: 0.75rem;
 }
 
+/* ========== CLIENT LOGOS ========== */
+.landing__clients {
+  padding: 3rem 0;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.landing__clients-label {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.landing__clients-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3.5rem;
+  flex-wrap: wrap;
+}
+
+.landing__client-logo {
+  display: flex;
+  align-items: center;
+  opacity: 0.45;
+  transition: opacity 0.22s ease;
+  text-decoration: none;
+}
+
+.landing__client-logo:hover {
+  opacity: 0.85;
+}
+
+.landing__client-logo img {
+  height: 34px;
+  max-width: 130px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.landing__client-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
 /* ========== TESTIMONIALS ========== */
 .landing__testimonial {
   background: var(--bg-card);
@@ -1205,7 +1258,7 @@
 
 /* ========== PLAN FLIP CARDS ========== */
 .landing__plan-flip {
-  height: 400px;
+  height: 480px;
   perspective: 1200px;
   cursor: pointer;
   position: relative;
@@ -1417,7 +1470,7 @@
   .landing__how-panel-form { display: none; }
   .landing__how-mockup-output { font-size: 0.74rem; }
   .landing__ig-compact-preview { flex-direction: column; gap: 1.25rem; }
-  .landing__plan-flip { height: auto; min-height: 360px; perspective: none; }
+  .landing__plan-flip { height: auto; min-height: 420px; perspective: none; }
   .landing__plan-flip__inner { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
   .landing__plan-flip__hint-icon { animation: none; }
 
