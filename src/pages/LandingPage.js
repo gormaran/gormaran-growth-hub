@@ -470,17 +470,48 @@ function ClientLogos() {
 
 // ── What You Get ──────────────────────────────────────────────────
 const WHAT_CATS = [
-  { emoji: '📈', nameKey: 'cat.marketing.name', toolKeys: ['tool.seo-keyword-research.name', 'tool.social-media-captions.name', 'tool.email-campaign.name'] },
-  { emoji: '🎯', nameKey: 'cat.strategy.name',  toolKeys: ['tool.business-plan.name', 'tool.competitor-research.name', 'tool.swot-analysis.name'] },
-  { emoji: '✍️', nameKey: 'cat.content.name',   toolKeys: ['tool.blog-post.name', 'tool.newsletter.name', 'tool.video-script.name'] },
-  { emoji: '🛠️', nameKey: 'cat.digital.name',   toolKeys: ['tool.google-ads.name', 'tool.meta-ads.name', 'tool.landing-page.name'] },
-  { emoji: '🛒', nameKey: 'cat.ecommerce.name', toolKeys: ['tool.amazon-listing.name', 'tool.product-description.name', 'tool.cro-audit.name'] },
-  { emoji: '🏢', nameKey: 'cat.agency.name',    toolKeys: ['tool.client-proposal.name', 'tool.client-report.name', 'tool.case-study.name'] },
-  { emoji: '🚀', nameKey: 'cat.startup.name',   toolKeys: ['tool.investor-pitch.name', 'tool.gtm-strategy.name', 'tool.user-stories.name'] },
-  { emoji: '🎨', nameKey: 'cat.creative.name',  toolKeys: ['tool.brand-identity.name', 'tool.photo-direction.name', 'tool.video-production.name'] },
-  { emoji: '💰', nameKey: 'cat.finance.name',   toolKeys: ['tool.financial-forecast.name', 'tool.investment-analysis.name', 'tool.cash-flow-optimizer.name'] },
-  { emoji: '⚡', nameKey: 'cat.automation.name', toolKeys: [], isAddon: true },
+  { emoji: '📈', nameKey: 'cat.marketing.name', plan: 'grow',      toolKeys: ['tool.seo-keyword-research.name', 'tool.seo-meta-tags.name', 'tool.copywriting-headlines.name', 'tool.social-media-captions.name', 'tool.email-campaign.name', 'tool.press-release.name'] },
+  { emoji: '✍️', nameKey: 'cat.content.name',   plan: 'grow',      toolKeys: ['tool.blog-post.name', 'tool.newsletter.name', 'tool.video-script.name'] },
+  { emoji: '🛠️', nameKey: 'cat.digital.name',   plan: 'grow',      toolKeys: ['tool.google-ads.name', 'tool.meta-ads.name', 'tool.landing-page.name'] },
+  { emoji: '🛒', nameKey: 'cat.ecommerce.name', plan: 'scale',     toolKeys: ['tool.amazon-listing.name', 'tool.product-description.name', 'tool.cro-audit.name'] },
+  { emoji: '🏢', nameKey: 'cat.agency.name',    plan: 'scale',     toolKeys: ['tool.client-proposal.name', 'tool.client-report.name', 'tool.case-study.name'] },
+  { emoji: '🎨', nameKey: 'cat.creative.name',  plan: 'scale',     toolKeys: ['tool.brand-identity.name', 'tool.photo-direction.name', 'tool.video-production.name'] },
+  { emoji: '🎯', nameKey: 'cat.strategy.name',  plan: 'evolution', toolKeys: ['tool.business-plan.name', 'tool.market-analysis.name', 'tool.competitor-research.name', 'tool.swot-analysis.name'] },
+  { emoji: '🚀', nameKey: 'cat.startup.name',   plan: 'evolution', toolKeys: ['tool.investor-pitch.name', 'tool.gtm-strategy.name', 'tool.user-stories.name'] },
+  { emoji: '💰', nameKey: 'cat.finance.name',   plan: 'evolution', toolKeys: ['tool.financial-forecast.name', 'tool.investment-analysis.name', 'tool.cash-flow-optimizer.name'] },
+  { emoji: '⚡', nameKey: 'cat.automation.name', plan: 'addon',    toolKeys: ['tool.n8n-workflow.name'], isAddon: true },
 ];
+
+function WygFlipCard({ cat }) {
+  const { t } = useTranslation();
+  const [flipped, setFlipped] = useState(false);
+  const planLabel = { grow: 'Grow', scale: 'Scale', evolution: 'Evolution', addon: 'Add-on' }[cat.plan];
+  return (
+    <div
+      className={`wyg-flip wyg-flip--${cat.plan}${flipped ? ' is-flipped' : ''}`}
+      onClick={() => setFlipped((f) => !f)}
+    >
+      <div className="wyg-flip__inner">
+        <div className="wyg-flip__front">
+          <div className="wyg-flip__emoji">{cat.emoji}</div>
+          <div className="wyg-flip__name">{t(cat.nameKey)}</div>
+          <span className={`wyg-flip__badge wyg-flip__badge--${cat.plan}`}>{planLabel}</span>
+          <div className="wyg-flip__count">{cat.toolKeys.length} {t('landing.wyg.toolsLabel', { defaultValue: 'tools' })}</div>
+          <span className="wyg-flip__hint">↻ {t('landing.wyg.tap', { defaultValue: 'Tap to see tools' })}</span>
+        </div>
+        <div className="wyg-flip__back">
+          <div className="wyg-flip__back-header">{cat.emoji} {t(cat.nameKey)}</div>
+          <div className="wyg-flip__back-tools">
+            {cat.toolKeys.map((k) => (
+              <span key={k} className="wyg-flip__back-tool">✓ {t(k)}</span>
+            ))}
+            {cat.isAddon && <span className="wyg-flip__back-tool wyg-flip__back-tool--note">€10 / 10 workflows</span>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function WhatYouGet() {
   const { t } = useTranslation();
@@ -504,22 +535,8 @@ function WhatYouGet() {
           variants={stagger}
         >
           {WHAT_CATS.map((cat) => (
-            <motion.div key={cat.nameKey} className={`landing__wyg-card${cat.isAddon ? ' landing__wyg-card--addon' : ''}`} variants={fadeUp}>
-              <div className="landing__wyg-emoji">{cat.emoji}</div>
-              <div className="landing__wyg-name">
-                {t(cat.nameKey)}
-                {cat.isAddon && <span className="landing__wyg-addon-badge">{t('landing.wyg.addon', { defaultValue: 'Add-on' })}</span>}
-              </div>
-              <div className="landing__wyg-tools">
-                {cat.toolKeys.map((k) => (
-                  <span key={k} className="landing__wyg-tool">{t(k)}</span>
-                ))}
-                {cat.isAddon && (
-                  <span className="landing__wyg-tool">
-                    {t('landing.wyg.addonDesc', { defaultValue: '10 workflows · €10' })}
-                  </span>
-                )}
-              </div>
+            <motion.div key={cat.nameKey} variants={fadeUp}>
+              <WygFlipCard cat={cat} />
             </motion.div>
           ))}
         </motion.div>

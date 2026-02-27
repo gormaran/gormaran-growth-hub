@@ -110,6 +110,7 @@
 }
 
 @media (max-width: 640px) {
-  .footer__grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .footer__grid { grid-template-columns: 1fr; gap: 2rem; }
+  .footer__brand { grid-column: auto; }
   .footer__bottom { flex-direction: column; gap: 0.5rem; text-align: center; }
 }
