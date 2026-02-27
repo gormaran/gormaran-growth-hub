@@ -360,6 +360,37 @@
   .pricing__faq-grid { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 640px) {
+  .pricing__plans,
+  .pricing__plans--4 { max-width: 100%; }
+
+  .pricing__plan { padding: 1.5rem; }
+
+  .pricing__plan-amount { font-size: 2.5rem; }
+
+  .pricing__plan-header h2 { font-size: 1.15rem; }
+
+  .pricing__plan-desc,
+  .pricing__feature { font-size: 1rem; }
+
+  .pricing__plan-period { font-size: 0.9rem; }
+
+  .pricing__plan-cta { width: 100%; font-size: 1rem; padding: 0.85rem 1rem; }
+
+  .pricing__faq-item { padding: 1.25rem; }
+  .pricing__faq-item h4 { font-size: 1rem; }
+  .pricing__faq-item p { font-size: 0.9375rem; }
+
+  .pricing__table-wrap { -webkit-overflow-scrolling: touch; }
+  .pricing__table { font-size: 0.875rem; }
+  .pricing__table th, .pricing__table td { padding: 0.75rem 0.75rem; }
+
+  .pricing__addon { padding: 1.25rem; }
+  .pricing__addon-title { font-size: 1.15rem; }
+  .pricing__addon-desc { font-size: 0.9375rem; }
+  .pricing__addon-features li { font-size: 0.9375rem; }
+}
+
 /* ─── Per-tier plan card colors ─── */
 
 /* FREE — green */

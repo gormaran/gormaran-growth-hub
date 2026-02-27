@@ -883,15 +883,8 @@
 
 .how-visual__line {
   height: 9px;
-  width: var(--w, 80%);
   border-radius: 100px;
   background: linear-gradient(90deg, rgba(99,102,241,0.55), rgba(139,92,246,0.3));
-  animation: how-line-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) both;
-}
-
-@keyframes how-line-in {
-  from { transform: scaleX(0); transform-origin: left; }
-  to   { transform: scaleX(1); transform-origin: left; }
 }
 
 /* ── Step body ── */
@@ -1401,6 +1394,150 @@
   font-size: 0.85rem;
 }
 
+/* ========== WHAT YOU GET ========== */
+.landing__wyg .section-title,
+.landing__wyg .section-subtitle { text-align: center; }
+
+.landing__wyg-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.landing__wyg-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.25rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.landing__wyg-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99,102,241,0.35);
+  box-shadow: 0 8px 32px rgba(99,102,241,0.12);
+}
+
+.landing__wyg-card--addon {
+  border-color: rgba(99,102,241,0.25);
+  background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(139,92,246,0.03));
+}
+
+.landing__wyg-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-bottom: 0.15rem;
+}
+
+.landing__wyg-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.landing__wyg-addon-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: 100px;
+}
+
+.landing__wyg-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.landing__wyg-tool {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ========== WHY NOT CHATGPT ========== */
+.landing__whychatgpt .section-title,
+.landing__whychatgpt .section-subtitle { text-align: center; }
+
+.landing__whychatgpt-table {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  max-width: 760px;
+  margin: 3rem auto 0;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.landing__whychatgpt-col {
+  padding: 0;
+}
+
+.landing__whychatgpt-col--generic {
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-color);
+}
+
+.landing__whychatgpt-col--gormaran {
+  background: linear-gradient(160deg, rgba(99,102,241,0.06), rgba(139,92,246,0.03));
+}
+
+.landing__whychatgpt-col-header {
+  padding: 1rem 1.5rem 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.landing__whychatgpt-col-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.landing__whychatgpt-col--gormaran .landing__whychatgpt-col-label {
+  color: var(--color-primary-light);
+}
+
+.landing__whychatgpt-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  line-height: 1.45;
+}
+
+.landing__whychatgpt-row:last-child { border-bottom: none; }
+
+.landing__whychatgpt-col--generic .landing__whychatgpt-row {
+  color: var(--text-muted);
+}
+
+.landing__whychatgpt-icon {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--text-muted);
+  margin-top: 0.05rem;
+}
+
+.landing__whychatgpt-icon--yes {
+  color: #10b981;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1200px) {
   .landing__categories-grid { grid-template-columns: repeat(3, 1fr); }
@@ -1413,6 +1550,8 @@
   .landing__ig-compact-inner { grid-template-columns: 1fr; gap: 2.5rem; }
   /* How It Works – 2 cols on tablet */
   .landing__how-steps { grid-template-columns: repeat(2, 1fr); }
+  /* What You Get – 3 cols on tablet */
+  .landing__wyg-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 640px) {
@@ -1424,6 +1563,12 @@
   .landing__plans-grid { grid-template-columns: 1fr; max-width: 100%; }
   /* How It Works – 1 col on mobile */
   .landing__how-steps { grid-template-columns: 1fr; max-width: 480px; margin-left: auto; margin-right: auto; }
+  /* What You Get – 2 cols on mobile */
+  .landing__wyg-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  /* Why ChatGPT – stack on mobile */
+  .landing__whychatgpt-table { grid-template-columns: 1fr; }
+  .landing__whychatgpt-col--generic { border-right: none; border-bottom: 1px solid var(--border-color); }
+  .landing__whychatgpt-row { padding: 0.75rem 1.25rem; font-size: 0.9rem; }
   .landing__ig-compact-preview { flex-direction: column; gap: 1.25rem; }
   .landing__plan-flip { height: auto; min-height: 420px; perspective: none; }
   .landing__plan-flip__inner { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }

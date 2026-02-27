@@ -135,7 +135,7 @@ const HOW_STEPS = [
   },
 ];
 
-const HOW_TAGS = ['📈 Marketing', '✍️ Content', '🛒 E-commerce', '🏢 Agency', '🚀 Startup', '💰 Finance'];
+const HOW_TAGS = ['📈 Marketing', '🎯 Strategy', '✍️ Content', '🛠️ Digital', '🛒 E-commerce', '🏢 Agency', '🚀 Startup', '🎨 Creative', '💰 Finance', '⚡ n8n'];
 
 function StepVisual({ index }) {
   if (index === 0) {
@@ -178,10 +178,14 @@ function StepVisual({ index }) {
       <div className="how-visual__output">
         <span className="how-visual__output-badge">✨ AI Output</span>
         {[88, 72, 95, 60, 82, 50].map((w, i) => (
-          <div
+          <motion.div
             key={i}
             className="how-visual__line"
-            style={{ '--w': `${w}%`, '--delay': `${i * 0.12}s` }}
+            style={{ width: `${w}%`, transformOrigin: 'left center' }}
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: '-30px' }}
+            transition={{ duration: 0.8, delay: i * 0.13, ease: [0.22, 1, 0.36, 1] }}
           />
         ))}
       </div>
@@ -464,6 +468,128 @@ function ClientLogos() {
   );
 }
 
+// ── What You Get ──────────────────────────────────────────────────
+const WHAT_CATS = [
+  { emoji: '📈', nameKey: 'cat.marketing.name', toolKeys: ['tool.seo-keyword-research.name', 'tool.social-media-captions.name', 'tool.email-campaign.name'] },
+  { emoji: '🎯', nameKey: 'cat.strategy.name',  toolKeys: ['tool.business-plan.name', 'tool.competitor-research.name', 'tool.swot-analysis.name'] },
+  { emoji: '✍️', nameKey: 'cat.content.name',   toolKeys: ['tool.blog-post.name', 'tool.newsletter.name', 'tool.video-script.name'] },
+  { emoji: '🛠️', nameKey: 'cat.digital.name',   toolKeys: ['tool.google-ads.name', 'tool.meta-ads.name', 'tool.landing-page.name'] },
+  { emoji: '🛒', nameKey: 'cat.ecommerce.name', toolKeys: ['tool.amazon-listing.name', 'tool.product-description.name', 'tool.cro-audit.name'] },
+  { emoji: '🏢', nameKey: 'cat.agency.name',    toolKeys: ['tool.client-proposal.name', 'tool.client-report.name', 'tool.case-study.name'] },
+  { emoji: '🚀', nameKey: 'cat.startup.name',   toolKeys: ['tool.investor-pitch.name', 'tool.gtm-strategy.name', 'tool.user-stories.name'] },
+  { emoji: '🎨', nameKey: 'cat.creative.name',  toolKeys: ['tool.brand-identity.name', 'tool.photo-direction.name', 'tool.video-production.name'] },
+  { emoji: '💰', nameKey: 'cat.finance.name',   toolKeys: ['tool.financial-forecast.name', 'tool.investment-analysis.name', 'tool.cash-flow-optimizer.name'] },
+  { emoji: '⚡', nameKey: 'cat.automation.name', toolKeys: [], isAddon: true },
+];
+
+function WhatYouGet() {
+  const { t } = useTranslation();
+  return (
+    <section className="landing__wyg section">
+      <div className="container">
+        <AnimatedSection>
+          <h2 className="section-title">
+            {t('landing.wyg.titlePre', { defaultValue: 'Everything in' })}{' '}
+            <span className="gradient-text">{t('landing.wyg.titleHighlight', { defaultValue: 'one hub' })}</span>
+          </h2>
+          <p className="section-subtitle">
+            {t('landing.wyg.subtitle', { defaultValue: '35+ specialized AI tools across 10 business categories — structured outputs you can use immediately.' })}
+          </p>
+        </AnimatedSection>
+        <motion.div
+          className="landing__wyg-grid"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-20px' }}
+          variants={stagger}
+        >
+          {WHAT_CATS.map((cat) => (
+            <motion.div key={cat.nameKey} className={`landing__wyg-card${cat.isAddon ? ' landing__wyg-card--addon' : ''}`} variants={fadeUp}>
+              <div className="landing__wyg-emoji">{cat.emoji}</div>
+              <div className="landing__wyg-name">
+                {t(cat.nameKey)}
+                {cat.isAddon && <span className="landing__wyg-addon-badge">{t('landing.wyg.addon', { defaultValue: 'Add-on' })}</span>}
+              </div>
+              <div className="landing__wyg-tools">
+                {cat.toolKeys.map((k) => (
+                  <span key={k} className="landing__wyg-tool">{t(k)}</span>
+                ))}
+                {cat.isAddon && (
+                  <span className="landing__wyg-tool">
+                    {t('landing.wyg.addonDesc', { defaultValue: '10 workflows · €10' })}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ── Why Not ChatGPT ───────────────────────────────────────────────
+const CHATGPT_VS = [
+  { genericKey: 'landing.whychatgpt.vs.0.generic', gormaranKey: 'landing.whychatgpt.vs.0.gormaran', gDefault: 'Open-ended answers', rDefault: 'Execution frameworks by category' },
+  { genericKey: 'landing.whychatgpt.vs.1.generic', gormaranKey: 'landing.whychatgpt.vs.1.gormaran', gDefault: 'Trial-and-error prompting', rDefault: 'Guided inputs, zero guesswork' },
+  { genericKey: 'landing.whychatgpt.vs.2.generic', gormaranKey: 'landing.whychatgpt.vs.2.gormaran', gDefault: 'Same tool for everything', rDefault: 'Specialized tools per category' },
+  { genericKey: 'landing.whychatgpt.vs.3.generic', gormaranKey: 'landing.whychatgpt.vs.3.gormaran', gDefault: 'Raw text you need to edit', rDefault: 'Structured outputs, ready to publish' },
+];
+
+function WhyNotChatGPT() {
+  const { t } = useTranslation();
+  return (
+    <section className="landing__whychatgpt section">
+      <div className="container">
+        <AnimatedSection>
+          <span className="badge badge-primary" style={{ marginBottom: '1rem', display: 'inline-block' }}>
+            {t('landing.whychatgpt.badge', { defaultValue: '🤔 Fair question' })}
+          </span>
+          <h2 className="section-title">
+            {t('landing.whychatgpt.title', { defaultValue: 'Why not just use ChatGPT, Gemini or Claude?' })}
+          </h2>
+          <p className="section-subtitle">
+            {t('landing.whychatgpt.body', { defaultValue: 'Those tools give you answers. Gormaran gives you execution frameworks — specialized tools by category with structured outputs you can publish and use immediately, without trial-and-error.' })}
+          </p>
+        </AnimatedSection>
+
+        <motion.div
+          className="landing__whychatgpt-table"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="landing__whychatgpt-col landing__whychatgpt-col--generic">
+            <div className="landing__whychatgpt-col-header">
+              <span className="landing__whychatgpt-col-label">
+                {t('landing.whychatgpt.col1', { defaultValue: 'Generic AI' })}
+              </span>
+            </div>
+            {CHATGPT_VS.map((row, i) => (
+              <div key={i} className="landing__whychatgpt-row">
+                <span className="landing__whychatgpt-icon">✗</span>
+                {t(row.genericKey, { defaultValue: row.gDefault })}
+              </div>
+            ))}
+          </div>
+          <div className="landing__whychatgpt-col landing__whychatgpt-col--gormaran">
+            <div className="landing__whychatgpt-col-header">
+              <span className="landing__whychatgpt-col-label gradient-text">Gormaran</span>
+            </div>
+            {CHATGPT_VS.map((row, i) => (
+              <div key={i} className="landing__whychatgpt-row">
+                <span className="landing__whychatgpt-icon landing__whychatgpt-icon--yes">✓</span>
+                {t(row.gormaranKey, { defaultValue: row.rDefault })}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 // ── Main Component ───────────────────────────────────────────────
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -508,9 +634,12 @@ export default function LandingPage() {
                 {t('landing.hero.cta')}
                 <span className="landing__cta-arrow">→</span>
               </Link>
-              <Link to="/pricing" className="btn btn-secondary btn-lg">
-                {t('landing.hero.viewPricing', { defaultValue: 'View Pricing' })}
-              </Link>
+              <button
+                className="btn btn-secondary btn-lg"
+                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                {t('landing.hero.seeHow', { defaultValue: 'See how it works ↓' })}
+              </button>
             </motion.div>
 
             <motion.div className="landing__hero-social-proof" variants={fadeUp} transition={{ duration: 0.6, delay: 0.4 }}>
@@ -568,8 +697,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 3: How It Works ── */}
-      <section className="landing__how section">
+      {/* ── SECTION 3: What You Get ── */}
+      <WhatYouGet />
+
+      {/* ── SECTION 4: Why Not ChatGPT ── */}
+      <WhyNotChatGPT />
+
+      {/* ── SECTION 5: How It Works ── */}
+      <section id="how-it-works" className="landing__how section">
         <div className="container">
           <AnimatedSection>
             <h2 className="section-title">
@@ -580,7 +715,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 4: Plans ── */}
+      {/* ── SECTION 6: Client Logos ── */}
+      <ClientLogos />
+
+      {/* ── SECTION 7: Plans ── */}
       <section className="landing__plans section">
         <div className="container">
           <AnimatedSection>
@@ -604,48 +742,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 5: Why Different ── */}
-      <section className="landing__features section">
-        <div className="container">
-          <AnimatedSection>
-            <h2 className="section-title">
-              {t('landing.features.titlePre', { defaultValue: 'Why' })}{' '}
-              <span className="gradient-text">Gormaran</span>{' '}
-              {t('landing.features.titlePost', { defaultValue: 'is Different' })}
-            </h2>
-            <p className="section-subtitle">
-              {t('landing.features.subtitle')}
-            </p>
-          </AnimatedSection>
-          <motion.div
-            className="grid-3"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-20px' }}
-            variants={stagger}
-          >
-            {[0, 1, 2, 3, 4, 5].map((i) => (
-              <motion.div key={i} className="landing__feature-card" variants={fadeUp}>
-                <div className="landing__feature-icon">
-                  {['🎯', '⚡', '🛠️', '🔒', '📊', '🚀'][i]}
-                </div>
-                <h3 className="landing__feature-title">
-                  {t(`landing.feature.${i}.title`)}
-                </h3>
-                <p className="text-muted" style={{ fontSize: '0.875rem', lineHeight: 1.6 }}>
-                  {t(`landing.feature.${i}.desc`)}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── SECTION 6: Instagram Compact ── */}
+      {/* ── SECTION 8: Instagram Compact ── */}
       <InstagramCompact />
-
-      {/* ── SECTION 7: Client Logos ── */}
-      <ClientLogos />
 
       {/* ── SECTION 8: Stop Wasting Time ── */}
       <section className="landing__cta-full section">
