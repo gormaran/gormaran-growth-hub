@@ -206,6 +206,12 @@
   "landing.how.tab3.label": "Close more clients",
   "landing.how.tab3.tool": "Client Proposal Generator",
   "landing.how.tab3.benefit": "Proposals in 5 minutes, not 3 hours",
+  "landing.how.step1.title": "Choose Your Tool",
+  "landing.how.step1.desc": "Pick from 35+ specialized AI tools across 10 business categories — from marketing to finance.",
+  "landing.how.step2.title": "Describe Your Goal",
+  "landing.how.step2.desc": "Fill in a few simple inputs. No complex prompts, no technical knowledge needed.",
+  "landing.how.step3.title": "Get AI Results",
+  "landing.how.step3.desc": "Professional, ready-to-use content delivered in seconds. Copy, paste, done.",
 
   "landing.plans.title": "Simple, transparent pricing",
   "landing.plans.perMonth": "/month",
