@@ -191,6 +191,12 @@
   "landing.how.tab3.label": "Concluez plus de clients",
   "landing.how.tab3.tool": "Client Proposal Generator",
   "landing.how.tab3.benefit": "Propositions en 5 minutes, pas en 3 heures",
+  "landing.how.step1.title": "Choisissez votre outil",
+  "landing.how.step1.desc": "Sélectionnez parmi plus de 35 outils IA spécialisés dans 10 catégories — du marketing à la finance.",
+  "landing.how.step2.title": "Décrivez votre objectif",
+  "landing.how.step2.desc": "Remplissez quelques champs simples. Pas de prompts complexes, pas de compétences techniques.",
+  "landing.how.step3.title": "Obtenez vos résultats IA",
+  "landing.how.step3.desc": "Contenu professionnel prêt à l'emploi en quelques secondes. Copiez, collez, c'est fait.",
 
   "landing.plans.title": "Tarifs simples et transparents",
   "landing.plans.perMonth": "/mois",

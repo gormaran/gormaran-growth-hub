@@ -110,176 +110,112 @@ const STATS = [
   { value: '10', unit: 'x', labelKey: 'landing.stats.faster' },
 ];
 
-// ── How It Works (3-panel dashboard mockup) ───────────────────────
-const HOW_TABS = [
+// ── How It Works (Step Cards) ─────────────────────────────────────
+const HOW_STEPS = [
   {
-    tabKey:      'landing.how.tab1.label',
-    category:    '✍️ Content Creation',
-    sidebarTools: ['📧 Newsletter Writer', '📝 Blog Post Writer', '🎥 Video Script'],
-    tool:        '📧 Newsletter Writer',
-    inputs: [
-      { label: 'Topic',    value: 'AI tools for small businesses' },
-      { label: 'Audience', value: 'Marketers & Founders' },
-    ],
-    benefitKey: 'landing.how.tab1.benefit',
-    output: `Subject: The tool saving marketers 2h/week
-
-Hey {{first_name}},
-
-We've been testing something new for 3 months.
-The results were unexpected.
-
-→ Open rates jumped 34%
-→ Click-through rate doubled
-→ Time to write: under 2 minutes
-
-Here's the exact playbook we used...
-
-Full breakdown inside.
-Ready-to-use templates included.`,
+    num: '01',
+    titleKey: 'landing.how.step1.title',
+    descKey:  'landing.how.step1.desc',
+    defaultTitle: 'Choose Your Tool',
+    defaultDesc:  'Pick from 35+ specialized AI tools across 10 business categories — from marketing to finance.',
   },
   {
-    tabKey:      'landing.how.tab2.label',
-    category:    '🛠️ Digital Tools',
-    sidebarTools: ['🔍 Google Ads', '📱 Meta Ads', '🎯 Landing Page'],
-    tool:        '🔍 Google Ads Creator',
-    inputs: [
-      { label: 'Product', value: 'AI Marketing Platform' },
-      { label: 'Goal',    value: 'Lead Generation' },
-    ],
-    benefitKey: 'landing.how.tab2.benefit',
-    output: `CAMPAIGN: AI Marketing Platform
-GOAL: Lead Generation
-━━━━━━━━━━━━━━━━━━━━
-
-Headline 1: AI Tools for Marketers   (30 ✓)
-Headline 2: Save 10h/Week on Copy    (25 ✓)
-Headline 3: Grow Faster with AI      (21 ✓)
-
-Description 1:
-Professional copy in seconds.
-AI-powered. Conversion-optimized.
-Start free — no credit card.
-
-Description 2:
-35+ marketing AI tools, one platform.
-Results in minutes, not hours.`,
+    num: '02',
+    titleKey: 'landing.how.step2.title',
+    descKey:  'landing.how.step2.desc',
+    defaultTitle: 'Describe Your Goal',
+    defaultDesc:  'Fill in a few simple inputs. No complex prompts, no technical knowledge needed.',
   },
   {
-    tabKey:      'landing.how.tab3.label',
-    category:    '🏢 Agency Tools',
-    sidebarTools: ['📋 Client Proposal', '📊 Client Report', '📌 Case Study'],
-    tool:        '📋 Client Proposal',
-    inputs: [
-      { label: 'Client',  value: 'Pixel Growth Agency' },
-      { label: 'Service', value: 'Social Media Management' },
-    ],
-    benefitKey: 'landing.how.tab3.benefit',
-    output: `CLIENT PROPOSAL
-━━━━━━━━━━━━━━━━━━━━━━━━
-Social Media Management
-Client: Pixel Growth Agency
-
-INVESTMENT: €1,200/month
-
-DELIVERABLES:
-→ 12 Instagram posts/month
-→ 8 LinkedIn articles/month
-→ Weekly performance report
-→ Monthly strategy call (60min)
-
-TIMELINE: 3-month engagement`,
+    num: '03',
+    titleKey: 'landing.how.step3.title',
+    descKey:  'landing.how.step3.desc',
+    defaultTitle: 'Get AI Results',
+    defaultDesc:  'Professional, ready-to-use content delivered in seconds. Copy, paste, done.',
   },
 ];
 
-function useTyping(text, speed = 16) {
-  const [displayed, setDisplayed] = useState('');
-  useEffect(() => {
-    setDisplayed('');
-    let i = 0;
-    const id = setInterval(() => {
-      i++;
-      setDisplayed(text.slice(0, i));
-      if (i >= text.length) clearInterval(id);
-    }, speed);
-    return () => clearInterval(id);
-  }, [text]);
-  return displayed;
+const HOW_TAGS = ['📈 Marketing', '✍️ Content', '🛒 E-commerce', '🏢 Agency', '🚀 Startup', '💰 Finance'];
+
+function StepVisual({ index }) {
+  if (index === 0) {
+    return (
+      <div className="how-visual how-visual--1">
+        <div className="how-visual__tags">
+          {HOW_TAGS.map((tag) => (
+            <span key={tag} className="how-visual__tag">{tag}</span>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (index === 1) {
+    return (
+      <div className="how-visual how-visual--2">
+        <div className="how-visual__form">
+          <div className="how-visual__field">
+            <span className="how-visual__label">Topic</span>
+            <div className="how-visual__input">
+              AI tools for small businesses<span className="how-visual__cursor" />
+            </div>
+          </div>
+          <div className="how-visual__field">
+            <span className="how-visual__label">Audience</span>
+            <div className="how-visual__input">Marketers & Founders</div>
+          </div>
+          <div className="how-visual__btn">
+            <span className="preview-dot" />
+            <span className="preview-dot" style={{ animationDelay: '0.18s' }} />
+            <span className="preview-dot" style={{ animationDelay: '0.36s' }} />
+            Generating…
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="how-visual how-visual--3">
+      <div className="how-visual__output">
+        <span className="how-visual__output-badge">✨ AI Output</span>
+        {[88, 72, 95, 60, 82, 50].map((w, i) => (
+          <div
+            key={i}
+            className="how-visual__line"
+            style={{ '--w': `${w}%`, '--delay': `${i * 0.12}s` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function HowItWorks() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState(0);
-  const current = HOW_TABS[activeTab];
-  const typed = useTyping(current.output);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <div className="landing__how-wrapper">
-      <div className="landing__how-tabs">
-        {HOW_TABS.map((tab, i) => (
-          <button
-            key={i}
-            className={`landing__how-tab${i === activeTab ? ' active' : ''}`}
-            onClick={() => setActiveTab(i)}
-          >
-            {t(tab.tabKey)}
-          </button>
-        ))}
-      </div>
-
-      <AnimatePresence mode="wait">
+    <div ref={ref} className="landing__how-steps">
+      {HOW_STEPS.map((step, i) => (
         <motion.div
-          key={activeTab}
-          className="landing__how-mockup"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.22 }}
+          key={step.num}
+          className="landing__how-step"
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="landing__how-mockup-header">
-            <div className="landing__how-mockup-dots"><span /><span /><span /></div>
-            <span className="landing__how-mockup-title">Gormaran AI Growth Hub</span>
-          </div>
-          <div className="landing__how-mockup-panels">
-            {/* Left: tool sidebar */}
-            <div className="landing__how-panel-sidebar">
-              <div className="landing__how-sidebar-category">{current.category}</div>
-              {current.sidebarTools.map((tool, i) => (
-                <div key={i} className={`landing__how-sidebar-tool${i === 0 ? ' active' : ''}`}>
-                  {tool}
-                </div>
-              ))}
-            </div>
-
-            {/* Center: input form */}
-            <div className="landing__how-panel-form">
-              <div className="landing__how-form-toolname">{current.tool}</div>
-              {current.inputs.map((inp, i) => (
-                <div key={i} className="landing__how-form-field">
-                  <div className="landing__how-form-label">{inp.label}</div>
-                  <div className="landing__how-form-value">{inp.value}</div>
-                </div>
-              ))}
-              <div className="landing__how-form-generate">
-                <span className="preview-dot" />
-                <span className="preview-dot" style={{ animationDelay: '0.18s' }} />
-                <span className="preview-dot" style={{ animationDelay: '0.36s' }} />
-                <span>Generating…</span>
-              </div>
-            </div>
-
-            {/* Right: AI output */}
-            <div className="landing__how-panel-output">
-              <div className="landing__how-output-label">AI Output</div>
-              <pre className="landing__how-mockup-output">
-                {typed}<span className="landing__cursor" />
-              </pre>
-            </div>
+          <StepVisual index={i} />
+          <div className="landing__how-step-body">
+            <div className="landing__how-step-num">{step.num}</div>
+            <h3 className="landing__how-step-title">
+              {t(step.titleKey, { defaultValue: step.defaultTitle })}
+            </h3>
+            <p className="landing__how-step-desc">
+              {t(step.descKey, { defaultValue: step.defaultDesc })}
+            </p>
           </div>
         </motion.div>
-      </AnimatePresence>
-
-      <p className="landing__how-benefit">✦ {t(current.benefitKey)}</p>
+      ))}
     </div>
   );
 }
