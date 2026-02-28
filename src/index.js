@@ -9,13 +9,12 @@ import ReactGA from "react-ga4";
 ReactGA.initialize("G-ND3CT7RGWF");
 ReactGA.send("pageview");
 
-const rootElement = document.getElementById('root');
-if (rootElement.hasChildNodes()) {
-  // Pre-rendered by react-snap — hydrate instead of full mount
-  ReactDOM.hydrateRoot(rootElement, <React.StrictMode><App /></React.StrictMode>);
-} else {
-  ReactDOM.createRoot(rootElement).render(<React.StrictMode><App /></React.StrictMode>);
-}
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
