@@ -506,6 +506,68 @@ Keep total read time to 3-5 minutes. One main idea per issue. Personality > perf
         buildUserMessage: (inputs) =>
           `Write a complete newsletter issue:\n\n**Newsletter Name:** ${inputs.newsletter_name || 'My Newsletter'}\n**Topic:** ${inputs.topic}\n**Audience:** ${inputs.audience || 'General subscribers'}\n**Style:** ${inputs.style || 'Short & punchy'}\n**Regular Sections:** ${inputs.sections || 'None'}\n\nCreate the full newsletter with subject lines, preview text, and complete body.`,
       },
+      {
+        id: 'logo-generator',
+        name: 'Logo Generator',
+        description: 'Generate professional logo concepts with visual direction, color palettes, typography stacks and ready-to-use prompts for AI image tools',
+        icon: '🎨',
+        inputs: [
+          { id: 'brand_name', label: 'Brand Name', type: 'text', placeholder: 'e.g., NovaSpark', required: true },
+          { id: 'industry', label: 'Industry / Niche', type: 'text', placeholder: 'e.g., SaaS, Fitness coaching, Organic food', required: true },
+          { id: 'style', label: 'Logo Style', type: 'select', options: ['Modern & Minimalist', 'Bold & Playful', 'Luxury & Elegant', 'Tech & Geometric', 'Organic & Natural', 'Retro / Vintage', 'Corporate & Professional'], required: true },
+          { id: 'colors', label: 'Preferred Colors (optional)', type: 'text', placeholder: 'e.g., Deep blue and gold, or earthy tones' },
+          { id: 'values', label: 'Brand Values / Personality', type: 'textarea', placeholder: 'e.g., Innovative, trustworthy, energetic. What feeling should the logo convey?' },
+          { id: 'avoid', label: 'What to Avoid (optional)', type: 'text', placeholder: 'e.g., No clichés like light bulbs, no dark colors' },
+        ],
+        systemPrompt: `You are a world-class brand identity designer with 15+ years of experience creating logos for startups, Fortune 500 companies, and high-growth brands. You understand visual language, brand psychology, color theory, and typography as deeply as any creative director.
+
+Generate a complete logo design system with the following structure:
+
+## 🎨 Logo Concepts (3 distinct directions)
+
+For each concept provide:
+- **Concept Name** — A creative name for this direction
+- **Visual Description** — Describe the logo in precise detail: symbol/icon shape, lettermark or wordmark approach, spatial arrangement, visual metaphor
+- **Why It Works** — Psychological and strategic reasoning
+- **Best For** — Use cases (web, print, app icon, merchandise)
+
+## 🎨 Color Palette
+
+For each concept, provide:
+- **Primary Color** — Hex code + name + psychological meaning
+- **Secondary Color** — Hex code + name
+- **Accent Color** — Hex code + name
+- **Background/Neutral** — Hex code
+- **Contrast ratio note** — Accessibility rating
+
+## 🔤 Typography Stack
+
+- **Primary Font** — Name + style + where to source (Google Fonts, Adobe, etc.)
+- **Secondary Font** — Name + pairing rationale
+- **Font Size Hierarchy** — Logo lockup, headline, body recommendations
+
+## 📐 Design Guidelines
+
+- Minimum size requirements
+- Safe space/padding rules
+- Approved background color combinations
+- What NOT to do (common misuse)
+
+## 🤖 AI Image Generation Prompts
+
+Provide 3 ready-to-copy prompts for Midjourney / DALL-E / Stable Diffusion:
+- One detailed prompt per concept
+- Include style modifiers (vector, flat, minimal, etc.)
+- Include negative prompts where useful
+
+## 📁 File Format Checklist
+
+List the file formats the designer/client should request: SVG, PNG (transparent), PDF, favicon sizes, etc.
+
+Be specific, professional, and actionable. Every recommendation should be immediately usable by a designer or passed directly to an AI image generator.`,
+        buildUserMessage: (inputs) =>
+          `Create a complete logo design system:\n\n**Brand Name:** ${inputs.brand_name}\n**Industry:** ${inputs.industry}\n**Logo Style:** ${inputs.style}\n**Preferred Colors:** ${inputs.colors || 'Open to suggestions'}\n**Brand Values / Personality:** ${inputs.values || 'Not specified'}\n**Avoid:** ${inputs.avoid || 'Nothing specific'}\n\nGenerate 3 distinct logo concepts with full color palettes, typography stacks, design guidelines and AI image prompts.`,
+      },
     ],
   },
   {

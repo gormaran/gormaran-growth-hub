@@ -471,7 +471,7 @@ function ClientLogos() {
 // ── What You Get ──────────────────────────────────────────────────
 const WHAT_CATS = [
   { emoji: '📈', nameKey: 'cat.marketing.name', plan: 'grow',      toolKeys: ['tool.seo-keyword-research.name', 'tool.seo-meta-tags.name', 'tool.copywriting-headlines.name', 'tool.social-media-captions.name', 'tool.email-campaign.name', 'tool.press-release.name'] },
-  { emoji: '✍️', nameKey: 'cat.content.name',   plan: 'grow',      toolKeys: ['tool.blog-post.name', 'tool.newsletter.name', 'tool.video-script.name'] },
+  { emoji: '✍️', nameKey: 'cat.content.name',   plan: 'grow',      toolKeys: ['tool.blog-post.name', 'tool.newsletter.name', 'tool.video-script.name', 'tool.logo-generator.name'] },
   { emoji: '🛠️', nameKey: 'cat.digital.name',   plan: 'grow',      toolKeys: ['tool.google-ads.name', 'tool.meta-ads.name', 'tool.landing-page.name'] },
   { emoji: '🛒', nameKey: 'cat.ecommerce.name', plan: 'scale',     toolKeys: ['tool.amazon-listing.name', 'tool.product-description.name', 'tool.cro-audit.name'] },
   { emoji: '🏢', nameKey: 'cat.agency.name',    plan: 'scale',     toolKeys: ['tool.client-proposal.name', 'tool.client-report.name', 'tool.case-study.name'] },

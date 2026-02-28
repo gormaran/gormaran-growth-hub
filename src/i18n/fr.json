@@ -87,6 +87,8 @@
   "tool.video-script.desc": "Obtenez des scripts prêts pour la production pour YouTube, TikTok, publicités et VSL — avec accroche, chapitres, CTAs et modèles de description",
   "tool.newsletter.name": "Rédacteur de Newsletter",
   "tool.newsletter.desc": "Créez des newsletters engageantes avec packs d'objets, hooks d'intro personnalisés et recommandations A/B",
+  "tool.logo-generator.name": "Générateur de Logo",
+  "tool.logo-generator.desc": "Générez des concepts de logo professionnels avec direction visuelle, palettes de couleurs, typographies et prompts prêts pour les outils d'image IA",
   "tool.google-ads.name": "Créateur Google Ads",
   "tool.google-ads.desc": "Construisez des campagnes Google Ads complètes avec groupes d'annonces, listes de mots-clés et feuille de route d'optimisation",
   "tool.meta-ads.name": "Meta Ads (Facebook et Instagram)",
