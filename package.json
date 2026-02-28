@@ -30,8 +30,26 @@
     "server": "node server/index.js",
     "dev": "concurrently \"react-scripts start\" \"node server/index.js\"",
     "build": "react-scripts build",
+    "postbuild": "react-snap || true",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+  },
+  "reactSnap": {
+    "source": "build",
+    "crawl": false,
+    "include": [
+      "/",
+      "/pricing",
+      "/auth",
+      "/privacy-policy",
+      "/terms-of-service",
+      "/cookie-policy"
+    ],
+    "puppeteerArgs": ["--no-sandbox", "--disable-setuid-sandbox"],
+    "minifyHtml": {
+      "collapseWhitespace": false,
+      "removeComments": false
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -50,5 +68,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-snap": "^1.23.0"
   }
 }
