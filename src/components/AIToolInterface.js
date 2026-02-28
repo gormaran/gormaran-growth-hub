@@ -71,7 +71,7 @@ export default function AIToolInterface({ tool, categoryId }) {
   const [wordCount, setWordCount] = useState(0);
   const outputRef = useRef(null);
   const outputPanelRef = useRef(null);
-  const abortRef = useRef(false);
+  const abortControllerRef = useRef(null);
   const finalOutputRef = useRef('');
   const [history, setHistory] = useState([]);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -157,10 +157,18 @@ export default function AIToolInterface({ tool, categoryId }) {
       return;
     }
 
+    // imageOnly tools skip text streaming and go straight to image generation
+    if (tool.imageOnly) {
+      setTimeout(() => outputPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      handleGenerateImage();
+      return;
+    }
+
     setOutput('');
     finalOutputRef.current = '';
     setIsStreaming(true);
-    abortRef.current = false;
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     setTimeout(() => outputPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     const capturedInputs = { ...inputs };
 
@@ -168,14 +176,13 @@ export default function AIToolInterface({ tool, categoryId }) {
       categoryId,
       toolId: tool.id,
       inputs: { ...inputs, _language: i18n.language },
+      signal: controller.signal,
       onChunk: (text) => {
-        if (!abortRef.current) {
-          setOutput((prev) => {
-            const next = prev + text;
-            finalOutputRef.current = next;
-            return next;
-          });
-        }
+        setOutput((prev) => {
+          const next = prev + text;
+          finalOutputRef.current = next;
+          return next;
+        });
       },
       onDone: () => {
         setIsStreaming(false);
@@ -190,7 +197,7 @@ export default function AIToolInterface({ tool, categoryId }) {
   }
 
   function handleStop() {
-    abortRef.current = true;
+    abortControllerRef.current?.abort();
     setIsStreaming(false);
   }
 
@@ -336,18 +343,25 @@ export default function AIToolInterface({ tool, categoryId }) {
         <div className="ai-tool__panel ai-tool__output-panel" ref={outputPanelRef}>
           <div className="ai-tool__output-header">
             <h3 className="ai-tool__panel-title">
-              {isStreaming ? (
+              {isGeneratingImage ? (
+                <span className="ai-tool__streaming">
+                  <span className="ai-tool__streaming-dot" />
+                  Generating with DALL·E 3…
+                </span>
+              ) : isStreaming ? (
                 <span className="ai-tool__streaming">
                   <span className="ai-tool__streaming-dot" />
                   {t('ui.aiGenerating', { defaultValue: 'AI is generating...' })}
                 </span>
+              ) : generatedImage ? (
+                `✅ Logo Generated`
               ) : output ? (
                 `✅ ${t('ui.aiOutput', { defaultValue: 'AI Output' })}`
               ) : (
                 `🤖 ${t('ui.aiOutput', { defaultValue: 'AI Output' })}`
               )}
             </h3>
-            {output && (
+            {output && !tool.imageOnly && (
               <div className="ai-tool__output-controls">
                 <span className="ai-tool__word-count">{wordCount} {t('ui.words', { defaultValue: 'words' })}</span>
                 <button
@@ -370,72 +384,81 @@ export default function AIToolInterface({ tool, categoryId }) {
           </div>
 
           <div className="ai-tool__output-body" ref={outputRef}>
-            {!output && !isStreaming && (
-              <div className="ai-tool__output-placeholder">
-                <div className="ai-tool__placeholder-icon">✨</div>
-                <p>{t('ui.fillInputs', { defaultValue: 'Fill in the inputs on the left and click' })} <strong>{t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}</strong>.</p>
-                <div className="ai-tool__placeholder-features">
-                  <span>{t('ui.structuredOutput', { defaultValue: '📊 Structured output' })}</span>
-                  <span>{t('ui.categorySpecific', { defaultValue: '🎯 Category-specific' })}</span>
-                  <span>{t('ui.realTimeStreaming', { defaultValue: '⚡ Real-time streaming' })}</span>
-                </div>
-              </div>
-            )}
 
-            <AnimatePresence>
-              {(output || isStreaming) && (
-                <motion.div
-                  className="ai-tool__output-content markdown-output"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown>
-                  {isStreaming && <span className="ai-tool__cursor">▋</span>}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Image generation block — only for tools with generatesImage: true */}
-            {tool.generatesImage && output && !isStreaming && (
-              <div className="ai-tool__image-block">
-                <div className="ai-tool__image-divider">
-                  <span>🎨 {t('ui.generateLogoImage', { defaultValue: 'Generate Logo Image with DALL·E 3' })}</span>
-                </div>
-                <button
-                  className="btn btn-primary ai-tool__image-btn"
-                  onClick={handleGenerateImage}
-                  disabled={isGeneratingImage}
-                >
-                  {isGeneratingImage
-                    ? `⏳ ${t('ui.generatingImage', { defaultValue: 'Generating image...' })}`
-                    : `🖼 ${t('ui.generateImage', { defaultValue: 'Generate Logo Image' })}`}
-                </button>
-                {imageError && (
-                  <div className="alert alert-error" style={{ marginTop: '0.75rem' }}>
-                    ⚠️ {imageError}
+            {/* ── imageOnly output (e.g. Logo Generator) ── */}
+            {tool.imageOnly ? (
+              <>
+                {!generatedImage && !isGeneratingImage && !imageError && (
+                  <div className="ai-tool__output-placeholder">
+                    <div className="ai-tool__placeholder-icon">🎨</div>
+                    <p>{t('ui.fillInputs', { defaultValue: 'Fill in the inputs on the left and click' })} <strong>{t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}</strong>.</p>
+                    <div className="ai-tool__placeholder-features">
+                      <span>🖼 DALL·E 3</span>
+                      <span>⚡ {t('ui.realTimeStreaming', { defaultValue: '~15 seconds' })}</span>
+                      <span>⬇️ {t('ui.downloadImage', { defaultValue: 'Download' })}</span>
+                    </div>
                   </div>
+                )}
+                {isGeneratingImage && (
+                  <div className="ai-tool__image-loading">
+                    <div className="ai-tool__image-spinner" />
+                    <p>Generating your logo with DALL·E 3…</p>
+                  </div>
+                )}
+                {imageError && (
+                  <div className="alert alert-error">⚠️ {imageError}</div>
                 )}
                 {generatedImage && (
                   <motion.div
-                    className="ai-tool__image-result"
+                    className="ai-tool__image-result ai-tool__image-result--full"
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                   >
-                    <img src={generatedImage} alt="Generated logo" className="ai-tool__generated-img" />
-                    <a
-                      href={generatedImage}
-                      download="logo.png"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn btn-secondary btn-sm ai-tool__image-download"
-                    >
-                      ⬇️ {t('ui.downloadImage', { defaultValue: 'Download Image' })}
-                    </a>
+                    <img src={generatedImage} alt={`${inputs.brand_name || ''} logo`} className="ai-tool__generated-img" />
+                    <p className="ai-tool__image-caption">
+                      <strong>{inputs.brand_name}</strong> · {inputs.style} · {inputs.industry}
+                      {inputs.colors ? ` · ${inputs.colors}` : ''}
+                    </p>
+                    <div className="ai-tool__image-actions">
+                      <a href={generatedImage} download="logo.png" target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
+                        ⬇️ {t('ui.downloadImage', { defaultValue: 'Download' })}
+                      </a>
+                      <button className="btn btn-ghost btn-sm" onClick={handleGenerateImage} disabled={isGeneratingImage}>
+                        🔄 {t('ui.regenerate', { defaultValue: 'Regenerate' })}
+                      </button>
+                    </div>
                   </motion.div>
                 )}
-              </div>
+              </>
+            ) : (
+              /* ── Standard text output ── */
+              <>
+                {!output && !isStreaming && (
+                  <div className="ai-tool__output-placeholder">
+                    <div className="ai-tool__placeholder-icon">✨</div>
+                    <p>{t('ui.fillInputs', { defaultValue: 'Fill in the inputs on the left and click' })} <strong>{t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}</strong>.</p>
+                    <div className="ai-tool__placeholder-features">
+                      <span>{t('ui.structuredOutput', { defaultValue: '📊 Structured output' })}</span>
+                      <span>{t('ui.categorySpecific', { defaultValue: '🎯 Category-specific' })}</span>
+                      <span>{t('ui.realTimeStreaming', { defaultValue: '⚡ Real-time streaming' })}</span>
+                    </div>
+                  </div>
+                )}
+                <AnimatePresence>
+                  {(output || isStreaming) && (
+                    <motion.div
+                      className="ai-tool__output-content markdown-output"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown>
+                      {isStreaming && <span className="ai-tool__cursor">▋</span>}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
             )}
           </div>
         </div>

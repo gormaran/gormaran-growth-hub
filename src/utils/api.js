@@ -12,7 +12,7 @@ async function getAuthHeader() {
 }
 
 // Stream AI response using fetch + ReadableStream
-export async function streamAIResponse({ categoryId, toolId, inputs, onChunk, onDone, onError }) {
+export async function streamAIResponse({ categoryId, toolId, inputs, onChunk, onDone, onError, signal }) {
   try {
     const authHeaders = await getAuthHeader();
     const response = await fetch(`${API_URL}/api/ai/generate`, {
@@ -22,6 +22,7 @@ export async function streamAIResponse({ categoryId, toolId, inputs, onChunk, on
         ...authHeaders,
       },
       body: JSON.stringify({ categoryId, toolId, inputs }),
+      signal,
     });
 
     if (!response.ok) {
@@ -60,6 +61,7 @@ export async function streamAIResponse({ categoryId, toolId, inputs, onChunk, on
     }
     onDone?.();
   } catch (err) {
+    if (err.name === 'AbortError') return; // user stopped — no error shown
     onError?.(err.message || 'Failed to generate response');
   }
 }

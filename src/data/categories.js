@@ -509,9 +509,9 @@ Keep total read time to 3-5 minutes. One main idea per issue. Personality > perf
       {
         id: 'logo-generator',
         name: 'Logo Generator',
-        description: 'Generate professional logo concepts with visual direction, color palettes, typography stacks and ready-to-use prompts for AI image tools',
+        description: 'Generate a professional logo image for your brand using DALL·E 3 — just fill in your brand details and get a ready-to-use visual in seconds.',
         icon: '🎨',
-        generatesImage: true,
+        imageOnly: true,
         inputs: [
           { id: 'brand_name', label: 'Brand Name', type: 'text', placeholder: 'e.g., NovaSpark', required: true },
           { id: 'industry', label: 'Industry / Niche', type: 'text', placeholder: 'e.g., SaaS, Fitness coaching, Organic food', required: true },
