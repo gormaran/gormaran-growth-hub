@@ -12,6 +12,7 @@ admin.initializeApp({
 
 const aiRoutes = require("./routes/ai");
 const stripeRoutes = require("./routes/stripe");
+const imageRoutes = require("./routes/imageGeneration");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -77,6 +78,7 @@ app.get("/health", (req, res) => {
 ================================ */
 app.use("/api/ai", aiRoutes);
 app.use("/api/stripe", stripeRoutes);
+app.use("/api/image", imageRoutes);
 
 /* ===============================
    🔥 404

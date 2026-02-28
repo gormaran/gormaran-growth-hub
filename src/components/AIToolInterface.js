@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { streamAIResponse } from '../utils/api';
+import { streamAIResponse, generateLogoImage } from '../utils/api';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
 import ReactMarkdown from 'react-markdown';
@@ -75,6 +75,9 @@ export default function AIToolInterface({ tool, categoryId }) {
   const finalOutputRef = useRef('');
   const [history, setHistory] = useState([]);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [imageError, setImageError] = useState('');
 
   const { currentUser } = useAuth();
   const { canUseSpecificTool, trackUsage, subscription } = useSubscription();
@@ -86,6 +89,8 @@ export default function AIToolInterface({ tool, categoryId }) {
     setOutput('');
     setError('');
     setIsStreaming(false);
+    setGeneratedImage(null);
+    setImageError('');
   }, [tool?.id]);
 
   // Load history when tool changes
@@ -187,6 +192,20 @@ export default function AIToolInterface({ tool, categoryId }) {
   function handleStop() {
     abortRef.current = true;
     setIsStreaming(false);
+  }
+
+  async function handleGenerateImage() {
+    setImageError('');
+    setGeneratedImage(null);
+    setIsGeneratingImage(true);
+    try {
+      const { imageUrl } = await generateLogoImage({ ...inputs, _language: i18n.language });
+      setGeneratedImage(imageUrl);
+    } catch (err) {
+      setImageError(err.message || 'Failed to generate image');
+    } finally {
+      setIsGeneratingImage(false);
+    }
   }
 
   async function handleCopy() {
@@ -376,6 +395,48 @@ export default function AIToolInterface({ tool, categoryId }) {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Image generation block — only for tools with generatesImage: true */}
+            {tool.generatesImage && output && !isStreaming && (
+              <div className="ai-tool__image-block">
+                <div className="ai-tool__image-divider">
+                  <span>🎨 {t('ui.generateLogoImage', { defaultValue: 'Generate Logo Image with DALL·E 3' })}</span>
+                </div>
+                <button
+                  className="btn btn-primary ai-tool__image-btn"
+                  onClick={handleGenerateImage}
+                  disabled={isGeneratingImage}
+                >
+                  {isGeneratingImage
+                    ? `⏳ ${t('ui.generatingImage', { defaultValue: 'Generating image...' })}`
+                    : `🖼 ${t('ui.generateImage', { defaultValue: 'Generate Logo Image' })}`}
+                </button>
+                {imageError && (
+                  <div className="alert alert-error" style={{ marginTop: '0.75rem' }}>
+                    ⚠️ {imageError}
+                  </div>
+                )}
+                {generatedImage && (
+                  <motion.div
+                    className="ai-tool__image-result"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <img src={generatedImage} alt="Generated logo" className="ai-tool__generated-img" />
+                    <a
+                      href={generatedImage}
+                      download="logo.png"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-secondary btn-sm ai-tool__image-download"
+                    >
+                      ⬇️ {t('ui.downloadImage', { defaultValue: 'Download Image' })}
+                    </a>
+                  </motion.div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

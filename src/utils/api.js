@@ -99,6 +99,24 @@ export async function createPortalSession() {
   return response.json();
 }
 
+// Generate logo image via DALL-E 3
+export async function generateLogoImage(inputs) {
+  const authHeaders = await getAuthHeader();
+  const response = await fetch(`${API_URL}/api/image/generate-logo`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders,
+    },
+    body: JSON.stringify({ inputs }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to generate image');
+  }
+  return response.json(); // { imageUrl, revisedPrompt }
+}
+
 // Get current subscription status
 export async function getSubscriptionStatus() {
   const authHeaders = await getAuthHeader();

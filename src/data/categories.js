@@ -511,6 +511,7 @@ Keep total read time to 3-5 minutes. One main idea per issue. Personality > perf
         name: 'Logo Generator',
         description: 'Generate professional logo concepts with visual direction, color palettes, typography stacks and ready-to-use prompts for AI image tools',
         icon: '🎨',
+        generatesImage: true,
         inputs: [
           { id: 'brand_name', label: 'Brand Name', type: 'text', placeholder: 'e.g., NovaSpark', required: true },
           { id: 'industry', label: 'Industry / Niche', type: 'text', placeholder: 'e.g., SaaS, Fitness coaching, Organic food', required: true },
