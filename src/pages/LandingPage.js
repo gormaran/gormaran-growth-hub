@@ -729,11 +729,11 @@ export default function LandingPage() {
       {/* ── SECTION 4: What You Get ── */}
       <WhatYouGet />
 
-      {/* ── SECTION 5: Why Not ChatGPT ── */}
-      <WhyNotChatGPT />
-
-      {/* ── SECTION 6: Instagram Compact ── */}
+      {/* ── SECTION 5: Instagram Compact ── */}
       <InstagramCompact />
+
+      {/* ── SECTION 6: Why Not ChatGPT ── */}
+      <WhyNotChatGPT />
 
       {/* ── SECTION 7: Client Logos ── */}
       <ClientLogos />
