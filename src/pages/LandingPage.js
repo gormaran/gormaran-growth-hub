@@ -232,7 +232,7 @@ const GROW_CATS = [
   },
   {
     nameKey: 'cat.content.name', emoji: '✍️',
-    tools: ['tool.blog-post.name','tool.newsletter.name','tool.video-script.name'],
+    tools: ['tool.blog-post.name','tool.newsletter.name','tool.video-script.name','tool.logo-generator.name'],
   },
   {
     nameKey: 'cat.digital.name', emoji: '🛠️',
