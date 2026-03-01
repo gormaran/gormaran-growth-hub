@@ -5,7 +5,17 @@ const { verifyToken } = require('../middleware/firebaseAuth');
 
 const router = express.Router();
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Lazy init — avoids crashing the server at startup if OPENAI_API_KEY is not yet set
+let openai = null;
+function getOpenAI() {
+  if (!openai) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY is not configured on the server.');
+    }
+    openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return openai;
+}
 
 // 10 images per hour per IP
 const imageLimiter = rateLimit({
@@ -30,7 +40,7 @@ router.post('/generate-logo', imageLimiter, verifyToken, async (req, res) => {
   const prompt = `A professional, minimalist logo for "${inputs.brand_name}", a ${inputs.industry || 'business'} brand. Style: ${inputs.style}${colorNote}${valuesNote}. Clean vector-style logo isolated on a pure white background. No background gradients. High quality, scalable, suitable for business cards, websites and app icons.`;
 
   try {
-    const response = await openai.images.generate({
+    const response = await getOpenAI().images.generate({
       model: 'dall-e-3',
       prompt,
       n: 1,
