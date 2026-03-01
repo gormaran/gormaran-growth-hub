@@ -729,16 +729,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 5: Instagram Compact ── */}
-      <InstagramCompact />
-
-      {/* ── SECTION 6: Why Not ChatGPT ── */}
+      {/* ── SECTION 5: Why Not ChatGPT ── */}
       <WhyNotChatGPT />
 
-      {/* ── SECTION 7: Client Logos ── */}
-      <ClientLogos />
+      {/* ── SECTION 6: Instagram Compact ── */}
+      <InstagramCompact />
 
-      {/* ── SECTION 8: Plans ── */}
+      {/* ── SECTION 7: Plans ── */}
       <section className="landing__plans section">
         <div className="container">
           <AnimatedSection>
@@ -762,7 +759,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 8: Stop Wasting Time ── */}
+      {/* ── SECTION 8: Client Logos ── */}
+      <ClientLogos />
+
+      {/* ── SECTION 9: Stop Wasting Time ── */}
       <section className="landing__cta-full section">
         <div className="container">
           <AnimatedSection>
