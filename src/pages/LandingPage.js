@@ -692,7 +692,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 2: Stats ── */}
+      {/* ── SECTION 2: How It Works ── */}
+      <section id="how-it-works" className="landing__how section">
+        <div className="container">
+          <AnimatedSection>
+            <h2 className="section-title">
+              {t('landing.how.title')}
+            </h2>
+          </AnimatedSection>
+          <HowItWorks />
+        </div>
+      </section>
+
+      {/* ── SECTION 3: Stats ── */}
       <section className="landing__stats">
         <div className="container">
           <motion.div
@@ -714,28 +726,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 3: What You Get ── */}
+      {/* ── SECTION 4: What You Get ── */}
       <WhatYouGet />
 
-      {/* ── SECTION 4: Why Not ChatGPT ── */}
+      {/* ── SECTION 5: Why Not ChatGPT ── */}
       <WhyNotChatGPT />
 
-      {/* ── SECTION 5: How It Works ── */}
-      <section id="how-it-works" className="landing__how section">
-        <div className="container">
-          <AnimatedSection>
-            <h2 className="section-title">
-              {t('landing.how.title')}
-            </h2>
-          </AnimatedSection>
-          <HowItWorks />
-        </div>
-      </section>
+      {/* ── SECTION 6: Instagram Compact ── */}
+      <InstagramCompact />
 
-      {/* ── SECTION 6: Client Logos ── */}
+      {/* ── SECTION 7: Client Logos ── */}
       <ClientLogos />
 
-      {/* ── SECTION 7: Plans ── */}
+      {/* ── SECTION 8: Plans ── */}
       <section className="landing__plans section">
         <div className="container">
           <AnimatedSection>
@@ -758,9 +761,6 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
-
-      {/* ── SECTION 8: Instagram Compact ── */}
-      <InstagramCompact />
 
       {/* ── SECTION 8: Stop Wasting Time ── */}
       <section className="landing__cta-full section">
