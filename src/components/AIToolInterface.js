@@ -215,9 +215,28 @@ export default function AIToolInterface({ tool, categoryId }) {
     }
   }
 
+  function stripMarkdown(text) {
+    return text
+      .replace(/```[\w]*\n?([\s\S]*?)```/g, '$1')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/\*{1,3}([^*\n]+)\*{1,3}/g, '$1')
+      .replace(/_{1,3}([^_\n]+)_{1,3}/g, '$1')
+      .replace(/~~([^~]+)~~/g, '$1')
+      .replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/^>\s+/gm, '')
+      .replace(/^[-*_]{3,}\s*$/gm, '')
+      .replace(/^\|[-| :]+\|$/gm, '')
+      .replace(/^\|(.+)\|$/gm, (_, cells) =>
+        cells.split('|').map(c => c.trim()).filter(Boolean).join('  '))
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
   async function handleCopy() {
     if (!output) return;
-    await navigator.clipboard.writeText(output);
+    await navigator.clipboard.writeText(stripMarkdown(output));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
