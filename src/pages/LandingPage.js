@@ -704,7 +704,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 3: Stats ── */}
+      {/* ── SECTION 3: What You Get ── */}
+      <WhatYouGet />
+
+      {/* ── SECTION 4: Stats ── */}
       <section className="landing__stats">
         <div className="container">
           <motion.div
@@ -725,9 +728,6 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
-
-      {/* ── SECTION 4: What You Get ── */}
-      <WhatYouGet />
 
       {/* ── SECTION 5: Instagram Compact ── */}
       <InstagramCompact />
