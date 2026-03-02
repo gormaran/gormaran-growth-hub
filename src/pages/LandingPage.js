@@ -105,7 +105,7 @@ function HeroPreview() {
 // ── Stats ─────────────────────────────────────────────────────────
 const STATS = [
   { value: '10', unit: '',  labelKey: 'landing.stats.categories' },
-  { value: '32', unit: '+', labelKey: 'landing.stats.tools' },
+  { value: '30', unit: '+', labelKey: 'landing.stats.tools' },
   { value: '99', unit: '%', labelKey: 'landing.stats.precision' },
   { value: '10', unit: 'x', labelKey: 'landing.stats.faster' },
 ];
