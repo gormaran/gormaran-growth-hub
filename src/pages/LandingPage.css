@@ -1658,7 +1658,7 @@
   .landing__plan-flip__inner { transform-style: flat; height: auto; position: relative; }
   .landing__plan-flip__front,
   .landing__plan-flip__back { position: relative; inset: auto; backface-visibility: visible; -webkit-backface-visibility: visible; }
-  .landing__plan-flip__back { display: none; }
+  .landing__plan-flip__back { display: none; transform: none; }
   .landing__plan-flip.is-flipped .landing__plan-flip__front { display: none; }
   .landing__plan-flip.is-flipped .landing__plan-flip__inner { transform: none; }
   .landing__plan-flip.is-flipped .landing__plan-flip__back { display: flex; }
