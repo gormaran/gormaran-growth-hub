@@ -53,8 +53,22 @@ const CATEGORY_PROMPTS = {
       buildUserMessage: (inputs) => `Conduct a strategic SWOT analysis:\n\n**Company/Product:** ${inputs.company}\n**Business Description:** ${inputs.description}\n**Strategic Goal:** ${inputs.goal || 'Grow and scale the business'}\n\nProvide the full SWOT analysis with TOWS strategies.`,
     },
     'business-strategy-developer': {
-      systemPrompt: `You are a senior business strategist with 20+ years of experience. Given a company's context and competitors, deliver a comprehensive Business Strategy covering: 1) Executive Summary with strategic direction, 2) Competitive Landscape Analysis based on competitor URLs, 3) Market Positioning & Value Proposition, 4) Strategic SWOT Snapshot, 5) Top 5 Strategic Priorities with 90-day/6-month/12-month milestones, 6) Customer Acquisition Strategy tailored to location and industry, 7) Revenue & Growth Levers (top 3), 8) Local/Regional Competitive Advantage, 9) KPIs & Success Metrics (8-10 KPIs), 10) 90-Day Action Plan week by week. Be highly specific — reference the company name, competitors, location, and industry throughout. No generic advice. CRITICAL: You must always complete every section fully. Never end a response mid-sentence, mid-list, or mid-section. If space is limited, write more concisely but always finish every section completely with a proper closing.`,
-      buildUserMessage: (inputs) => `Build a full business strategy for:\n\n**Company:** ${inputs.company_name}\n**Website:** ${inputs.company_url || 'Not provided'}\n**Industry:** ${inputs.industry}\n**Product/Service:** ${inputs.product_service}\n**Competitors:** ${inputs.competitors || 'Not provided'}\n**Location:** ${inputs.location || 'Not specified'}\n**Target Customer:** ${inputs.target_customer || 'Not specified'}\n**Main Goal:** ${inputs.goal || 'Grow and scale the business'}\n\nDeliver the complete business strategy with all 10 sections. Every section must be fully completed — never leave any section or list unfinished.`,
+      systemPrompt: `You are a senior business strategist with 20+ years of experience. Deliver a complete Business Strategy document with EXACTLY these 10 sections. CRITICAL RULES: (1) You MUST complete ALL 10 sections — never stop before section 10 is finished. (2) Use bullet points and short tables instead of long paragraphs to stay concise. (3) Allocate space evenly — do not over-expand early sections at the expense of later ones. (4) Never end mid-sentence, mid-list, or mid-section. Each section must be fully closed before moving to the next.
+
+SECTION FORMAT:
+1. RESUMEN EJECUTIVO — 3-4 bullet points covering strategic direction and 12-month goals.
+2. ANÁLISIS DE LA COMPETENCIA — Table with: Competitor | Strengths | Weaknesses | Threat Level. Then 2-3 bullets on the competitive window.
+3. POSICIONAMIENTO Y PROPUESTA DE VALOR — Positioning statement + table: Segment | Value Proposition | Key Message (3-4 rows).
+4. DAFO ESTRATÉGICO — 4 compact tables: Fortalezas (4 items), Debilidades (4 items), Oportunidades (4 items), Amenazas (4 items). Each item: ID | Description | Strategic Impact.
+5. TOP 5 PRIORIDADES — For each priority: Name + table with 3 rows: 90 días | 6 meses | 12 meses, listing 2-3 concrete milestones per period.
+6. ESTRATEGIA DE CAPTACIÓN — Table: Channel | Tactic | Expected Result. Cover 4-5 channels specific to industry and location.
+7. PALANCAS DE INGRESOS — 3 levers. Each: Name + 3 bullet actions + expected impact.
+8. VENTAJA COMPETITIVA LOCAL/REGIONAL — 4-5 bullets on specific local/regional advantages. Include geographic, cultural, and market-specific factors.
+9. KPIs Y MÉTRICAS — Table with 8-10 KPIs: KPI | Current Baseline | 6-Month Target | 12-Month Target | Measurement Tool.
+10. PLAN DE ACCIÓN 90 DÍAS — Week-by-week table: Week | Priority Focus | Key Actions (2-3 per week) | Owner. Cover all 12 weeks.
+
+Be highly specific — reference the company name, competitors, location, and industry in every section. No generic advice.`,
+      buildUserMessage: (inputs) => `Build a full business strategy for:\n\n**Company:** ${inputs.company_name}\n**Website:** ${inputs.company_url || 'Not provided'}\n**Industry:** ${inputs.industry}\n**Product/Service:** ${inputs.product_service}\n**Competitors:** ${inputs.competitors || 'Not provided'}\n**Location:** ${inputs.location || 'Not specified'}\n**Target Customer:** ${inputs.target_customer || 'Not specified'}\n**Main Goal:** ${inputs.goal || 'Grow and scale the business'}\n\nDeliver ALL 10 sections completely. Use bullet points and tables to be concise. Section 10 (Plan de Acción 90 Días) must include all 12 weeks. Do not stop until every section is 100% complete.`,
       maxTokens: 8000,
     },
   },
