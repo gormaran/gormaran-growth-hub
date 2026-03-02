@@ -118,6 +118,8 @@
   "tool.user-stories.desc": "Generate complete Agile story packages with acceptance criteria, story points, MoSCoW priority and sprint planning",
   "tool.instagram-audit.name": "Instagram Express Audit",
   "tool.instagram-audit.desc": "Analyze your Instagram profile in 5 minutes and get the 3 priority actions to optimize your bio, content strategy, and CTA for faster growth",
+  "tool.business-strategy-developer.name": "Business Strategy Developer",
+  "tool.business-strategy-developer.desc": "Build a full competitive business strategy with market positioning, growth levers, KPIs and a 90-day action plan based on your context and competitors",
   "tool.n8n-workflow.name": "n8n Workflow Designer",
   "tool.n8n-workflow.desc": "Design complete n8n automation workflows with triggers, nodes, logic conditions and step-by-step setup instructions",
 
@@ -209,7 +211,7 @@
   "landing.how.tab3.tool": "Client Proposal Generator",
   "landing.how.tab3.benefit": "Proposals in 5 minutes, not 3 hours",
   "landing.how.step1.title": "Choose Your Tool",
-  "landing.how.step1.desc": "Pick from 35+ specialized AI tools across 10 business categories — from marketing to finance.",
+  "landing.how.step1.desc": "Pick from 30+ specialized AI tools across 10 business categories — from marketing to finance.",
   "landing.how.step2.title": "Describe Your Goal",
   "landing.how.step2.desc": "Fill in a few simple inputs. No complex prompts, no technical knowledge needed.",
   "landing.how.step3.title": "Get AI Results",
@@ -231,7 +233,7 @@
   "landing.whychatgpt.vs.1.generic": "Trial-and-error prompting",
   "landing.whychatgpt.vs.1.gormaran": "Professional quality in minutes",
   "landing.whychatgpt.vs.2.generic": "Same tool for everything",
-  "landing.whychatgpt.vs.2.gormaran": "35+ expert-built tools",
+  "landing.whychatgpt.vs.2.gormaran": "30+ expert-built tools",
   "landing.whychatgpt.vs.3.generic": "Raw text you need to edit",
   "landing.whychatgpt.vs.3.gormaran": "Ready to publish — zero rewriting",
 
