@@ -370,6 +370,55 @@ Be specific to the business provided, not generic. Every item should reference t
         buildUserMessage: (inputs) =>
           `Conduct a strategic SWOT analysis:\n\n**Company/Product:** ${inputs.company}\n**Business Description:** ${inputs.description}\n**Strategic Goal:** ${inputs.goal || 'Grow and scale the business'}\n\nProvide the full SWOT analysis with TOWS strategies and priority actions.`,
       },
+      {
+        id: 'business-strategy-developer',
+        name: 'Business Strategy Developer',
+        description: 'Build a full competitive business strategy with market positioning, growth levers, KPIs and a 90-day action plan based on your context and competitors',
+        icon: '🧭',
+        inputs: [
+          { id: 'company_name', label: 'Company Name', type: 'text', placeholder: 'e.g., Gormaran', required: true },
+          { id: 'company_url', label: 'Company Website', type: 'text', placeholder: 'https://yourcompany.com' },
+          { id: 'industry', label: 'Industry / Sector', type: 'text', placeholder: 'e.g., Digital marketing, SaaS, Retail...', required: true },
+          { id: 'product_service', label: 'Main Product or Service', type: 'textarea', placeholder: 'Describe what you sell or offer and who it is for', required: true },
+          { id: 'competitors', label: 'Competitor Websites (up to 3)', type: 'text', placeholder: 'https://competitor1.com, https://competitor2.com, https://competitor3.com' },
+          { id: 'location', label: 'Location', type: 'text', placeholder: 'e.g., Vitoria-Gasteiz, Álava, España' },
+          { id: 'target_customer', label: 'Target Customer', type: 'text', placeholder: 'e.g., Small business owners aged 30-50, local service companies' },
+          { id: 'goal', label: 'Main Business Goal', type: 'text', placeholder: 'e.g., Double revenue in 12 months, enter new market' },
+        ],
+        systemPrompt: `You are a senior business strategist and consultant with 20+ years of experience helping businesses define and execute winning strategies. You combine McKinsey, BCG, and Porter's competitive frameworks with practical, grounded guidance.
+
+Given the company information, competitive context, and location, deliver a comprehensive Business Strategy:
+
+1. **Executive Summary** — Strategic positioning statement and the single most important strategic direction to pursue
+
+2. **Competitive Landscape Analysis** — Based on the competitor URLs provided:
+   - What each competitor likely focuses on (positioning, strengths, weaknesses)
+   - Key gaps in the market they are not addressing
+   - How the company can differentiate and win
+
+3. **Market Positioning & Value Proposition** — Clear, differentiated positioning statement and core value proposition. What makes this company uniquely worth choosing.
+
+4. **Strategic SWOT Snapshot** — Concise internal/external assessment (3–4 items per quadrant) specific to the company and its context
+
+5. **Top 5 Strategic Priorities** — The five initiatives with the highest impact:
+   - Priority name and rationale
+   - Expected outcome
+   - 90-day, 6-month, 12-month milestones per priority
+
+6. **Customer Acquisition Strategy** — Primary and secondary channels tailored to the industry, location, and target customer. Include both online and offline if relevant.
+
+7. **Revenue & Growth Levers** — Top 3 concrete growth opportunities (pricing, new segments, partnerships, retention, upsell, etc.)
+
+8. **Local / Regional Advantage** — Specific ways to leverage the geographic context to build defensible, hard-to-replicate advantages (local SEO, community, events, partnerships)
+
+9. **KPIs & Success Metrics** — 8–10 KPIs with targets and measurement frequency
+
+10. **90-Day Action Plan** — Week-by-week breakdown of the first 12 weeks: what to do, who owns it, what success looks like
+
+Be highly specific to the business provided. Reference the company name, competitors, location, and industry throughout. Avoid generic advice.`,
+        buildUserMessage: (inputs) =>
+          `Build a full business strategy for:\n\n**Company:** ${inputs.company_name}\n**Website:** ${inputs.company_url || 'Not provided'}\n**Industry:** ${inputs.industry}\n**Product/Service:** ${inputs.product_service}\n**Competitors:** ${inputs.competitors || 'Not provided'}\n**Location:** ${inputs.location || 'Not specified'}\n**Target Customer:** ${inputs.target_customer || 'Not specified'}\n**Main Goal:** ${inputs.goal || 'Grow and scale the business'}\n\nDeliver the complete business strategy with all 10 sections.`,
+      },
     ],
   },
   {

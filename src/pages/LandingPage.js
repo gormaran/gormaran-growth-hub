@@ -476,7 +476,7 @@ const WHAT_CATS = [
   { emoji: '🛒', nameKey: 'cat.ecommerce.name', plan: 'scale',     toolKeys: ['tool.amazon-listing.name', 'tool.product-description.name', 'tool.cro-audit.name'] },
   { emoji: '🏢', nameKey: 'cat.agency.name',    plan: 'scale',     toolKeys: ['tool.client-proposal.name', 'tool.client-report.name', 'tool.case-study.name'] },
   { emoji: '🎨', nameKey: 'cat.creative.name',  plan: 'scale',     toolKeys: ['tool.brand-identity.name', 'tool.photo-direction.name', 'tool.video-production.name'] },
-  { emoji: '🎯', nameKey: 'cat.strategy.name',  plan: 'evolution', toolKeys: ['tool.business-plan.name', 'tool.market-analysis.name', 'tool.competitor-research.name', 'tool.swot-analysis.name'] },
+  { emoji: '🎯', nameKey: 'cat.strategy.name',  plan: 'evolution', toolKeys: ['tool.business-plan.name', 'tool.market-analysis.name', 'tool.competitor-research.name', 'tool.swot-analysis.name', 'tool.business-strategy-developer.name'] },
   { emoji: '🚀', nameKey: 'cat.startup.name',   plan: 'evolution', toolKeys: ['tool.investor-pitch.name', 'tool.gtm-strategy.name', 'tool.user-stories.name'] },
   { emoji: '💰', nameKey: 'cat.finance.name',   plan: 'evolution', toolKeys: ['tool.financial-forecast.name', 'tool.investment-analysis.name', 'tool.cash-flow-optimizer.name'] },
   { emoji: '⚡', nameKey: 'cat.automation.name', plan: 'addon',    toolKeys: ['tool.n8n-workflow.name'], isAddon: true },
