@@ -303,36 +303,52 @@ Include specific data points, frameworks, and strategic insights throughout.`,
       {
         id: 'competitor-research',
         name: 'Competitor Research',
-        description: 'Map your competitive landscape with detailed profiles, feature comparison matrices, battle cards and positioning strategy',
+        description: 'Análisis competitivo completo: perfiles, mapa de posicionamiento, 4 P\'s, oportunidades de mercado y estrategia de diferenciación',
         icon: '🔬',
         inputs: [
-          { id: 'your_product', label: 'Your Product / Service', type: 'text', placeholder: 'e.g., AI-powered project management tool', required: true },
-          { id: 'competitors', label: 'Main Competitors (name up to 4)', type: 'text', placeholder: 'e.g., Asana, Monday.com, ClickUp, Notion', required: true },
-          { id: 'differentiator', label: 'Your Key Differentiator', type: 'text', placeholder: 'e.g., AI auto-prioritization that saves 5 hours/week' },
-          { id: 'target_customer', label: 'Target Customer', type: 'text', placeholder: 'e.g., Startup founders and small teams' },
+          { id: 'business_name', label: 'Your Business Name', type: 'text', placeholder: 'e.g., Gormaran', required: true },
+          { id: 'business_url', label: 'Your Business Website', type: 'text', placeholder: 'e.g., https://gormaran.io', required: true },
+          { id: 'your_product', label: 'Your Product / Service', type: 'text', placeholder: 'e.g., AI-powered marketing tools for SMBs', required: true },
+          { id: 'target_customer', label: 'Target Customer', type: 'text', placeholder: 'e.g., Startup founders and small business owners', required: true },
+          { id: 'competitors', label: 'Main Competitors (up to 4, name or URL)', type: 'text', placeholder: 'e.g., HubSpot, Semrush, Mailchimp', required: true },
+          { id: 'differentiator', label: 'Your Key Differentiator', type: 'text', placeholder: 'e.g., All-in-one AI tools in one hub, no prompt engineering needed' },
         ],
-        systemPrompt: `You are a competitive intelligence expert with deep expertise in strategic positioning, win/loss analysis, and market differentiation. You have conducted competitive research for Fortune 500 companies and fast-growing startups.
+        systemPrompt: `You are a competitive intelligence expert. Be concise, direct, and analytical — use tables and bullets only, no long paragraphs. Base your analysis on what can be inferred from the business description, website, and competitors provided. Flag assumptions clearly.
 
-Produce a detailed competitive analysis report:
+Deliver ALL 8 sections completely. NEVER stop before section 8 is finished.
 
-1. **Competitive Landscape Overview** — Market map categorizing competitors (direct, indirect, potential future)
-2. **Competitor Profiles** — For each competitor listed:
-   - Core product & key features
-   - Pricing model & estimated revenue tier
-   - Target customer & positioning
-   - Key strengths (3-5)
-   - Key weaknesses (3-5)
-   - Recent moves or news
-3. **Feature Comparison Matrix** — Table comparing your product vs each competitor across 10-12 key dimensions (rate each: ✅ Strong / ⚠️ Partial / ❌ Missing)
-4. **Positioning Map** — 2x2 grid analysis (you define the axes based on the market) showing where each player sits
-5. **Competitive Moats Analysis** — What makes each competitor hard to displace and what moats they have (network effects, switching costs, data, brand, etc.)
-6. **Your Competitive Advantages** — Based on analysis, where you genuinely win and why
-7. **Battle Cards** — For each competitor: 3 reasons customers choose YOU over THEM and 3 objection handlers
-8. **Strategic Recommendations** — 5 specific actions to strengthen your competitive position
+**1. PERFILES DE COMPETIDORES**
+Table: Competitor | Website | Product/Service | Target Customer | Price Range | Key Strengths | Key Weaknesses
 
-Be direct and analytical. Flag where assumptions are made.`,
+**2. RECOPILACIÓN DE DATOS**
+Table: Competitor | Social Media Presence | Pricing Model | Perceived Quality | Customer Service | Review Score (est.) | Notable Reviews/Complaints
+
+**3. MAPA DE POSICIONAMIENTO**
+Define 2 axes relevant to this market (e.g., Price vs Quality, Specialization vs Generalism). Place your business and each competitor on the map. Describe the quadrant each occupies and what it means strategically.
+
+**4. ANÁLISIS DE LAS 4 P'S**
+Table with 5 rows (your business + each competitor): Company | Producto | Precio | Plaza (distribución) | Promoción
+
+**5. COMPARATIVA DE DIFERENCIACIÓN**
+Table: Dimension | Tu empresa | Competencia 1 | Competencia 2 | Competencia 3
+Dimensions: Cliente objetivo, Personalidad de marca, Producto, Fortalezas, Debilidades, Marketing
+
+**6. OPORTUNIDADES DE MERCADO**
+- 3–5 unserved niches or gaps identified from the competitive analysis
+- For each: opportunity description + why competitors are missing it + how your business can capture it
+
+**7. TENDENCIAS DEL MERCADO**
+- 3–5 trends shaping this market in the next 12–24 months
+- For each: trend + how competitors are (or aren't) adapting + strategic implication for your business
+
+**8. ESTRATEGIA DE DIFERENCIACIÓN**
+- Pricing adjustments: 2 specific recommendations
+- Marketing improvements: 2 specific recommendations
+- Customer experience: 2 specific recommendations
+- Overall positioning statement to adopt`,
         buildUserMessage: (inputs) =>
-          `Conduct competitive research:\n\n**My Product:** ${inputs.your_product}\n**Competitors to Analyze:** ${inputs.competitors}\n**My Key Differentiator:** ${inputs.differentiator || 'Not specified'}\n**Target Customer:** ${inputs.target_customer || 'General market'}\n\nProvide the full competitive analysis with all sections and battle cards.`,
+          `Conduct a complete competitive analysis:\n\n**My Business:** ${inputs.business_name}\n**My Website:** ${inputs.business_url}\n**My Product/Service:** ${inputs.your_product}\n**Target Customer:** ${inputs.target_customer}\n**Competitors to Analyze:** ${inputs.competitors}\n**My Key Differentiator:** ${inputs.differentiator || 'Not specified'}\n\nDeliver all 8 sections completely. Use tables and bullets only. Never stop before section 8 is finished.`,
+        maxTokens: 8000,
       },
       {
         id: 'swot-analysis',
