@@ -51,6 +51,38 @@ function FormField({ field, value, onChange, toolId }) {
     );
   }
 
+  if (field.type === 'multiselect') {
+    const selected = value ? value.split(', ').filter(Boolean) : [];
+    return (
+      <div className="form-group">
+        <label className="form-label">
+          {label}
+          {field.required && <span className="required-mark"> *</span>}
+        </label>
+        <div className="form-multiselect">
+          {field.options.map((opt) => {
+            const checked = selected.includes(opt);
+            return (
+              <label key={opt} className={`form-multiselect__option${checked ? ' form-multiselect__option--checked' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(e) => {
+                    const next = e.target.checked
+                      ? [...selected, opt]
+                      : selected.filter((o) => o !== opt);
+                    onChange(field.id, next.join(', '));
+                  }}
+                />
+                <span>{opt}</span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="form-group">
       <label className="form-label" htmlFor={field.id}>

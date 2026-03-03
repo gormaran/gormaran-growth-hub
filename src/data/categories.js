@@ -240,7 +240,7 @@ Always respond in the language specified by the user. If no language is specifie
     tools: [
       {
         id: 'business-plan',
-        name: 'Business Plan Builder',
+        name: 'Business Plan Developer',
         description: 'Generate a full investor-ready business plan with executive summary, market analysis, financial projections and GTM strategy',
         icon: '📋',
         inputs: [
@@ -1136,7 +1136,7 @@ Keep language professional but human. Avoid data dumps — every number should h
       },
       {
         id: 'case-study',
-        name: 'Case Study Builder',
+        name: 'Case Study Developer',
         description: 'Transform your client results into compelling case studies with narrative structure, headline metrics and social media versions',
         icon: '🏆',
         inputs: [
@@ -1192,6 +1192,72 @@ Create a comprehensive case study:
 **[SALES ONE-PAGER]** — 250-word condensed version for proposals`,
         buildUserMessage: (inputs) =>
           `Create a case study:\n\n**Client:** ${inputs.client_name}\n**Industry:** ${inputs.industry || 'Not specified'}\n**Challenge:** ${inputs.challenge}\n**Solution:** ${inputs.solution}\n**Results:** ${inputs.results}\n**Timeframe:** ${inputs.duration || 'Not specified'}\n\nCreate the complete case study with all sections and variations.`,
+      },
+      {
+        id: 'social-media-strategy',
+        name: 'Social Media Strategy Developer',
+        description: 'Build a complete, platform-specific social media strategy with content pillars, posting calendar, format mix and growth tactics',
+        icon: '📱',
+        inputs: [
+          { id: 'platforms', label: 'Social Media Platforms', type: 'multiselect', options: ['Instagram', 'TikTok', 'YouTube', 'LinkedIn', 'X (Twitter)', 'Facebook', 'Pinterest'], required: true },
+          { id: 'username', label: 'Your Username / Handle', type: 'text', placeholder: 'e.g., @karealde_', required: true },
+          { id: 'bio', label: 'Profile Bio / Description', type: 'textarea', placeholder: 'Paste your current bio or describe your brand, what you offer and who you help', required: true },
+          { id: 'competitors', label: 'Top 3 Competitors (@ handles)', type: 'text', placeholder: 'e.g., @competitor1, @competitor2, @competitor3', required: true },
+          { id: 'location', label: 'Location', type: 'text', placeholder: 'e.g., Barakaldo, Vizcaya. España' },
+          { id: 'goal', label: 'Strategy Objective', type: 'select', options: ['Grow followers organically', 'Generate leads and sales', 'Build brand awareness', 'Position as industry expert', 'Drive traffic to website', 'Build community & engagement'], required: true },
+          { id: 'frequency', label: 'Publishing Frequency', type: 'select', options: ['Daily (7x/week)', '5x per week', '3x per week', '2x per week', 'Weekly (1x/week)'], required: true },
+          { id: 'formats', label: 'Content Formats', type: 'multiselect', options: ['Reels / Shorts', 'Carrusel / Slideshow', 'Stories', 'Posts / Feed', 'Lives', 'Podcasts / Audio'], required: true },
+        ],
+        systemPrompt: `You are a top-tier social media strategist specializing in organic growth and content strategy for brands and creators. You create precise, platform-native strategies that consistently generate followers, engagement, and leads. Always reference the specific username, competitors, location, and platforms provided. No generic advice — everything must be tailored.
+
+Deliver a COMPLETE Social Media Strategy with ALL of these sections:
+
+**1. DIAGNÓSTICO DE PERFIL**
+- Analysis of the current bio and profile positioning
+- Strengths to leverage and gaps to fix
+- Recommended profile optimization (bio rewrite, highlights, link-in-bio)
+
+**2. ANÁLISIS DE COMPETENCIA**
+- Table: Competitor | Est. Followers | Posting Style | What's Working | Gap to Exploit
+- Top 3 content tactics being used by competitors
+- Opportunities to differentiate
+
+**3. POSICIONAMIENTO Y PILARES DE CONTENIDO**
+- Positioning statement for the profile
+- 4-5 Content Pillars with name, description, and 3 content ideas each
+
+**4. ESTRATEGIA DE FORMATOS**
+- For each selected format: recommended %, content type, best practices, and posting hook formula
+
+**5. CALENDARIO EDITORIAL (4 SEMANAS)**
+- Week-by-week table: Day | Platform | Format | Content Topic / Hook | Goal
+- Cover the full posting frequency requested
+
+**6. ESTRATEGIA DE HASHTAGS Y SEO SOCIAL**
+- 3 hashtag tiers: Niche (5), Mid (5), Broad (3)
+- SEO keywords for bio and captions
+- Location/geo tags if applicable
+
+**7. TÁCTICAS DE CRECIMIENTO ORGÁNICO**
+- 5 specific growth tactics for the selected platforms
+- Engagement loop strategy (how to turn viewers into followers into buyers)
+- Collaboration / UGC / duet strategies
+
+**8. KPIs Y MÉTRICAS CLAVE**
+- Table: KPI | Baseline | 30-day Target | 90-day Target | How to Measure
+- Minimum 6 KPIs
+
+**9. ERRORES A EVITAR**
+- Top 5 mistakes brands in this niche/location make on social media
+- How to fix each one
+
+**10. PLAN DE ACCIÓN PRIMERAS 4 SEMANAS**
+- Week-by-week action plan with specific tasks, tools, and priorities
+
+CRITICAL: Complete ALL 10 sections fully. Never stop before section 10 is finished.`,
+        buildUserMessage: (inputs) =>
+          `Build a complete social media strategy for:\n\n**Username:** ${inputs.username}\n**Platforms:** ${inputs.platforms}\n**Bio / Brand Description:** ${inputs.bio}\n**Competitors:** ${inputs.competitors}\n**Location:** ${inputs.location || 'Not specified'}\n**Strategy Goal:** ${inputs.goal}\n**Posting Frequency:** ${inputs.frequency}\n**Content Formats:** ${inputs.formats}\n\nDeliver the full strategy with all 10 sections completely finished. Reference the username, competitors and location throughout. Be specific and actionable.`,
+        maxTokens: 8000,
       },
     ],
   },

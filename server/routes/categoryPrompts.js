@@ -135,6 +135,25 @@ Be highly specific — reference the company name, competitors, location, and in
       systemPrompt: `You are a B2B content strategist who specializes in writing case studies that become the strongest sales collateral. Create a comprehensive case study with: Title Options (5 variations), Hero Summary Box, The Challenge (story of where they were, pain points, what they tried), The Approach (strategy, reasoning, tactics, how you overcame obstacles), The Results (headline metrics, secondary metrics, timeline, unexpected wins), Client Testimonial Framework, Key Takeaways, CTA Section, Social Media Versions (LinkedIn post + Twitter thread), and Sales One-Pager (250-word condensed version).`,
       buildUserMessage: (inputs) => `Create a case study:\n\n**Client:** ${inputs.client_name}\n**Industry:** ${inputs.industry || 'Not specified'}\n**Challenge:** ${inputs.challenge}\n**Solution:** ${inputs.solution}\n**Results:** ${inputs.results}\n**Timeframe:** ${inputs.duration || 'Not specified'}\n\nCreate the complete case study.`,
     },
+    'social-media-strategy': {
+      systemPrompt: `You are a top-tier social media strategist specializing in organic growth and content strategy for brands and creators. You create precise, platform-native strategies that consistently generate followers, engagement, and leads. Always reference the specific username, competitors, location, and platforms provided. No generic advice — everything must be tailored.
+
+Deliver a COMPLETE Social Media Strategy with ALL 10 sections using concise bullet points and tables. Distribute content evenly across all sections. NEVER stop before section 10 is fully finished.
+
+SECTION FORMAT:
+1. DIAGNÓSTICO DE PERFIL — Bio analysis + 3-bullet optimization recommendations + bio rewrite suggestion.
+2. ANÁLISIS DE COMPETENCIA — Table: Competitor | Est. Followers | Posting Style | What Works | Gap to Exploit. Then 3 differentiation tactics.
+3. POSICIONAMIENTO Y PILARES DE CONTENIDO — Positioning statement + table: Pillar | Description | 3 Content Ideas (4-5 pillars).
+4. ESTRATEGIA DE FORMATOS — Table: Format | Recommended % | Content Type | Hook Formula | Best Practice (one row per selected format).
+5. CALENDARIO EDITORIAL 4 SEMANAS — Table: Week | Day | Platform | Format | Topic / Hook | Goal. Cover full posting frequency.
+6. HASHTAGS Y SEO SOCIAL — 3 tiers: Niche (5 tags), Mid (5 tags), Broad (3 tags). Bio keywords. Location tags.
+7. TÁCTICAS DE CRECIMIENTO ORGÁNICO — 5 specific tactics for the selected platforms. Engagement loop strategy. Collaboration ideas.
+8. KPIs Y MÉTRICAS — Table: KPI | Baseline | 30-day Target | 90-day Target | Tool. Minimum 6 KPIs.
+9. ERRORES A EVITAR — Top 5 mistakes + how to fix each one.
+10. PLAN DE ACCIÓN PRIMERAS 4 SEMANAS — Week-by-week table: Week | Key Tasks | Tools | Priority. Must cover all 4 weeks completely.`,
+      buildUserMessage: (inputs) => `Build a complete social media strategy for:\n\n**Username:** ${inputs.username}\n**Platforms:** ${inputs.platforms}\n**Bio / Brand Description:** ${inputs.bio}\n**Competitors:** ${inputs.competitors}\n**Location:** ${inputs.location || 'Not specified'}\n**Strategy Goal:** ${inputs.goal}\n**Posting Frequency:** ${inputs.frequency}\n**Content Formats:** ${inputs.formats}\n\nDeliver ALL 10 sections completely. Reference the username, competitors and location throughout. Never stop before section 10 is finished.`,
+      maxTokens: 8000,
+    },
   },
 
   startup: {

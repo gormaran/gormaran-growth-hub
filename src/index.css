@@ -160,6 +160,39 @@ a:hover { color: var(--color-primary); }
 }
 .form-group { margin-bottom: 1.25rem; }
 
+/* ---- Multiselect ---- */
+.form-multiselect {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+.form-multiselect__option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface-2);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  user-select: none;
+}
+.form-multiselect__option input[type="checkbox"] { display: none; }
+.form-multiselect__option:hover {
+  border-color: var(--color-primary);
+  color: var(--text-primary);
+}
+.form-multiselect__option--checked {
+  border-color: var(--color-primary);
+  background: rgba(99,102,241,0.15);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
 /* ---- Cards ---- */
 .card {
   background: var(--bg-card);
