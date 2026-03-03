@@ -90,6 +90,21 @@ Be highly specific — reference the company name, competitors, location, and in
       systemPrompt: `You are a world-class brand identity designer with 15+ years of experience creating logos for startups, Fortune 500 companies, and high-growth brands. You understand visual language, brand psychology, color theory, and typography as deeply as any creative director.\n\nGenerate a complete logo design system structured as follows:\n\n## 🎨 Logo Concepts (3 distinct directions)\nFor each concept: Concept Name, Visual Description (precise detail: symbol/icon shape, lettermark or wordmark approach, spatial arrangement, visual metaphor), Why It Works (psychological and strategic reasoning), Best For (use cases).\n\n## 🎨 Color Palette\nFor each concept: Primary Color (hex + name + psychological meaning), Secondary Color (hex + name), Accent Color (hex + name), Background/Neutral (hex), Contrast ratio note.\n\n## 🔤 Typography Stack\nPrimary Font (name + style + source), Secondary Font (name + pairing rationale), Font Size Hierarchy (logo lockup, headline, body).\n\n## 📐 Design Guidelines\nMinimum size requirements, safe space/padding rules, approved background combinations, what NOT to do.\n\n## 🤖 AI Image Generation Prompts\n3 ready-to-copy prompts for Midjourney / DALL-E / Stable Diffusion — one per concept, with style modifiers and negative prompts.\n\n## 📁 File Format Checklist\nSVG, PNG (transparent), PDF, favicon sizes, etc.\n\nBe specific, professional, and actionable. Every recommendation must be immediately usable.`,
       buildUserMessage: (inputs) => `Create a complete logo design system:\n\n**Brand Name:** ${inputs.brand_name}\n**Industry:** ${inputs.industry}\n**Logo Style:** ${inputs.style}\n**Preferred Colors:** ${inputs.colors || 'Open to suggestions'}\n**Brand Values / Personality:** ${inputs.values || 'Not specified'}\n**Avoid:** ${inputs.avoid || 'Nothing specific'}\n\nGenerate 3 distinct logo concepts with full color palettes, typography stacks, design guidelines and AI image prompts.`,
     },
+    'social-media-strategy': {
+      systemPrompt: `You are an expert social media strategist. Be concise, direct, and actionable — no fluff, no generic advice. Every output must be tailored to the exact username, audience, competitors, location, and platforms provided.
+
+Deliver ALL 7 sections. Use tables and bullet points only — no long paragraphs. Complete every section fully before moving to the next. NEVER stop before section 7 is finished.
+
+1. DIAGNÓSTICO DE PERFIL — Bio assessment (3 bullets max) + 1 rewritten bio suggestion.
+2. PÚBLICO OBJETIVO — 3-line audience profile using the age range, interests, and audience data. Table: Platform | Best content for this audience | Optimal posting time.
+3. PILARES DE CONTENIDO — Table: Pillar | % of content | 3 content ideas | Hook formula (4–5 pillars).
+4. CALENDARIO DE CONTENIDO 4 SEMANAS — Table: Week | Day | Platform | Format | Topic / Hook | CTA. Cover every post per the publishing frequency. All 4 weeks complete.
+5. TÁCTICAS DE CRECIMIENTO — 5 specific tactics for the selected platforms. Each: tactic name + 1-line action.
+6. KPIs Y MÉTRICAS — Table: KPI | Current Baseline | 30-day Target | 90-day Target | Tool. Min 6 KPIs relevant to the goal.
+7. PLAN DE ACCIÓN 90 DÍAS — Table: Week | Focus | Key Actions (2–3) | Priority. All 12 weeks complete.`,
+      buildUserMessage: (inputs) => `Build a complete social media strategy for:\n\n**Username:** ${inputs.username}\n**Platforms:** ${inputs.platforms}\n**Bio:** ${inputs.bio}\n**Target Audience:** ${inputs.target_audience}\n**Age Range:** ${inputs.age_range}\n**Audience Interests:** ${inputs.interests}\n**Competitors:** ${inputs.competitors}\n**Location:** ${inputs.location || 'Not specified'}\n**Goal:** ${inputs.goal}\n**Posting Frequency:** ${inputs.frequency}\n**Content Formats:** ${inputs.formats}\n\nDeliver all 7 sections completely. Be concise and direct. Use tables and bullets only. Never stop before section 7 is finished.`,
+      maxTokens: 8000,
+    },
   },
 
   digital: {
@@ -134,21 +149,6 @@ Be highly specific — reference the company name, competitors, location, and in
     'case-study': {
       systemPrompt: `You are a B2B content strategist who specializes in writing case studies that become the strongest sales collateral. Create a comprehensive case study with: Title Options (5 variations), Hero Summary Box, The Challenge (story of where they were, pain points, what they tried), The Approach (strategy, reasoning, tactics, how you overcame obstacles), The Results (headline metrics, secondary metrics, timeline, unexpected wins), Client Testimonial Framework, Key Takeaways, CTA Section, Social Media Versions (LinkedIn post + Twitter thread), and Sales One-Pager (250-word condensed version).`,
       buildUserMessage: (inputs) => `Create a case study:\n\n**Client:** ${inputs.client_name}\n**Industry:** ${inputs.industry || 'Not specified'}\n**Challenge:** ${inputs.challenge}\n**Solution:** ${inputs.solution}\n**Results:** ${inputs.results}\n**Timeframe:** ${inputs.duration || 'Not specified'}\n\nCreate the complete case study.`,
-    },
-    'social-media-strategy': {
-      systemPrompt: `You are an expert social media strategist. Be concise, direct, and actionable — no fluff, no generic advice. Every output must be tailored to the exact username, audience, competitors, location, and platforms provided.
-
-Deliver ALL 7 sections. Use tables and bullet points only — no long paragraphs. Complete every section fully before moving to the next. NEVER stop before section 7 is finished.
-
-1. DIAGNÓSTICO DE PERFIL — Bio assessment (3 bullets max) + 1 rewritten bio suggestion.
-2. PÚBLICO OBJETIVO — 3-line audience profile using the age range, interests, and audience data. Table: Platform | Best content for this audience | Optimal posting time.
-3. PILARES DE CONTENIDO — Table: Pillar | % of content | 3 content ideas | Hook formula (4–5 pillars).
-4. CALENDARIO DE CONTENIDO 4 SEMANAS — Table: Week | Day | Platform | Format | Topic / Hook | CTA. Cover every post per the publishing frequency. All 4 weeks complete.
-5. TÁCTICAS DE CRECIMIENTO — 5 specific tactics for the selected platforms. Each: tactic name + 1-line action.
-6. KPIs Y MÉTRICAS — Table: KPI | Current Baseline | 30-day Target | 90-day Target | Tool. Min 6 KPIs relevant to the goal.
-7. PLAN DE ACCIÓN 90 DÍAS — Table: Week | Focus | Key Actions (2–3) | Priority. All 12 weeks complete.`,
-      buildUserMessage: (inputs) => `Build a complete social media strategy for:\n\n**Username:** ${inputs.username}\n**Platforms:** ${inputs.platforms}\n**Bio:** ${inputs.bio}\n**Target Audience:** ${inputs.target_audience}\n**Age Range:** ${inputs.age_range}\n**Audience Interests:** ${inputs.interests}\n**Competitors:** ${inputs.competitors}\n**Location:** ${inputs.location || 'Not specified'}\n**Goal:** ${inputs.goal}\n**Posting Frequency:** ${inputs.frequency}\n**Content Formats:** ${inputs.formats}\n\nDeliver all 7 sections completely. Be concise and direct. Use tables and bullets only. Never stop before section 7 is finished.`,
-      maxTokens: 8000,
     },
   },
 
