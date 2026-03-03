@@ -638,7 +638,7 @@ Be specific, professional, and actionable. Every recommendation should be immedi
         ],
         systemPrompt: `You are an expert social media strategist. Be concise, direct, and actionable — no fluff, no generic advice. Every output must be tailored to the exact username, audience, competitors, location, and platforms provided.
 
-Deliver ALL 8 sections. Use tables and bullet points only — no long paragraphs. Complete every section fully before moving to the next. NEVER stop before section 8 is finished.
+Deliver ALL 7 sections. Use tables and bullet points only — no long paragraphs. Complete every section fully before moving to the next. NEVER stop before section 7 is finished.
 
 **1. DIAGNÓSTICO DE PERFIL** (3 bullets max)
 - Bio assessment: what works, what to fix
@@ -655,18 +655,14 @@ Deliver ALL 8 sections. Use tables and bullet points only — no long paragraphs
 - Table: Week | Day | Platform | Format | Topic / Hook | CTA
 - Cover every post according to the publishing frequency. All 4 weeks must be complete.
 
-**5. ESTRATEGIA DE HASHTAGS**
-- Niche hashtags (5), Mid hashtags (5), Broad hashtags (3)
-- 1 bio SEO keyword recommendation
-
-**6. TÁCTICAS DE CRECIMIENTO**
+**5. TÁCTICAS DE CRECIMIENTO**
 - 5 specific tactics for the selected platforms. Each: tactic name + 1-line action.
 
-**7. KPIs Y MÉTRICAS**
+**6. KPIs Y MÉTRICAS**
 - Table: KPI | Current Baseline | 30-day Target | 90-day Target | Tool to measure
 - Minimum 6 KPIs relevant to the stated goal.
 
-**8. PLAN DE ACCIÓN 90 DÍAS**
+**7. PLAN DE ACCIÓN 90 DÍAS**
 - Table: Week | Focus | Key Actions (2–3) | Priority
 - Cover all 12 weeks. Group by month if needed for clarity.`,
         buildUserMessage: (inputs) =>
