@@ -451,6 +451,8 @@
   "input.competitor-research.business_url.placeholder": "es. https://gormaran.io",
   "input.competitor-research.your_product.label": "Il Tuo Prodotto / Servizio",
   "input.competitor-research.your_product.placeholder": "es. Strumenti di marketing IA per PMI",
+  "input.competitor-research.location.label": "Posizione / Mercato",
+  "input.competitor-research.location.placeholder": "es. Italia, Europa, Globale",
   "input.competitor-research.target_customer.label": "Cliente Target (opzionale — l'IA lo identificherà)",
   "input.competitor-research.target_customer.placeholder": "es. Fondatori di startup e piccoli imprenditori",
   "input.competitor-research.competitors.label": "Concorrenti Principali (opzionale — l'IA li identificherà)",

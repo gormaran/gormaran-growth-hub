@@ -58,7 +58,7 @@ Deliver ALL 9 sections completely. NEVER stop before section 9 is finished.
 7. OPORTUNIDADES DE MERCADO — 3–5 unserved niches. Each: opportunity + why competitors miss it + how to capture it.
 8. TENDENCIAS DEL MERCADO — 3–5 trends next 12–24 months. Each: trend + competitor adaptation + strategic implication.
 9. ESTRATEGIA DE DIFERENCIACIÓN — Pricing (2 recs) + Marketing (2 recs) + Customer experience (2 recs) + Positioning statement.`,
-      buildUserMessage: (inputs) => `Conduct a complete competitive analysis:\n\n**My Business:** ${inputs.business_name}\n**My Website:** ${inputs.business_url}\n**My Product/Service:** ${inputs.your_product}\n**Target Customer (hint, optional):** ${inputs.target_customer || 'Not provided — please identify'}\n**Competitors (hint, optional):** ${inputs.competitors || 'Not provided — please identify'}\n**My Differentiator:** ${inputs.differentiator || 'Not specified'}\n\nDeliver all 9 sections completely. Use tables and bullets only. Never stop before section 9 is finished.`,
+      buildUserMessage: (inputs) => `Conduct a complete competitive analysis:\n\n**My Business:** ${inputs.business_name}\n**My Website:** ${inputs.business_url}\n**My Product/Service:** ${inputs.your_product}\n**Location / Market:** ${inputs.location}\n**Target Customer (hint, optional):** ${inputs.target_customer || 'Not provided — please identify'}\n**Competitors (hint, optional):** ${inputs.competitors || 'Not provided — please identify'}\n**My Differentiator:** ${inputs.differentiator || 'Not specified'}\n\nDeliver all 9 sections completely. Use tables and bullets only. Never stop before section 9 is finished.`,
       maxTokens: 8000,
     },
     'swot-analysis': {

@@ -451,6 +451,8 @@
   "input.competitor-research.business_url.placeholder": "z.B. https://gormaran.io",
   "input.competitor-research.your_product.label": "Ihr Produkt / Ihre Dienstleistung",
   "input.competitor-research.your_product.placeholder": "z.B. KI-Marketing-Tools für KMUs",
+  "input.competitor-research.location.label": "Standort / Markt",
+  "input.competitor-research.location.placeholder": "z.B. Deutschland, Europa, Global",
   "input.competitor-research.target_customer.label": "Zielkunde (optional — KI wird ihn identifizieren)",
   "input.competitor-research.target_customer.placeholder": "z.B. Startup-Gründer und kleine Unternehmer",
   "input.competitor-research.competitors.label": "Hauptkonkurrenten (optional — KI wird sie identifizieren)",
