@@ -349,7 +349,7 @@ export default function AIToolInterface({ tool, categoryId }) {
         {/* Input Panel */}
         <div className="ai-tool__panel ai-tool__input-panel">
           <h3 className="ai-tool__panel-title">{t('ui.yourInputs', { defaultValue: '📝 Your Inputs' })}</h3>
-          <form onSubmit={handleGenerate}>
+          <form onSubmit={handleGenerate} noValidate>
             {tool.inputs.map((field) => (
               <FormField
                 key={field.id}
