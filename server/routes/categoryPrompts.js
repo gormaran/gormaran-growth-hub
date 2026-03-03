@@ -45,19 +45,20 @@ const CATEGORY_PROMPTS = {
       buildUserMessage: (inputs) => `Conduct a comprehensive market analysis:\n\n**Market/Industry:** ${inputs.market}\n**Geographic Focus:** ${inputs.geography || 'Global'}\n**Target Segment:** ${inputs.customer_segment || 'General market'}\n**Known Market Data:** ${inputs.current_size || 'None provided'}\n\nDeliver the full market analysis.`,
     },
     'competitor-research': {
-      systemPrompt: `You are a competitive intelligence expert. Be concise, direct, and analytical — use tables and bullets only, no long paragraphs. Base your analysis on what can be inferred from the business description, website, and competitors provided. Flag assumptions clearly.
+      systemPrompt: `You are a competitive intelligence expert. Be concise, direct, and analytical — use tables and bullets only, no long paragraphs. Infer everything you can from the business name, website, and product/service. If target customer or competitors are not provided, identify them yourself. Flag assumptions clearly.
 
-Deliver ALL 8 sections completely. NEVER stop before section 8 is finished.
+Deliver ALL 9 sections completely. NEVER stop before section 9 is finished.
 
-1. PERFILES DE COMPETIDORES — Table: Competitor | Website | Product/Service | Target Customer | Price Range | Key Strengths | Key Weaknesses
-2. RECOPILACIÓN DE DATOS — Table: Competitor | Social Media | Pricing Model | Perceived Quality | Customer Service | Review Score | Notable Feedback
-3. MAPA DE POSICIONAMIENTO — Define 2 relevant axes. Place your business and each competitor. Describe each quadrant strategically.
-4. ANÁLISIS DE LAS 4 P'S — Table: Company | Producto | Precio | Plaza | Promoción (your business + each competitor)
-5. COMPARATIVA DE DIFERENCIACIÓN — Table: Dimension | Tu empresa | Competitors. Dimensions: Cliente objetivo, Personalidad de marca, Producto, Fortalezas, Debilidades, Marketing
-6. OPORTUNIDADES DE MERCADO — 3–5 unserved niches. Each: opportunity + why competitors miss it + how to capture it.
-7. TENDENCIAS DEL MERCADO — 3–5 trends next 12–24 months. Each: trend + competitor adaptation + strategic implication.
-8. ESTRATEGIA DE DIFERENCIACIÓN — Pricing (2 recs) + Marketing (2 recs) + Customer experience (2 recs) + Positioning statement.`,
-      buildUserMessage: (inputs) => `Conduct a complete competitive analysis:\n\n**My Business:** ${inputs.business_name}\n**My Website:** ${inputs.business_url}\n**My Product/Service:** ${inputs.your_product}\n**Target Customer:** ${inputs.target_customer}\n**Competitors:** ${inputs.competitors}\n**My Differentiator:** ${inputs.differentiator || 'Not specified'}\n\nDeliver all 8 sections completely. Use tables and bullets only. Never stop before section 8 is finished.`,
+1. PERFILES DE COMPETIDORES — Identify the top 3–4 competitors if not provided. Table: Competitor | Website | Product/Service | Target Customer | Price Range | Key Strengths | Key Weaknesses
+2. PERFIL DEL PÚBLICO OBJETIVO — Identify the ideal customer profile: Demographics (age range, gender, location, income, job title) | Psychographics (values, lifestyle, motivations) | Puntos de dolor: 4–5 specific problems this audience faces | Intereses y comportamiento: 4–5 interests, platforms used, buying behavior | Buying triggers: what makes them decide to purchase.
+3. RECOPILACIÓN DE DATOS — Table: Competitor | Social Media | Pricing Model | Perceived Quality | Customer Service | Review Score | Notable Feedback
+4. MAPA DE POSICIONAMIENTO — Define 2 relevant axes. Place your business and each competitor. Describe each quadrant strategically.
+5. ANÁLISIS DE LAS 4 P'S — Table: Company | Producto | Precio | Plaza | Promoción (your business + each competitor)
+6. COMPARATIVA DE DIFERENCIACIÓN — Table: Dimension | Tu empresa | Competitors. Dimensions: Cliente objetivo, Personalidad de marca, Producto, Fortalezas, Debilidades, Marketing
+7. OPORTUNIDADES DE MERCADO — 3–5 unserved niches. Each: opportunity + why competitors miss it + how to capture it.
+8. TENDENCIAS DEL MERCADO — 3–5 trends next 12–24 months. Each: trend + competitor adaptation + strategic implication.
+9. ESTRATEGIA DE DIFERENCIACIÓN — Pricing (2 recs) + Marketing (2 recs) + Customer experience (2 recs) + Positioning statement.`,
+      buildUserMessage: (inputs) => `Conduct a complete competitive analysis:\n\n**My Business:** ${inputs.business_name}\n**My Website:** ${inputs.business_url}\n**My Product/Service:** ${inputs.your_product}\n**Target Customer (hint, optional):** ${inputs.target_customer || 'Not provided — please identify'}\n**Competitors (hint, optional):** ${inputs.competitors || 'Not provided — please identify'}\n**My Differentiator:** ${inputs.differentiator || 'Not specified'}\n\nDeliver all 9 sections completely. Use tables and bullets only. Never stop before section 9 is finished.`,
       maxTokens: 8000,
     },
     'swot-analysis': {

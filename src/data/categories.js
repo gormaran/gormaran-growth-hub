@@ -309,45 +309,53 @@ Include specific data points, frameworks, and strategic insights throughout.`,
           { id: 'business_name', label: 'Your Business Name', type: 'text', placeholder: 'e.g., Gormaran', required: true },
           { id: 'business_url', label: 'Your Business Website', type: 'text', placeholder: 'e.g., https://gormaran.io', required: true },
           { id: 'your_product', label: 'Your Product / Service', type: 'text', placeholder: 'e.g., AI-powered marketing tools for SMBs', required: true },
-          { id: 'target_customer', label: 'Target Customer', type: 'text', placeholder: 'e.g., Startup founders and small business owners', required: true },
-          { id: 'competitors', label: 'Main Competitors (up to 4, name or URL)', type: 'text', placeholder: 'e.g., HubSpot, Semrush, Mailchimp', required: true },
+          { id: 'target_customer', label: 'Target Customer (optional — AI will identify)', type: 'text', placeholder: 'e.g., Startup founders and small business owners' },
+          { id: 'competitors', label: 'Main Competitors (optional — AI will identify)', type: 'text', placeholder: 'e.g., HubSpot, Semrush, Mailchimp' },
           { id: 'differentiator', label: 'Your Key Differentiator', type: 'text', placeholder: 'e.g., All-in-one AI tools in one hub, no prompt engineering needed' },
         ],
-        systemPrompt: `You are a competitive intelligence expert. Be concise, direct, and analytical — use tables and bullets only, no long paragraphs. Base your analysis on what can be inferred from the business description, website, and competitors provided. Flag assumptions clearly.
+        systemPrompt: `You are a competitive intelligence expert. Be concise, direct, and analytical — use tables and bullets only, no long paragraphs. Infer everything you can from the business name, website, and product/service. If target customer or competitors are not provided, identify them yourself. Flag assumptions clearly.
 
-Deliver ALL 8 sections completely. NEVER stop before section 8 is finished.
+Deliver ALL 9 sections completely. NEVER stop before section 9 is finished.
 
 **1. PERFILES DE COMPETIDORES**
-Table: Competitor | Website | Product/Service | Target Customer | Price Range | Key Strengths | Key Weaknesses
+Identify the top 3–4 competitors if not provided. Table: Competitor | Website | Product/Service | Target Customer | Price Range | Key Strengths | Key Weaknesses
 
-**2. RECOPILACIÓN DE DATOS**
+**2. PERFIL DEL PÚBLICO OBJETIVO**
+Identify the ideal customer profile derived from the business and competitors:
+- Demographics: age range, gender, location, income level, job title
+- Psychographics: values, lifestyle, motivations
+- Puntos de dolor (Pain Points): 4–5 specific problems this audience faces
+- Intereses y comportamiento: 4–5 interests, platforms they use, buying behavior
+- Buying triggers: what makes them decide to purchase
+
+**3. RECOPILACIÓN DE DATOS**
 Table: Competitor | Social Media Presence | Pricing Model | Perceived Quality | Customer Service | Review Score (est.) | Notable Reviews/Complaints
 
-**3. MAPA DE POSICIONAMIENTO**
+**4. MAPA DE POSICIONAMIENTO**
 Define 2 axes relevant to this market (e.g., Price vs Quality, Specialization vs Generalism). Place your business and each competitor on the map. Describe the quadrant each occupies and what it means strategically.
 
-**4. ANÁLISIS DE LAS 4 P'S**
-Table with 5 rows (your business + each competitor): Company | Producto | Precio | Plaza (distribución) | Promoción
+**5. ANÁLISIS DE LAS 4 P'S**
+Table with rows (your business + each competitor): Company | Producto | Precio | Plaza (distribución) | Promoción
 
-**5. COMPARATIVA DE DIFERENCIACIÓN**
+**6. COMPARATIVA DE DIFERENCIACIÓN**
 Table: Dimension | Tu empresa | Competencia 1 | Competencia 2 | Competencia 3
 Dimensions: Cliente objetivo, Personalidad de marca, Producto, Fortalezas, Debilidades, Marketing
 
-**6. OPORTUNIDADES DE MERCADO**
+**7. OPORTUNIDADES DE MERCADO**
 - 3–5 unserved niches or gaps identified from the competitive analysis
 - For each: opportunity description + why competitors are missing it + how your business can capture it
 
-**7. TENDENCIAS DEL MERCADO**
+**8. TENDENCIAS DEL MERCADO**
 - 3–5 trends shaping this market in the next 12–24 months
 - For each: trend + how competitors are (or aren't) adapting + strategic implication for your business
 
-**8. ESTRATEGIA DE DIFERENCIACIÓN**
+**9. ESTRATEGIA DE DIFERENCIACIÓN**
 - Pricing adjustments: 2 specific recommendations
 - Marketing improvements: 2 specific recommendations
 - Customer experience: 2 specific recommendations
 - Overall positioning statement to adopt`,
         buildUserMessage: (inputs) =>
-          `Conduct a complete competitive analysis:\n\n**My Business:** ${inputs.business_name}\n**My Website:** ${inputs.business_url}\n**My Product/Service:** ${inputs.your_product}\n**Target Customer:** ${inputs.target_customer}\n**Competitors to Analyze:** ${inputs.competitors}\n**My Key Differentiator:** ${inputs.differentiator || 'Not specified'}\n\nDeliver all 8 sections completely. Use tables and bullets only. Never stop before section 8 is finished.`,
+          `Conduct a complete competitive analysis:\n\n**My Business:** ${inputs.business_name}\n**My Website:** ${inputs.business_url}\n**My Product/Service:** ${inputs.your_product}\n**Target Customer (hint, optional):** ${inputs.target_customer || 'Not provided — please identify'}\n**Competitors (hint, optional):** ${inputs.competitors || 'Not provided — please identify'}\n**My Key Differentiator:** ${inputs.differentiator || 'Not specified'}\n\nDeliver all 9 sections completely. Use tables and bullets only. Never stop before section 9 is finished.`,
         maxTokens: 8000,
       },
       {
