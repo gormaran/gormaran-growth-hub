@@ -627,61 +627,50 @@ Be specific, professional, and actionable. Every recommendation should be immedi
           { id: 'platforms', label: 'Social Media Platforms', type: 'multiselect', options: ['Instagram', 'TikTok', 'YouTube', 'LinkedIn', 'X (Twitter)', 'Facebook', 'Pinterest'], required: true },
           { id: 'username', label: 'Your Username / Handle', type: 'text', placeholder: 'e.g., @karealde_', required: true },
           { id: 'bio', label: 'Profile Bio / Description', type: 'textarea', placeholder: 'Paste your current bio or describe your brand, what you offer and who you help', required: true },
+          { id: 'target_audience', label: 'Target Audience', type: 'text', placeholder: 'e.g., Freelance designers, young mothers, local entrepreneurs', required: true },
+          { id: 'age_range', label: 'Age Range', type: 'select', options: ['13–17', '18–24', '25–34', '35–44', '45–54', '55+', '18–34 (broad young adult)', '25–44 (broad professional)'], required: true },
+          { id: 'interests', label: 'Audience Interests', type: 'text', placeholder: 'e.g., fashion, fitness, personal finance, travel, food', required: true },
           { id: 'competitors', label: 'Top 3 Competitors (@ handles)', type: 'text', placeholder: 'e.g., @competitor1, @competitor2, @competitor3', required: true },
           { id: 'location', label: 'Location', type: 'text', placeholder: 'e.g., Barakaldo, Vizcaya. España' },
           { id: 'goal', label: 'Strategy Objective', type: 'select', options: ['Grow followers organically', 'Generate leads and sales', 'Build brand awareness', 'Position as industry expert', 'Drive traffic to website', 'Build community & engagement'], required: true },
           { id: 'frequency', label: 'Publishing Frequency', type: 'select', options: ['Daily (7x/week)', '5x per week', '3x per week', '2x per week', 'Weekly (1x/week)'], required: true },
           { id: 'formats', label: 'Content Formats', type: 'multiselect', options: ['Reels / Shorts', 'Carrusel / Slideshow', 'Stories', 'Posts / Feed', 'Lives', 'Podcasts / Audio'], required: true },
         ],
-        systemPrompt: `You are a top-tier social media strategist specializing in organic growth and content strategy for brands and creators. You create precise, platform-native strategies that consistently generate followers, engagement, and leads. Always reference the specific username, competitors, location, and platforms provided. No generic advice — everything must be tailored.
+        systemPrompt: `You are an expert social media strategist. Be concise, direct, and actionable — no fluff, no generic advice. Every output must be tailored to the exact username, audience, competitors, location, and platforms provided.
 
-Deliver a COMPLETE Social Media Strategy with ALL of these sections:
+Deliver ALL 8 sections. Use tables and bullet points only — no long paragraphs. Complete every section fully before moving to the next. NEVER stop before section 8 is finished.
 
-**1. DIAGNÓSTICO DE PERFIL**
-- Analysis of the current bio and profile positioning
-- Strengths to leverage and gaps to fix
-- Recommended profile optimization (bio rewrite, highlights, link-in-bio)
+**1. DIAGNÓSTICO DE PERFIL** (3 bullets max)
+- Bio assessment: what works, what to fix
+- 1 rewritten bio suggestion
 
-**2. ANÁLISIS DE COMPETENCIA**
-- Table: Competitor | Est. Followers | Posting Style | What's Working | Gap to Exploit
-- Top 3 content tactics being used by competitors
-- Opportunities to differentiate
+**2. PÚBLICO OBJETIVO** (concise)
+- 3-line audience profile using the age range, interests, and audience data provided
+- Table: Platform | Best content for this audience | Optimal posting time
 
-**3. POSICIONAMIENTO Y PILARES DE CONTENIDO**
-- Positioning statement for the profile
-- 4-5 Content Pillars with name, description, and 3 content ideas each
+**3. PILARES DE CONTENIDO**
+- Table: Pillar | % of content | 3 content ideas | Hook formula (4–5 pillars)
 
-**4. ESTRATEGIA DE FORMATOS**
-- For each selected format: recommended %, content type, best practices, and posting hook formula
+**4. CALENDARIO DE CONTENIDO — 4 SEMANAS**
+- Table: Week | Day | Platform | Format | Topic / Hook | CTA
+- Cover every post according to the publishing frequency. All 4 weeks must be complete.
 
-**5. CALENDARIO EDITORIAL (4 SEMANAS)**
-- Week-by-week table: Day | Platform | Format | Content Topic / Hook | Goal
-- Cover the full posting frequency requested
+**5. ESTRATEGIA DE HASHTAGS**
+- Niche hashtags (5), Mid hashtags (5), Broad hashtags (3)
+- 1 bio SEO keyword recommendation
 
-**6. ESTRATEGIA DE HASHTAGS Y SEO SOCIAL**
-- 3 hashtag tiers: Niche (5), Mid (5), Broad (3)
-- SEO keywords for bio and captions
-- Location/geo tags if applicable
+**6. TÁCTICAS DE CRECIMIENTO**
+- 5 specific tactics for the selected platforms. Each: tactic name + 1-line action.
 
-**7. TÁCTICAS DE CRECIMIENTO ORGÁNICO**
-- 5 specific growth tactics for the selected platforms
-- Engagement loop strategy (how to turn viewers into followers into buyers)
-- Collaboration / UGC / duet strategies
+**7. KPIs Y MÉTRICAS**
+- Table: KPI | Current Baseline | 30-day Target | 90-day Target | Tool to measure
+- Minimum 6 KPIs relevant to the stated goal.
 
-**8. KPIs Y MÉTRICAS CLAVE**
-- Table: KPI | Baseline | 30-day Target | 90-day Target | How to Measure
-- Minimum 6 KPIs
-
-**9. ERRORES A EVITAR**
-- Top 5 mistakes brands in this niche/location make on social media
-- How to fix each one
-
-**10. PLAN DE ACCIÓN PRIMERAS 4 SEMANAS**
-- Week-by-week action plan with specific tasks, tools, and priorities
-
-CRITICAL: Complete ALL 10 sections fully. Never stop before section 10 is finished.`,
+**8. PLAN DE ACCIÓN 90 DÍAS**
+- Table: Week | Focus | Key Actions (2–3) | Priority
+- Cover all 12 weeks. Group by month if needed for clarity.`,
         buildUserMessage: (inputs) =>
-          `Build a complete social media strategy for:\n\n**Username:** ${inputs.username}\n**Platforms:** ${inputs.platforms}\n**Bio / Brand Description:** ${inputs.bio}\n**Competitors:** ${inputs.competitors}\n**Location:** ${inputs.location || 'Not specified'}\n**Strategy Goal:** ${inputs.goal}\n**Posting Frequency:** ${inputs.frequency}\n**Content Formats:** ${inputs.formats}\n\nDeliver the full strategy with all 10 sections completely finished. Reference the username, competitors and location throughout. Be specific and actionable.`,
+          `Build a complete social media strategy for:\n\n**Username:** ${inputs.username}\n**Platforms:** ${inputs.platforms}\n**Bio:** ${inputs.bio}\n**Target Audience:** ${inputs.target_audience}\n**Age Range:** ${inputs.age_range}\n**Audience Interests:** ${inputs.interests}\n**Competitors:** ${inputs.competitors}\n**Location:** ${inputs.location || 'Not specified'}\n**Goal:** ${inputs.goal}\n**Posting Frequency:** ${inputs.frequency}\n**Content Formats:** ${inputs.formats}\n\nDeliver all 8 sections completely. Be concise and direct. Use tables and bullets only. Never stop before section 8 is finished.`,
         maxTokens: 8000,
       },
     ],

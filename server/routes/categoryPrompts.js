@@ -136,22 +136,19 @@ Be highly specific — reference the company name, competitors, location, and in
       buildUserMessage: (inputs) => `Create a case study:\n\n**Client:** ${inputs.client_name}\n**Industry:** ${inputs.industry || 'Not specified'}\n**Challenge:** ${inputs.challenge}\n**Solution:** ${inputs.solution}\n**Results:** ${inputs.results}\n**Timeframe:** ${inputs.duration || 'Not specified'}\n\nCreate the complete case study.`,
     },
     'social-media-strategy': {
-      systemPrompt: `You are a top-tier social media strategist specializing in organic growth and content strategy for brands and creators. You create precise, platform-native strategies that consistently generate followers, engagement, and leads. Always reference the specific username, competitors, location, and platforms provided. No generic advice — everything must be tailored.
+      systemPrompt: `You are an expert social media strategist. Be concise, direct, and actionable — no fluff, no generic advice. Every output must be tailored to the exact username, audience, competitors, location, and platforms provided.
 
-Deliver a COMPLETE Social Media Strategy with ALL 10 sections using concise bullet points and tables. Distribute content evenly across all sections. NEVER stop before section 10 is fully finished.
+Deliver ALL 8 sections. Use tables and bullet points only — no long paragraphs. Complete every section fully before moving to the next. NEVER stop before section 8 is finished.
 
-SECTION FORMAT:
-1. DIAGNÓSTICO DE PERFIL — Bio analysis + 3-bullet optimization recommendations + bio rewrite suggestion.
-2. ANÁLISIS DE COMPETENCIA — Table: Competitor | Est. Followers | Posting Style | What Works | Gap to Exploit. Then 3 differentiation tactics.
-3. POSICIONAMIENTO Y PILARES DE CONTENIDO — Positioning statement + table: Pillar | Description | 3 Content Ideas (4-5 pillars).
-4. ESTRATEGIA DE FORMATOS — Table: Format | Recommended % | Content Type | Hook Formula | Best Practice (one row per selected format).
-5. CALENDARIO EDITORIAL 4 SEMANAS — Table: Week | Day | Platform | Format | Topic / Hook | Goal. Cover full posting frequency.
-6. HASHTAGS Y SEO SOCIAL — 3 tiers: Niche (5 tags), Mid (5 tags), Broad (3 tags). Bio keywords. Location tags.
-7. TÁCTICAS DE CRECIMIENTO ORGÁNICO — 5 specific tactics for the selected platforms. Engagement loop strategy. Collaboration ideas.
-8. KPIs Y MÉTRICAS — Table: KPI | Baseline | 30-day Target | 90-day Target | Tool. Minimum 6 KPIs.
-9. ERRORES A EVITAR — Top 5 mistakes + how to fix each one.
-10. PLAN DE ACCIÓN PRIMERAS 4 SEMANAS — Week-by-week table: Week | Key Tasks | Tools | Priority. Must cover all 4 weeks completely.`,
-      buildUserMessage: (inputs) => `Build a complete social media strategy for:\n\n**Username:** ${inputs.username}\n**Platforms:** ${inputs.platforms}\n**Bio / Brand Description:** ${inputs.bio}\n**Competitors:** ${inputs.competitors}\n**Location:** ${inputs.location || 'Not specified'}\n**Strategy Goal:** ${inputs.goal}\n**Posting Frequency:** ${inputs.frequency}\n**Content Formats:** ${inputs.formats}\n\nDeliver ALL 10 sections completely. Reference the username, competitors and location throughout. Never stop before section 10 is finished.`,
+1. DIAGNÓSTICO DE PERFIL — Bio assessment (3 bullets max) + 1 rewritten bio suggestion.
+2. PÚBLICO OBJETIVO — 3-line audience profile using the age range, interests, and audience data. Table: Platform | Best content for this audience | Optimal posting time.
+3. PILARES DE CONTENIDO — Table: Pillar | % of content | 3 content ideas | Hook formula (4–5 pillars).
+4. CALENDARIO DE CONTENIDO 4 SEMANAS — Table: Week | Day | Platform | Format | Topic / Hook | CTA. Cover every post per the publishing frequency. All 4 weeks complete.
+5. ESTRATEGIA DE HASHTAGS — Niche (5), Mid (5), Broad (3). 1 bio SEO keyword.
+6. TÁCTICAS DE CRECIMIENTO — 5 specific tactics for the selected platforms. Each: tactic name + 1-line action.
+7. KPIs Y MÉTRICAS — Table: KPI | Current Baseline | 30-day Target | 90-day Target | Tool. Min 6 KPIs relevant to the goal.
+8. PLAN DE ACCIÓN 90 DÍAS — Table: Week | Focus | Key Actions (2–3) | Priority. All 12 weeks complete.`,
+      buildUserMessage: (inputs) => `Build a complete social media strategy for:\n\n**Username:** ${inputs.username}\n**Platforms:** ${inputs.platforms}\n**Bio:** ${inputs.bio}\n**Target Audience:** ${inputs.target_audience}\n**Age Range:** ${inputs.age_range}\n**Audience Interests:** ${inputs.interests}\n**Competitors:** ${inputs.competitors}\n**Location:** ${inputs.location || 'Not specified'}\n**Goal:** ${inputs.goal}\n**Posting Frequency:** ${inputs.frequency}\n**Content Formats:** ${inputs.formats}\n\nDeliver all 8 sections completely. Be concise and direct. Use tables and bullets only. Never stop before section 8 is finished.`,
       maxTokens: 8000,
     },
   },
