@@ -138,17 +138,16 @@ Be highly specific — reference the company name, competitors, location, and in
     'social-media-strategy': {
       systemPrompt: `You are an expert social media strategist. Be concise, direct, and actionable — no fluff, no generic advice. Every output must be tailored to the exact username, audience, competitors, location, and platforms provided.
 
-Deliver ALL 8 sections. Use tables and bullet points only — no long paragraphs. Complete every section fully before moving to the next. NEVER stop before section 8 is finished.
+Deliver ALL 7 sections. Use tables and bullet points only — no long paragraphs. Complete every section fully before moving to the next. NEVER stop before section 7 is finished.
 
 1. DIAGNÓSTICO DE PERFIL — Bio assessment (3 bullets max) + 1 rewritten bio suggestion.
 2. PÚBLICO OBJETIVO — 3-line audience profile using the age range, interests, and audience data. Table: Platform | Best content for this audience | Optimal posting time.
 3. PILARES DE CONTENIDO — Table: Pillar | % of content | 3 content ideas | Hook formula (4–5 pillars).
 4. CALENDARIO DE CONTENIDO 4 SEMANAS — Table: Week | Day | Platform | Format | Topic / Hook | CTA. Cover every post per the publishing frequency. All 4 weeks complete.
-5. ESTRATEGIA DE HASHTAGS — Niche (5), Mid (5), Broad (3). 1 bio SEO keyword.
-6. TÁCTICAS DE CRECIMIENTO — 5 specific tactics for the selected platforms. Each: tactic name + 1-line action.
-7. KPIs Y MÉTRICAS — Table: KPI | Current Baseline | 30-day Target | 90-day Target | Tool. Min 6 KPIs relevant to the goal.
-8. PLAN DE ACCIÓN 90 DÍAS — Table: Week | Focus | Key Actions (2–3) | Priority. All 12 weeks complete.`,
-      buildUserMessage: (inputs) => `Build a complete social media strategy for:\n\n**Username:** ${inputs.username}\n**Platforms:** ${inputs.platforms}\n**Bio:** ${inputs.bio}\n**Target Audience:** ${inputs.target_audience}\n**Age Range:** ${inputs.age_range}\n**Audience Interests:** ${inputs.interests}\n**Competitors:** ${inputs.competitors}\n**Location:** ${inputs.location || 'Not specified'}\n**Goal:** ${inputs.goal}\n**Posting Frequency:** ${inputs.frequency}\n**Content Formats:** ${inputs.formats}\n\nDeliver all 8 sections completely. Be concise and direct. Use tables and bullets only. Never stop before section 8 is finished.`,
+5. TÁCTICAS DE CRECIMIENTO — 5 specific tactics for the selected platforms. Each: tactic name + 1-line action.
+6. KPIs Y MÉTRICAS — Table: KPI | Current Baseline | 30-day Target | 90-day Target | Tool. Min 6 KPIs relevant to the goal.
+7. PLAN DE ACCIÓN 90 DÍAS — Table: Week | Focus | Key Actions (2–3) | Priority. All 12 weeks complete.`,
+      buildUserMessage: (inputs) => `Build a complete social media strategy for:\n\n**Username:** ${inputs.username}\n**Platforms:** ${inputs.platforms}\n**Bio:** ${inputs.bio}\n**Target Audience:** ${inputs.target_audience}\n**Age Range:** ${inputs.age_range}\n**Audience Interests:** ${inputs.interests}\n**Competitors:** ${inputs.competitors}\n**Location:** ${inputs.location || 'Not specified'}\n**Goal:** ${inputs.goal}\n**Posting Frequency:** ${inputs.frequency}\n**Content Formats:** ${inputs.formats}\n\nDeliver all 7 sections completely. Be concise and direct. Use tables and bullets only. Never stop before section 7 is finished.`,
       maxTokens: 8000,
     },
   },
