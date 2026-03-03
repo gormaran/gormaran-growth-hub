@@ -45,8 +45,20 @@ const CATEGORY_PROMPTS = {
       buildUserMessage: (inputs) => `Conduct a comprehensive market analysis:\n\n**Market/Industry:** ${inputs.market}\n**Geographic Focus:** ${inputs.geography || 'Global'}\n**Target Segment:** ${inputs.customer_segment || 'General market'}\n**Known Market Data:** ${inputs.current_size || 'None provided'}\n\nDeliver the full market analysis.`,
     },
     'competitor-research': {
-      systemPrompt: `You are a competitive intelligence expert with deep expertise in strategic positioning, win/loss analysis, and market differentiation. Produce a detailed competitive analysis report covering: Competitive Landscape Overview, Competitor Profiles (strengths/weaknesses for each), Feature Comparison Matrix, Positioning Map, Competitive Moats Analysis, Your Competitive Advantages, Battle Cards (why customers choose you vs each competitor), and Strategic Recommendations. Be direct and analytical.`,
-      buildUserMessage: (inputs) => `Conduct competitive research:\n\n**My Product:** ${inputs.your_product}\n**Competitors to Analyze:** ${inputs.competitors}\n**My Key Differentiator:** ${inputs.differentiator || 'Not specified'}\n**Target Customer:** ${inputs.target_customer || 'General market'}\n\nProvide the full competitive analysis with battle cards.`,
+      systemPrompt: `You are a competitive intelligence expert. Be concise, direct, and analytical — use tables and bullets only, no long paragraphs. Base your analysis on what can be inferred from the business description, website, and competitors provided. Flag assumptions clearly.
+
+Deliver ALL 8 sections completely. NEVER stop before section 8 is finished.
+
+1. PERFILES DE COMPETIDORES — Table: Competitor | Website | Product/Service | Target Customer | Price Range | Key Strengths | Key Weaknesses
+2. RECOPILACIÓN DE DATOS — Table: Competitor | Social Media | Pricing Model | Perceived Quality | Customer Service | Review Score | Notable Feedback
+3. MAPA DE POSICIONAMIENTO — Define 2 relevant axes. Place your business and each competitor. Describe each quadrant strategically.
+4. ANÁLISIS DE LAS 4 P'S — Table: Company | Producto | Precio | Plaza | Promoción (your business + each competitor)
+5. COMPARATIVA DE DIFERENCIACIÓN — Table: Dimension | Tu empresa | Competitors. Dimensions: Cliente objetivo, Personalidad de marca, Producto, Fortalezas, Debilidades, Marketing
+6. OPORTUNIDADES DE MERCADO — 3–5 unserved niches. Each: opportunity + why competitors miss it + how to capture it.
+7. TENDENCIAS DEL MERCADO — 3–5 trends next 12–24 months. Each: trend + competitor adaptation + strategic implication.
+8. ESTRATEGIA DE DIFERENCIACIÓN — Pricing (2 recs) + Marketing (2 recs) + Customer experience (2 recs) + Positioning statement.`,
+      buildUserMessage: (inputs) => `Conduct a complete competitive analysis:\n\n**My Business:** ${inputs.business_name}\n**My Website:** ${inputs.business_url}\n**My Product/Service:** ${inputs.your_product}\n**Target Customer:** ${inputs.target_customer}\n**Competitors:** ${inputs.competitors}\n**My Differentiator:** ${inputs.differentiator || 'Not specified'}\n\nDeliver all 8 sections completely. Use tables and bullets only. Never stop before section 8 is finished.`,
+      maxTokens: 8000,
     },
     'swot-analysis': {
       systemPrompt: `You are a strategic management consultant with expertise in SWOT analysis. Deliver a comprehensive strategic SWOT including: SWOT Matrix (6-8 items per quadrant with impact ratings), TOWS Strategic Alternatives (SO/ST/WO/WT strategies — 3 each), Priority Action Matrix (top 5 initiatives with 30/60/90 day milestones), Risk Heat Map (top 5 risks with mitigation), and Strategic Recommendation. Be specific to the business, not generic.`,
