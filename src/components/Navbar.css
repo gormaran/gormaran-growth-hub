@@ -303,13 +303,21 @@
   border-color: rgba(99,102,241,0.4);
 }
 
-.navbar__lang-flag {
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.navbar__lang-code {
+.navbar__lang-abbr {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 18px;
+  padding: 0 4px;
+  background: rgba(99,102,241,0.18);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
   letter-spacing: 0.04em;
+  color: var(--color-primary-light);
+  line-height: 1;
 }
 
 .navbar__lang-arrow {

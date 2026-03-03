@@ -7,11 +7,11 @@ import { useSubscription } from '../context/SubscriptionContext';
 import './Navbar.css';
 
 const LANGUAGES = [
-  { code: 'en', label: 'English',  flag: '🇬🇧' },
-  { code: 'es', label: 'Español',  flag: '🇪🇸' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'de', label: 'Deutsch',  flag: '🇩🇪' },
-  { code: 'it', label: 'Italiano', flag: '🇮🇹' },
+  { code: 'en', label: 'English',  abbr: 'EN' },
+  { code: 'es', label: 'Español',  abbr: 'ES' },
+  { code: 'fr', label: 'Français', abbr: 'FR' },
+  { code: 'de', label: 'Deutsch',  abbr: 'DE' },
+  { code: 'it', label: 'Italiano', abbr: 'IT' },
 ];
 
 export default function Navbar() {
@@ -73,7 +73,7 @@ export default function Navbar() {
       <div className="navbar__inner">
         {/* Logo */}
         <Link to="/" className="navbar__logo">
-          <img src="/TP-favicon-gormaran-SaaS.png" alt="Gormaran" className="navbar__logo-img" />
+          <img src="/favicon.svg" alt="Gormaran" className="navbar__logo-img" />
           <span className="navbar__logo-text">
             <span className="gradient-text">Gormaran</span>
             <span className="navbar__logo-sub">AI Growth Hub</span>
@@ -102,8 +102,7 @@ export default function Navbar() {
               onClick={() => { setLangMenuOpen(!langMenuOpen); setUserMenuOpen(false); }}
               aria-label="Select language"
             >
-              <span className="navbar__lang-flag">{currentLang.flag}</span>
-              <span className="navbar__lang-code">{currentLang.code.toUpperCase()}</span>
+              <span className="navbar__lang-abbr">{currentLang.abbr}</span>
               <span className={`navbar__lang-arrow ${langMenuOpen ? 'open' : ''}`}>▾</span>
             </button>
 
@@ -122,7 +121,7 @@ export default function Navbar() {
                       className={`navbar__lang-option ${i18n.language === lang.code ? 'navbar__lang-option--active' : ''}`}
                       onClick={() => changeLanguage(lang.code)}
                     >
-                      <span>{lang.flag}</span>
+                      <span className="navbar__lang-abbr">{lang.abbr}</span>
                       <span>{lang.label}</span>
                     </button>
                   ))}
@@ -219,8 +218,8 @@ export default function Navbar() {
                   className={`navbar__mobile-lang ${i18n.language === lang.code ? 'navbar__mobile-lang--active' : ''}`}
                   onClick={() => changeLanguage(lang.code)}
                 >
-                  <span>{lang.flag}</span>
-                  <span>{lang.code.toUpperCase()}</span>
+                  <span className="navbar__lang-abbr">{lang.abbr}</span>
+                  <span>{lang.label}</span>
                 </button>
               ))}
             </div>
