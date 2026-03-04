@@ -238,6 +238,8 @@ a:hover { color: var(--color-primary); }
 @media (max-width: 768px) {
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   .container, .container-sm { padding: 0 1rem; }
+  .section { padding: 3rem 0; }
+  .section-subtitle { margin-bottom: 2rem; }
 }
 
 /* ---- Helpers ---- */
