@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
-import { createCheckoutSession } from '../utils/api';
+import { createCheckoutSession, validatePromoCode } from '../utils/api';
 import { useTranslation } from 'react-i18next';
 import './PricingPage.css';
 
@@ -50,10 +50,33 @@ export default function PricingPage() {
   const { t } = useTranslation();
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [error, setError] = useState('');
+  const [promoCode, setPromoCode] = useState('');
+  const [promoState, setPromoState] = useState(null); // { promoId, discountLabel, name } | null
+  const [promoError, setPromoError] = useState('');
+  const [promoLoading, setPromoLoading] = useState(false);
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/health`).catch(() => {});
   }, []);
+
+  async function handleApplyPromo() {
+    const trimmed = promoCode.trim().toUpperCase();
+    if (!trimmed) return;
+    if (!currentUser) {
+      navigate('/auth?mode=register');
+      return;
+    }
+    setPromoError('');
+    setPromoState(null);
+    setPromoLoading(true);
+    try {
+      const result = await validatePromoCode(trimmed);
+      setPromoState(result);
+    } catch (err) {
+      setPromoError(err.message || t('pricing.promo.invalid', { defaultValue: 'Invalid or expired code' }));
+    }
+    setPromoLoading(false);
+  }
 
   async function handleAddonSelect() {
     if (!currentUser) {
@@ -68,7 +91,7 @@ export default function PricingPage() {
     setError('');
     setLoadingPlan('addon');
     try {
-      const { url } = await createCheckoutSession(addonPriceId, 'payment');
+      const { url } = await createCheckoutSession(addonPriceId, 'payment', promoState?.promoId || null);
       window.location.href = url;
     } catch (err) {
       setError(err.message || 'Failed to start checkout. Please try again.');
@@ -95,7 +118,7 @@ export default function PricingPage() {
     setError('');
     setLoadingPlan(plan.id);
     try {
-      const { url } = await createCheckoutSession(plan.priceId);
+      const { url } = await createCheckoutSession(plan.priceId, 'subscription', promoState?.promoId || null);
       window.location.href = url;
     } catch (err) {
       setError(err.message || 'Failed to start checkout. Please try again.');
@@ -150,6 +173,47 @@ export default function PricingPage() {
             </div>
           </div>
         )}
+
+        {/* Promo code */}
+        <div className="container">
+          <div className="pricing__promo">
+            <p className="pricing__promo-label">
+              {t('pricing.promo.label', { defaultValue: 'Have a discount code?' })}
+            </p>
+            <div className="pricing__promo-row">
+              <input
+                className="pricing__promo-input"
+                type="text"
+                placeholder={t('pricing.promo.placeholder', { defaultValue: 'Enter code' })}
+                value={promoCode}
+                onChange={(e) => {
+                  setPromoCode(e.target.value);
+                  setPromoState(null);
+                  setPromoError('');
+                }}
+                onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
+                disabled={promoLoading}
+              />
+              <button
+                className="btn btn-secondary pricing__promo-btn"
+                onClick={handleApplyPromo}
+                disabled={promoLoading || !promoCode.trim()}
+              >
+                {promoLoading
+                  ? t('pricing.promo.applying', { defaultValue: 'Applying...' })
+                  : t('pricing.promo.apply', { defaultValue: 'Apply' })}
+              </button>
+            </div>
+            {promoState && (
+              <p className="pricing__promo-success">
+                ✅ {t('pricing.promo.applied', { defaultValue: 'Code applied' })}: <strong>{promoState.name}</strong> — {promoState.discountLabel}
+              </p>
+            )}
+            {promoError && (
+              <p className="pricing__promo-error">⚠️ {promoError}</p>
+            )}
+          </div>
+        </div>
 
         {/* Plans */}
         <div className="container">

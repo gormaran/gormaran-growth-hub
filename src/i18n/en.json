@@ -406,6 +406,12 @@
   "pricing.cta.titleHighlight": "Get Started?",
   "pricing.cta.subtitle": "Join thousands of marketers, founders, and agencies growing with AI.",
   "pricing.cta.btn": "Start Free Today →",
+  "pricing.promo.label": "Have a discount code?",
+  "pricing.promo.placeholder": "Enter code",
+  "pricing.promo.apply": "Apply",
+  "pricing.promo.applying": "Applying...",
+  "pricing.promo.applied": "Code applied",
+  "pricing.promo.invalid": "Invalid or expired code",
 
   "wa.title": "Join the community",
   "wa.subtitle": "Marketing tips, AI and growth every week. Free, on WhatsApp.",
