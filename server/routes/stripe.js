@@ -91,12 +91,23 @@ router.post('/create-portal', verifyToken, async (req, res) => {
   }
 
   try {
-    // Find Stripe customer by email
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    if (customers.data.length === 0) {
-      return res.status(404).json({ error: 'No Stripe customer found for this user' });
+    // Prefer stripeCustomerId stored in Firestore; fall back to email lookup
+    let customerId = null;
+    try {
+      const admin = require('firebase-admin');
+      if (admin.apps.length > 0) {
+        const userDoc = await admin.firestore().collection('users').doc(user.uid).get();
+        customerId = userDoc.data()?.stripeCustomerId || null;
+      }
+    } catch (_) {}
+
+    if (!customerId) {
+      const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+      if (customers.data.length === 0) {
+        return res.status(404).json({ error: 'No Stripe customer found for this user' });
+      }
+      customerId = customers.data[0].id;
     }
-    const customerId = customers.data[0].id;
 
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
@@ -175,8 +186,22 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     case 'checkout.session.completed': {
       const session = event.data.object;
       const firebaseUid = session.metadata?.firebaseUid || session.client_reference_id;
-      if (firebaseUid) {
-        await updateUserSubscription(firebaseUid, session.subscription, 'pro');
+      if (firebaseUid && session.subscription) {
+        // Expand subscription to get priceId and assign correct plan
+        try {
+          const sub = await stripe.subscriptions.retrieve(session.subscription);
+          const priceId = sub.items.data[0]?.price?.id;
+          let plan = 'grow'; // fallback
+          if (priceId === process.env.STRIPE_GROW_PRICE_ID) plan = 'grow';
+          if (priceId === process.env.STRIPE_SCALE_PRICE_ID) plan = 'scale';
+          if (priceId === process.env.STRIPE_EVOLUTION_PRICE_ID) plan = 'evolution';
+          await updateUserSubscription(firebaseUid, session.subscription, plan, session.customer);
+        } catch (err) {
+          console.error('[Webhook] Failed to retrieve subscription on checkout:', err.message);
+        }
+      } else if (firebaseUid && session.mode === 'payment') {
+        // One-time payment (e.g. add-on) — just store customerId
+        await updateUserSubscription(firebaseUid, null, null, session.customer);
       }
       break;
     }
@@ -213,24 +238,26 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 });
 
 // Update user subscription in Firestore
-async function updateUserSubscription(uid, subscriptionId, plan) {
+async function updateUserSubscription(uid, subscriptionId, plan, stripeCustomerId) {
   try {
     const admin = require('firebase-admin');
-    // Only update if firebase is initialized
     if (admin.apps.length > 0) {
       const db = admin.firestore();
-      // Never overwrite admin subscription — admin access is manually assigned
       const existing = await db.collection('users').doc(uid).get();
       if (existing.exists && existing.data().subscription === 'admin') {
         console.log(`[Webhook] Skipping update for admin user ${uid}`);
         return;
       }
-      await db.collection('users').doc(uid).update({
-        subscription: plan,
-        stripeSubscriptionId: subscriptionId,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-      console.log(`[Webhook] Updated user ${uid} subscription to ${plan}`);
+      const update = { updatedAt: admin.firestore.FieldValue.serverTimestamp() };
+      if (plan !== null) {
+        update.subscription = plan;
+        update.stripeSubscriptionId = subscriptionId;
+      }
+      if (stripeCustomerId) {
+        update.stripeCustomerId = stripeCustomerId;
+      }
+      await db.collection('users').doc(uid).update(update);
+      console.log(`[Webhook] Updated user ${uid}:`, update);
     }
   } catch (err) {
     console.error('[Webhook] Failed to update Firestore:', err.message);
