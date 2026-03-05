@@ -1,4 +1,5 @@
 
+import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -30,12 +31,20 @@ const fadeUp = {
 };
 
 export default function Dashboard() {
-  const { currentUser } = useAuth();
+  const { currentUser, refreshUserProfile } = useAuth();
   const { subscription, isCategoryLocked, isInTrial, trialDaysRemaining } = useSubscription();
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
 
   const paymentStatus = searchParams.get('payment');
+
+  // After successful payment, give the webhook ~2s to update Firestore then refresh
+  useEffect(() => {
+    if (paymentStatus === 'success' && currentUser) {
+      const timer = setTimeout(() => refreshUserProfile(currentUser.uid), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [paymentStatus, currentUser]); // eslint-disable-line react-hooks/exhaustive-deps
   const inTrial = isInTrial();
   const daysLeft = trialDaysRemaining();
   const trialPct = Math.round((daysLeft / 14) * 100);
