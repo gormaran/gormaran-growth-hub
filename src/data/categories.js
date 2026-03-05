@@ -1569,6 +1569,23 @@ For each story:
         buildUserMessage: () => '',
       },
       {
+        id: 'nano-banana-prompts',
+        name: 'Nano Banana 2.0 — Image Prompt Generator',
+        description: 'Generate optimised image prompts for Gemini Nano Banana 2.0 — subject, style, lighting, negative prompt and recommended settings, ready to paste',
+        icon: '✨',
+        inputs: [
+          { id: 'subject', label: 'Subject / Scene', type: 'textarea', placeholder: 'e.g., A surfer riding a giant wave at sunset, drone angle, water spray catching the light', required: true },
+          { id: 'style', label: 'Visual Style', type: 'select', options: ['Photorealistic', 'Cinematic', 'Digital Illustration', 'Anime / Manga', 'Abstract / Conceptual', '3D Render', 'Oil Painting', 'Watercolour', 'Vintage / Film', 'Dark Fantasy'], required: true },
+          { id: 'mood', label: 'Mood / Atmosphere', type: 'text', placeholder: 'e.g., mysterious, nostalgic, energetic, serene' },
+          { id: 'lighting', label: 'Lighting', type: 'select', options: ['Golden hour / Sunset', 'Blue hour / Dawn', 'Studio — soft box', 'Studio — hard light', 'Neon / Cyberpunk', 'Natural daylight', 'Overcast / Moody', 'Dramatic shadows', 'Backlit / Silhouette'] },
+          { id: 'colors', label: 'Color Palette (optional)', type: 'text', placeholder: 'e.g., muted pastels, deep purples and golds, monochromatic blue' },
+          { id: 'aspect_ratio', label: 'Aspect Ratio', type: 'select', options: ['1:1 — Square', '16:9 — Landscape', '9:16 — Portrait / Reel', '4:3 — Classic', '21:9 — Cinematic wide', '3:2 — Photo'] },
+          { id: 'negative', label: 'What to Avoid (optional)', type: 'text', placeholder: 'e.g., blurry, watermark, oversaturated, text, ugly hands' },
+        ],
+        systemPrompt: '',
+        buildUserMessage: () => '',
+      },
+      {
         id: 'nano-banana-image',
         name: 'AI Image Generator',
         description: 'Generate stunning AI images with DALL·E 3 — describe your scene, choose style and lighting, and get a high-quality image in seconds',
