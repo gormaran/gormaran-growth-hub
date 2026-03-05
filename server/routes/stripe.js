@@ -8,9 +8,40 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder'
   apiVersion: '2024-11-20.acacia',
 });
 
+// POST /api/stripe/validate-promo — Validate a promotion code
+router.post('/validate-promo', verifyToken, async (req, res) => {
+  const { code } = req.body;
+
+  if (!code) return res.status(400).json({ error: 'Missing code' });
+
+  if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.includes('placeholder')) {
+    return res.status(503).json({ error: 'Payment system not configured yet.' });
+  }
+
+  try {
+    const promoCodes = await stripe.promotionCodes.list({ code, active: true, limit: 1 });
+    if (promoCodes.data.length === 0) {
+      return res.status(404).json({ error: 'Invalid or expired discount code' });
+    }
+    const promo = promoCodes.data[0];
+    const coupon = promo.coupon;
+    let discountLabel = '';
+    if (coupon.percent_off) {
+      discountLabel = `${coupon.percent_off}% off`;
+    } else if (coupon.amount_off) {
+      const currency = (coupon.currency || 'eur').toUpperCase();
+      discountLabel = `${(coupon.amount_off / 100).toFixed(2)} ${currency} off`;
+    }
+    res.json({ valid: true, promoId: promo.id, discountLabel, name: coupon.name || code });
+  } catch (err) {
+    console.error('[Stripe Promo Validate Error]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/stripe/create-checkout — Create Stripe Checkout Session
 router.post('/create-checkout', verifyToken, async (req, res) => {
-  const { priceId, mode: checkoutMode } = req.body;
+  const { priceId, mode: checkoutMode, promoId } = req.body;
   const user = req.user;
   const mode = checkoutMode === 'payment' ? 'payment' : 'subscription';
 
@@ -31,8 +62,14 @@ router.post('/create-checkout', verifyToken, async (req, res) => {
       cancel_url: `${process.env.FRONTEND_URL}/pricing?payment=cancelled`,
       client_reference_id: user.uid,
       metadata: { firebaseUid: user.uid },
-      allow_promotion_codes: true,
     };
+
+    if (promoId) {
+      sessionParams.discounts = [{ promotion_code: promoId }];
+    } else {
+      sessionParams.allow_promotion_codes = true;
+    }
+
     if (mode === 'subscription') {
       sessionParams.subscription_data = { metadata: { firebaseUid: user.uid } };
     }

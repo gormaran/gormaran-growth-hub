@@ -66,8 +66,26 @@ export async function streamAIResponse({ categoryId, toolId, inputs, onChunk, on
   }
 }
 
+// Validate a Stripe promotion code
+export async function validatePromoCode(code) {
+  const authHeaders = await getAuthHeader();
+  const response = await fetch(`${API_URL}/api/stripe/validate-promo`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders,
+    },
+    body: JSON.stringify({ code }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Invalid discount code');
+  }
+  return response.json(); // { valid, promoId, discountLabel, name }
+}
+
 // Create Stripe checkout session
-export async function createCheckoutSession(priceId, mode = 'subscription') {
+export async function createCheckoutSession(priceId, mode = 'subscription', promoId = null) {
   const authHeaders = await getAuthHeader();
   const response = await fetch(`${API_URL}/api/stripe/create-checkout`, {
     method: 'POST',
@@ -75,7 +93,7 @@ export async function createCheckoutSession(priceId, mode = 'subscription') {
       'Content-Type': 'application/json',
       ...authHeaders,
     },
-    body: JSON.stringify({ priceId, mode }),
+    body: JSON.stringify({ priceId, mode, promoId }),
   });
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
