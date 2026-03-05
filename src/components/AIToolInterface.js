@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { streamAIResponse, generateLogoImage } from '../utils/api';
+import { streamAIResponse, generateLogoImage, generateImage } from '../utils/api';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
 import ReactMarkdown from 'react-markdown';
@@ -238,7 +238,8 @@ export default function AIToolInterface({ tool, categoryId }) {
     setGeneratedImage(null);
     setIsGeneratingImage(true);
     try {
-      const { imageUrl } = await generateLogoImage({ ...inputs, _language: i18n.language });
+      const apiFn = tool.imageEndpoint === 'generate' ? generateImage : generateLogoImage;
+      const { imageUrl } = await apiFn({ ...inputs, _language: i18n.language });
       setGeneratedImage(imageUrl);
     } catch (err) {
       setImageError(err.message || 'Failed to generate image');

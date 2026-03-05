@@ -58,4 +58,49 @@ router.post('/generate-logo', imageLimiter, verifyToken, async (req, res) => {
   }
 });
 
+// POST /api/image/generate — general-purpose image generation
+router.post('/generate', imageLimiter, verifyToken, async (req, res) => {
+  const { inputs } = req.body;
+
+  if (!inputs?.subject || !inputs?.style) {
+    return res.status(400).json({ error: 'Missing required fields: subject, style' });
+  }
+
+  // Map aspect ratio to DALL-E 3 supported sizes
+  const sizeMap = {
+    '1:1 — Square': '1024x1024',
+    '16:9 — Landscape': '1792x1024',
+    '9:16 — Portrait / Reel': '1024x1792',
+    '4:3 — Classic': '1792x1024',
+    '21:9 — Cinematic wide': '1792x1024',
+    '3:2 — Photo': '1792x1024',
+  };
+  const size = sizeMap[inputs.aspect_ratio] || '1792x1024';
+
+  const moodNote = inputs.mood ? `, mood: ${inputs.mood}` : '';
+  const lightingNote = inputs.lighting ? `, lighting: ${inputs.lighting}` : '';
+  const colorNote = inputs.colors ? `, color palette: ${inputs.colors}` : '';
+  const negativeHint = inputs.negative ? ` Avoid: ${inputs.negative}.` : '';
+
+  const prompt = `${inputs.subject}. Visual style: ${inputs.style}${moodNote}${lightingNote}${colorNote}. Ultra high quality, detailed, professional.${negativeHint}`;
+
+  try {
+    const response = await getOpenAI().images.generate({
+      model: 'dall-e-3',
+      prompt,
+      n: 1,
+      size,
+      quality: 'hd',
+    });
+
+    res.json({
+      imageUrl: response.data[0].url,
+      revisedPrompt: response.data[0].revised_prompt,
+    });
+  } catch (err) {
+    console.error('[Image Generation Error]', err.message);
+    res.status(500).json({ error: 'Failed to generate image: ' + err.message });
+  }
+});
+
 module.exports = router;

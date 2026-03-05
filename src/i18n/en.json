@@ -133,8 +133,8 @@
   "tool.photo-direction.desc": "Get a full photography brief with shot list, lighting guide, composition rules, and post-processing direction",
   "tool.video-production.name": "Video Production Plan",
   "tool.video-production.desc": "Create a full video production brief with creative concept, shot list, script outline, and distribution strategy",
-  "tool.nano-banana-image.name": "Nano Banana 2.0 — Image Prompts",
-  "tool.nano-banana-image.desc": "Generate ready-to-use optimised prompts for Higgsfield's Nano Banana 2.0 image model — paste directly and get stunning AI visuals",
+  "tool.nano-banana-image.name": "AI Image Generator",
+  "tool.nano-banana-image.desc": "Generate stunning AI images with DALL·E 3 — describe your scene, choose style and lighting, and get a high-quality image in seconds",
   "tool.kling-video.name": "Kling 3.0 — Video Prompts",
   "tool.kling-video.desc": "Generate cinematic video prompts optimised for Higgsfield's Kling 3.0 model — includes motion control, camera direction and style parameters",
 

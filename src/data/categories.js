@@ -1570,9 +1570,11 @@ For each story:
       },
       {
         id: 'nano-banana-image',
-        name: 'Nano Banana 2.0 — Image Prompts',
-        description: 'Generate ready-to-use optimised prompts for Higgsfield\'s Nano Banana 2.0 image model — paste directly and get stunning AI visuals',
+        name: 'AI Image Generator',
+        description: 'Generate stunning AI images with DALL·E 3 — describe your scene, choose style and lighting, and get a high-quality image in seconds',
         icon: '🖼️',
+        imageOnly: true,
+        imageEndpoint: 'generate',
         inputs: [
           { id: 'subject', label: 'Subject / Scene', type: 'textarea', placeholder: 'e.g., A futuristic Tokyo street at night, rain-slicked roads reflecting neon signs, a lone figure in a trench coat walking away', required: true },
           { id: 'style', label: 'Visual Style', type: 'select', options: ['Photorealistic', 'Cinematic', 'Digital Illustration', 'Anime / Manga', 'Abstract / Conceptual', '3D Render', 'Oil Painting', 'Watercolour', 'Vintage / Film', 'Dark Fantasy'], required: true },
@@ -1580,7 +1582,7 @@ For each story:
           { id: 'lighting', label: 'Lighting', type: 'select', options: ['Golden hour / Sunset', 'Blue hour / Dawn', 'Studio — soft box', 'Studio — hard light', 'Neon / Cyberpunk', 'Natural daylight', 'Overcast / Moody', 'Dramatic shadows', 'Backlit / Silhouette'] },
           { id: 'colors', label: 'Color Palette (optional)', type: 'text', placeholder: 'e.g., muted pastels, deep purples and golds, monochromatic blue' },
           { id: 'aspect_ratio', label: 'Aspect Ratio', type: 'select', options: ['1:1 — Square', '16:9 — Landscape', '9:16 — Portrait / Reel', '4:3 — Classic', '21:9 — Cinematic wide', '3:2 — Photo'] },
-          { id: 'negative', label: 'Negative Prompt — What to Avoid (optional)', type: 'text', placeholder: 'e.g., blurry, watermark, oversaturated, text, ugly hands' },
+          { id: 'negative', label: 'What to Avoid (optional)', type: 'text', placeholder: 'e.g., blurry, watermark, oversaturated, text, ugly hands' },
         ],
         systemPrompt: '',
         buildUserMessage: () => '',
