@@ -32,75 +32,6 @@ function AnimatedSection({ children, className, delay = 0 }) {
   );
 }
 
-// ── Hero Preview (unchanged) ─────────────────────────────────────
-const PREVIEW_STEPS = [
-  { catIdx: 0, tool: '🔍 Keyword Research',    label: 'Target Keyword', value: 'email marketing automation',    lines: [90, 75, 85, 60, 80] },
-  { catIdx: 2, tool: '✍️ Blog Post Writer',     label: 'Topic',          value: 'AI tools for small businesses', lines: [85, 70, 90, 65, 75] },
-  { catIdx: 1, tool: '📊 SWOT Analysis',        label: 'Company',        value: 'Gormaran AI Growth Hub',        lines: [80, 92, 70, 88, 76] },
-  { catIdx: 3, tool: '💡 Google Ads Generator', label: 'Product',        value: 'AI-powered marketing suite',    lines: [88, 72, 95, 68, 82] },
-];
-
-const PREVIEW_CATS = [
-  '📈 Marketing & Growth',
-  '🎯 Business Strategy',
-  '✍️ Content Creation',
-  '🛠️ Digital Tools',
-];
-
-function HeroPreview() {
-  const [step, setStep] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setStep((s) => (s + 1) % PREVIEW_STEPS.length), 3800);
-    return () => clearInterval(id);
-  }, []);
-  const cur = PREVIEW_STEPS[step];
-  return (
-    <div className="landing__preview-body">
-      <div className="landing__preview-sidebar">
-        {PREVIEW_CATS.map((cat, i) => (
-          <div key={cat} className={`landing__preview-cat${i === cur.catIdx ? ' active' : ''}`}>
-            {cat}
-          </div>
-        ))}
-      </div>
-      <div className="landing__preview-main">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-          >
-            <div className="landing__preview-tool-header">{cur.tool}</div>
-            <div className="landing__preview-input">
-              <div className="landing__preview-label">{cur.label}</div>
-              <div className="landing__preview-value">{cur.value}</div>
-            </div>
-            <div className="landing__preview-output">
-              {cur.lines.map((w, i) => (
-                <motion.div
-                  key={i}
-                  className="landing__preview-line"
-                  style={{ width: `${w}%`, transformOrigin: 'left' }}
-                  initial={{ scaleX: 0, opacity: 0 }}
-                  animate={{ scaleX: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.15 + i * 0.1, ease: 'easeOut' }}
-                />
-              ))}
-            </div>
-          </motion.div>
-        </AnimatePresence>
-        <div className="preview-generating">
-          <span className="preview-dot" />
-          <span className="preview-dot" style={{ animationDelay: '0.18s' }} />
-          <span className="preview-dot" style={{ animationDelay: '0.36s' }} />
-          <span className="preview-generating-text">AI generating…</span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ── Stats ─────────────────────────────────────────────────────────
 const STATS = [
@@ -965,7 +896,14 @@ export default function LandingPage() {
                 </div>
                 <span className="landing__preview-title">Gormaran AI Growth Hub</span>
               </div>
-              <HeroPreview />
+              <video
+                className="landing__hero-video"
+                src="/linkedin.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
             </div>
           </motion.div>
         </div>

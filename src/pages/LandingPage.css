@@ -204,6 +204,14 @@
   font-weight: 500;
 }
 
+.landing__hero-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 480px;
+  object-fit: cover;
+}
+
 .landing__preview-body {
   display: grid;
   grid-template-columns: 160px 1fr;
