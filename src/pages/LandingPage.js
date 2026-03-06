@@ -256,6 +256,7 @@ function WorkflowDemo() {
   return (
     <motion.div
       ref={inViewRef}
+      id="workflow-demo"
       className="wf-demo"
       initial={{ opacity: 0, y: 32 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -931,7 +932,7 @@ export default function LandingPage() {
               </Link>
               <button
                 className="btn btn-secondary btn-lg"
-                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => document.getElementById('workflow-demo')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 {t('landing.hero.seeHow', { defaultValue: 'See how it works ↓' })}
               </button>
@@ -978,8 +979,8 @@ export default function LandingPage() {
               {t('landing.how.title')}
             </h2>
           </AnimatedSection>
-          <HowItWorks />
           <WorkflowDemo />
+          <HowItWorks />
         </div>
       </section>
 
