@@ -224,6 +224,195 @@ function HowItWorks() {
   );
 }
 
+// ── Workflow Demo ──────────────────────────────────────────────────
+const DEMO_TOOLS = [
+  { cat: '📈 Marketing', name: 'Keyword Research' },
+  { cat: '✍️ Content',   name: 'Blog Post Writer', active: true },
+  { cat: '✍️ Content',   name: 'Newsletter Writer' },
+  { cat: '🛠️ Digital',   name: 'Google Ads Creator' },
+  { cat: '🎯 Strategy',  name: 'SWOT Analysis' },
+];
+
+const DEMO_PHASES = [
+  { labelKey: 'landing.how.demo.phase1', dLabel: 'Select your tool' },
+  { labelKey: 'landing.how.demo.phase2', dLabel: 'Fill in your inputs' },
+  { labelKey: 'landing.how.demo.phase3', dLabel: 'Get your AI output' },
+];
+
+const DEMO_OUTPUT_LINES = [92, 78, 95, 65, 83, 55, 88, 72];
+
+function WorkflowDemo() {
+  const { t } = useTranslation();
+  const [phase, setPhase] = useState(0);
+  const inViewRef = useRef(null);
+  const inView = useInView(inViewRef, { once: true, margin: '-60px' });
+
+  useEffect(() => {
+    if (!inView) return;
+    const id = setInterval(() => setPhase((p) => (p + 1) % 3), 3600);
+    return () => clearInterval(id);
+  }, [inView]);
+
+  return (
+    <motion.div
+      ref={inViewRef}
+      className="wf-demo"
+      initial={{ opacity: 0, y: 32 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {/* ── Window chrome ── */}
+      <div className="wf-demo__chrome">
+        <div className="wf-demo__dots"><span /><span /><span /></div>
+        <span className="wf-demo__chrome-title">Gormaran AI Growth Hub</span>
+        <div className="wf-demo__phase-pills">
+          {DEMO_PHASES.map((dp, i) => (
+            <button
+              key={i}
+              className={`wf-demo__pill${phase === i ? ' active' : ''}`}
+              onClick={() => setPhase(i)}
+            >
+              <span className="wf-demo__pill-num">{i + 1}</span>
+              {t(dp.labelKey, { defaultValue: dp.dLabel })}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Body ── */}
+      <div className="wf-demo__body">
+        {/* Sidebar */}
+        <div className="wf-demo__sidebar">
+          <div className="wf-demo__sidebar-label">
+            {t('landing.how.demo.tools', { defaultValue: 'AI Tools' })}
+          </div>
+          {DEMO_TOOLS.map((tool, i) => (
+            <motion.div
+              key={tool.name}
+              className={`wf-demo__tool${tool.active && phase >= 1 ? ' selected' : ''}${tool.active && phase === 0 ? ' highlight' : ''}`}
+              animate={tool.active && phase === 0 ? { x: [0, 4, 0] } : {}}
+              transition={{ duration: 0.5, delay: 0.8, repeat: 1 }}
+            >
+              <span className="wf-demo__tool-cat">{tool.cat}</span>
+              <span className="wf-demo__tool-name">{tool.name}</span>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Main panel */}
+        <div className="wf-demo__main">
+          <AnimatePresence mode="wait">
+            {phase === 0 && (
+              <motion.div
+                key="select"
+                className="wf-demo__panel"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="wf-demo__empty">
+                  <div className="wf-demo__empty-icon">✍️</div>
+                  <p className="wf-demo__empty-title">
+                    {t('landing.how.demo.selectHint', { defaultValue: 'Select a tool from the sidebar' })}
+                  </p>
+                  <motion.div
+                    className="wf-demo__arrow"
+                    animate={{ x: [-4, 0, -4] }}
+                    transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                  >←</motion.div>
+                </div>
+              </motion.div>
+            )}
+
+            {phase === 1 && (
+              <motion.div
+                key="form"
+                className="wf-demo__panel"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="wf-demo__tool-header">✍️ Blog Post Writer</div>
+                <div className="wf-demo__form">
+                  {[
+                    { label: t('landing.how.demo.field1', { defaultValue: 'Topic' }),    val: 'AI tools for small businesses in 2025' },
+                    { label: t('landing.how.demo.field2', { defaultValue: 'Audience' }), val: 'Freelancers & founders' },
+                    { label: t('landing.how.demo.field3', { defaultValue: 'Keyword' }),  val: 'ai tools small business' },
+                  ].map((field, i) => (
+                    <div key={i} className="wf-demo__field">
+                      <div className="wf-demo__field-label">{field.label}</div>
+                      <motion.div
+                        className="wf-demo__field-value"
+                        initial={{ width: 0 }}
+                        animate={{ width: '100%' }}
+                        transition={{ duration: 0.7, delay: i * 0.35, ease: 'easeOut' }}
+                      >
+                        <span>{field.val}</span>
+                        {i === 2 && <span className="how-visual__cursor" />}
+                      </motion.div>
+                    </div>
+                  ))}
+                  <motion.button
+                    className="wf-demo__generate-btn"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: 1.2 }}
+                  >
+                    <span className="preview-dot" />
+                    <span className="preview-dot" style={{ animationDelay: '0.18s' }} />
+                    <span className="preview-dot" style={{ animationDelay: '0.36s' }} />
+                    {t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {phase === 2 && (
+              <motion.div
+                key="output"
+                className="wf-demo__panel"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="wf-demo__output-header">
+                  <span className="wf-demo__output-badge">✨ {t('ui.aiOutput', { defaultValue: 'AI Output' })}</span>
+                  <span className="wf-demo__word-count">~680 {t('ui.words', { defaultValue: 'words' })}</span>
+                </div>
+                <div className="wf-demo__output-lines">
+                  {DEMO_OUTPUT_LINES.map((w, i) => (
+                    <motion.div
+                      key={i}
+                      className={`wf-demo__output-line${i === 0 ? ' heading' : ''}`}
+                      style={{ width: i === 0 ? '70%' : `${w}%` }}
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      animate={{ scaleX: 1, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: i * 0.1, ease: 'easeOut' }}
+                    />
+                  ))}
+                </div>
+                <motion.div
+                  className="wf-demo__copy-row"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.2 }}
+                >
+                  <button className="wf-demo__copy-btn">
+                    {t('ui.copy', { defaultValue: 'Copy' })} ✓
+                  </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Plan category / tool data ─────────────────────────────────────
 const GROW_CATS = [
   {
@@ -790,6 +979,7 @@ export default function LandingPage() {
             </h2>
           </AnimatedSection>
           <HowItWorks />
+          <WorkflowDemo />
         </div>
       </section>
 
