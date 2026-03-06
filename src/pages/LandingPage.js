@@ -276,9 +276,24 @@ const EVO_EXTRA_CATS = [
 
 // ── Plans ─────────────────────────────────────────────────────────
 const PLANS = [
-  { name: 'Grow',      price: '€19', descKey: 'landing.plans.grow.desc',  featured: false, categories: GROW_CATS,        includesKey: null },
-  { name: 'Scale',     price: '€49', descKey: 'landing.plans.scale.desc', featured: true,  categories: SCALE_EXTRA_CATS, includesKey: 'landing.plans.scale.includes' },
-  { name: 'Evolution', price: '€99', descKey: 'landing.plans.evo.desc',   featured: false, categories: EVO_EXTRA_CATS,   includesKey: 'landing.plans.evo.includes' },
+  {
+    name: 'Grow', price: '€19', descKey: 'landing.plans.grow.desc', featured: false,
+    categories: GROW_CATS, includesKey: null,
+    benefitKeys: ['landing.plans.grow.benefit1', 'landing.plans.grow.benefit2', 'landing.plans.grow.benefit3'],
+    bDefaults: ['Rank higher on Google with precision keywords', 'Full email campaigns ready in under 2 minutes', 'Launch-ready ad copy for Google Search'],
+  },
+  {
+    name: 'Scale', price: '€49', descKey: 'landing.plans.scale.desc', featured: true,
+    categories: SCALE_EXTRA_CATS, includesKey: 'landing.plans.scale.includes',
+    benefitKeys: ['landing.plans.scale.benefit1', 'landing.plans.scale.benefit2', 'landing.plans.scale.benefit3'],
+    bDefaults: ['Win more clients with professional proposals', 'Investor-ready business plan in one click', 'Complete visual identity for your brand'],
+  },
+  {
+    name: 'Evolution', price: '€99', descKey: 'landing.plans.evo.desc', featured: false,
+    categories: EVO_EXTRA_CATS, includesKey: 'landing.plans.evo.includes',
+    benefitKeys: ['landing.plans.evo.benefit1', 'landing.plans.evo.benefit2', 'landing.plans.evo.benefit3'],
+    bDefaults: ['TAM/SAM/SOM and competitive intelligence', '12-month forecast with break-even analysis', 'VC-ready pitch deck with Q&A preparation'],
+  },
 ];
 
 // ── Plan Flip Card ────────────────────────────────────────────────
@@ -299,9 +314,17 @@ function PlanFlipCard({ plan }) {
             <span className="landing__plan-period">{t('landing.plans.perMonth')}</span>
           </div>
           <p className="landing__plan-flip__desc">{t(plan.descKey)}</p>
+          <ul className="landing__plan-benefits">
+            {plan.benefitKeys.map((key, i) => (
+              <li key={key} className="landing__plan-benefit">
+                <span className="landing__plan-benefit-check">✓</span>
+                {t(key, { defaultValue: plan.bDefaults[i] })}
+              </li>
+            ))}
+          </ul>
           <span className="landing__plan-flip__hint">
             <span className="landing__plan-flip__hint-icon">↻</span>
-            {t('landing.plans.flip.hint', { defaultValue: 'Hover to see all tools' })}
+            {t('landing.plans.flip.hint', { defaultValue: 'Flip to see all tools' })}
           </span>
           <Link
             to="/pricing"
@@ -607,6 +630,72 @@ function WhyNotChatGPT() {
   );
 }
 
+// ── Support / Atención Section ────────────────────────────────────
+const SUPPORT_ITEMS = [
+  {
+    icon: '💬',
+    titleKey: 'landing.support.wa.title',
+    descKey:  'landing.support.wa.desc',
+    tDefault: 'WhatsApp Community',
+    dDefault: 'Weekly marketing tips, AI strategies and direct access to the Gormaran team. Free, no spam.',
+  },
+  {
+    icon: '📧',
+    titleKey: 'landing.support.email.title',
+    descKey:  'landing.support.email.desc',
+    tDefault: 'Priority Email Support',
+    dDefault: 'Get a real answer within 24 hours — not a bot. Available on Grow, Scale and Evolution plans.',
+  },
+  {
+    icon: '👤',
+    titleKey: 'landing.support.manager.title',
+    descKey:  'landing.support.manager.desc',
+    tDefault: 'Dedicated Account Manager',
+    dDefault: 'Personalised onboarding and strategy sessions. Exclusive to Evolution plan subscribers.',
+  },
+];
+
+function SupportSection() {
+  const { t } = useTranslation();
+  return (
+    <section className="landing__support section">
+      <div className="container">
+        <AnimatedSection>
+          <span className="badge badge-primary" style={{ marginBottom: '1rem', display: 'inline-block' }}>
+            {t('landing.support.badge', { defaultValue: '🤝 Real Support' })}
+          </span>
+          <h2 className="section-title">
+            {t('landing.support.titlePre', { defaultValue: 'You are never' })}{' '}
+            <span className="gradient-text">{t('landing.support.titleHighlight', { defaultValue: 'alone' })}</span>
+          </h2>
+          <p className="section-subtitle">
+            {t('landing.support.subtitle', { defaultValue: 'Behind every plan there is a team ready to help you get results — not just a subscription.' })}
+          </p>
+        </AnimatedSection>
+        <motion.div
+          className="landing__support-grid"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-20px' }}
+          variants={stagger}
+        >
+          {SUPPORT_ITEMS.map((item) => (
+            <motion.div key={item.titleKey} className="landing__support-card" variants={fadeUp}>
+              <div className="landing__support-icon">{item.icon}</div>
+              <h3 className="landing__support-title">
+                {t(item.titleKey, { defaultValue: item.tDefault })}
+              </h3>
+              <p className="landing__support-desc">
+                {t(item.descKey, { defaultValue: item.dDefault })}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 // ── Main Component ───────────────────────────────────────────────
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -762,7 +851,10 @@ export default function LandingPage() {
       {/* ── SECTION 8: Client Logos ── */}
       <ClientLogos />
 
-      {/* ── SECTION 9: Stop Wasting Time ── */}
+      {/* ── SECTION 9: Support / Atención ── */}
+      <SupportSection />
+
+      {/* ── SECTION 10: Stop Wasting Time ── */}
       <section className="landing__cta-full section">
         <div className="container">
           <AnimatedSection>
