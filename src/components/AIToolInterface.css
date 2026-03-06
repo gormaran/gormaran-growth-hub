@@ -33,6 +33,25 @@
   color: var(--text-muted);
 }
 
+/* Business context block */
+.ai-tool__biz-context {
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  border-radius: var(--border-radius);
+  padding: 1rem 1.1rem 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.ai-tool__biz-context-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  margin-bottom: 0.75rem;
+}
+
 /* Upgrade notice */
 .ai-tool__upgrade {
   display: flex;

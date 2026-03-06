@@ -106,7 +106,15 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
     : '';
 
   const systemPrompt = tool.systemPrompt + languageInstruction;
-  const userMessage = tool.buildUserMessage(inputs);
+  const baseUserMessage = tool.buildUserMessage(inputs);
+
+  // Append business context fields if provided (injected for all non-creative categories)
+  const bizLines = [];
+  if (inputs._website_url) bizLines.push(`Business Website: ${inputs._website_url}`);
+  if (inputs._location)    bizLines.push(`Business Location: ${inputs._location}`);
+  const userMessage = bizLines.length > 0
+    ? `${baseUserMessage}\n\n**Business Context:**\n${bizLines.join('\n')}`
+    : baseUserMessage;
 
   // Set SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
