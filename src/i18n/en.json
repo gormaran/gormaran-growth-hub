@@ -273,6 +273,17 @@
   "landing.plans.evo.includes": "✓ Everything in Scale, plus:",
   "tool.press-release.name": "Press Release Generator",
 
+  "landing.support.badge": "🤝 Real Support",
+  "landing.support.titlePre": "You are never",
+  "landing.support.titleHighlight": "alone",
+  "landing.support.subtitle": "Behind every plan there is a team ready to help you get results — not just a subscription.",
+  "landing.support.wa.title": "WhatsApp Community",
+  "landing.support.wa.desc": "Weekly marketing tips, AI strategies and direct access to the Gormaran team. Free, no spam.",
+  "landing.support.email.title": "Priority Email Support",
+  "landing.support.email.desc": "Get a real answer within 24 hours — not a bot. Available on Grow, Scale and Evolution plans.",
+  "landing.support.manager.title": "Dedicated Account Manager",
+  "landing.support.manager.desc": "Personalised onboarding and strategy sessions. Exclusive to Evolution plan subscribers.",
+
   "landing.ig.badge": "📸 Free Tool",
   "landing.ig.title": "Instagram Express Audit",
   "landing.ig.subtitle": "Analyze your profile in 5 minutes and get 3 priority actions to grow faster.",
