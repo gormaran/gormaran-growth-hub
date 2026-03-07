@@ -1,6 +1,7 @@
 
 import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { pushEvent } from '../utils/analytics';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
@@ -38,9 +39,15 @@ export default function Dashboard() {
 
   const paymentStatus = searchParams.get('payment');
 
+  const PLAN_PRICES = { grow: 19, scale: 49, evolution: 129 };
+
   // After successful payment, give the webhook ~2s to update Firestore then refresh
   useEffect(() => {
     if (paymentStatus === 'success' && currentUser) {
+      pushEvent('Suscribe', {
+        value: PLAN_PRICES[subscription] ?? 0,
+        currency: 'EUR',
+      });
       const timer = setTimeout(() => refreshUserProfile(currentUser.uid), 2000);
       return () => clearTimeout(timer);
     }
