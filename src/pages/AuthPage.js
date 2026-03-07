@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { pushEvent } from '../utils/analytics';
 import './AuthPage.css';
 
 export default function AuthPage() {
@@ -48,6 +49,7 @@ export default function AuthPage() {
         if (!name.trim()) { setError('Please enter your name'); setLoading(false); return; }
         if (password.length < 6) { setError('Password must be at least 6 characters'); setLoading(false); return; }
         await register(email, password, name);
+        pushEvent('CompleteRegistration');
       } else {
         await login(email, password);
       }
@@ -69,7 +71,11 @@ export default function AuthPage() {
     setError('');
     setLoading(true);
     try {
-      await signInWithGoogle();
+      const result = await signInWithGoogle();
+      if (result?.additionalUserInfo?.isNewUser) {
+        pushEvent('signup_complete');
+        pushEvent('trial_started');
+      }
       navigate(from, { replace: true });
     } catch (err) {
       setError(err.message || 'Failed to sign in with Google');
