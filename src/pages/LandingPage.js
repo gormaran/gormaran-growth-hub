@@ -889,22 +889,7 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="landing__preview-window">
-              <div className="landing__preview-header">
-                <div className="landing__preview-dots">
-                  <span /><span /><span />
-                </div>
-                <span className="landing__preview-title">Gormaran AI Growth Hub</span>
-              </div>
-              <video
-                className="landing__hero-video"
-                src="/linkedin.mp4"
-                autoPlay
-                muted
-                loop
-                playsInline
-              />
-            </div>
+            <WorkflowDemo />
           </motion.div>
         </div>
       </section>
