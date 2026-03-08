@@ -518,5 +518,7 @@
   "landing.dash.connect": "Connect",
   "landing.dash.connecting": "Connecting...",
   "landing.dash.connected": "Connected",
-  "landing.dash.connectedNotice": "Your accounts are connected. Data shown is a demo preview — real analytics coming soon."
+  "landing.dash.connectedNotice": "Your accounts are connected. Data shown is a demo preview — real analytics coming soon.",
+  "landing.dash.signInToConnect": "Sign in to connect your accounts",
+  "landing.dash.signInBtn": "Sign In →"
 }

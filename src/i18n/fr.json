@@ -781,5 +781,7 @@
   "landing.dash.connect": "Connecter",
   "landing.dash.connecting": "Connexion...",
   "landing.dash.connected": "Connecté",
-  "landing.dash.connectedNotice": "Vos comptes sont connectés. Les données affichées sont une démo — vos vraies métriques arrivent bientôt."
+  "landing.dash.connectedNotice": "Vos comptes sont connectés. Les données affichées sont une démo — vos vraies métriques arrivent bientôt.",
+  "landing.dash.signInToConnect": "Connectez-vous pour lier vos comptes",
+  "landing.dash.signInBtn": "Se connecter →"
 }
