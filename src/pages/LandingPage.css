@@ -2016,7 +2016,7 @@
 
 @media (max-width: 1024px) {
   .landing__hero .container { grid-template-columns: 1fr; gap: 3rem; }
-  .landing__hero-preview { display: none; }
+  .landing__hero-preview { display: block; }
   .landing__plans-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
   .landing__ig-compact-inner { grid-template-columns: 1fr; gap: 2.5rem; }
   /* How It Works – 2 cols on tablet */
