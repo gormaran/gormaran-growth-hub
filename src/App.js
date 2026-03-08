@@ -14,6 +14,7 @@ import Dashboard from './pages/Dashboard';
 import CategoryPage from './pages/CategoryPage';
 import PricingPage from './pages/PricingPage';
 import SettingsPage from './pages/SettingsPage';
+import RealTimeDataPage from './pages/RealTimeDataPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
@@ -72,6 +73,14 @@ export default function App() {
               element={
                 <AppLayout>
                   <PricingPage />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/real-time-data"
+              element={
+                <AppLayout>
+                  <RealTimeDataPage />
                 </AppLayout>
               }
             />

@@ -53,10 +53,12 @@ export default function Navbar() {
 
   const navLinks = currentUser
     ? [
+        { to: '/real-time-data', label: 'Real Time Data' },
         { to: '/dashboard', label: 'Dashboard' },
         { to: '/pricing', label: 'Pricing' },
       ]
     : [
+        { to: '/real-time-data', label: 'Real Time Data' },
         { to: '/#features', label: 'Features' },
         { to: '/pricing', label: 'Pricing' },
       ];
