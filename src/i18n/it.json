@@ -774,5 +774,7 @@
   "landing.dash.qa.title": "Azioni Rapide",
   "landing.dash.qa.content": "Genera Contenuto",
   "landing.dash.qa.seo": "Audit SEO",
-  "landing.dash.qa.funnel": "Crea Funnel"
+  "landing.dash.qa.funnel": "Crea Funnel",
+  "landing.dash.demoBadge": "Anteprima demo",
+  "landing.dash.demoNotice": "Questa è un'anteprima con dati di esempio. Collega i tuoi account per vedere i tuoi risultati reali."
 }

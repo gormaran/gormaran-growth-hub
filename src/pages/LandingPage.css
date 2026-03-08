@@ -2026,166 +2026,210 @@
   max-width: 540px;
 }
 
-.landing__smartdash-connect {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 3rem;
+/* Gradient border frame */
+.landing__smartdash-frame {
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(124,58,237,0.5) 0%, rgba(168,85,247,0.3) 40%, rgba(59,130,246,0.35) 70%, rgba(124,58,237,0.5) 100%);
+  box-shadow: 0 0 40px rgba(124,58,237,0.12), 0 0 80px rgba(124,58,237,0.06);
+}
+.landing__smartdash-frame-inner {
+  border-radius: 18px;
+  background: var(--bg-secondary);
+  overflow: hidden;
 }
 
-.landing__smartdash-connect-btn {
+/* Demo notice banner */
+.landing__smartdash-demo-banner {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem 1.2rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  background: var(--bg-secondary);
-  transition: border-color 0.2s, color 0.2s;
-  text-decoration: none;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  padding: 0.9rem 1.4rem;
+  background: rgba(124,58,237,0.08);
+  border-bottom: 1px solid rgba(124,58,237,0.18);
 }
-.landing__smartdash-connect-btn:hover {
-  border-color: var(--accent);
-  color: var(--text-primary);
+.landing__smartdash-demo-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #a78bfa;
+  background: rgba(124,58,237,0.18);
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.landing__smartdash-demo-notice {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  flex: 1;
+  min-width: 180px;
+}
+.landing__smartdash-demo-sources {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.landing__smartdash-source-btn {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 0.85rem;
+  border-radius: 6px;
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--src-color) 40%, transparent);
+  color: var(--src-color);
+  background: color-mix(in srgb, var(--src-color) 8%, transparent);
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.landing__smartdash-source-btn:hover {
+  background: color-mix(in srgb, var(--src-color) 15%, transparent);
 }
 
 .landing__smartdash-grid {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 1.5rem;
+  grid-template-columns: 1fr 360px;
+  gap: 0;
   align-items: start;
+}
+
+/* ── Left panel ── */
+.landing__smartdash-left {
+  padding: 1.5rem;
+  border-right: 1px solid rgba(255,255,255,0.06);
 }
 
 /* ── Metrics ── */
 .landing__smartdash-metrics {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: 0.85rem;
   margin-bottom: 1rem;
 }
 
 .landing__smartdash-metric {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.2rem 1.4rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
 }
 .landing__smartdash-metric-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.45rem;
 }
 .landing__smartdash-metric-label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
-.landing__smartdash-metric-icon { font-size: 1rem; opacity: 0.6; }
+.landing__smartdash-metric-icon { font-size: 0.9rem; opacity: 0.5; }
 .landing__smartdash-metric-value {
-  font-size: 1.6rem;
+  font-size: 1.55rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #fff;
   line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 .landing__smartdash-metric-change {
-  font-size: 0.78rem;
-  color: #22c55e;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #4ade80;
   margin-top: 0.3rem;
 }
 
 /* ── Chart ── */
 .landing__smartdash-chart {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.4rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 1.1rem 1.2rem;
 }
 .landing__smartdash-chart-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-  color: var(--text-primary);
-  margin-bottom: 1.2rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 1rem;
 }
 .landing__smartdash-chart-bars {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
-  height: 130px;
+  gap: 7px;
+  height: 110px;
 }
 .landing__smartdash-bar {
   flex: 1;
-  background: linear-gradient(180deg, var(--accent) 0%, rgba(124,58,237,0.3) 100%);
-  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #7c3aed 0%, rgba(124,58,237,0.25) 100%);
+  border-radius: 3px 3px 0 0;
   transform-origin: bottom;
-  min-height: 4px;
+  min-height: 3px;
 }
-.landing__smartdash-chart-label {
-  text-align: center;
-  font-size: 0.78rem;
-  color: var(--text-tertiary, var(--text-secondary));
-  margin-top: 1rem;
-  opacity: 0.6;
+
+/* ── Right panel ── */
+.landing__smartdash-right {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 /* ── AI Suggestions ── */
 .landing__smartdash-ai {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.4rem;
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 .landing__smartdash-ai-header {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.6rem;
   align-items: flex-start;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
 }
-.landing__smartdash-ai-icon { font-size: 1.4rem; }
+.landing__smartdash-ai-icon { font-size: 1.2rem; }
 .landing__smartdash-ai-header strong {
   display: block;
-  color: var(--accent);
-  font-size: 1rem;
+  color: #a78bfa;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 .landing__smartdash-ai-header p {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.45);
+  margin: 0.15rem 0 0;
+  line-height: 1.4;
 }
 
 .landing__smartdash-sug {
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1rem;
-  margin-bottom: 0.75rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 9px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.6rem;
   position: relative;
 }
-.landing__smartdash-sug--locked {
-  overflow: hidden;
-}
+.landing__smartdash-sug--locked { overflow: hidden; }
 .landing__smartdash-sug-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
-  border-radius: 10px;
+  background: rgba(10,10,20,0.7);
+  backdrop-filter: blur(5px);
+  border-radius: 9px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  font-size: 1.4rem;
+  gap: 0.35rem;
+  font-size: 1.2rem;
   z-index: 2;
 }
 .landing__smartdash-sug-overlay a {
-  font-size: 0.82rem;
-  color: var(--accent);
+  font-size: 0.78rem;
+  color: #a78bfa;
   text-decoration: underline;
   font-weight: 600;
 }
@@ -2193,57 +2237,57 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.4rem;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
 }
 .landing__smartdash-sug-title {
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #fff;
 }
 .landing__smartdash-priority {
-  font-size: 0.72rem;
+  font-size: 0.67rem;
   font-weight: 700;
-  padding: 0.2rem 0.55rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 20px;
   white-space: nowrap;
 }
-.landing__smartdash-priority--high   { background: rgba(239,68,68,0.15); color: #ef4444; }
-.landing__smartdash-priority--medium { background: rgba(234,179,8,0.15);  color: #ca8a04; }
+.landing__smartdash-priority--high   { background: rgba(239,68,68,0.18); color: #f87171; }
+.landing__smartdash-priority--medium { background: rgba(234,179,8,0.18);  color: #fbbf24; }
 .landing__smartdash-sug-desc {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  margin: 0 0 0.65rem;
+  line-height: 1.4;
 }
 .landing__smartdash-sug-btn {
   width: 100%;
-  padding: 0.45rem;
+  padding: 0.4rem;
   background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.82rem;
-  color: var(--text-secondary);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 7px;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.5);
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
 .landing__smartdash-sug-btn:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--text-primary);
+  border-color: #7c3aed;
+  color: #a78bfa;
 }
-.landing__smartdash-sug-btn:disabled { opacity: 0.4; cursor: default; }
+.landing__smartdash-sug-btn:disabled { opacity: 0.35; cursor: default; }
 
 /* ── Quick Actions ── */
 .landing__smartdash-qa {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.4rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 1rem;
 }
 .landing__smartdash-qa-title {
   display: block;
-  font-size: 1rem;
-  color: var(--text-primary);
-  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 0.75rem;
 }
 .landing__smartdash-qa-btn {
   display: flex;
@@ -2251,29 +2295,29 @@
   justify-content: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.65rem;
+  padding: 0.6rem;
   border-radius: 8px;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
   text-decoration: none;
   transition: opacity 0.2s, background 0.2s;
-  border: 1px solid var(--border);
-  color: var(--text-primary);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
   background: transparent;
 }
 .landing__smartdash-qa-btn.primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: #7c3aed;
+  border-color: #7c3aed;
   color: #fff;
 }
-.landing__smartdash-qa-btn.locked { opacity: 0.55; }
-.landing__smartdash-qa-btn:hover:not(.locked) { opacity: 0.85; }
+.landing__smartdash-qa-btn.locked { opacity: 0.5; }
+.landing__smartdash-qa-btn:hover:not(.locked) { opacity: 0.8; }
 .landing__smartdash-qa-badge {
-  font-size: 0.7rem;
-  background: rgba(124,58,237,0.2);
-  color: var(--accent);
-  padding: 0.15rem 0.45rem;
+  font-size: 0.65rem;
+  background: rgba(124,58,237,0.25);
+  color: #a78bfa;
+  padding: 0.12rem 0.4rem;
   border-radius: 20px;
   margin-left: auto;
 }
@@ -2329,8 +2373,10 @@
 
   /* ── Smart Dashboard ── */
   .landing__smartdash-grid { grid-template-columns: 1fr; }
+  .landing__smartdash-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
   .landing__smartdash-metrics { grid-template-columns: repeat(2, 1fr); }
-  .landing__smartdash-chart-bars { height: 100px; }
+  .landing__smartdash-chart-bars { height: 90px; }
+  .landing__smartdash-demo-banner { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
 
   /* ── Mobile GPU performance ── */
   .landing__orb {
