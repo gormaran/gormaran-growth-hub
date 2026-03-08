@@ -44,9 +44,14 @@
   "ui.requestsRemaining": "solicitudes restantes hoy",
   "ui.upgradeForUnlimited": "Mejora para acceso ilimitado",
   "footer.brand.desc": "El hub de crecimiento con IA para freelances, marketers, agencias y emprendedores. Creado para ayudarte a moverte más rápido y crecer de forma más inteligente.",
-  "footer.product.title": "Producto", "footer.product.pricing": "Precios", "footer.product.dashboard": "Dashboard", "footer.product.getStarted": "Empezar",
+  "footer.product.title": "Producto",
+  "footer.product.pricing": "Precios",
+  "footer.product.dashboard": "Dashboard",
+  "footer.product.getStarted": "Empezar",
   "footer.tools.title": "Herramientas",
-  "footer.legal.privacy": "Política de Privacidad", "footer.legal.terms": "Términos de Servicio", "footer.legal.cookies": "Política de Cookies",
+  "footer.legal.privacy": "Política de Privacidad",
+  "footer.legal.terms": "Términos de Servicio",
+  "footer.legal.cookies": "Política de Cookies",
   "cat.marketing.name": "Marketing y Crecimiento",
   "cat.marketing.desc": "SEO, copywriting, redes sociales, anuncios y campañas de email",
   "cat.strategy.name": "Estrategia de Negocio",
@@ -186,11 +191,9 @@
   "landing.cta.seePricing": "Ver Precios",
   "landing.cta.note": "Prueba gratuita de 14 días · Sin tarjeta de crédito",
   "landing.cta.main": "Empieza gratis hoy — Sin tarjeta de crédito",
-
   "landing.problem.card1": "Horas perdidas escribiendo copies y contenido",
   "landing.problem.card2": "Campañas de ads que consumen tiempo y no convierten",
   "landing.problem.card3": "Propuestas y reportes que te roban el día",
-
   "landing.how.title": "Así funciona",
   "landing.how.tab1.label": "Crea contenido en minutos",
   "landing.how.tab1.tool": "Newsletter Writer",
@@ -235,7 +238,6 @@
   "landing.whychatgpt.vs.2.gormaran": "30+ herramientas diseñadas por expertos",
   "landing.whychatgpt.vs.3.generic": "Texto en bruto que hay que editar",
   "landing.whychatgpt.vs.3.gormaran": "Listo para publicar — cero reescritura",
-
   "landing.plans.title": "Precios simples y transparentes",
   "landing.plans.perMonth": "/mes",
   "landing.plans.cta": "Ver todos los planes →",
@@ -275,7 +277,6 @@
   "landing.support.email.desc": "Recibes una respuesta real en menos de 24h — sin bots. Disponible en los planes Grow, Scale y Evolution.",
   "landing.support.manager.title": "Account Manager Dedicado",
   "landing.support.manager.desc": "Onboarding personalizado y sesiones de estrategia. Exclusivo para suscriptores del plan Evolution.",
-
   "landing.ig.badge": "📸 Herramienta Gratuita",
   "landing.ig.title": "Auditoría Express de Instagram",
   "landing.ig.subtitle": "Analiza tu perfil en 5 minutos y obtén 3 acciones prioritarias para crecer más rápido.",
@@ -764,7 +765,6 @@
   "landing.categories.availableScale": "Disponible en Scale →",
   "landing.categories.availableEvolution": "Disponible en Evolution →",
   "landing.categories.availableAddon": "Add-on →",
-
   "landing.dash.title1": "Dashboard Inteligente",
   "landing.dash.title2": "En Tiempo Real",
   "landing.dash.subtitle": "Métricas que importan y sugerencias automáticas para crecer cada día.",
@@ -795,5 +795,9 @@
   "landing.dash.qa.seo": "Auditar SEO",
   "landing.dash.qa.funnel": "Crear Funnel",
   "landing.dash.demoBadge": "Vista previa demo",
-  "landing.dash.demoNotice": "Esto es una demo con datos de ejemplo. Conecta tus cuentas para ver tus resultados reales."
+  "landing.dash.demoNotice": "Esto es una demo con datos de ejemplo. Conecta tus cuentas para ver tus resultados reales.",
+  "landing.dash.connect": "Conectar",
+  "landing.dash.connecting": "Conectando...",
+  "landing.dash.connected": "Conectado",
+  "landing.dash.connectedNotice": "Tus cuentas están conectadas. Los datos mostrados son una demo — tus métricas reales estarán disponibles pronto."
 }

@@ -2084,9 +2084,51 @@
   transition: background 0.2s;
   white-space: nowrap;
 }
-.landing__smartdash-source-btn:hover {
+.landing__smartdash-source-btn:hover:not(:disabled) {
   background: color-mix(in srgb, var(--src-color) 15%, transparent);
 }
+.landing__smartdash-source-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* Provider chips (Real Time Data page) */
+.rtd__banner-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.rtd__provider-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 0.5rem 0.3rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--src-color) 50%, transparent);
+  color: var(--src-color);
+  background: color-mix(in srgb, var(--src-color) 10%, transparent);
+}
+.rtd__provider-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+}
+.rtd__provider-disconnect {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 0.1rem;
+  transition: color 0.15s;
+}
+.rtd__provider-disconnect:hover { color: #ef4444; }
+.rtd__provider-connect { cursor: pointer; }
+.rtd__provider-connect:disabled { opacity: 0.6; cursor: default; }
 
 .landing__smartdash-grid {
   display: grid;

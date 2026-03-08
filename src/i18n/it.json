@@ -44,9 +44,14 @@
   "ui.requestsRemaining": "richieste rimanenti oggi",
   "ui.upgradeForUnlimited": "Esegui l'upgrade per accesso illimitato",
   "footer.brand.desc": "L'hub di crescita AI per freelance, marketer, agenzie e fondatori. Progettato per aiutarti a muoverti più velocemente e crescere in modo più intelligente.",
-  "footer.product.title": "Prodotto", "footer.product.pricing": "Prezzi", "footer.product.dashboard": "Dashboard", "footer.product.getStarted": "Inizia",
+  "footer.product.title": "Prodotto",
+  "footer.product.pricing": "Prezzi",
+  "footer.product.dashboard": "Dashboard",
+  "footer.product.getStarted": "Inizia",
   "footer.tools.title": "Strumenti",
-  "footer.legal.privacy": "Informativa sulla Privacy", "footer.legal.terms": "Termini di Servizio", "footer.legal.cookies": "Cookie Policy",
+  "footer.legal.privacy": "Informativa sulla Privacy",
+  "footer.legal.terms": "Termini di Servizio",
+  "footer.legal.cookies": "Cookie Policy",
   "cat.marketing.name": "Marketing e Crescita",
   "cat.marketing.desc": "SEO, copywriting, social media, annunci e campagne email",
   "cat.strategy.name": "Strategia Aziendale",
@@ -186,11 +191,9 @@
   "landing.cta.seePricing": "Vedi i Prezzi",
   "landing.cta.note": "Prova gratuita di 14 giorni · Nessuna carta di credito richiesta",
   "landing.cta.main": "Inizia gratis oggi — Nessuna carta di credito",
-
   "landing.problem.card1": "Ore perse a scrivere copy e contenuti",
   "landing.problem.card2": "Campagne ads che consumano tempo e non convertono",
   "landing.problem.card3": "Proposte e report che ti rubano la giornata",
-
   "landing.how.title": "Scopri come funziona",
   "landing.how.tab1.label": "Crea contenuti in minuti",
   "landing.how.tab1.tool": "Newsletter Writer",
@@ -227,7 +230,6 @@
   "landing.whychatgpt.vs.2.gormaran": "30+ strumenti creati da esperti",
   "landing.whychatgpt.vs.3.generic": "Testo grezzo da modificare",
   "landing.whychatgpt.vs.3.gormaran": "Pronto da pubblicare — zero riscrittura",
-
   "landing.plans.title": "Prezzi semplici e trasparenti",
   "landing.plans.perMonth": "/mese",
   "landing.plans.cta": "Vedi tutti i piani →",
@@ -745,7 +747,6 @@
   "landing.categories.availableScale": "Disponibile su Scale →",
   "landing.categories.availableEvolution": "Disponibile su Evolution →",
   "landing.categories.availableAddon": "Add-on →",
-
   "landing.dash.title1": "Dashboard Intelligente",
   "landing.dash.title2": "In Tempo Reale",
   "landing.dash.subtitle": "Le metriche che contano e suggerimenti automatici per crescere ogni giorno.",
@@ -776,5 +777,9 @@
   "landing.dash.qa.seo": "Audit SEO",
   "landing.dash.qa.funnel": "Crea Funnel",
   "landing.dash.demoBadge": "Anteprima demo",
-  "landing.dash.demoNotice": "Questa è un'anteprima con dati di esempio. Collega i tuoi account per vedere i tuoi risultati reali."
+  "landing.dash.demoNotice": "Questa è un'anteprima con dati di esempio. Collega i tuoi account per vedere i tuoi risultati reali.",
+  "landing.dash.connect": "Connetti",
+  "landing.dash.connecting": "Connessione...",
+  "landing.dash.connected": "Connesso",
+  "landing.dash.connectedNotice": "I tuoi account sono connessi. I dati mostrati sono una demo — le tue metriche reali arriveranno presto."
 }
