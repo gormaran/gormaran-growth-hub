@@ -139,11 +139,7 @@ router.get('/:provider/connect', async (req, res) => {
   if (!config) return res.status(400).send('Unknown provider');
 
   if (!config.clientId) {
-    return res.send(`<!DOCTYPE html><html><body style="background:#09090f;color:#e2e8f0;font-family:system-ui,sans-serif;padding:2rem">
-      <h3>⚠️ ${provider} OAuth not configured</h3>
-      <p>Add the required credentials to the server environment variables.</p>
-      <script>setTimeout(() => window.close(), 4000)</script>
-    </body></html>`);
+    return res.send(popupHtml(false, `${provider} integration not yet available. Coming soon!`));
   }
 
   // Optional: if the user is already logged in, embed their uid in the state

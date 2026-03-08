@@ -184,7 +184,7 @@ export default function RealTimeDataPage() {
           initial="hidden"
           animate="visible"
           variants={stagger}
-          style={{ textAlign: 'center', marginBottom: '2.5rem' }}
+          style={{ textAlign: 'center', marginBottom: '2.5rem', paddingTop: '64px' }}
         >
           <motion.h1 className="section-title" variants={fadeUp} transition={{ duration: 0.35 }}>
             {t('landing.dash.title1')}
