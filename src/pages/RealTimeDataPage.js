@@ -1,20 +1,15 @@
-import { useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import './LandingPage.css';
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 },
-};
+const API_URL = process.env.REACT_APP_API_URL || 'https://gormaran-growth-hub.onrender.com';
 
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.06 } },
-};
+const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
+const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } };
 
 const DASH_METRICS = [
   { labelKey: 'landing.dash.metric.visits',      raw: 24567,  prefix: '',  change: '+12.5%', icon: '👁' },
@@ -35,10 +30,10 @@ const DASH_QUICK_ACTIONS = [
   { labelKey: 'landing.dash.qa.funnel' },
 ];
 
-const DASH_CONNECT = [
-  { key: 'ga', label: 'Google Analytics', color: '#E37400' },
-  { key: 'ig', label: 'Instagram',        color: '#E1306C' },
-  { key: 'li', label: 'LinkedIn',         color: '#0A66C2' },
+const PROVIDERS = [
+  { key: 'google_analytics', label: 'Google Analytics', icon: '📊', color: '#E37400' },
+  { key: 'instagram',        label: 'Instagram',        icon: '📸', color: '#E1306C' },
+  { key: 'linkedin',         label: 'LinkedIn',         icon: '💼', color: '#0A66C2' },
 ];
 
 const BAR_HEIGHTS = [60, 75, 55, 90, 70, 85, 65];
@@ -48,8 +43,8 @@ function useCountUp(target, inView) {
   useEffect(() => {
     if (!inView) return;
     let frame;
-    const duration = 1400;
     const start = performance.now();
+    const duration = 1400;
     const tick = (now) => {
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
@@ -80,14 +75,103 @@ function MetricCard({ metric, inView }) {
 
 export default function RealTimeDataPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const { subscription } = useSubscription();
 
   const hasPaidPlan      = currentUser && ['grow', 'scale', 'evolution', 'admin'].includes(subscription);
   const hasExecuteAccess = currentUser && ['scale', 'evolution', 'admin'].includes(subscription);
 
+  // Connection state: null = checking, false = not connected, true = connected
+  const [connections, setConnections] = useState({
+    google_analytics: null,
+    instagram: null,
+    linkedin: null,
+  });
+  const [connecting, setConnecting] = useState(null);
+  const [disconnecting, setDisconnecting] = useState(null);
+
   const ref    = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-40px' });
+
+  // Check connection status for all providers
+  const checkStatus = useCallback(async () => {
+    if (!currentUser) {
+      setConnections({ google_analytics: false, instagram: false, linkedin: false });
+      return;
+    }
+    const token = await currentUser.getIdToken();
+    PROVIDERS.forEach(async ({ key }) => {
+      try {
+        const res = await fetch(`${API_URL}/api/oauth/${key}/status`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setConnections(prev => ({ ...prev, [key]: data.connected }));
+      } catch {
+        setConnections(prev => ({ ...prev, [key]: false }));
+      }
+    });
+  }, [currentUser]);
+
+  useEffect(() => { checkStatus(); }, [checkStatus]);
+
+  // Listen for postMessage from OAuth popup
+  useEffect(() => {
+    const handler = (event) => {
+      if (event.data?.type !== 'oauth_result') return;
+      setConnecting(null);
+      if (event.data.success) {
+        // Find which provider from the popup key stored in connecting
+        checkStatus();
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [checkStatus]);
+
+  async function handleConnect(key) {
+    if (!currentUser) {
+      navigate('/auth?mode=register');
+      return;
+    }
+    setConnecting(key);
+    try {
+      const token = await currentUser.getIdToken();
+      const popup = window.open(
+        `${API_URL}/api/oauth/${key}/connect?token=${encodeURIComponent(token)}`,
+        `oauth_${key}`,
+        'width=620,height=720,scrollbars=yes,resizable=yes'
+      );
+      // Detect if popup was blocked
+      if (!popup) {
+        alert('Please allow popups for this site to connect your account.');
+        setConnecting(null);
+      }
+    } catch (e) {
+      console.error('Connect failed:', e);
+      setConnecting(null);
+    }
+  }
+
+  async function handleDisconnect(key) {
+    if (!currentUser) return;
+    setDisconnecting(key);
+    try {
+      const token = await currentUser.getIdToken();
+      await fetch(`${API_URL}/api/oauth/${key}/disconnect`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setConnections(prev => ({ ...prev, [key]: false }));
+    } catch (e) {
+      console.error('Disconnect failed:', e);
+    } finally {
+      setDisconnecting(null);
+    }
+  }
+
+  const anyConnected = Object.values(connections).some(v => v === true);
 
   return (
     <div ref={ref} className="landing__smartdash section" style={{ minHeight: '80vh', paddingTop: '3rem' }}>
@@ -111,26 +195,69 @@ export default function RealTimeDataPage() {
         {/* Gradient-border wrapper */}
         <div className="landing__smartdash-frame">
           <div className="landing__smartdash-frame-inner">
-            {/* Demo notice banner */}
+
+            {/* ── Connection banner ── */}
             <div className="landing__smartdash-demo-banner">
-              <span className="landing__smartdash-demo-badge">✦ {t('landing.dash.demoBadge')}</span>
-              <span className="landing__smartdash-demo-notice">{t('landing.dash.demoNotice')}</span>
+              <div className="rtd__banner-left">
+                {anyConnected ? (
+                  <span className="landing__smartdash-demo-badge" style={{ background: 'rgba(34,197,94,0.15)', color: '#4ade80' }}>
+                    ✓ {t('landing.dash.connected')}
+                  </span>
+                ) : (
+                  <span className="landing__smartdash-demo-badge">✦ {t('landing.dash.demoBadge')}</span>
+                )}
+                <span className="landing__smartdash-demo-notice">
+                  {anyConnected ? t('landing.dash.connectedNotice') : t('landing.dash.demoNotice')}
+                </span>
+              </div>
+
               <div className="landing__smartdash-demo-sources">
-                {DASH_CONNECT.map((src) => (
-                  <Link key={src.key} to="/auth?mode=register" className="landing__smartdash-source-btn" style={{ '--src-color': src.color }}>
-                    {src.label}
-                  </Link>
-                ))}
+                {PROVIDERS.map(({ key, label, icon, color }) => {
+                  const status = connections[key];
+                  const isConnecting   = connecting === key;
+                  const isDisconnecting = disconnecting === key;
+
+                  if (status === true) {
+                    return (
+                      <div key={key} className="rtd__provider-chip rtd__provider-chip--connected" style={{ '--src-color': color }}>
+                        <span>{icon}</span>
+                        <span>{label}</span>
+                        <span className="rtd__provider-dot" />
+                        <button
+                          className="rtd__provider-disconnect"
+                          onClick={() => handleDisconnect(key)}
+                          disabled={isDisconnecting}
+                        >
+                          {isDisconnecting ? '…' : '×'}
+                        </button>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <button
+                      key={key}
+                      className="landing__smartdash-source-btn rtd__provider-connect"
+                      style={{ '--src-color': color }}
+                      onClick={() => handleConnect(key)}
+                      disabled={isConnecting || status === null}
+                    >
+                      <span>{icon}</span>
+                      {isConnecting ? t('landing.dash.connecting') : status === null ? '…' : `${t('landing.dash.connect')} ${label}`}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
+            {/* ── Dashboard grid ── */}
             <motion.div
               className="landing__smartdash-grid"
               initial="hidden"
               animate={inView ? 'visible' : 'hidden'}
               variants={stagger}
             >
-              {/* ── Left: metrics + chart ── */}
+              {/* Left: metrics + chart */}
               <div className="landing__smartdash-left">
                 <div className="landing__smartdash-metrics">
                   {DASH_METRICS.map((m) => (
@@ -159,7 +286,7 @@ export default function RealTimeDataPage() {
                 </motion.div>
               </div>
 
-              {/* ── Right: AI suggestions + quick actions ── */}
+              {/* Right: AI suggestions + quick actions */}
               <div className="landing__smartdash-right">
                 <motion.div className="landing__smartdash-ai" variants={fadeUp}>
                   <div className="landing__smartdash-ai-header">
@@ -202,7 +329,7 @@ export default function RealTimeDataPage() {
                     return (
                       <Link
                         key={i}
-                        to="/auth?mode=register"
+                        to={currentUser ? '/dashboard' : '/auth?mode=register'}
                         className={`landing__smartdash-qa-btn${qa.primary ? ' primary' : ''}${locked ? ' locked' : ''}`}
                       >
                         {t(qa.labelKey)}
@@ -213,6 +340,7 @@ export default function RealTimeDataPage() {
                 </motion.div>
               </div>
             </motion.div>
+
           </div>
         </div>
       </div>

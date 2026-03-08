@@ -44,9 +44,14 @@
   "ui.requestsRemaining": "verbleibende Anfragen heute",
   "ui.upgradeForUnlimited": "Upgraden für unbegrenzten Zugriff",
   "footer.brand.desc": "Der KI-gestützte Wachstums-Hub für Freelancer, Marketer, Agenturen und Gründer. Entwickelt, um Ihnen zu helfen, schneller voranzukommen und intelligenter zu wachsen.",
-  "footer.product.title": "Produkt", "footer.product.pricing": "Preise", "footer.product.dashboard": "Dashboard", "footer.product.getStarted": "Loslegen",
+  "footer.product.title": "Produkt",
+  "footer.product.pricing": "Preise",
+  "footer.product.dashboard": "Dashboard",
+  "footer.product.getStarted": "Loslegen",
   "footer.tools.title": "Tools",
-  "footer.legal.privacy": "Datenschutzrichtlinie", "footer.legal.terms": "Nutzungsbedingungen", "footer.legal.cookies": "Cookie-Richtlinie",
+  "footer.legal.privacy": "Datenschutzrichtlinie",
+  "footer.legal.terms": "Nutzungsbedingungen",
+  "footer.legal.cookies": "Cookie-Richtlinie",
   "cat.marketing.name": "Marketing & Wachstum",
   "cat.marketing.desc": "SEO, Copywriting, Social Media, Anzeigen und E-Mail-Kampagnen",
   "cat.strategy.name": "Unternehmensstrategie",
@@ -186,11 +191,9 @@
   "landing.cta.seePricing": "Preise ansehen",
   "landing.cta.note": "14-tägige kostenlose Testphase · Keine Kreditkarte erforderlich",
   "landing.cta.main": "Jetzt kostenlos starten — Keine Kreditkarte",
-
   "landing.problem.card1": "Stunden, die mit dem Schreiben von Texten vergehen",
   "landing.problem.card2": "Werbekampagnen, die Zeit kosten und nicht konvertieren",
   "landing.problem.card3": "Angebote und Berichte, die Ihnen den Tag stehlen",
-
   "landing.how.title": "So funktioniert es",
   "landing.how.tab1.label": "Inhalte in Minuten erstellen",
   "landing.how.tab1.tool": "Newsletter Writer",
@@ -227,7 +230,6 @@
   "landing.whychatgpt.vs.2.gormaran": "30+ von Experten entwickelte Tools",
   "landing.whychatgpt.vs.3.generic": "Rohtexte, die noch bearbeitet werden müssen",
   "landing.whychatgpt.vs.3.gormaran": "Sofort publishbar — null Nacharbeit",
-
   "landing.plans.title": "Einfache, transparente Preise",
   "landing.plans.perMonth": "/Monat",
   "landing.plans.cta": "Alle Pläne ansehen →",
@@ -745,7 +747,6 @@
   "landing.categories.availableScale": "Verfügbar in Scale →",
   "landing.categories.availableEvolution": "Verfügbar in Evolution →",
   "landing.categories.availableAddon": "Add-on →",
-
   "landing.dash.title1": "Intelligentes Dashboard",
   "landing.dash.title2": "In Echtzeit",
   "landing.dash.subtitle": "Die wichtigsten Kennzahlen und automatische Vorschläge zum täglichen Wachstum.",
@@ -776,5 +777,9 @@
   "landing.dash.qa.seo": "SEO prüfen",
   "landing.dash.qa.funnel": "Funnel erstellen",
   "landing.dash.demoBadge": "Demo-Vorschau",
-  "landing.dash.demoNotice": "Dies ist eine Vorschau mit Beispieldaten. Verbinden Sie Ihre Konten, um Ihre echten Ergebnisse zu sehen."
+  "landing.dash.demoNotice": "Dies ist eine Vorschau mit Beispieldaten. Verbinden Sie Ihre Konten, um Ihre echten Ergebnisse zu sehen.",
+  "landing.dash.connect": "Verbinden",
+  "landing.dash.connecting": "Verbinde...",
+  "landing.dash.connected": "Verbunden",
+  "landing.dash.connectedNotice": "Ihre Konten sind verbunden. Die angezeigten Daten sind eine Demo — Ihre echten Metriken kommen bald."
 }
