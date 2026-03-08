@@ -2089,6 +2089,81 @@
 }
 .landing__smartdash-source-btn:disabled { opacity: 0.6; cursor: default; }
 
+/* Provider banner v2 (Real Time Data page) */
+.rtd__banner-v2 {
+  flex-direction: column !important;
+  gap: 1rem !important;
+  align-items: stretch !important;
+}
+.rtd__banner-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.rtd__banner-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.rtd__provider-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+@media (max-width: 640px) {
+  .rtd__provider-cards { grid-template-columns: 1fr; }
+}
+.rtd__provider-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--src-color) 35%, transparent);
+  background: color-mix(in srgb, var(--src-color) 7%, transparent);
+}
+.rtd__provider-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.rtd__provider-card-icon { font-size: 1.1rem; }
+.rtd__provider-card-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.rtd__provider-card-metrics {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  margin: 0 0 0.25rem;
+  line-height: 1.4;
+}
+.rtd__provider-action-btn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--src-color, #7c3aed) 60%, transparent);
+  background: color-mix(in srgb, var(--src-color, #7c3aed) 15%, transparent);
+  color: color-mix(in srgb, var(--src-color, #a78bfa) 90%, #fff);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: opacity 0.2s;
+  align-self: flex-start;
+}
+.rtd__provider-action-btn:hover { opacity: 0.8; }
+.rtd__provider-action-btn:disabled { opacity: 0.5; cursor: default; }
+.rtd__provider-action-btn--connected {
+  border-color: rgba(74,222,128,0.4);
+  background: rgba(74,222,128,0.1);
+  color: #4ade80;
+}
+
 /* Provider chips (Real Time Data page) */
 .rtd__banner-left {
   display: flex;

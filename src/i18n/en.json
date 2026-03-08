@@ -520,5 +520,8 @@
   "landing.dash.connected": "Connected",
   "landing.dash.connectedNotice": "Your accounts are connected. Data shown is a demo preview — real analytics coming soon.",
   "landing.dash.signInToConnect": "Sign in to connect your accounts",
-  "landing.dash.signInBtn": "Sign In →"
+  "landing.dash.signInBtn": "Sign In →",
+  "landing.dash.ga.metrics": "Visits · Conversions · Revenue",
+  "landing.dash.ig.metrics": "Followers · Reach · Engagement",
+  "landing.dash.li.metrics": "Profile views · Connections · Posts"
 }

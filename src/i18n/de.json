@@ -783,5 +783,8 @@
   "landing.dash.connected": "Verbunden",
   "landing.dash.connectedNotice": "Ihre Konten sind verbunden. Die angezeigten Daten sind eine Demo — Ihre echten Metriken kommen bald.",
   "landing.dash.signInToConnect": "Anmelden, um Ihre Konten zu verbinden",
-  "landing.dash.signInBtn": "Anmelden →"
+  "landing.dash.signInBtn": "Anmelden →",
+  "landing.dash.ga.metrics": "Besuche · Conversions · Umsatz",
+  "landing.dash.ig.metrics": "Follower · Reichweite · Engagement",
+  "landing.dash.li.metrics": "Profilaufrufe · Verbindungen · Posts"
 }
