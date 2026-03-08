@@ -535,5 +535,7 @@
   "landing.dash.qa.title": "Quick Actions",
   "landing.dash.qa.content": "Generate Content",
   "landing.dash.qa.seo": "Audit SEO",
-  "landing.dash.qa.funnel": "Create Funnel"
+  "landing.dash.qa.funnel": "Create Funnel",
+  "landing.dash.demoBadge": "Demo Preview",
+  "landing.dash.demoNotice": "This is a preview with sample data. Connect your accounts to see your real results."
 }

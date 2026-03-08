@@ -821,10 +821,10 @@ function SupportSection() {
 
 // ── Smart Dashboard Preview ───────────────────────────────────────
 const DASH_METRICS = [
-  { labelKey: 'landing.dash.metric.visits',      value: '24,567', change: '+12.5%', icon: '👁' },
-  { labelKey: 'landing.dash.metric.conversions', value: '1,234',  change: '+28.3%', icon: '📈' },
-  { labelKey: 'landing.dash.metric.revenue',     value: '€45,890',change: '+34.2%', icon: '💶' },
-  { labelKey: 'landing.dash.metric.followers',   value: '18,456', change: '+8.7%',  icon: '👥' },
+  { labelKey: 'landing.dash.metric.visits',      raw: 24567,  prefix: '',  change: '+12.5%', icon: '👁' },
+  { labelKey: 'landing.dash.metric.conversions', raw: 1234,   prefix: '',  change: '+28.3%', icon: '📈' },
+  { labelKey: 'landing.dash.metric.revenue',     raw: 45890,  prefix: '€', change: '+34.2%', icon: '💶' },
+  { labelKey: 'landing.dash.metric.followers',   raw: 18456,  prefix: '',  change: '+8.7%',  icon: '👥' },
 ];
 
 const DASH_SUGGESTIONS = [
@@ -840,22 +840,57 @@ const DASH_QUICK_ACTIONS = [
 ];
 
 const DASH_CONNECT = [
-  { key: 'ga', icon: '📊', labelKey: 'landing.dash.connect.ga' },
-  { key: 'ig', icon: '📸', labelKey: 'landing.dash.connect.ig' },
-  { key: 'li', icon: '💼', labelKey: 'landing.dash.connect.li' },
+  { key: 'ga', label: 'Google Analytics', color: '#E37400' },
+  { key: 'ig', label: 'Instagram',        color: '#E1306C' },
+  { key: 'li', label: 'LinkedIn',         color: '#0A66C2' },
 ];
 
 const BAR_HEIGHTS = [60, 75, 55, 90, 70, 85, 65];
+
+function useCountUp(target, inView) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    let frame;
+    const duration = 1400;
+    const start = performance.now();
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [inView, target]);
+  return count;
+}
+
+function MetricCard({ metric, inView }) {
+  const { t } = useTranslation();
+  const count = useCountUp(metric.raw, inView);
+  const formatted = metric.prefix + count.toLocaleString('en-US');
+  return (
+    <div className="landing__smartdash-metric">
+      <div className="landing__smartdash-metric-top">
+        <span className="landing__smartdash-metric-label">{t(metric.labelKey)}</span>
+        <span className="landing__smartdash-metric-icon">{metric.icon}</span>
+      </div>
+      <div className="landing__smartdash-metric-value">{formatted}</div>
+      <div className="landing__smartdash-metric-change">↑ {metric.change} {t('landing.dash.vsPrev')}</div>
+    </div>
+  );
+}
 
 function SmartDashboard() {
   const { t } = useTranslation();
   const { currentUser } = useAuth();
   const { subscription } = useSubscription();
 
-  const hasPaidPlan     = currentUser && ['grow', 'scale', 'evolution', 'admin'].includes(subscription);
+  const hasPaidPlan      = currentUser && ['grow', 'scale', 'evolution', 'admin'].includes(subscription);
   const hasExecuteAccess = currentUser && ['scale', 'evolution', 'admin'].includes(subscription);
 
-  const ref   = useRef(null);
+  const ref    = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-40px' });
 
   return (
@@ -868,116 +903,115 @@ function SmartDashboard() {
             <span className="gradient-text">{t('landing.dash.title2')}</span>
           </h2>
           <p className="landing__smartdash-subtitle">{t('landing.dash.subtitle')}</p>
-
-          {/* Connect accounts */}
-          <div className="landing__smartdash-connect">
-            {DASH_CONNECT.map((src) => (
-              <Link key={src.key} to="/auth?mode=register" className="landing__smartdash-connect-btn">
-                <span>{src.icon}</span> {t(src.labelKey)}
-              </Link>
-            ))}
-          </div>
         </AnimatedSection>
 
-        <motion.div
-          className="landing__smartdash-grid"
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          variants={stagger}
-        >
-          {/* ── Left: metrics + chart ── */}
-          <div className="landing__smartdash-left">
-            <div className="landing__smartdash-metrics">
-              {DASH_METRICS.map((m) => (
-                <motion.div key={m.labelKey} className="landing__smartdash-metric" variants={fadeUp}>
-                  <div className="landing__smartdash-metric-top">
-                    <span className="landing__smartdash-metric-label">{t(m.labelKey)}</span>
-                    <span className="landing__smartdash-metric-icon">{m.icon}</span>
-                  </div>
-                  <div className="landing__smartdash-metric-value">{m.value}</div>
-                  <div className="landing__smartdash-metric-change">↑ {m.change} {t('landing.dash.vsPrev')}</div>
-                </motion.div>
+        {/* Gradient-border wrapper */}
+        <div className="landing__smartdash-frame">
+          <div className="landing__smartdash-frame-inner">
+          {/* Demo notice banner */}
+          <div className="landing__smartdash-demo-banner">
+            <span className="landing__smartdash-demo-badge">✦ {t('landing.dash.demoBadge')}</span>
+            <span className="landing__smartdash-demo-notice">{t('landing.dash.demoNotice')}</span>
+            <div className="landing__smartdash-demo-sources">
+              {DASH_CONNECT.map((src) => (
+                <Link key={src.key} to="/auth?mode=register" className="landing__smartdash-source-btn" style={{ '--src-color': src.color }}>
+                  {src.label}
+                </Link>
               ))}
             </div>
+          </div>
 
-            <motion.div className="landing__smartdash-chart" variants={fadeUp}>
-              <div className="landing__smartdash-chart-header">
-                <span>📊</span>
-                <strong>{t('landing.dash.chart.title')}</strong>
-              </div>
-              <div className="landing__smartdash-chart-bars">
-                {BAR_HEIGHTS.map((h, i) => (
-                  <motion.div
-                    key={i}
-                    className="landing__smartdash-bar"
-                    style={{ height: `${h}%` }}
-                    initial={{ scaleY: 0 }}
-                    animate={inView ? { scaleY: 1 } : {}}
-                    transition={{ duration: 0.5, delay: 0.3 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                  />
+          <motion.div
+            className="landing__smartdash-grid"
+            initial="hidden"
+            animate={inView ? 'visible' : 'hidden'}
+            variants={stagger}
+          >
+            {/* ── Left: metrics + chart ── */}
+            <div className="landing__smartdash-left">
+              <div className="landing__smartdash-metrics">
+                {DASH_METRICS.map((m) => (
+                  <motion.div key={m.labelKey} variants={fadeUp}>
+                    <MetricCard metric={m} inView={inView} />
+                  </motion.div>
                 ))}
               </div>
-              <p className="landing__smartdash-chart-label">{t('landing.dash.chart.label')}</p>
-            </motion.div>
-          </div>
 
-          {/* ── Right: AI suggestions + quick actions ── */}
-          <div className="landing__smartdash-right">
-            <motion.div className="landing__smartdash-ai" variants={fadeUp}>
-              <div className="landing__smartdash-ai-header">
-                <span className="landing__smartdash-ai-icon">🤖</span>
-                <div>
-                  <strong>{t('landing.dash.ai.title')}</strong>
-                  <p>{t('landing.dash.ai.subtitle')}</p>
+              <motion.div className="landing__smartdash-chart" variants={fadeUp}>
+                <div className="landing__smartdash-chart-header">
+                  <strong>{t('landing.dash.chart.title')}</strong>
                 </div>
-              </div>
+                <div className="landing__smartdash-chart-bars">
+                  {BAR_HEIGHTS.map((h, i) => (
+                    <motion.div
+                      key={i}
+                      className="landing__smartdash-bar"
+                      style={{ height: `${h}%` }}
+                      initial={{ scaleY: 0 }}
+                      animate={inView ? { scaleY: 1 } : {}}
+                      transition={{ duration: 0.5, delay: 0.4 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            </div>
 
-              {DASH_SUGGESTIONS.map((sug, i) => {
-                const locked = !hasPaidPlan && i > 0;
-                return (
-                  <div key={i} className={`landing__smartdash-sug${locked ? ' landing__smartdash-sug--locked' : ''}`}>
-                    {locked && (
-                      <div className="landing__smartdash-sug-overlay">
-                        <span>🔒</span>
-                        <Link to="/auth?mode=register">{t('landing.dash.unlock')}</Link>
-                      </div>
-                    )}
-                    <div className="landing__smartdash-sug-top">
-                      <span className="landing__smartdash-sug-title">{t(sug.titleKey)}</span>
-                      <span className={`landing__smartdash-priority landing__smartdash-priority--${sug.cls}`}>
-                        {t(sug.priorityKey)}
-                      </span>
-                    </div>
-                    <p className="landing__smartdash-sug-desc">{t(sug.descKey)}</p>
-                    <button
-                      className="landing__smartdash-sug-btn"
-                      disabled={locked}
-                    >
-                      ✨ {t('landing.dash.apply')}
-                    </button>
+            {/* ── Right: AI suggestions + quick actions ── */}
+            <div className="landing__smartdash-right">
+              <motion.div className="landing__smartdash-ai" variants={fadeUp}>
+                <div className="landing__smartdash-ai-header">
+                  <span className="landing__smartdash-ai-icon">🤖</span>
+                  <div>
+                    <strong>{t('landing.dash.ai.title')}</strong>
+                    <p>{t('landing.dash.ai.subtitle')}</p>
                   </div>
-                );
-              })}
-            </motion.div>
+                </div>
 
-            <motion.div className="landing__smartdash-qa" variants={fadeUp}>
-              <strong className="landing__smartdash-qa-title">{t('landing.dash.qa.title')}</strong>
-              {DASH_QUICK_ACTIONS.map((qa, i) => {
-                const locked = !hasExecuteAccess;
-                return (
-                  <Link
-                    key={i}
-                    to="/auth?mode=register"
-                    className={`landing__smartdash-qa-btn${qa.primary ? ' primary' : ''}${locked ? ' locked' : ''}`}
-                  >
-                    {t(qa.labelKey)}
-                    {locked && <span className="landing__smartdash-qa-badge">Scale+</span>}
-                  </Link>
-                );
-              })}
-            </motion.div>
+                {DASH_SUGGESTIONS.map((sug, i) => {
+                  const locked = !hasPaidPlan && i > 0;
+                  return (
+                    <div key={i} className={`landing__smartdash-sug${locked ? ' landing__smartdash-sug--locked' : ''}`}>
+                      {locked && (
+                        <div className="landing__smartdash-sug-overlay">
+                          <span>🔒</span>
+                          <Link to="/auth?mode=register">{t('landing.dash.unlock')}</Link>
+                        </div>
+                      )}
+                      <div className="landing__smartdash-sug-top">
+                        <span className="landing__smartdash-sug-title">{t(sug.titleKey)}</span>
+                        <span className={`landing__smartdash-priority landing__smartdash-priority--${sug.cls}`}>
+                          {t(sug.priorityKey)}
+                        </span>
+                      </div>
+                      <p className="landing__smartdash-sug-desc">{t(sug.descKey)}</p>
+                      <button className="landing__smartdash-sug-btn" disabled={locked}>
+                        ✨ {t('landing.dash.apply')}
+                      </button>
+                    </div>
+                  );
+                })}
+              </motion.div>
+
+              <motion.div className="landing__smartdash-qa" variants={fadeUp}>
+                <strong className="landing__smartdash-qa-title">{t('landing.dash.qa.title')}</strong>
+                {DASH_QUICK_ACTIONS.map((qa, i) => {
+                  const locked = !hasExecuteAccess;
+                  return (
+                    <Link
+                      key={i}
+                      to="/auth?mode=register"
+                      className={`landing__smartdash-qa-btn${qa.primary ? ' primary' : ''}${locked ? ' locked' : ''}`}
+                    >
+                      {t(qa.labelKey)}
+                      {locked && <span className="landing__smartdash-qa-badge">Scale+</span>}
+                    </Link>
+                  );
+                })}
+              </motion.div>
+            </div>
+          </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

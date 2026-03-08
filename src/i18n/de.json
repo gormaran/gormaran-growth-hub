@@ -774,5 +774,7 @@
   "landing.dash.qa.title": "Schnellaktionen",
   "landing.dash.qa.content": "Inhalt erstellen",
   "landing.dash.qa.seo": "SEO prüfen",
-  "landing.dash.qa.funnel": "Funnel erstellen"
+  "landing.dash.qa.funnel": "Funnel erstellen",
+  "landing.dash.demoBadge": "Demo-Vorschau",
+  "landing.dash.demoNotice": "Dies ist eine Vorschau mit Beispieldaten. Verbinden Sie Ihre Konten, um Ihre echten Ergebnisse zu sehen."
 }
