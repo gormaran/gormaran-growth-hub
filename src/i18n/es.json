@@ -801,5 +801,8 @@
   "landing.dash.connected": "Conectado",
   "landing.dash.connectedNotice": "Tus cuentas están conectadas. Los datos mostrados son una demo — tus métricas reales estarán disponibles pronto.",
   "landing.dash.signInToConnect": "Inicia sesión para conectar tus cuentas",
-  "landing.dash.signInBtn": "Iniciar sesión →"
+  "landing.dash.signInBtn": "Iniciar sesión →",
+  "landing.dash.ga.metrics": "Visitas · Conversiones · Ingresos",
+  "landing.dash.ig.metrics": "Seguidores · Alcance · Engagement",
+  "landing.dash.li.metrics": "Vistas de perfil · Conexiones · Posts"
 }

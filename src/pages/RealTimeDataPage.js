@@ -31,9 +31,9 @@ const DASH_QUICK_ACTIONS = [
 ];
 
 const PROVIDERS = [
-  { key: 'google_analytics', label: 'Google Analytics', icon: '📊', color: '#E37400' },
-  { key: 'instagram',        label: 'Instagram',        icon: '📸', color: '#E1306C' },
-  { key: 'linkedin',         label: 'LinkedIn',         icon: '💼', color: '#0A66C2' },
+  { key: 'google_analytics', label: 'Google Analytics', icon: '📊', color: '#E37400', metricsKey: 'landing.dash.ga.metrics' },
+  { key: 'instagram',        label: 'Instagram',        icon: '📸', color: '#E1306C', metricsKey: 'landing.dash.ig.metrics' },
+  { key: 'linkedin',         label: 'LinkedIn',         icon: '💼', color: '#0A66C2', metricsKey: 'landing.dash.li.metrics' },
 ];
 
 const BAR_HEIGHTS = [60, 75, 55, 90, 70, 85, 65];
@@ -193,66 +193,68 @@ export default function RealTimeDataPage() {
           <div className="landing__smartdash-frame-inner">
 
             {/* ── Connection banner ── */}
-            <div className="landing__smartdash-demo-banner">
-              <div className="rtd__banner-left">
-                {anyConnected ? (
-                  <span className="landing__smartdash-demo-badge" style={{ background: 'rgba(34,197,94,0.15)', color: '#4ade80' }}>
-                    ✓ {t('landing.dash.connected')}
+            <div className="landing__smartdash-demo-banner rtd__banner-v2">
+              {/* Top row: status badge + CTA */}
+              <div className="rtd__banner-top">
+                <div className="rtd__banner-status">
+                  {anyConnected ? (
+                    <span className="landing__smartdash-demo-badge" style={{ background: 'rgba(34,197,94,0.15)', color: '#4ade80' }}>
+                      ✓ {t('landing.dash.connected')}
+                    </span>
+                  ) : (
+                    <span className="landing__smartdash-demo-badge">✦ {t('landing.dash.demoBadge')}</span>
+                  )}
+                  <span className="landing__smartdash-demo-notice">
+                    {anyConnected ? t('landing.dash.connectedNotice') : t('landing.dash.demoNotice')}
                   </span>
-                ) : (
-                  <span className="landing__smartdash-demo-badge">✦ {t('landing.dash.demoBadge')}</span>
+                </div>
+                {!currentUser && (
+                  <Link to="/auth?mode=register" className="rtd__guest-btn">{t('landing.dash.signInBtn')}</Link>
                 )}
-                <span className="landing__smartdash-demo-notice">
-                  {anyConnected ? t('landing.dash.connectedNotice') : t('landing.dash.demoNotice')}
-                </span>
               </div>
 
-              {!currentUser ? (
-                /* Guest: sign-in prompt */
-                <div className="rtd__guest-cta">
-                  <span className="rtd__guest-text">{t('landing.dash.signInToConnect')}</span>
-                  <Link to="/auth?mode=register" className="rtd__guest-btn">{t('landing.dash.signInBtn')}</Link>
-                </div>
-              ) : (
-                /* Logged-in: connect / disconnect chips */
-                <div className="landing__smartdash-demo-sources">
-                  {PROVIDERS.map(({ key, label, icon, color }) => {
-                    const status = connections[key];
-                    const isConnecting    = connecting === key;
-                    const isDisconnecting = disconnecting === key;
+              {/* Provider cards row */}
+              <div className="rtd__provider-cards">
+                {PROVIDERS.map(({ key, label, icon, color, metricsKey }) => {
+                  const status = connections[key];
+                  const isConnecting    = connecting === key;
+                  const isDisconnecting = disconnecting === key;
 
-                    if (status === true) {
-                      return (
-                        <div key={key} className="rtd__provider-chip" style={{ '--src-color': color }}>
-                          <span>{icon}</span>
-                          <span>{label}</span>
-                          <span className="rtd__provider-dot" />
-                          <button
-                            className="rtd__provider-disconnect"
-                            onClick={() => handleDisconnect(key)}
-                            disabled={isDisconnecting}
-                          >
-                            {isDisconnecting ? '…' : '×'}
-                          </button>
-                        </div>
-                      );
-                    }
+                  return (
+                    <div key={key} className="rtd__provider-card" style={{ '--src-color': color }}>
+                      <div className="rtd__provider-card-header">
+                        <span className="rtd__provider-card-icon">{icon}</span>
+                        <span className="rtd__provider-card-name" style={{ color }}>{label}</span>
+                        {status === true && <span className="rtd__provider-dot" />}
+                      </div>
+                      <p className="rtd__provider-card-metrics">{t(metricsKey)}</p>
 
-                    return (
-                      <button
-                        key={key}
-                        className="landing__smartdash-source-btn rtd__provider-connect"
-                        style={{ '--src-color': color }}
-                        onClick={() => handleConnect(key)}
-                        disabled={isConnecting || status === null}
-                      >
-                        <span>{icon}</span>
-                        {isConnecting ? t('landing.dash.connecting') : status === null ? '…' : `${t('landing.dash.connect')} ${label}`}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+                      {!currentUser ? (
+                        <Link to="/auth?mode=register" className="rtd__provider-action-btn">
+                          {t('landing.dash.connect')} →
+                        </Link>
+                      ) : status === true ? (
+                        <button
+                          className="rtd__provider-action-btn rtd__provider-action-btn--connected"
+                          onClick={() => handleDisconnect(key)}
+                          disabled={isDisconnecting}
+                        >
+                          {isDisconnecting ? '…' : `✓ ${t('landing.dash.connected')} ·  ×`}
+                        </button>
+                      ) : (
+                        <button
+                          className="rtd__provider-action-btn"
+                          style={{ '--src-color': color }}
+                          onClick={() => handleConnect(key)}
+                          disabled={isConnecting || status === null}
+                        >
+                          {isConnecting ? t('landing.dash.connecting') : status === null ? '…' : `${t('landing.dash.connect')} →`}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* ── Dashboard grid ── */}
