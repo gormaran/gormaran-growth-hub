@@ -180,7 +180,7 @@ function WorkflowDemo() {
 
   useEffect(() => {
     if (!inView) return;
-    const id = setInterval(() => setPhase((p) => (p + 1) % 3), 3600);
+    const id = setInterval(() => setPhase((p) => (p + 1) % 3), 2500);
     return () => clearInterval(id);
   }, [inView]);
 
@@ -840,23 +840,23 @@ export default function LandingPage() {
             animate="visible"
             variants={stagger}
           >
-            <motion.div variants={fadeUp} transition={{ duration: 0.5 }}>
+            <motion.div variants={fadeUp} transition={{ duration: 0.3 }}>
               <span className="landing__hero-badge">
                 {t('landing.hero.badge', { defaultValue: '⚡ AI-Powered Platform' })}
               </span>
             </motion.div>
 
-            <motion.h1 className="landing__hero-title" variants={fadeUp} transition={{ duration: 0.6, delay: 0.1 }}>
+            <motion.h1 className="landing__hero-title" variants={fadeUp} transition={{ duration: 0.35, delay: 0.05 }}>
               {t('landing.hero.title1')}
               <br />
               <span className="gradient-text">{t('landing.hero.title2')}</span>
             </motion.h1>
 
-            <motion.p className="landing__hero-subtitle" variants={fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
+            <motion.p className="landing__hero-subtitle" variants={fadeUp} transition={{ duration: 0.35, delay: 0.1 }}>
               {t('landing.hero.subtitle')}
             </motion.p>
 
-            <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.6, delay: 0.3 }}>
+            <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.35, delay: 0.15 }}>
               <Link to="/auth?mode=register" className="btn btn-primary btn-lg landing__cta-btn">
                 {t('landing.hero.cta')}
                 <span className="landing__cta-arrow">→</span>
@@ -869,7 +869,7 @@ export default function LandingPage() {
               </button>
             </motion.div>
 
-            <motion.div className="landing__hero-social-proof" variants={fadeUp} transition={{ duration: 0.6, delay: 0.4 }}>
+            <motion.div className="landing__hero-social-proof" variants={fadeUp} transition={{ duration: 0.35, delay: 0.2 }}>
               <div className="landing__avatars">
                 {['A','B','C','D','E'].map((l) => (
                   <div key={l} className="landing__avatar">{l}</div>
@@ -887,7 +887,7 @@ export default function LandingPage() {
             className="landing__hero-preview"
             initial={{ opacity: 0, y: 60, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
             <WorkflowDemo />
           </motion.div>
