@@ -116,6 +116,17 @@ export default function RealTimeDataPage() {
 
   useEffect(() => { checkStatus(); }, [checkStatus]);
 
+  // After login redirect: auto-trigger pending connect from sessionStorage
+  useEffect(() => {
+    if (!currentUser) return;
+    const pending = sessionStorage.getItem('pendingConnect');
+    if (pending) {
+      sessionStorage.removeItem('pendingConnect');
+      setTimeout(() => handleConnect(pending), 600);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
+
   // Listen for postMessage from OAuth popup
   useEffect(() => {
     const handler = (event) => {
@@ -130,8 +141,13 @@ export default function RealTimeDataPage() {
     return () => window.removeEventListener('message', handler);
   }, [checkStatus]);
 
+  function handleGuestConnect(key) {
+    sessionStorage.setItem('pendingConnect', key);
+    navigate('/auth?mode=register', { state: { from: { pathname: '/real-time-data' } } });
+  }
+
   async function handleConnect(key) {
-    if (!currentUser) return; // button disabled for guests
+    if (!currentUser) return;
     setConnecting(key);
     try {
       const token = await currentUser.getIdToken();
@@ -170,7 +186,7 @@ export default function RealTimeDataPage() {
   const anyConnected = Object.values(connections).some(v => v === true);
 
   return (
-    <div ref={ref} className="landing__smartdash section" style={{ minHeight: '80vh', paddingTop: '3rem' }}>
+    <div ref={ref} className="landing__smartdash section" style={{ minHeight: '80vh', paddingTop: '4rem' }}>
       <div className="container">
         <motion.div
           initial="hidden"
@@ -230,9 +246,13 @@ export default function RealTimeDataPage() {
                       <p className="rtd__provider-card-metrics">{t(metricsKey)}</p>
 
                       {!currentUser ? (
-                        <Link to="/auth?mode=register" className="rtd__provider-action-btn">
+                        <button
+                          className="rtd__provider-action-btn"
+                          style={{ '--src-color': color }}
+                          onClick={() => handleGuestConnect(key)}
+                        >
                           {t('landing.dash.connect')} →
-                        </Link>
+                        </button>
                       ) : status === true ? (
                         <button
                           className="rtd__provider-action-btn rtd__provider-action-btn--connected"
