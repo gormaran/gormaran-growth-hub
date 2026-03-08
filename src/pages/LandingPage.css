@@ -2130,6 +2130,31 @@
 .rtd__provider-connect { cursor: pointer; }
 .rtd__provider-connect:disabled { opacity: 0.6; cursor: default; }
 
+/* Guest sign-in prompt in banner */
+.rtd__guest-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.rtd__guest-text {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.5);
+  white-space: nowrap;
+}
+.rtd__guest-btn {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 7px;
+  background: #7c3aed;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.rtd__guest-btn:hover { opacity: 0.85; }
+
 .landing__smartdash-grid {
   display: grid;
   grid-template-columns: 1fr 360px;
