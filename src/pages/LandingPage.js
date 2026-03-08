@@ -863,7 +863,7 @@ export default function LandingPage() {
               </Link>
               <button
                 className="btn btn-secondary btn-lg"
-                onClick={() => document.getElementById('workflow-demo')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 {t('landing.hero.seeHow', { defaultValue: 'See how it works ↓' })}
               </button>
@@ -902,7 +902,6 @@ export default function LandingPage() {
               {t('landing.how.title')}
             </h2>
           </AnimatedSection>
-          <WorkflowDemo />
           <HowItWorks />
         </div>
       </section>
