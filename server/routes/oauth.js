@@ -10,7 +10,8 @@ const PROVIDERS = {
     get clientId()     { return process.env.GOOGLE_OAUTH_CLIENT_ID; },
     get clientSecret() { return process.env.GOOGLE_OAUTH_CLIENT_SECRET; },
     get redirectUri()  { return process.env.GOOGLE_REDIRECT_URI; },
-    scope:  'https://www.googleapis.com/auth/analytics.readonly',
+    // openid+email+profile needed to identify the user and auto-create Gormaran account
+    scope:  'openid email profile https://www.googleapis.com/auth/analytics.readonly',
     extras: { access_type: 'offline', prompt: 'consent' },
   },
   instagram: {
@@ -19,7 +20,8 @@ const PROVIDERS = {
     get clientId()     { return process.env.META_APP_ID; },
     get clientSecret() { return process.env.META_APP_SECRET; },
     get redirectUri()  { return process.env.META_REDIRECT_URI; },
-    scope:  'instagram_basic,pages_show_list,pages_read_engagement,instagram_manage_insights',
+    // email added so we can identify the user
+    scope:  'email,instagram_basic,pages_show_list,pages_read_engagement,instagram_manage_insights',
     extras: {},
   },
   linkedin: {
@@ -36,9 +38,11 @@ const PROVIDERS = {
 const frontendUrl = () => process.env.FRONTEND_URL || 'https://gormaran.io';
 
 /* ── Popup response HTML ── */
-function popupHtml(success, message = '') {
+function popupHtml(success, message = '', customToken = null) {
   const icon = success ? '✅' : '❌';
   const text = success ? 'Connected! Closing...' : `Error: ${message}`;
+  const payload = { type: 'oauth_result', success, message };
+  if (customToken) payload.customToken = customToken;
   return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
 <body style="margin:0;background:#09090f;color:#e2e8f0;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh">
   <div style="text-align:center;padding:2rem">
@@ -48,7 +52,7 @@ function popupHtml(success, message = '') {
   <script>
     try {
       window.opener && window.opener.postMessage(
-        ${JSON.stringify({ type: 'oauth_result', success, message })},
+        ${JSON.stringify(payload)},
         '${frontendUrl()}'
       );
     } catch(e) {}
@@ -57,7 +61,76 @@ function popupHtml(success, message = '') {
 </body></html>`;
 }
 
-/* ── GET /api/oauth/:provider/connect?token=... ── */
+/* ── Extract user identity from provider after token exchange ── */
+async function getProviderIdentity(provider, tokenData) {
+  if (provider === 'google_analytics') {
+    const idToken = tokenData.id_token;
+    if (!idToken) throw new Error('No id_token returned by Google. Make sure openid scope is included.');
+    const payloadB64 = idToken.split('.')[1];
+    const googleUser = JSON.parse(Buffer.from(payloadB64, 'base64url').toString());
+    return { email: googleUser.email, displayName: googleUser.name || '' };
+  }
+
+  if (provider === 'instagram') {
+    const meRes = await fetch(
+      `https://graph.facebook.com/me?fields=id,name,email&access_token=${tokenData.access_token}`
+    );
+    const metaUser = await meRes.json();
+    if (!metaUser.email) {
+      throw new Error('Email not available from Meta. Enable the email permission in your Meta app.');
+    }
+    return { email: metaUser.email, displayName: metaUser.name || '' };
+  }
+
+  if (provider === 'linkedin') {
+    const [profileRes, emailRes] = await Promise.all([
+      fetch('https://api.linkedin.com/v2/me', {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      }),
+      fetch('https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))', {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      }),
+    ]);
+    const profile  = await profileRes.json();
+    const emailData = await emailRes.json();
+    const email = emailData.elements?.[0]?.['handle~']?.emailAddress;
+    if (!email) throw new Error('Email not available from LinkedIn.');
+    const displayName = `${profile.localizedFirstName || ''} ${profile.localizedLastName || ''}`.trim();
+    return { email, displayName };
+  }
+
+  throw new Error(`Unknown provider: ${provider}`);
+}
+
+/* ── Find or create Firebase user by email ── */
+async function findOrCreateFirebaseUser(email, displayName) {
+  try {
+    const userRecord = await admin.auth().getUserByEmail(email);
+    return userRecord.uid;
+  } catch {
+    // User doesn't exist — create one
+    const newUser = await admin.auth().createUser({
+      email,
+      displayName: displayName || '',
+      emailVerified: true,
+    });
+    // Create Firestore profile (mirrors AuthContext.createUserProfile)
+    const db = admin.firestore();
+    await db.collection('users').doc(newUser.uid).set({
+      uid:             newUser.uid,
+      email,
+      displayName:     displayName || '',
+      subscription:    'free',
+      usageCount:      0,
+      usageResetDate:  new Date(),
+      createdAt:       admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt:       admin.firestore.FieldValue.serverTimestamp(),
+    });
+    return newUser.uid;
+  }
+}
+
+/* ── GET /api/oauth/:provider/connect?token=... (token optional for guests) ── */
 router.get('/:provider/connect', async (req, res) => {
   const { provider } = req.params;
   const { token } = req.query;
@@ -73,24 +146,27 @@ router.get('/:provider/connect', async (req, res) => {
     </body></html>`);
   }
 
-  try {
-    const decoded = await admin.auth().verifyIdToken(token);
-    const uid = decoded.uid;
-    const state = Buffer.from(JSON.stringify({ uid, provider, ts: Date.now() })).toString('base64url');
-
-    const params = new URLSearchParams({
-      client_id: config.clientId,
-      redirect_uri: config.redirectUri,
-      response_type: 'code',
-      scope: config.scope,
-      state,
-      ...config.extras,
-    });
-
-    res.redirect(`${config.authUrl}?${params.toString()}`);
-  } catch (e) {
-    res.status(401).send('Invalid or expired token. Please try again.');
+  // Optional: if the user is already logged in, embed their uid in the state
+  let uid = null;
+  if (token) {
+    try {
+      const decoded = await admin.auth().verifyIdToken(token);
+      uid = decoded.uid;
+    } catch { /* treat as guest */ }
   }
+
+  const state = Buffer.from(JSON.stringify({ uid, provider, ts: Date.now() })).toString('base64url');
+
+  const params = new URLSearchParams({
+    client_id:     config.clientId,
+    redirect_uri:  config.redirectUri,
+    response_type: 'code',
+    scope:         config.scope,
+    state,
+    ...config.extras,
+  });
+
+  res.redirect(`${config.authUrl}?${params.toString()}`);
 });
 
 /* ── GET /api/oauth/:provider/callback ── */
@@ -104,18 +180,18 @@ router.get('/:provider/callback', async (req, res) => {
   if (!state) return res.send(popupHtml(false, 'Missing state'));
 
   try {
-    const { uid } = JSON.parse(Buffer.from(state, 'base64url').toString());
+    const { uid: existingUid } = JSON.parse(Buffer.from(state, 'base64url').toString());
 
     // Exchange code for tokens
     const tokenRes = await fetch(config.tokenUrl, {
-      method: 'POST',
+      method:  'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
+      body:    new URLSearchParams({
         code,
-        client_id: config.clientId,
+        client_id:     config.clientId,
         client_secret: config.clientSecret,
-        redirect_uri: config.redirectUri,
-        grant_type: 'authorization_code',
+        redirect_uri:  config.redirectUri,
+        grant_type:    'authorization_code',
       }).toString(),
     });
 
@@ -124,11 +200,21 @@ router.get('/:provider/callback', async (req, res) => {
       throw new Error(tokenData.error_description || tokenData.error || 'Token exchange failed');
     }
 
-    // Store in Firestore
+    // Determine uid: use existing if user was already logged in, otherwise find/create from provider identity
+    let uid = existingUid;
+    let customToken = null;
+
+    if (!uid) {
+      const { email, displayName } = await getProviderIdentity(provider, tokenData);
+      uid = await findOrCreateFirebaseUser(email, displayName);
+      customToken = await admin.auth().createCustomToken(uid);
+    }
+
+    // Store integration in Firestore
     const db = admin.firestore();
     const update = {};
     update[`integrations.${provider}`] = {
-      connected: true,
+      connected:    true,
       accessToken:  tokenData.access_token,
       refreshToken: tokenData.refresh_token || null,
       expiresAt:    tokenData.expires_in ? Date.now() + tokenData.expires_in * 1000 : null,
@@ -136,7 +222,7 @@ router.get('/:provider/callback', async (req, res) => {
     };
     await db.collection('users').doc(uid).set(update, { merge: true });
 
-    res.send(popupHtml(true));
+    res.send(popupHtml(true, '', customToken));
   } catch (e) {
     console.error(`[OAuth ${provider}]`, e.message);
     res.send(popupHtml(false, e.message));
