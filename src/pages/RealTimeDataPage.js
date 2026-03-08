@@ -1,7 +1,9 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { signInWithCustomToken } from 'firebase/auth';
+import { auth } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import './LandingPage.css';
@@ -75,7 +77,6 @@ function MetricCard({ metric, inView }) {
 
 export default function RealTimeDataPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const { subscription } = useSubscription();
 
@@ -116,24 +117,20 @@ export default function RealTimeDataPage() {
 
   useEffect(() => { checkStatus(); }, [checkStatus]);
 
-  // After login redirect: auto-trigger pending connect from sessionStorage
-  useEffect(() => {
-    if (!currentUser) return;
-    const pending = sessionStorage.getItem('pendingConnect');
-    if (pending) {
-      sessionStorage.removeItem('pendingConnect');
-      setTimeout(() => handleConnect(pending), 600);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
-
   // Listen for postMessage from OAuth popup
   useEffect(() => {
-    const handler = (event) => {
+    const handler = async (event) => {
       if (event.data?.type !== 'oauth_result') return;
       setConnecting(null);
       if (event.data.success) {
-        // Find which provider from the popup key stored in connecting
+        // If backend returned a custom token, the user was a guest → sign them in now
+        if (event.data.customToken) {
+          try {
+            await signInWithCustomToken(auth, event.data.customToken);
+          } catch (e) {
+            console.error('Auto sign-in failed:', e);
+          }
+        }
         checkStatus();
       }
     };
@@ -141,21 +138,16 @@ export default function RealTimeDataPage() {
     return () => window.removeEventListener('message', handler);
   }, [checkStatus]);
 
-  function handleGuestConnect(key) {
-    sessionStorage.setItem('pendingConnect', key);
-    navigate('/auth?mode=register', { state: { from: { pathname: '/real-time-data' } } });
-  }
-
   async function handleConnect(key) {
-    if (!currentUser) return;
     setConnecting(key);
     try {
-      const token = await currentUser.getIdToken();
-      const popup = window.open(
-        `${API_URL}/api/oauth/${key}/connect?token=${encodeURIComponent(token)}`,
-        `oauth_${key}`,
-        'width=620,height=720,scrollbars=yes,resizable=yes'
-      );
+      // Build URL: attach Firebase token if logged in, so backend skips auto-create
+      let url = `${API_URL}/api/oauth/${key}/connect`;
+      if (currentUser) {
+        const token = await currentUser.getIdToken();
+        url += `?token=${encodeURIComponent(token)}`;
+      }
+      const popup = window.open(url, `oauth_${key}`, 'width=620,height=720,scrollbars=yes,resizable=yes');
       if (!popup) {
         alert('Please allow popups for this site to connect your account.');
         setConnecting(null);
@@ -245,30 +237,22 @@ export default function RealTimeDataPage() {
                       </div>
                       <p className="rtd__provider-card-metrics">{t(metricsKey)}</p>
 
-                      {!currentUser ? (
-                        <button
-                          className="rtd__provider-action-btn"
-                          style={{ '--src-color': color }}
-                          onClick={() => handleGuestConnect(key)}
-                        >
-                          {t('landing.dash.connect')} →
-                        </button>
-                      ) : status === true ? (
+                      {status === true ? (
                         <button
                           className="rtd__provider-action-btn rtd__provider-action-btn--connected"
                           onClick={() => handleDisconnect(key)}
                           disabled={isDisconnecting}
                         >
-                          {isDisconnecting ? '…' : `✓ ${t('landing.dash.connected')} ·  ×`}
+                          {isDisconnecting ? '…' : `✓ ${t('landing.dash.connected')} · ×`}
                         </button>
                       ) : (
                         <button
                           className="rtd__provider-action-btn"
                           style={{ '--src-color': color }}
                           onClick={() => handleConnect(key)}
-                          disabled={isConnecting || status === null}
+                          disabled={isConnecting || (!currentUser && status === null)}
                         >
-                          {isConnecting ? t('landing.dash.connecting') : status === null ? '…' : `${t('landing.dash.connect')} →`}
+                          {isConnecting ? t('landing.dash.connecting') : (!currentUser || status !== null) ? `${t('landing.dash.connect')} →` : '…'}
                         </button>
                       )}
                     </div>
