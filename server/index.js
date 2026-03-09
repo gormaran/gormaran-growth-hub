@@ -3,10 +3,6 @@ const express = require("express");
 const cors = require("cors");
 // const helmet = require('helmet');
 
-// Instagram webhook route
-const instagramWebhook = require("./routes/instagramWebhook");
-
-
 const admin = require("firebase-admin");
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
@@ -18,9 +14,11 @@ const aiRoutes = require("./routes/ai");
 const stripeRoutes = require("./routes/stripe");
 const imageRoutes = require("./routes/imageGeneration");
 const oauthRoutes = require("./routes/oauth");
+const instagramWebhook = require("./routes/instagramWebhook");
 
 
 const app = express();
+app.set('trust proxy', 1); // Required for Render (proxy) — fixes express-rate-limit X-Forwarded-For error
 const PORT = process.env.PORT || 5000;
 
 
