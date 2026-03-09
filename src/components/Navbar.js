@@ -55,7 +55,6 @@ export default function Navbar() {
     ? [
         { to: '/real-time-data', label: 'Real Time Data' },
         { to: '/dashboard', label: 'Dashboard' },
-        { to: '/history', label: 'History' },
         { to: '/pricing', label: 'Pricing' },
       ]
     : [
