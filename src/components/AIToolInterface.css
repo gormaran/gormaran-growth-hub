@@ -519,3 +519,38 @@
   gap: 0.75rem;
   flex-wrap: wrap;
 }
+
+/* Templates */
+.ai-tool__template-row {
+  display: flex;
+  align-items: stretch;
+}
+.ai-tool__template-item {
+  flex: 1;
+  text-align: left;
+}
+.ai-tool__template-delete {
+  background: none;
+  border: none;
+  border-left: 1px solid var(--border-color);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0 0.75rem;
+  transition: color 0.15s;
+}
+.ai-tool__template-delete:hover { color: #ef4444; }
+
+/* Save as template form */
+.ai-tool__save-tpl-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.ai-tool__save-tpl-input {
+  font-size: 0.82rem !important;
+  padding: 0.3rem 0.6rem !important;
+  height: auto !important;
+  min-width: 160px;
+}

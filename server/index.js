@@ -3,6 +3,10 @@ const express = require("express");
 const cors = require("cors");
 // const helmet = require('helmet');
 
+// Instagram webhook route
+const instagramWebhook = require("./routes/instagramWebhook");
+//
+
 const admin = require("firebase-admin");
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
@@ -14,6 +18,7 @@ const aiRoutes = require("./routes/ai");
 const stripeRoutes = require("./routes/stripe");
 const imageRoutes = require("./routes/imageGeneration");
 const oauthRoutes = require("./routes/oauth");
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -81,6 +86,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/stripe", stripeRoutes);
 app.use("/api/image", imageRoutes);
 app.use("/api/oauth", oauthRoutes);
+app.use("/api/webhooks/instagram", instagramWebhook);
 
 /* ===============================
    🔥 404
