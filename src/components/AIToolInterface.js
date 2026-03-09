@@ -179,7 +179,7 @@ export default function AIToolInterface({ tool, categoryId }) {
   }
 
   function validateInputs() {
-    if (categoryId !== 'creative') {
+    if (categoryId !== 'creative' && categoryId !== 'strategy') {
       if (!inputs._website_url?.trim()) return t('ui.websiteUrlRequired', { defaultValue: '"Website URL" is required' });
       if (!inputs._location?.trim()) return t('ui.locationRequired', { defaultValue: '"Location" is required' });
     }
@@ -420,7 +420,7 @@ export default function AIToolInterface({ tool, categoryId }) {
         <div className="ai-tool__panel ai-tool__input-panel">
           <h3 className="ai-tool__panel-title">{t('ui.yourInputs', { defaultValue: '📝 Your Inputs' })}</h3>
           <form onSubmit={handleGenerate} noValidate>
-            {categoryId !== 'creative' && (
+            {categoryId !== 'creative' && categoryId !== 'strategy' && (
               <div className="ai-tool__biz-context">
                 <span className="ai-tool__biz-context-label">🏢 {t('ui.bizContext', { defaultValue: 'Business context' })}</span>
                 <FormField
