@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { streamAIResponse, generateLogoImage, generateImage } from '../utils/api';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
+import { collection, addDoc, getDocs, deleteDoc, doc, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase/config';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './AIToolInterface.css';
@@ -107,6 +109,11 @@ export default function AIToolInterface({ tool, categoryId }) {
   const finalOutputRef = useRef('');
   const [history, setHistory] = useState([]);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [templates, setTemplates] = useState([]);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [templateName, setTemplateName] = useState('');
+  const [savingTemplate, setSavingTemplate] = useState(false);
   const [generatedImage, setGeneratedImage] = useState(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageError, setImageError] = useState('');
@@ -140,6 +147,16 @@ export default function AIToolInterface({ tool, categoryId }) {
     }
     setHistoryOpen(false);
   }, [tool?.id]);
+
+  // Load Firestore templates when tool or user changes
+  useEffect(() => {
+    setTemplates([]);
+    setTemplatesOpen(false);
+    setShowSaveTemplate(false);
+    setTemplateName('');
+    if (tool?.id && currentUser) loadTemplates();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tool?.id, currentUser?.uid]);
 
   // Track word count
   useEffect(() => {
@@ -313,6 +330,51 @@ export default function AIToolInterface({ tool, categoryId }) {
     const updated = [entry, ...existing].slice(0, 10);
     localStorage.setItem(key, JSON.stringify(updated));
     setHistory(updated);
+    // Persist to Firestore if logged in
+    if (currentUser) {
+      addDoc(collection(db, 'users', currentUser.uid, 'history'), {
+        toolId: tool.id, toolName: tool.name, categoryId,
+        inputs: queryInputs, output: queryOutput,
+        createdAt: serverTimestamp(),
+      }).catch(console.error);
+    }
+  }
+
+  async function loadTemplates() {
+    try {
+      const q = query(
+        collection(db, 'users', currentUser.uid, 'templates'),
+        where('toolId', '==', tool.id),
+        orderBy('createdAt', 'desc')
+      );
+      const snap = await getDocs(q);
+      setTemplates(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch { setTemplates([]); }
+  }
+
+  async function saveTemplate() {
+    if (!templateName.trim() || !currentUser) return;
+    setSavingTemplate(true);
+    try {
+      const cleanInputs = Object.fromEntries(
+        Object.entries(inputs).filter(([k]) => !k.startsWith('_'))
+      );
+      const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'templates'), {
+        name: templateName.trim(), toolId: tool.id, toolName: tool.name, categoryId,
+        inputs: cleanInputs, createdAt: serverTimestamp(),
+      });
+      setTemplates(prev => [{ id: docRef.id, name: templateName.trim(), inputs: cleanInputs }, ...prev]);
+      setTemplateName('');
+      setShowSaveTemplate(false);
+    } catch (e) { console.error(e); }
+    finally { setSavingTemplate(false); }
+  }
+
+  async function deleteTemplate(templateId) {
+    try {
+      await deleteDoc(doc(db, 'users', currentUser.uid, 'templates', templateId));
+      setTemplates(prev => prev.filter(t => t.id !== templateId));
+    } catch (e) { console.error(e); }
   }
 
   if (!tool) {
@@ -375,6 +437,33 @@ export default function AIToolInterface({ tool, categoryId }) {
                 />
               </div>
             )}
+            {/* Templates */}
+            {currentUser && templates.length > 0 && (
+              <div className="ai-tool__history">
+                <button type="button" className="ai-tool__history-toggle" onClick={() => setTemplatesOpen(o => !o)}>
+                  <span>⭐</span>
+                  <span>{t('ui.myTemplates', { defaultValue: 'My Templates' })} ({templates.length})</span>
+                  <span className={`ai-tool__history-arrow ${templatesOpen ? 'open' : ''}`}>▾</span>
+                </button>
+                {templatesOpen && (
+                  <div className="ai-tool__history-list">
+                    {templates.map(tpl => (
+                      <div key={tpl.id} className="ai-tool__template-row">
+                        <button
+                          type="button"
+                          className="ai-tool__history-item ai-tool__template-item"
+                          onClick={() => { setInputs(prev => ({ ...prev, ...tpl.inputs })); setTemplatesOpen(false); }}
+                        >
+                          <span className="ai-tool__history-preview">⭐ {tpl.name}</span>
+                        </button>
+                        <button type="button" className="ai-tool__template-delete" onClick={() => deleteTemplate(tpl.id)}>×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {tool.inputs.map((field) => (
               <FormField
                 key={field.id}
@@ -454,6 +543,30 @@ export default function AIToolInterface({ tool, categoryId }) {
                   >
                     ⬇️ {t('ui.downloadJson', { defaultValue: 'Download JSON' })}
                   </button>
+                )}
+                {!isStreaming && currentUser && (
+                  showSaveTemplate ? (
+                    <div className="ai-tool__save-tpl-form">
+                      <input
+                        className="form-input ai-tool__save-tpl-input"
+                        placeholder={t('ui.templateNamePlaceholder', { defaultValue: 'Template name…' })}
+                        value={templateName}
+                        onChange={e => setTemplateName(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && saveTemplate()}
+                        autoFocus
+                      />
+                      <button className="btn btn-primary btn-sm" onClick={saveTemplate} disabled={!templateName.trim() || savingTemplate}>
+                        {savingTemplate ? '…' : t('ui.save', { defaultValue: 'Save' })}
+                      </button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => { setShowSaveTemplate(false); setTemplateName(''); }}>
+                        {t('ui.cancel', { defaultValue: 'Cancel' })}
+                      </button>
+                    </div>
+                  ) : (
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowSaveTemplate(true)}>
+                      ⭐ {t('ui.saveAsTemplate', { defaultValue: 'Save as template' })}
+                    </button>
+                  )
                 )}
               </div>
             )}
