@@ -307,9 +307,7 @@ Include specific data points, frameworks, and strategic insights throughout.`,
         icon: '🔬',
         inputs: [
           { id: 'business_name', label: 'Your Business Name', type: 'text', placeholder: 'e.g., Gormaran', required: true },
-          { id: 'business_url', label: 'Your Business Website', type: 'text', placeholder: 'e.g., https://gormaran.io', required: true },
           { id: 'your_product', label: 'Your Product / Service', type: 'text', placeholder: 'e.g., AI-powered marketing tools for SMBs', required: true },
-          { id: 'location', label: 'Location / Market', type: 'text', placeholder: 'e.g., Spain, Latin America, Global', required: true },
           { id: 'target_customer', label: 'Target Customer (optional — AI will identify)', type: 'text', placeholder: 'e.g., Startup founders and small business owners' },
           { id: 'competitors', label: 'Main Competitors (optional — AI will identify)', type: 'text', placeholder: 'e.g., HubSpot, Semrush, Mailchimp' },
           { id: 'differentiator', label: 'Your Key Differentiator', type: 'text', placeholder: 'e.g., All-in-one AI tools in one hub, no prompt engineering needed' },
@@ -356,7 +354,7 @@ Dimensions: Cliente objetivo, Personalidad de marca, Producto, Fortalezas, Debil
 - Customer experience: 2 specific recommendations
 - Overall positioning statement to adopt`,
         buildUserMessage: (inputs) =>
-          `Conduct a complete competitive analysis:\n\n**My Business:** ${inputs.business_name}\n**My Website:** ${inputs.business_url}\n**My Product/Service:** ${inputs.your_product}\n**Location / Market:** ${inputs.location}\n**Target Customer (hint, optional):** ${inputs.target_customer || 'Not provided — please identify'}\n**Competitors (hint, optional):** ${inputs.competitors || 'Not provided — please identify'}\n**My Key Differentiator:** ${inputs.differentiator || 'Not specified'}\n\nDeliver all 9 sections completely. Use tables and bullets only. Never stop before section 9 is finished.`,
+          `Conduct a complete competitive analysis:\n\n**My Business:** ${inputs.business_name}\n**My Website:** ${inputs._website_url}\n**My Product/Service:** ${inputs.your_product}\n**Location / Market:** ${inputs._location}\n**Target Customer (hint, optional):** ${inputs.target_customer || 'Not provided — please identify'}\n**Competitors (hint, optional):** ${inputs.competitors || 'Not provided — please identify'}\n**My Key Differentiator:** ${inputs.differentiator || 'Not specified'}\n\nDeliver all 9 sections completely. Use tables and bullets only. Never stop before section 9 is finished.`,
         maxTokens: 8000,
       },
       {
