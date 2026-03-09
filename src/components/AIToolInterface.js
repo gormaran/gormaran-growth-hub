@@ -179,10 +179,6 @@ export default function AIToolInterface({ tool, categoryId }) {
   }
 
   function validateInputs() {
-    if (categoryId !== 'creative' && categoryId !== 'strategy') {
-      if (!inputs._website_url?.trim()) return t('ui.websiteUrlRequired', { defaultValue: '"Website URL" is required' });
-      if (!inputs._location?.trim()) return t('ui.locationRequired', { defaultValue: '"Location" is required' });
-    }
     const required = tool.inputs.filter((f) => f.required);
     for (const field of required) {
       if (!inputs[field.id] || inputs[field.id].trim() === '') {
