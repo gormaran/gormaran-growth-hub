@@ -290,6 +290,13 @@
 
 .n8n-chat__msg--user { flex-direction: row-reverse; }
 
+.n8n-chat__msg-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-width: 74%;
+}
+
 .n8n-chat__avatar {
   width: 28px;
   height: 28px;
@@ -302,8 +309,25 @@
   flex-shrink: 0;
 }
 
+.n8n-chat__download {
+  align-self: flex-start;
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+  font-family: var(--font-sans);
+}
+.n8n-chat__download:hover {
+  border-color: var(--color-primary);
+  color: var(--text-primary);
+}
+
 .n8n-chat__bubble {
-  max-width: 74%;
+  max-width: 100%;
   padding: 0.65rem 0.9rem;
   border-radius: 16px;
   font-size: 0.9rem;
@@ -322,6 +346,7 @@
   background: var(--gradient-primary);
   border-bottom-right-radius: 4px;
   color: #fff;
+  max-width: 74%;
 }
 
 .n8n-chat__bubble--typing {

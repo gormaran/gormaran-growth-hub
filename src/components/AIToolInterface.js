@@ -18,6 +18,23 @@ const CHAT_EXAMPLES = [
   'Alert me when a form is submitted on my website',
 ];
 
+function extractChatJson(text) {
+  const block = text.match(/```json\s*([\s\S]*?)```/);
+  if (block) return block[1].trim();
+  const loose = text.match(/(\{[\s\S]*\})/);
+  return loose ? loose[1].trim() : null;
+}
+
+function downloadJson(json, filename = 'n8n-workflow.json') {
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function N8nChat({ tool, currentUser }) {
   const [messages, setMessages] = useState([
     { role: 'assistant', text: "Hi! Tell me what you want to automate and I'll build it for you. For example: \"Send me a Slack message when I get a new lead.\"" },
@@ -67,12 +84,25 @@ function N8nChat({ tool, currentUser }) {
 
       <div className="n8n-chat">
         <div className="n8n-chat__messages">
-          {messages.map((msg, i) => (
-            <div key={i} className={`n8n-chat__msg n8n-chat__msg--${msg.role}`}>
-              {msg.role === 'assistant' && <div className="n8n-chat__avatar">⚡</div>}
-              <div className="n8n-chat__bubble">{msg.text}</div>
-            </div>
-          ))}
+          {messages.map((msg, i) => {
+            const json = msg.role === 'assistant' ? extractChatJson(msg.text) : null;
+            return (
+              <div key={i} className={`n8n-chat__msg n8n-chat__msg--${msg.role}`}>
+                {msg.role === 'assistant' && <div className="n8n-chat__avatar">⚡</div>}
+                <div className="n8n-chat__msg-content">
+                  <div className="n8n-chat__bubble">{msg.text}</div>
+                  {json && (
+                    <button
+                      className="n8n-chat__download"
+                      onClick={() => downloadJson(json)}
+                    >
+                      ⬇️ Download JSON
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
           {loading && (
             <div className="n8n-chat__msg n8n-chat__msg--assistant">
               <div className="n8n-chat__avatar">⚡</div>
