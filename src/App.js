@@ -19,7 +19,6 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
 import HistoryPage from './pages/HistoryPage';
-import AutomationsPage from './pages/AutomationsPage';
 
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -124,16 +123,6 @@ export default function App() {
                 <ProtectedRoute>
                   <AppLayout>
                     <HistoryPage />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/automations"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <AutomationsPage />
                   </AppLayout>
                 </ProtectedRoute>
               }
