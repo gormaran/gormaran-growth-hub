@@ -11,6 +11,105 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './AIToolInterface.css';
 
+const CHAT_EXAMPLES = [
+  'Send me a Slack alert when I get a new Stripe payment',
+  'Save new Gmail leads to a Google Sheet daily',
+  'Post to Instagram when I publish a new blog post',
+  'Alert me when a form is submitted on my website',
+];
+
+function N8nChat({ tool, currentUser }) {
+  const [messages, setMessages] = useState([
+    { role: 'assistant', text: "Hi! Tell me what you want to automate and I'll build it for you. For example: \"Send me a Slack message when I get a new lead.\"" },
+  ]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
+
+  async function sendMessage(e) {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || loading) return;
+    setMessages(prev => [...prev, { role: 'user', text }]);
+    setInput('');
+    setLoading(true);
+    try {
+      const res = await fetch(tool.webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, userId: currentUser?.uid, userEmail: currentUser?.email }),
+      });
+      const data = await res.json();
+      const reply = data?.output || data?.message || data?.text || 'Done! Your automation has been set up.';
+      setMessages(prev => [...prev, { role: 'assistant', text: reply }]);
+    } catch {
+      setMessages(prev => [...prev, { role: 'assistant', text: 'Something went wrong connecting to n8n. Make sure your workflow is active.' }]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="ai-tool">
+      <div className="ai-tool__header">
+        <div className="ai-tool__title-row">
+          <span className="ai-tool__icon">{tool.icon}</span>
+          <div>
+            <h2 className="ai-tool__title">{tool.name}</h2>
+            <p className="ai-tool__description">{tool.description}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="n8n-chat">
+        <div className="n8n-chat__messages">
+          {messages.map((msg, i) => (
+            <div key={i} className={`n8n-chat__msg n8n-chat__msg--${msg.role}`}>
+              {msg.role === 'assistant' && <div className="n8n-chat__avatar">⚡</div>}
+              <div className="n8n-chat__bubble">{msg.text}</div>
+            </div>
+          ))}
+          {loading && (
+            <div className="n8n-chat__msg n8n-chat__msg--assistant">
+              <div className="n8n-chat__avatar">⚡</div>
+              <div className="n8n-chat__bubble n8n-chat__bubble--typing">
+                <span /><span /><span />
+              </div>
+            </div>
+          )}
+          <div ref={bottomRef} />
+        </div>
+
+        <div className="n8n-chat__examples">
+          {CHAT_EXAMPLES.map(ex => (
+            <button key={ex} className="n8n-chat__chip" onClick={() => setInput(ex)} disabled={loading}>
+              {ex}
+            </button>
+          ))}
+        </div>
+
+        <form className="n8n-chat__input-row" onSubmit={sendMessage}>
+          <input
+            className="n8n-chat__input"
+            type="text"
+            placeholder="Tell me what you want to automate…"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            disabled={loading}
+          />
+          <button className="n8n-chat__send" type="submit" disabled={!input.trim() || loading}>
+            Send
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function FormField({ field, value, onChange, toolId }) {
   const { t } = useTranslation();
   const label = t(`input.${toolId}.${field.id}.label`, { defaultValue: field.label });
@@ -448,6 +547,10 @@ export default function AIToolInterface({ tool, categoryId }) {
         <p>{t('ui.selectToolSub', { defaultValue: 'Choose a tool from the sidebar to generate AI-powered content' })}</p>
       </div>
     );
+  }
+
+  if (tool.chatWidget) {
+    return <N8nChat tool={tool} currentUser={currentUser} />;
   }
 
   const toolName = t(`tool.${tool.id}.name`, { defaultValue: tool.name });
