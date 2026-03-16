@@ -66,94 +66,7 @@ const HOW_STEPS = [
   },
 ];
 
-const HOW_TAGS = ['📈 Marketing', '🎯 Strategy', '✍️ Content', '🛠️ Digital', '🛒 E-commerce', '🏢 Agency', '🚀 Startup', '🎨 Creative', '💰 Finance', '⚡ n8n'];
 
-function StepVisual({ index }) {
-  if (index === 0) {
-    return (
-      <div className="how-visual how-visual--1">
-        <div className="how-visual__tags">
-          {HOW_TAGS.map((tag) => (
-            <span key={tag} className="how-visual__tag">{tag}</span>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  if (index === 1) {
-    return (
-      <div className="how-visual how-visual--2">
-        <div className="how-visual__form">
-          <div className="how-visual__field">
-            <span className="how-visual__label">Topic</span>
-            <div className="how-visual__input">
-              AI tools for small businesses<span className="how-visual__cursor" />
-            </div>
-          </div>
-          <div className="how-visual__field">
-            <span className="how-visual__label">Audience</span>
-            <div className="how-visual__input">Marketers & Founders</div>
-          </div>
-          <div className="how-visual__btn">
-            <span className="preview-dot" />
-            <span className="preview-dot" style={{ animationDelay: '0.18s' }} />
-            <span className="preview-dot" style={{ animationDelay: '0.36s' }} />
-            Generating…
-          </div>
-        </div>
-      </div>
-    );
-  }
-  return (
-    <div className="how-visual how-visual--3">
-      <div className="how-visual__output">
-        <span className="how-visual__output-badge">✨ AI Output</span>
-        {[88, 72, 95, 60, 82, 50].map((w, i) => (
-          <motion.div
-            key={i}
-            className="how-visual__line"
-            style={{ width: `${w}%`, transformOrigin: 'left center' }}
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true, margin: '-30px' }}
-            transition={{ duration: 0.8, delay: i * 0.13, ease: [0.22, 1, 0.36, 1] }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function HowItWorks() {
-  const { t } = useTranslation();
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-
-  return (
-    <div ref={ref} className="landing__how-steps">
-      {HOW_STEPS.map((step, i) => (
-        <motion.div
-          key={step.num}
-          className="landing__how-step"
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.55, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <StepVisual index={i} />
-          <div className="landing__how-step-body">
-            <div className="landing__how-step-num">{step.num}</div>
-            <h3 className="landing__how-step-title">
-              {t(step.titleKey, { defaultValue: step.defaultTitle })}
-            </h3>
-            <p className="landing__how-step-desc">
-              {t(step.descKey, { defaultValue: step.defaultDesc })}
-            </p>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  );
-}
 
 // ── Workflow Demo ──────────────────────────────────────────────────
 const DEMO_TOOLS = [
@@ -977,7 +890,7 @@ export default function LandingPage() {
               </Link>
               <button
                 className="btn btn-secondary btn-lg"
-                onClick={() => document.getElementById('workflow-demo')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 {t('landing.hero.getDemo', { defaultValue: 'How it works ↓' })}
               </button>
@@ -1121,7 +1034,7 @@ export default function LandingPage() {
                 </Link>
                 <button
                   className="btn btn-secondary btn-lg"
-                  onClick={() => document.getElementById('workflow-demo')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   {t('landing.cta.getDemo', { defaultValue: 'How it works ↓' })}
                 </button>
