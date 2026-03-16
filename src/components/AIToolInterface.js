@@ -127,9 +127,7 @@ export default function AIToolInterface({ tool, categoryId }) {
 
   // Reset when tool changes
   useEffect(() => {
-    const defaults = categoryId !== 'creative'
-      ? { _location: 'Vitoria-Gasteiz, Álava. España' }
-      : {};
+    const defaults = {};
     setInputs(defaults);
     setOutput('');
     setError('');
@@ -485,23 +483,6 @@ export default function AIToolInterface({ tool, categoryId }) {
         <div className="ai-tool__panel ai-tool__input-panel">
           <h3 className="ai-tool__panel-title">{t('ui.yourInputs', { defaultValue: '📝 Your Inputs' })}</h3>
           <form onSubmit={handleGenerate} noValidate>
-            {categoryId !== 'creative' && categoryId !== 'strategy' && (
-              <div className="ai-tool__biz-context">
-                <span className="ai-tool__biz-context-label">🏢 {t('ui.bizContext', { defaultValue: 'Business context' })}</span>
-                <FormField
-                  field={{ id: '_website_url', label: t('ui.websiteUrl', { defaultValue: 'Website URL' }), type: 'text', placeholder: 'https://tuempresa.com', required: true }}
-                  value={inputs._website_url}
-                  onChange={handleInputChange}
-                  toolId={tool.id}
-                />
-                <FormField
-                  field={{ id: '_location', label: t('ui.location', { defaultValue: 'Location' }), type: 'text', placeholder: 'Vitoria-Gasteiz, Álava. España', required: true }}
-                  value={inputs._location}
-                  onChange={handleInputChange}
-                  toolId={tool.id}
-                />
-              </div>
-            )}
             {/* Templates */}
             {currentUser && templates.length > 0 && (
               <div className="ai-tool__history">

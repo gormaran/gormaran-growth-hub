@@ -108,13 +108,7 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
   const systemPrompt = tool.systemPrompt + languageInstruction;
   const baseUserMessage = tool.buildUserMessage(inputs);
 
-  // Append business context fields if provided (injected for all non-creative categories)
-  const bizLines = [];
-  if (inputs._website_url) bizLines.push(`Business Website: ${inputs._website_url}`);
-  if (inputs._location)    bizLines.push(`Business Location: ${inputs._location}`);
-  const userMessageText = bizLines.length > 0
-    ? `${baseUserMessage}\n\n**Business Context:**\n${bizLines.join('\n')}`
-    : baseUserMessage;
+  const userMessageText = baseUserMessage;
 
   // If a reference image is attached, include it as a vision content block
   const userMessageContent = (inputs._ref_image_b64 && inputs._ref_image_mime)
