@@ -78,10 +78,10 @@ function RotatingText() {
 
 // ── Stats ─────────────────────────────────────────────────────────
 const STATS = [
-  { value: '10', unit: '',  labelKey: 'landing.stats.categories' },
-  { value: '30', unit: '+', labelKey: 'landing.stats.tools' },
-  { value: '99', unit: '%', labelKey: 'landing.stats.precision' },
-  { value: '10', unit: 'x', labelKey: 'landing.stats.faster' },
+  { value: '3h',  unit: '/day', labelKey: 'landing.stats.saved',   defaultLabel: 'saved per user' },
+  { value: '2',   unit: 'min',  labelKey: 'landing.stats.pertool', defaultLabel: 'avg. per tool' },
+  { value: '30',  unit: '+',    labelKey: 'landing.stats.tools',   defaultLabel: 'AI tools' },
+  { value: '0',   unit: '',     labelKey: 'landing.stats.prompts', defaultLabel: 'prompts needed' },
 ];
 
 // ── How It Works (Step Cards) ─────────────────────────────────────
@@ -106,6 +106,13 @@ const HOW_STEPS = [
     descKey:  'landing.how.step3.desc',
     defaultTitle: 'Get AI Results',
     defaultDesc:  'Professional, ready-to-use content delivered in seconds. Copy, paste, done.',
+  },
+  {
+    num: '04',
+    titleKey: 'landing.how.step4.title',
+    descKey:  'landing.how.step4.desc',
+    defaultTitle: 'Review & Publish',
+    defaultDesc:  'Edit, refine, or copy your output directly. You stay in full control — AI handles the heavy lifting.',
   },
 ];
 
@@ -763,6 +770,145 @@ function WhatYouGet() {
   );
 }
 
+// ── Workflow Chain Section ────────────────────────────────────────
+const WORKFLOW_CHAIN = [
+  { step: '01', tool: 'SEO Keyword Research', cat: '📈 Marketing', time: '2 min', output: '20 ranked keywords' },
+  { step: '02', tool: 'Blog Post Writer',      cat: '✍️ Content',   time: '2 min', output: '800-word post' },
+  { step: '03', tool: 'Social Media Captions', cat: '📈 Marketing', time: '1 min', output: '5 ready captions' },
+  { step: '04', tool: 'Email Campaign',        cat: '📈 Marketing', time: '2 min', output: 'Full email copy' },
+];
+
+function WorkflowChain() {
+  const { t } = useTranslation();
+  return (
+    <section className="landing__workflow section">
+      <div className="container">
+        <AnimatedSection>
+          <span className="section-pill">{t('landing.workflow.pill', { defaultValue: 'Complete Workflow' })}</span>
+          <h2 className="section-title">
+            {t('landing.workflow.titlePre', { defaultValue: 'A full marketing workflow' })}{' '}
+            <span className="gradient-text">{t('landing.workflow.titleHighlight', { defaultValue: 'in 10 minutes' })}</span>
+          </h2>
+          <p className="section-subtitle">
+            {t('landing.workflow.subtitle', { defaultValue: 'Chain multiple tools together. Each output feeds the next — no copy-pasting, no switching apps.' })}
+          </p>
+        </AnimatedSection>
+        <motion.div
+          className="landing__workflow-chain"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-20px' }}
+          variants={stagger}
+        >
+          {WORKFLOW_CHAIN.map((item, i) => (
+            <motion.div key={item.step} className="landing__workflow-item" variants={fadeUp}>
+              <div className="landing__workflow-step">{item.step}</div>
+              <div className="landing__workflow-card">
+                <div className="landing__workflow-cat">{item.cat}</div>
+                <div className="landing__workflow-tool">{item.tool}</div>
+                <div className="landing__workflow-meta">
+                  <span className="landing__workflow-time">⏱ {item.time}</span>
+                  <span className="landing__workflow-output">→ {item.output}</span>
+                </div>
+              </div>
+              {i < WORKFLOW_CHAIN.length - 1 && (
+                <div className="landing__workflow-arrow">→</div>
+              )}
+            </motion.div>
+          ))}
+        </motion.div>
+        <motion.div
+          className="landing__workflow-total"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.5 }}
+        >
+          <span className="landing__workflow-total-label">Total time:</span>
+          <span className="landing__workflow-total-value gradient-text">~7 minutes</span>
+          <span className="landing__workflow-total-vs">vs. 3+ hours manually</span>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ── Automation Section ────────────────────────────────────────────
+function AutomationSection() {
+  const { t } = useTranslation();
+  return (
+    <section className="landing__automation section">
+      <div className="container">
+        <div className="landing__automation-inner">
+          <motion.div
+            className="landing__automation-text"
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <span className="section-pill">{t('landing.automation.pill', { defaultValue: 'Automation' })}</span>
+            <h2 className="landing__automation-title">
+              {t('landing.automation.titlePre', { defaultValue: "Don't just generate content." })}<br />
+              <span className="gradient-text">{t('landing.automation.titleHighlight', { defaultValue: 'Automate your entire workflow.' })}</span>
+            </h2>
+            <p className="landing__automation-desc">
+              {t('landing.automation.desc', { defaultValue: 'Connect Gormaran with n8n to build full marketing pipelines that run on autopilot — from research to publishing, without touching a screen.' })}
+            </p>
+            <ul className="landing__automation-list">
+              {[
+                t('landing.automation.feat1', { defaultValue: 'Trigger workflows from any event' }),
+                t('landing.automation.feat2', { defaultValue: 'Connect to 400+ apps (Notion, Slack, Gmail…)' }),
+                t('landing.automation.feat3', { defaultValue: 'Schedule & repeat any AI task automatically' }),
+              ].map((feat, i) => (
+                <li key={i} className="landing__automation-feat">
+                  <span className="landing__trust-check">✓</span> {feat}
+                </li>
+              ))}
+            </ul>
+            <Link to="/pricing" className="btn btn-primary">
+              {t('landing.automation.cta', { defaultValue: 'Add Automation — €10 →' })}
+            </Link>
+          </motion.div>
+          <motion.div
+            className="landing__automation-visual"
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <div className="landing__automation-card">
+              <div className="landing__automation-card-header">
+                <span className="landing__automation-card-dot landing__automation-card-dot--green" />
+                <span className="landing__automation-card-label">⚡ n8n Workflow — Active</span>
+              </div>
+              {[
+                { icon: '🔍', label: 'Keyword Research', status: '✓ Done' },
+                { icon: '✍️', label: 'Blog Post Writer', status: '✓ Done' },
+                { icon: '📱', label: 'Social Captions', status: '↻ Running…' },
+                { icon: '📧', label: 'Email Campaign', status: '⏳ Queued' },
+              ].map((node, i) => (
+                <motion.div
+                  key={i}
+                  className={`landing__automation-node${node.status.includes('Running') ? ' running' : ''}`}
+                  initial={{ opacity: 0, x: 12 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: 0.3 + i * 0.1 }}
+                >
+                  <span className="landing__automation-node-icon">{node.icon}</span>
+                  <span className="landing__automation-node-label">{node.label}</span>
+                  <span className="landing__automation-node-status">{node.status}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── Why Not ChatGPT ───────────────────────────────────────────────
 const CHATGPT_VS = [
   { genericKey: 'landing.whychatgpt.vs.0.generic', gormaranKey: 'landing.whychatgpt.vs.0.gormaran', gDefault: 'Open-ended answers', rDefault: 'Execution frameworks by category' },
@@ -818,6 +964,22 @@ function WhyNotChatGPT() {
             ))}
           </div>
         </motion.div>
+
+        <motion.blockquote
+          className="landing__quote"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.45, delay: 0.2 }}
+        >
+          <p className="landing__quote-text">
+            "I went from spending 3 hours a week on blog content to under 20 minutes. The outputs are structured and ready to publish — no editing needed."
+          </p>
+          <footer className="landing__quote-author">
+            <strong>Laura M.</strong>
+            <span>Marketing Manager</span>
+          </footer>
+        </motion.blockquote>
       </div>
     </section>
   );
@@ -991,6 +1153,9 @@ export default function LandingPage() {
       {/* ── SECTION 3: What You Get ── */}
       <WhatYouGet />
 
+      {/* ── SECTION 3b: Workflow Chain ── */}
+      <WorkflowChain />
+
       {/* ── SECTION 4: Stats ── */}
       <section className="landing__stats">
         <div className="container">
@@ -1006,7 +1171,7 @@ export default function LandingPage() {
                 <div className="landing__stat-value">
                   <span className="gradient-text">{stat.value}{stat.unit}</span>
                 </div>
-                <div className="landing__stat-label">{t(stat.labelKey)}</div>
+                <div className="landing__stat-label">{t(stat.labelKey, { defaultValue: stat.defaultLabel })}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -1016,7 +1181,10 @@ export default function LandingPage() {
       {/* ── SECTION 5: Why Not ChatGPT ── */}
       <WhyNotChatGPT />
 
-      {/* ── SECTION 6: Instagram Compact ── */}
+      {/* ── SECTION 6: Automation ── */}
+      <AutomationSection />
+
+      {/* ── SECTION 6b: Instagram Compact ── */}
       <InstagramCompact />
 
       {/* ── SECTION 7: Plans ── */}
