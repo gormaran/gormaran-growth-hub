@@ -41,7 +41,7 @@ function N8nChat({ tool, currentUser }) {
       const res = await fetch(tool.webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, userId: currentUser?.uid, userEmail: currentUser?.email }),
+        body: JSON.stringify({ chatInput: text, sessionId: currentUser?.uid || 'guest' }),
       });
       const data = await res.json();
       const reply = data?.output || data?.message || data?.text || 'Done! Your automation has been set up.';
