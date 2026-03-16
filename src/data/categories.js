@@ -694,6 +694,57 @@ Be specific, professional, and actionable. Every recommendation should be immedi
         buildUserMessage: (inputs) =>
           `Create a complete logo design system:\n\n**Brand Name:** ${inputs.brand_name}\n**Industry:** ${inputs.industry}\n**Logo Style:** ${inputs.style}\n**Preferred Colors:** ${inputs.colors || 'Open to suggestions'}\n**Brand Values / Personality:** ${inputs.values || 'Not specified'}\n**Avoid:** ${inputs.avoid || 'Nothing specific'}\n\nGenerate 3 distinct logo concepts with full color palettes, typography stacks, design guidelines and AI image prompts.`,
       },
+      {
+        id: 'instagram-carousel',
+        name: 'Instagram Carousel Generator',
+        description: 'Generate slide-by-slide carousel content with hooks, body copy and CTAs — upload a reference image for style matching',
+        icon: '🎠',
+        hasRefImage: true,
+        inputs: [
+          { id: 'topic', label: 'Carousel Topic / Hook', type: 'textarea', placeholder: 'e.g., 5 reasons why your Instagram reach is dying (and how to fix it)', required: true },
+          { id: 'slides', label: 'Number of Slides', type: 'select', options: ['3 slides', '5 slides', '7 slides', '10 slides'], required: true },
+          { id: 'niche', label: 'Niche / Industry', type: 'text', placeholder: 'e.g., personal finance, fitness, marketing, real estate', required: true },
+          { id: 'audience', label: 'Target Audience', type: 'text', placeholder: 'e.g., female entrepreneurs aged 25–35', required: true },
+          { id: 'tone', label: 'Tone', type: 'select', options: ['Educational', 'Inspirational', 'Conversational', 'Bold & Direct', 'Storytelling', 'Humorous'], required: true },
+          { id: 'cta', label: 'Call to Action (last slide)', type: 'text', placeholder: 'e.g., Save this post, Follow for more, DM me "CAROUSEL"', required: true },
+          { id: 'extra', label: 'Extra Context (optional)', type: 'textarea', placeholder: 'e.g., brand colors, key message, product to promote, specific stats to include' },
+        ],
+        systemPrompt: `You are an expert Instagram content strategist who creates viral carousel posts. Every carousel must stop the scroll, deliver real value, and drive saves and shares.
+
+Output each slide clearly labelled. For every slide include:
+- **Slide headline** (max 8 words — bold, punchy, curiosity-driven)
+- **Body copy** (2–4 short lines max — easy to read on mobile)
+- **Visual note** (1 line describing what to show: graphic, photo, icon, color background, etc.)
+
+Structure:
+**SLIDE 1 — COVER (Hook)**
+Make it impossible to scroll past. Use a bold claim, surprising stat, or direct question. Include the topic keyword.
+
+**SLIDE 2 to N-1 — VALUE SLIDES**
+Each slide = one clear point. Use numbered lists where possible. Short sentences. No fluff.
+
+**LAST SLIDE — CTA**
+Reinforce the main takeaway. Add the CTA naturally. Invite to save, share, or reply.
+
+---
+After all slides, add:
+
+**CAPTION**
+- Hook line (first 125 characters must hook — no emojis at the start)
+- 3–5 sentence body expanding on the carousel topic
+- CTA matching the last slide
+- 5 niche hashtags + 5 broad hashtags
+
+**COVER DESIGN TIPS**
+- Font suggestion
+- Background color / style recommendation
+- Layout tip
+
+Be specific to the niche and audience provided. No generic advice.`,
+        buildUserMessage: (inputs) =>
+          `Create a complete Instagram carousel:\n\n**Topic:** ${inputs.topic}\n**Slides:** ${inputs.slides}\n**Niche:** ${inputs.niche}\n**Target Audience:** ${inputs.audience}\n**Tone:** ${inputs.tone}\n**CTA:** ${inputs.cta}${inputs.extra ? `\n**Extra Context:** ${inputs.extra}` : ''}${inputs._ref_image_b64 ? '\n\n[Reference image provided — match the visual style, color palette and branding in the design tips.]' : ''}\n\nGenerate every slide fully. Include caption and design tips at the end.`,
+        maxTokens: 6000,
+      },
     ],
   },
   {
@@ -879,57 +930,6 @@ Write complete, conversion-optimized landing page copy:
 - Exit intent popup copy option`,
         buildUserMessage: (inputs) =>
           `Write high-converting landing page copy:\n\n**Product/Service:** ${inputs.product}\n**Primary Offer/CTA:** ${inputs.offer}\n**Target Visitor:** ${inputs.audience || 'General visitors'}\n**Primary Benefit:** ${inputs.main_benefit || 'Not specified'}\n**Pain Points:** ${inputs.pain_points || 'Not specified'}\n**Social Proof:** ${inputs.social_proof || 'None available yet'}\n\nCreate the complete landing page copy with all sections.`,
-      },
-      {
-        id: 'instagram-carousel',
-        name: 'Instagram Carousel Generator',
-        description: 'Generate slide-by-slide carousel content with hooks, body copy and CTAs — upload a reference image for style matching',
-        icon: '🎠',
-        hasRefImage: true,
-        inputs: [
-          { id: 'topic', label: 'Carousel Topic / Hook', type: 'textarea', placeholder: 'e.g., 5 reasons why your Instagram reach is dying (and how to fix it)', required: true },
-          { id: 'slides', label: 'Number of Slides', type: 'select', options: ['3 slides', '5 slides', '7 slides', '10 slides'], required: true },
-          { id: 'niche', label: 'Niche / Industry', type: 'text', placeholder: 'e.g., personal finance, fitness, marketing, real estate', required: true },
-          { id: 'audience', label: 'Target Audience', type: 'text', placeholder: 'e.g., female entrepreneurs aged 25–35', required: true },
-          { id: 'tone', label: 'Tone', type: 'select', options: ['Educational', 'Inspirational', 'Conversational', 'Bold & Direct', 'Storytelling', 'Humorous'], required: true },
-          { id: 'cta', label: 'Call to Action (last slide)', type: 'text', placeholder: 'e.g., Save this post, Follow for more, DM me "CAROUSEL"', required: true },
-          { id: 'extra', label: 'Extra Context (optional)', type: 'textarea', placeholder: 'e.g., brand colors, key message, product to promote, specific stats to include' },
-        ],
-        systemPrompt: `You are an expert Instagram content strategist who creates viral carousel posts. Every carousel must stop the scroll, deliver real value, and drive saves and shares.
-
-Output each slide clearly labelled. For every slide include:
-- **Slide headline** (max 8 words — bold, punchy, curiosity-driven)
-- **Body copy** (2–4 short lines max — easy to read on mobile)
-- **Visual note** (1 line describing what to show: graphic, photo, icon, color background, etc.)
-
-Structure:
-**SLIDE 1 — COVER (Hook)**
-Make it impossible to scroll past. Use a bold claim, surprising stat, or direct question. Include the topic keyword.
-
-**SLIDE 2 to N-1 — VALUE SLIDES**
-Each slide = one clear point. Use numbered lists where possible. Short sentences. No fluff.
-
-**LAST SLIDE — CTA**
-Reinforce the main takeaway. Add the CTA naturally. Invite to save, share, or reply.
-
----
-After all slides, add:
-
-**CAPTION**
-- Hook line (first 125 characters must hook — no emojis at the start)
-- 3–5 sentence body expanding on the carousel topic
-- CTA matching the last slide
-- 5 niche hashtags + 5 broad hashtags
-
-**COVER DESIGN TIPS**
-- Font suggestion
-- Background color / style recommendation
-- Layout tip
-
-Be specific to the niche and audience provided. No generic advice.`,
-        buildUserMessage: (inputs) =>
-          `Create a complete Instagram carousel:\n\n**Topic:** ${inputs.topic}\n**Slides:** ${inputs.slides}\n**Niche:** ${inputs.niche}\n**Target Audience:** ${inputs.audience}\n**Tone:** ${inputs.tone}\n**CTA:** ${inputs.cta}${inputs.extra ? `\n**Extra Context:** ${inputs.extra}` : ''}${inputs._ref_image_b64 ? '\n\n[Reference image provided — match the visual style, color palette and branding in the design tips.]' : ''}\n\nGenerate every slide fully. Include caption and design tips at the end.`,
-        maxTokens: 6000,
       },
     ],
   },
