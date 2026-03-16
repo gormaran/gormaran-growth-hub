@@ -42,27 +42,29 @@ const ROTATING_PHRASES = [
 
 function RotatingText() {
   const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const id = setInterval(() => setIndex((i) => (i + 1) % ROTATING_PHRASES.length), 3000);
+    const id = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIndex((i) => (i + 1) % ROTATING_PHRASES.length);
+        setVisible(true);
+      }, 320);
+    }, 3200);
     return () => clearInterval(id);
   }, []);
 
   return (
-    <span className="landing__hero-rotating">
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={index}
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -14 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          style={{ display: 'block' }}
-        >
-          {ROTATING_PHRASES[index]}
-        </motion.span>
-      </AnimatePresence>
-    </span>
+    <motion.span
+      className="landing__hero-rotating"
+      animate={{ opacity: visible ? 1 : 0, y: visible ? 0 : -16 }}
+      initial={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+      style={{ display: 'block' }}
+    >
+      {ROTATING_PHRASES[index]}
+    </motion.span>
   );
 }
 
@@ -164,7 +166,7 @@ function WorkflowDemo() {
           <div className="wf-demo__sidebar-label">
             {t('landing.how.demo.tools', { defaultValue: 'AI Tools' })}
           </div>
-          {DEMO_TOOLS.map((tool, i) => (
+          {DEMO_TOOLS.map((tool) => (
             <motion.div
               key={tool.name}
               className={`wf-demo__tool${tool.active && phase >= 1 ? ' selected' : ''}${tool.active && phase === 0 ? ' highlight' : ''}`}
