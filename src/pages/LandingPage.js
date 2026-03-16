@@ -36,35 +36,43 @@ function AnimatedSection({ children, className, delay = 0 }) {
 // ── Rotating Hero Text ────────────────────────────────────────────
 const ROTATING_PHRASES = [
   'Create marketing content',
-  'Automate your marketing tasks',
+  'Your marketing tasks',
   'Save 3h/day on marketing',
 ];
 
 function RotatingText() {
-  const [index, setIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayed, setDisplayed] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setVisible(false);
-      setTimeout(() => {
-        setIndex((i) => (i + 1) % ROTATING_PHRASES.length);
-        setVisible(true);
-      }, 320);
-    }, 3200);
-    return () => clearInterval(id);
-  }, []);
+    const current = ROTATING_PHRASES[phraseIndex];
+
+    if (!isDeleting && displayed === current) {
+      const t = setTimeout(() => setIsDeleting(true), 1800);
+      return () => clearTimeout(t);
+    }
+
+    if (isDeleting && displayed === '') {
+      setIsDeleting(false);
+      setPhraseIndex((i) => (i + 1) % ROTATING_PHRASES.length);
+      return;
+    }
+
+    const speed = isDeleting ? 35 : 65;
+    const t = setTimeout(() => {
+      setDisplayed(isDeleting
+        ? current.slice(0, displayed.length - 1)
+        : current.slice(0, displayed.length + 1)
+      );
+    }, speed);
+    return () => clearTimeout(t);
+  }, [displayed, isDeleting, phraseIndex]);
 
   return (
-    <motion.span
-      className="landing__hero-rotating"
-      animate={{ opacity: visible ? 1 : 0, y: visible ? 0 : -16 }}
-      initial={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-      style={{ display: 'block' }}
-    >
-      {ROTATING_PHRASES[index]}
-    </motion.span>
+    <span className="landing__hero-rotating">
+      {displayed}<span className="landing__hero-cursor" />
+    </span>
   );
 }
 
