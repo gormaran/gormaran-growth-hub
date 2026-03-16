@@ -1137,7 +1137,7 @@ export default function LandingPage() {
         <HeroShowcase />
       </section>
 
-      {/* ── SECTION 2: How It Works ── */}
+      {/* ── 2: How It Works ── */}
       <section id="how-it-works" className="landing__how section">
         <div className="container">
           <AnimatedSection>
@@ -1150,13 +1150,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 3: What You Get ── */}
-      <WhatYouGet />
-
-      {/* ── SECTION 3b: Workflow Chain ── */}
-      <WorkflowChain />
-
-      {/* ── SECTION 4: Stats ── */}
+      {/* ── 3: Stats ── */}
       <section className="landing__stats">
         <div className="container">
           <motion.div
@@ -1178,16 +1172,25 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 5: Why Not ChatGPT ── */}
+      {/* ── 4: Why Not ChatGPT + Testimonial ── */}
       <WhyNotChatGPT />
 
-      {/* ── SECTION 6: Automation ── */}
-      <AutomationSection />
+      {/* ── 5: What You Get (tools) ── */}
+      <WhatYouGet />
 
-      {/* ── SECTION 6b: Instagram Compact ── */}
+      {/* ── 6: Workflow Chain ── */}
+      <WorkflowChain />
+
+      {/* ── 7: Instagram Compact (free tool — no-risk entry) ── */}
       <InstagramCompact />
 
-      {/* ── SECTION 7: Plans ── */}
+      {/* ── 8: Automation (upsell before pricing) ── */}
+      <AutomationSection />
+
+      {/* ── 9: Client Logos (social proof before price) ── */}
+      <ClientLogos />
+
+      {/* ── 10: Plans (price after all value shown) ── */}
       <section className="landing__plans section">
         <div className="container">
           <AnimatedSection>
@@ -1212,10 +1215,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── SECTION 8: Client Logos ── */}
-      <ClientLogos />
-
-      {/* ── SECTION 9: Support / Atención ── */}
+      {/* ── 11: Support (remove last objections) ── */}
       <SupportSection />
 
       {/* ── SECTION 10: Stop Wasting Time ── */}
