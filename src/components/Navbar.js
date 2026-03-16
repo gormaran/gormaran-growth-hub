@@ -133,7 +133,14 @@ export default function Navbar() {
             <div className="navbar__user">
               {/* Plan badge */}
               <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
-                {subscription === 'free' ? 'Free' : subscription === 'pro' ? '⭐ Pro' : '💎 Business'}
+                {
+                  subscription === 'free' ? 'Free' :
+                  subscription === 'grow' ? '⭐ Grow' :
+                  subscription === 'scale' ? '💎 Scale' :
+                  subscription === 'evolution' ? '🚀 Evolution' :
+                  subscription === 'admin' ? '🔑 Admin' :
+                  subscription
+                }
               </span>
 
               {/* Profile icon + dropdown */}
