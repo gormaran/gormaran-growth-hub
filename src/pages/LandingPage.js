@@ -33,6 +33,39 @@ function AnimatedSection({ children, className, delay = 0 }) {
 }
 
 
+// ── Rotating Hero Text ────────────────────────────────────────────
+const ROTATING_PHRASES = [
+  'Create marketing content',
+  'Automate your marketing tasks',
+  'Save 3h/day on marketing',
+];
+
+function RotatingText() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setIndex((i) => (i + 1) % ROTATING_PHRASES.length), 3000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <span className="landing__hero-rotating">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={index}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -14 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          style={{ display: 'block' }}
+        >
+          {ROTATING_PHRASES[index]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
 // ── Stats ─────────────────────────────────────────────────────────
 const STATS = [
   { value: '10', unit: '',  labelKey: 'landing.stats.categories' },
@@ -874,8 +907,7 @@ export default function LandingPage() {
             </motion.div>
 
             <motion.h1 className="landing__hero-title" variants={fadeUp} transition={{ duration: 0.35, delay: 0.05 }}>
-              {t('landing.hero.title1')}
-              <br />
+              <RotatingText />
               <span className="gradient-text">{t('landing.hero.title2')}</span>
             </motion.h1>
 

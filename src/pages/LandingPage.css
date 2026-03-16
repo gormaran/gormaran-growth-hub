@@ -102,6 +102,13 @@
   letter-spacing: -0.04em;
 }
 
+.landing__hero-rotating {
+  display: block;
+  overflow: hidden;
+  min-height: 1.15em;
+  margin-bottom: 0.05em;
+}
+
 .landing__hero-subtitle {
   font-size: 1.1rem;
   line-height: 1.7;
