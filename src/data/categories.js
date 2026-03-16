@@ -1744,7 +1744,7 @@ Be specific with exact n8n node names as they appear in the interface. Include r
         description: 'Chat with AI to build and deploy n8n automations in plain language — no forms needed',
         icon: '💬',
         chatWidget: true,
-        webhookUrl: 'https://gormaran.app.n8n.cloud/webhook/e447825a-f1ab-4c2f-b0a8-3dc0210b4ce9/chat',
+        webhookUrl: process.env.REACT_APP_N8N_CHAT_WEBHOOK,
         inputs: [],
       },
     ],
