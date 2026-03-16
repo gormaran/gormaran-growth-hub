@@ -82,7 +82,35 @@ router.post('/generate', imageLimiter, verifyToken, async (req, res) => {
   const colorNote = inputs.colors ? `, color palette: ${inputs.colors}` : '';
   const negativeHint = inputs.negative ? ` Avoid: ${inputs.negative}.` : '';
 
-  const prompt = `${inputs.subject}. Visual style: ${inputs.style}${moodNote}${lightingNote}${colorNote}. Ultra high quality, detailed, professional.${negativeHint}`;
+  // If a reference image is provided, analyse its style via GPT-4o vision
+  let refStyleNote = '';
+  if (inputs._ref_image_b64 && inputs._ref_image_mime) {
+    try {
+      const visionRes = await getOpenAI().chat.completions.create({
+        model: 'gpt-4o',
+        max_tokens: 200,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: { url: `data:${inputs._ref_image_mime};base64,${inputs._ref_image_b64}`, detail: 'low' },
+            },
+            {
+              type: 'text',
+              text: 'Describe the visual style, lighting, colour palette, composition, and mood of this reference image in 2 concise sentences. Focus on stylistic elements useful for image generation.',
+            },
+          ],
+        }],
+      });
+      const desc = visionRes.choices[0]?.message?.content?.trim();
+      if (desc) refStyleNote = ` Reference style: ${desc}`;
+    } catch (err) {
+      console.warn('[Reference Image Analysis] Failed:', err.message);
+    }
+  }
+
+  const prompt = `${inputs.subject}. Visual style: ${inputs.style}${moodNote}${lightingNote}${colorNote}.${refStyleNote} Ultra high quality, detailed, professional.${negativeHint}`;
 
   try {
     const response = await getOpenAI().images.generate({

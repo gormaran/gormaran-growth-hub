@@ -112,9 +112,17 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
   const bizLines = [];
   if (inputs._website_url) bizLines.push(`Business Website: ${inputs._website_url}`);
   if (inputs._location)    bizLines.push(`Business Location: ${inputs._location}`);
-  const userMessage = bizLines.length > 0
+  const userMessageText = bizLines.length > 0
     ? `${baseUserMessage}\n\n**Business Context:**\n${bizLines.join('\n')}`
     : baseUserMessage;
+
+  // If a reference image is attached, include it as a vision content block
+  const userMessageContent = (inputs._ref_image_b64 && inputs._ref_image_mime)
+    ? [
+        { type: 'image', source: { type: 'base64', media_type: inputs._ref_image_mime, data: inputs._ref_image_b64 } },
+        { type: 'text', text: userMessageText },
+      ]
+    : userMessageText;
 
   // Set SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
@@ -128,7 +136,7 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
       model: tool.model || 'claude-sonnet-4-6',
       max_tokens: tool.maxTokens || 4096,
       system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }],
+      messages: [{ role: 'user', content: userMessageContent }],
     });
 
     stream.on('text', (text) => {
