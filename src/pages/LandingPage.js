@@ -345,6 +345,123 @@ function WorkflowDemo() {
   );
 }
 
+// ── Hero Showcase Cards ──────────────────────────────────────────
+function HeroShowcase() {
+  return (
+    <div className="landing__hero-showcase">
+      <div className="container">
+        <motion.div
+          className="landing__showcase-cards"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="landing__showcase-card">
+            <div className="landing__showcase-card-header">
+              <div className="landing__showcase-card-icon">🗂️</div>
+              <div>
+                <div className="landing__showcase-card-title">Tool Library</div>
+                <div className="landing__showcase-card-sub">30+ AI tools, 10 categories</div>
+              </div>
+            </div>
+            <div className="landing__showcase-tags">
+              {['📈 Marketing', '✍️ Content', '🎯 Strategy', '🛒 E-com', '🚀 Startup'].map((tag) => (
+                <span key={tag} className="landing__showcase-tag">{tag}</span>
+              ))}
+            </div>
+          </div>
+
+          <div className="landing__showcase-card landing__showcase-card--featured">
+            <div className="landing__showcase-card-header">
+              <div className="landing__showcase-card-icon">⚡</div>
+              <div>
+                <div className="landing__showcase-card-title">Instant Output</div>
+                <div className="landing__showcase-card-sub">Professional results in seconds</div>
+              </div>
+            </div>
+            <div className="landing__showcase-output">
+              {[90, 75, 95, 60, 82].map((w, i) => (
+                <motion.div
+                  key={i}
+                  className="landing__showcase-line"
+                  style={{ width: `${w}%` }}
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.7, delay: 0.7 + i * 0.1, ease: 'easeOut' }}
+                />
+              ))}
+            </div>
+            <span className="landing__showcase-badge">✨ AI Output ready</span>
+          </div>
+
+          <div className="landing__showcase-card">
+            <div className="landing__showcase-card-header">
+              <div className="landing__showcase-card-icon">📊</div>
+              <div>
+                <div className="landing__showcase-card-title">10x Faster</div>
+                <div className="landing__showcase-card-sub">vs. manual work</div>
+              </div>
+            </div>
+            <div className="landing__showcase-metrics">
+              <div className="landing__showcase-metric">
+                <span className="landing__showcase-metric-val">99%</span>
+                <span className="landing__showcase-metric-label">Precision</span>
+              </div>
+              <div className="landing__showcase-metric">
+                <span className="landing__showcase-metric-val">14d</span>
+                <span className="landing__showcase-metric-label">Free trial</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+// ── How It Works New (BotDesk layout) ────────────────────────────
+function HowItWorksNew() {
+  const { t } = useTranslation();
+  const [active, setActive] = useState(0);
+
+  return (
+    <div className="landing__how-layout">
+      <div className="landing__how-steps-col">
+        {HOW_STEPS.map((step, i) => (
+          <button
+            key={step.num}
+            className={`landing__how-step-row${active === i ? ' active' : ''}`}
+            onClick={() => setActive(i)}
+          >
+            <div className="landing__how-step-row-num">{step.num}</div>
+            <div className="landing__how-step-row-content">
+              <div className="landing__how-step-row-title">
+                {t(step.titleKey, { defaultValue: step.defaultTitle })}
+              </div>
+              <AnimatePresence>
+                {active === i && (
+                  <motion.div
+                    className="landing__how-step-row-desc"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {t(step.descKey, { defaultValue: step.defaultDesc })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </button>
+        ))}
+      </div>
+      <div className="landing__how-visual-col">
+        <WorkflowDemo />
+      </div>
+    </div>
+  );
+}
+
 // ── Plan category / tool data ─────────────────────────────────────
 const GROW_CATS = [
   {
@@ -663,6 +780,7 @@ function WhatYouGet() {
     <section className="landing__wyg section">
       <div className="container">
         <AnimatedSection>
+          <span className="section-pill">{t('landing.wyg.pill', { defaultValue: 'Tools' })}</span>
           <h2 className="section-title">
             {t('landing.wyg.titlePre', { defaultValue: 'Everything in' })}{' '}
             <span className="gradient-text">{t('landing.wyg.titleHighlight', { defaultValue: 'one hub' })}</span>
@@ -703,9 +821,7 @@ function WhyNotChatGPT() {
     <section className="landing__whychatgpt section">
       <div className="container">
         <AnimatedSection>
-          <span className="badge badge-primary" style={{ marginBottom: '1rem', display: 'inline-block' }}>
-            {t('landing.whychatgpt.badge', { defaultValue: '🤔 Fair question' })}
-          </span>
+          <span className="section-pill">{t('landing.whychatgpt.pill', { defaultValue: 'Why Gormaran' })}</span>
           <h2 className="section-title">
             {t('landing.whychatgpt.title', { defaultValue: 'Why not just use ChatGPT, Gemini or Claude?' })}
           </h2>
@@ -782,9 +898,7 @@ function SupportSection() {
     <section className="landing__support section">
       <div className="container">
         <AnimatedSection>
-          <span className="badge badge-primary" style={{ marginBottom: '1rem', display: 'inline-block' }}>
-            {t('landing.support.badge', { defaultValue: '🤝 Real Support' })}
-          </span>
+          <span className="section-pill">{t('landing.support.pill', { defaultValue: 'Support' })}</span>
           <h2 className="section-title">
             {t('landing.support.titlePre', { defaultValue: 'You are never' })}{' '}
             <span className="gradient-text">{t('landing.support.titleHighlight', { defaultValue: 'alone' })}</span>
@@ -900,26 +1014,20 @@ export default function LandingPage() {
             </motion.div>
           </motion.div>
 
-          <motion.div
-            className="landing__hero-preview"
-            initial={{ opacity: 0, y: 60, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <WorkflowDemo />
-          </motion.div>
         </div>
+        <HeroShowcase />
       </section>
 
       {/* ── SECTION 2: How It Works ── */}
       <section id="how-it-works" className="landing__how section">
         <div className="container">
           <AnimatedSection>
+            <span className="section-pill">{t('landing.how.pill', { defaultValue: 'How It Works' })}</span>
             <h2 className="section-title">
               {t('landing.how.title')}
             </h2>
           </AnimatedSection>
-          <HowItWorks />
+          <HowItWorksNew />
         </div>
       </section>
 
@@ -958,6 +1066,7 @@ export default function LandingPage() {
       <section className="landing__plans section">
         <div className="container">
           <AnimatedSection>
+            <span className="section-pill">{t('landing.plans.pill', { defaultValue: 'Pricing' })}</span>
             <h2 className="section-title">
               {t('landing.plans.title')}
             </h2>
