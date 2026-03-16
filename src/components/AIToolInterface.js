@@ -117,6 +117,9 @@ export default function AIToolInterface({ tool, categoryId }) {
   const [generatedImage, setGeneratedImage] = useState(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageError, setImageError] = useState('');
+  const [outputMode, setOutputMode] = useState('image'); // 'image' | 'prompt'
+  const [refImage, setRefImage] = useState(null); // { dataUrl, b64, mime, name }
+  const refImageInputRef = useRef(null);
 
   const { currentUser } = useAuth();
   const { canUseSpecificTool, trackUsage, subscription } = useSubscription();
@@ -133,6 +136,8 @@ export default function AIToolInterface({ tool, categoryId }) {
     setIsStreaming(false);
     setGeneratedImage(null);
     setImageError('');
+    setOutputMode('image');
+    setRefImage(null);
   }, [tool?.id, categoryId]);
 
   // Load history when tool changes
@@ -216,6 +221,45 @@ export default function AIToolInterface({ tool, categoryId }) {
       return;
     }
 
+    // imageOrPrompt tools route based on the selected output mode
+    if (tool.imageOrPrompt) {
+      setTimeout(() => outputPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      if (outputMode === 'image') {
+        handleGenerateImage();
+      } else {
+        // fall through to streaming below
+        setOutput('');
+        finalOutputRef.current = '';
+        setIsStreaming(true);
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        const capturedInputs = { ...inputs };
+        await streamAIResponse({
+          categoryId,
+          toolId: tool.id,
+          inputs: { ...inputs, _language: i18n.language },
+          signal: controller.signal,
+          onChunk: (text) => {
+            setOutput((prev) => {
+              const next = prev + text;
+              finalOutputRef.current = next;
+              return next;
+            });
+          },
+          onDone: () => {
+            setIsStreaming(false);
+            trackUsage();
+            saveToHistory(capturedInputs, finalOutputRef.current);
+          },
+          onError: (msg) => {
+            setIsStreaming(false);
+            setError(msg);
+          },
+        });
+      }
+      return;
+    }
+
     setOutput('');
     finalOutputRef.current = '';
     setIsStreaming(true);
@@ -251,6 +295,31 @@ export default function AIToolInterface({ tool, categoryId }) {
   function handleStop() {
     abortControllerRef.current?.abort();
     setIsStreaming(false);
+  }
+
+  function handleRefImageChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target.result;
+      const [header, b64] = dataUrl.split(',');
+      const mime = header.match(/:(.*?);/)?.[1] || 'image/jpeg';
+      setRefImage({ dataUrl, b64, mime, name: file.name });
+      setInputs(prev => ({ ...prev, _ref_image_b64: b64, _ref_image_mime: mime }));
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleRemoveRefImage() {
+    setRefImage(null);
+    setInputs(prev => {
+      const next = { ...prev };
+      delete next._ref_image_b64;
+      delete next._ref_image_mime;
+      return next;
+    });
+    if (refImageInputRef.current) refImageInputRef.current.value = '';
   }
 
   async function handleGenerateImage() {
@@ -470,6 +539,54 @@ export default function AIToolInterface({ tool, categoryId }) {
               />
             ))}
 
+            {/* Reference image upload — only for imageOrPrompt tools */}
+            {tool.imageOrPrompt && (
+              <div className="form-group">
+                <label className="form-label">Reference Image (optional)</label>
+                {refImage ? (
+                  <div className="ai-tool__ref-image-preview">
+                    <img src={refImage.dataUrl} alt="reference" className="ai-tool__ref-thumb" />
+                    <div className="ai-tool__ref-info">
+                      <span className="ai-tool__ref-name">{refImage.name}</span>
+                      <button type="button" className="ai-tool__ref-remove" onClick={handleRemoveRefImage}>✕ Remove</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="ai-tool__ref-upload" onClick={() => refImageInputRef.current?.click()}>
+                    <span className="ai-tool__ref-upload-icon">📎</span>
+                    <span>Upload reference photo for style matching</span>
+                    <input
+                      ref={refImageInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      style={{ display: 'none' }}
+                      onChange={handleRefImageChange}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Output mode toggle — only for imageOrPrompt tools */}
+            {tool.imageOrPrompt && (
+              <div className="ai-tool__output-mode-toggle">
+                <button
+                  type="button"
+                  className={`ai-tool__mode-btn${outputMode === 'image' ? ' active' : ''}`}
+                  onClick={() => setOutputMode('image')}
+                >
+                  🖼 Generate Image
+                </button>
+                <button
+                  type="button"
+                  className={`ai-tool__mode-btn${outputMode === 'prompt' ? ' active' : ''}`}
+                  onClick={() => setOutputMode('prompt')}
+                >
+                  ✨ Get Prompt
+                </button>
+              </div>
+            )}
+
             {error && (
               <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
                 ⚠️ {error}
@@ -515,14 +632,14 @@ export default function AIToolInterface({ tool, categoryId }) {
                   {t('ui.aiGenerating', { defaultValue: 'AI is generating...' })}
                 </span>
               ) : generatedImage ? (
-                `✅ Logo Generated`
+                tool.imageOrPrompt ? `✅ Image Generated` : `✅ Logo Generated`
               ) : output ? (
                 `✅ ${t('ui.aiOutput', { defaultValue: 'AI Output' })}`
               ) : (
                 `🤖 ${t('ui.aiOutput', { defaultValue: 'AI Output' })}`
               )}
             </h3>
-            {output && !tool.imageOnly && (
+            {output && !tool.imageOnly && !(tool.imageOrPrompt && outputMode === 'image') && (
               <div className="ai-tool__output-controls">
                 <span className="ai-tool__word-count">{wordCount} {t('ui.words', { defaultValue: 'words' })}</span>
                 <button
@@ -607,6 +724,53 @@ export default function AIToolInterface({ tool, categoryId }) {
                     </p>
                     <div className="ai-tool__image-actions">
                       <a href={generatedImage} download="logo.png" target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
+                        ⬇️ {t('ui.downloadImage', { defaultValue: 'Download' })}
+                      </a>
+                      <button className="btn btn-ghost btn-sm" onClick={handleGenerateImage} disabled={isGeneratingImage}>
+                        🔄 {t('ui.regenerate', { defaultValue: 'Regenerate' })}
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </>
+            ) : tool.imageOrPrompt && outputMode === 'image' ? (
+              /* ── imageOrPrompt in image mode ── */
+              <>
+                {!generatedImage && !isGeneratingImage && !imageError && (
+                  <div className="ai-tool__output-placeholder">
+                    <div className="ai-tool__placeholder-icon">🎨</div>
+                    <p>{t('ui.fillInputs', { defaultValue: 'Fill in the inputs on the left and click' })} <strong>{t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}</strong>.</p>
+                    <div className="ai-tool__placeholder-features">
+                      <span>🖼 DALL·E 3</span>
+                      <span>⚡ ~15 seconds</span>
+                      <span>⬇️ {t('ui.downloadImage', { defaultValue: 'Download' })}</span>
+                    </div>
+                  </div>
+                )}
+                {isGeneratingImage && (
+                  <div className="ai-tool__image-loading">
+                    <div className="ai-tool__image-spinner" />
+                    <p>Generating your image with DALL·E 3…</p>
+                  </div>
+                )}
+                {imageError && (
+                  <div className="alert alert-error">⚠️ {imageError}</div>
+                )}
+                {generatedImage && (
+                  <motion.div
+                    className="ai-tool__image-result ai-tool__image-result--full"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <img src={generatedImage} alt={inputs.subject || 'generated image'} className="ai-tool__generated-img" />
+                    <p className="ai-tool__image-caption">
+                      {inputs.subject ? <strong>{inputs.subject.slice(0, 60)}{inputs.subject.length > 60 ? '…' : ''}</strong> : null}
+                      {inputs.style ? ` · ${inputs.style}` : ''}
+                      {inputs.lighting ? ` · ${inputs.lighting}` : ''}
+                    </p>
+                    <div className="ai-tool__image-actions">
+                      <a href={generatedImage} download="image.png" target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
                         ⬇️ {t('ui.downloadImage', { defaultValue: 'Download' })}
                       </a>
                       <button className="btn btn-ghost btn-sm" onClick={handleGenerateImage} disabled={isGeneratingImage}>
