@@ -922,7 +922,9 @@ export default function LandingPage() {
             </motion.h1>
 
             <motion.p className="landing__hero-subtitle" variants={fadeUp} transition={{ duration: 0.35, delay: 0.1 }}>
-              {t('landing.hero.subtitle')}
+              {t('landing.hero.subtitleLine1', { defaultValue: '30+ AI tools for marketing, content & business growth.' })}
+              <br />
+              {t('landing.hero.subtitleLine2', { defaultValue: 'No generic prompts.' })}
             </motion.p>
 
             <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.35, delay: 0.15 }}>
