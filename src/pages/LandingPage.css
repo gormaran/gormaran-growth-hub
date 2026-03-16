@@ -134,6 +134,42 @@
   transform: translateX(4px);
 }
 
+/* Trust badges */
+.landing__hero-trust {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.landing__trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.landing__trust-check {
+  color: #22c55e;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.landing__trust-divider {
+  color: var(--border-color);
+  font-size: 0.9rem;
+}
+
+.landing__cta-trust {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
 .landing__hero-social-proof {
   display: flex;
   align-items: center;

@@ -7,11 +7,8 @@ import { useSubscription } from '../context/SubscriptionContext';
 import './Navbar.css';
 
 const LANGUAGES = [
-  { code: 'en', label: 'English',  abbr: 'EN' },
-  { code: 'es', label: 'Español',  abbr: 'ES' },
-  { code: 'fr', label: 'Français', abbr: 'FR' },
-  { code: 'de', label: 'Deutsch',  abbr: 'DE' },
-  { code: 'it', label: 'Italiano', abbr: 'IT' },
+  { code: 'en', label: 'English', abbr: 'EN' },
+  { code: 'es', label: 'Español', abbr: 'ES' },
 ];
 
 export default function Navbar() {
