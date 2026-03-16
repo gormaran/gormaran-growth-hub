@@ -1738,15 +1738,6 @@ Be specific with exact n8n node names as they appear in the interface. Include r
         buildUserMessage: (inputs) =>
           `Design an n8n automation workflow:\n\n**Goal:** ${inputs.goal}\n**Apps to Connect:** ${inputs.apps}\n**Trigger:** ${inputs.trigger}\n**Frequency:** ${inputs.frequency || 'Real-time (webhook)'}\n**Complexity:** ${inputs.complexity || 'Medium (4-7 nodes)'}\n\nCreate the complete workflow design with full node breakdown, expressions and step-by-step setup guide.`,
       },
-      {
-        id: 'n8n-chat',
-        name: 'Automation Chat',
-        description: 'Chat with AI to build and deploy n8n automations in plain language — no forms needed',
-        icon: '💬',
-        chatWidget: true,
-        webhookUrl: process.env.REACT_APP_N8N_CHAT_WEBHOOK,
-        inputs: [],
-      },
     ],
   },
 ];
