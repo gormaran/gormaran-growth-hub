@@ -48,7 +48,7 @@ const HOW_STEPS = [
     titleKey: 'landing.how.step1.title',
     descKey:  'landing.how.step1.desc',
     defaultTitle: 'Choose Your Tool',
-    defaultDesc:  'Pick from 35+ specialized AI tools across 10 business categories — from marketing to finance.',
+    defaultDesc:  'Pick from 30+ specialized AI tools across 10 business categories — from marketing to finance.',
   },
   {
     num: '02',
@@ -668,7 +668,7 @@ function WhatYouGet() {
             <span className="gradient-text">{t('landing.wyg.titleHighlight', { defaultValue: 'one hub' })}</span>
           </h2>
           <p className="section-subtitle">
-            {t('landing.wyg.subtitle', { defaultValue: '35+ specialized AI tools across 10 business categories — structured outputs you can use immediately.' })}
+            {t('landing.wyg.subtitle', { defaultValue: '30+ specialized AI tools across 10 business categories — structured outputs you can use immediately.' })}
           </p>
         </AnimatedSection>
         <motion.div
@@ -863,13 +863,30 @@ export default function LandingPage() {
               </Link>
               <button
                 className="btn btn-secondary btn-lg"
-                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => document.getElementById('workflow-demo')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                {t('landing.hero.seeHow', { defaultValue: 'See how it works ↓' })}
+                {t('landing.hero.getDemo', { defaultValue: 'How it works ↓' })}
               </button>
             </motion.div>
 
-            <motion.div className="landing__hero-social-proof" variants={fadeUp} transition={{ duration: 0.35, delay: 0.2 }}>
+            <motion.div className="landing__hero-trust" variants={fadeUp} transition={{ duration: 0.35, delay: 0.2 }}>
+              <span className="landing__trust-item">
+                <span className="landing__trust-check">✓</span>
+                {t('landing.hero.trust1', { defaultValue: 'No credit card required' })}
+              </span>
+              <span className="landing__trust-divider">·</span>
+              <span className="landing__trust-item">
+                <span className="landing__trust-check">✓</span>
+                {t('landing.hero.trust2', { defaultValue: '14-day free trial' })}
+              </span>
+              <span className="landing__trust-divider">·</span>
+              <span className="landing__trust-item">
+                <span className="landing__trust-check">✓</span>
+                {t('landing.hero.trust3', { defaultValue: 'Cancel anytime' })}
+              </span>
+            </motion.div>
+
+            <motion.div className="landing__hero-social-proof" variants={fadeUp} transition={{ duration: 0.35, delay: 0.25 }}>
               <div className="landing__avatars">
                 {['A','B','C','D','E'].map((l) => (
                   <div key={l} className="landing__avatar">{l}</div>
@@ -993,13 +1010,20 @@ export default function LandingPage() {
                   {t('landing.cta.startFree', { defaultValue: 'Start Free Now →' })}
                   <span className="landing__cta-arrow">→</span>
                 </Link>
-                <Link to="/pricing" className="btn btn-secondary btn-lg">
-                  {t('landing.cta.seePricing', { defaultValue: 'See Pricing' })}
-                </Link>
+                <button
+                  className="btn btn-secondary btn-lg"
+                  onClick={() => document.getElementById('workflow-demo')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  {t('landing.cta.getDemo', { defaultValue: 'How it works ↓' })}
+                </button>
               </div>
-              <p className="landing__cta-note">
-                {t('landing.cta.note', { defaultValue: '14-day free trial · No credit card required' })}
-              </p>
+              <div className="landing__cta-trust">
+                <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust1', { defaultValue: 'No credit card required' })}</span>
+                <span className="landing__trust-divider">·</span>
+                <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust2', { defaultValue: '14-day free trial' })}</span>
+                <span className="landing__trust-divider">·</span>
+                <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust3', { defaultValue: 'Cancel anytime' })}</span>
+              </div>
             </div>
           </AnimatedSection>
         </div>
