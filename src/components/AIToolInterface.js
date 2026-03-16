@@ -520,8 +520,8 @@ export default function AIToolInterface({ tool, categoryId }) {
               />
             ))}
 
-            {/* Reference image upload — only for imageOrPrompt tools */}
-            {tool.imageOrPrompt && (
+            {/* Reference image upload — for imageOrPrompt and hasRefImage tools */}
+            {(tool.imageOrPrompt || tool.hasRefImage) && (
               <div className="form-group">
                 <label className="form-label">Reference Image (optional)</label>
                 {refImage ? (
