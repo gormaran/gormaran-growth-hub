@@ -83,12 +83,17 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
-      if (user) {
-        await createUserProfile(user);
-      } else {
-        setUserProfile(null);
+      try {
+        if (user) {
+          await createUserProfile(user);
+        } else {
+          setUserProfile(null);
+        }
+      } catch (err) {
+        console.error('AuthContext error:', err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
     return unsubscribe;
   }, []);
