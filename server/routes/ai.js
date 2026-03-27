@@ -139,7 +139,7 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
 
     stream.on('error', (err) => {
       console.error('[AI Stream Error]', err.message);
-      res.write(`data: ${JSON.stringify({ error: 'AI generation error' })}\n\n`);
+      res.write(`data: ${JSON.stringify({ error: err.message || 'AI generation error' })}\n\n`);
       res.end();
     });
 
