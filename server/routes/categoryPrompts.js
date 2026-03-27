@@ -242,6 +242,7 @@ The JSON must be complete and directly importable via n8n → Import Workflow. U
 
 Do not add diagrams, node breakdowns, setup steps, or any other section.`,
       buildUserMessage: (inputs) => `Create an n8n workflow:\n\n**Goal:** ${inputs.goal}\n**Apps:** ${inputs.apps}\n**Trigger:** ${inputs.trigger}\n**Frequency:** ${inputs.frequency || 'Real-time (webhook)'}\n**Complexity:** ${inputs.complexity || 'Medium (4-7 nodes)'}\n\nOutput ONLY: 5-line description + complete importable JSON.`,
+      maxTokens: 8192,
     },
   },
 };
