@@ -22,5 +22,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 server/firebase-service-account.json
-server/firebase-service-account.json
-gormaran-growth-hub-firebase-adminsdk-fbsvc-22f2521a0a.json
+*adminsdk*.json
+*firebase-adminsdk*.json
