@@ -585,8 +585,12 @@ export default function AIToolInterface({ tool, categoryId }) {
                   className="btn btn-primary"
                   disabled={!canUseSpecificTool(categoryId, tool.id)}
                 >
-                  <span>✨</span>
-                  {t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}
+                  <span>{tool.imageOrPrompt && outputMode === 'image' ? '🖼' : '✨'}</span>
+                  {tool.imageOrPrompt && outputMode === 'image'
+                    ? t('ui.generateImage', { defaultValue: 'Generate Image' })
+                    : tool.imageOrPrompt && outputMode === 'prompt'
+                      ? t('ui.getPrompt', { defaultValue: 'Get Prompt' })
+                      : t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}
                 </button>
               )}
               {output && !isStreaming && (

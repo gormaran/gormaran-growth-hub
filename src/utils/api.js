@@ -50,11 +50,12 @@ export async function streamAIResponse({ categoryId, toolId, inputs, onChunk, on
           try {
             const parsed = JSON.parse(data);
             if (parsed.text) onChunk(parsed.text);
-            if (parsed.error) throw new Error(parsed.error);
-          } catch (e) {
-            if (e.message !== 'Unexpected end of JSON input') {
-              // silently skip malformed chunks
+            if (parsed.error) {
+              onError?.(parsed.error);
+              return;
             }
+          } catch (e) {
+            // silently skip malformed JSON chunks (incomplete SSE frames)
           }
         }
       }
