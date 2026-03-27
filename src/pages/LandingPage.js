@@ -41,11 +41,20 @@ const ROTATING_PHRASES = [
 ];
 
 function RotatingText() {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 1024);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [displayed, setDisplayed] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth <= 1024);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) return;
+
     const current = ROTATING_PHRASES[phraseIndex];
 
     if (!isDeleting && displayed === current) {
@@ -67,7 +76,15 @@ function RotatingText() {
       );
     }, speed);
     return () => clearTimeout(t);
-  }, [displayed, isDeleting, phraseIndex]);
+  }, [displayed, isDeleting, phraseIndex, isMobile]);
+
+  if (isMobile) {
+    return (
+      <span className="landing__hero-rotating">
+        {ROTATING_PHRASES[0]}
+      </span>
+    );
+  }
 
   return (
     <span className="landing__hero-rotating">
