@@ -32,7 +32,7 @@ export default function SettingsPage() {
   }
 
   const plan = PLANS[subscription] || PLANS.free;
-  const usageDisplay = plan.dailyLimit === Infinity ? 'Unlimited' : `${usageCount} / ${plan.dailyLimit} today`;
+  const usageDisplay = plan.allAccess ? 'Unlimited' : `${usageCount} today`;
 
   return (
     <div className="page">
@@ -99,7 +99,7 @@ export default function SettingsPage() {
                 <div className="settings__plan-row">
                   <span className="settings__plan-label">Categories Unlocked</span>
                   <span className="settings__plan-value">
-                    {plan.categories.length} / 7
+                    {plan.allAccess ? 'All' : (plan.categories?.length ?? 0)} / 7
                   </span>
                 </div>
               </div>
