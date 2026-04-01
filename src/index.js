@@ -5,18 +5,22 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "./i18n/i18n";
 import ReactGA from "react-ga4";
+import ErrorBoundary from './components/ErrorBoundary';
+import { validateEnv } from './utils/envCheck';
 
-ReactGA.initialize("G-ND3CT7RGWF");
+validateEnv();
+
+const gaId = process.env.REACT_APP_GA_MEASUREMENT_ID || "G-ND3CT7RGWF";
+ReactGA.initialize(gaId);
 ReactGA.send("pageview");
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

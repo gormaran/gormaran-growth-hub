@@ -89,7 +89,17 @@ export default function SettingsPage() {
                 <div className="settings__plan-row">
                   <span className="settings__plan-label">Current Plan</span>
                   <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
-                    {subscription === 'free' ? 'Free' : subscription === 'pro' ? '⭐ Pro' : '💎 Business'}
+                    {subscription === 'free'
+                      ? 'Free'
+                      : subscription === 'grow'
+                      ? '⭐ Grow'
+                      : subscription === 'scale'
+                      ? '💎 Scale'
+                      : subscription === 'evolution'
+                      ? '🚀 Evolution'
+                      : subscription === 'admin'
+                      ? '🔑 Admin'
+                      : subscription}
                   </span>
                 </div>
                 <div className="settings__plan-row">

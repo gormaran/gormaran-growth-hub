@@ -17,6 +17,7 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
   const [filterTool, setFilterTool] = useState('');
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     if (!currentUser) return;
@@ -39,8 +40,14 @@ export default function HistoryPage() {
   }
 
   async function deleteEntry(id) {
-    await deleteDoc(doc(db, 'users', currentUser.uid, 'history', id));
-    setHistory(prev => prev.filter(h => h.id !== id));
+    setDeleteError('');
+    try {
+      await deleteDoc(doc(db, 'users', currentUser.uid, 'history', id));
+      setHistory(prev => prev.filter(h => h.id !== id));
+    } catch (e) {
+      console.error('[HistoryPage] deleteEntry failed:', e);
+      setDeleteError('Failed to delete entry. Please try again.');
+    }
   }
 
   function formatDate(createdAt) {
@@ -97,6 +104,11 @@ export default function HistoryPage() {
               </button>
             ))}
           </div>
+        )}
+
+        {/* Delete error */}
+        {deleteError && (
+          <div className="alert alert-error" style={{ marginBottom: '1rem' }}>{deleteError}</div>
         )}
 
         {/* Content */}

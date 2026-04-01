@@ -179,52 +179,6 @@ export default function RealTimeDataPage() {
 
   return (
     <div ref={ref} className="landing__smartdash section" style={{ minHeight: '80vh', paddingTop: '4rem', position: 'relative' }}>
-
-      {/* ── Coming Soon Overlay ── */}
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: 50,
-        backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
-        background: 'rgba(9,9,15,0.7)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        borderRadius: 'inherit',
-      }}>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '24px',
-            padding: '2.5rem 3rem',
-            textAlign: 'center',
-            maxWidth: '400px',
-            boxShadow: '0 0 60px rgba(99,102,241,0.2)',
-          }}
-        >
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔬</div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.5rem', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Still in the lab.
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-            Our team is building something powerful here. When it drops, you'll be the first to know. 👀
-          </p>
-          <span style={{
-            display: 'inline-block',
-            background: 'rgba(99,102,241,0.12)',
-            border: '1px solid rgba(99,102,241,0.3)',
-            borderRadius: '20px',
-            color: 'var(--color-primary)',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            padding: '0.35rem 1rem',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-          }}>
-            Coming soon
-          </span>
-        </motion.div>
-      </div>
       <div className="container">
         <motion.div
           initial="hidden"

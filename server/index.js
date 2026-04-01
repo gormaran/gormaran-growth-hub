@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-// const helmet = require('helmet');
+const helmet = require('helmet');
 
 const admin = require("firebase-admin");
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -18,7 +18,27 @@ const instagramWebhook = require("./routes/instagramWebhook");
 
 
 const app = express();
-app.set('trust proxy', 1); // Required for Render (proxy) — fixes express-rate-limit X-Forwarded-For error
+app.set('trust proxy', 1);
+
+/* ===============================
+   🔒 SECURITY HEADERS (helmet)
+================================ */
+app.use(helmet({
+  // This is an API-only server — no HTML pages served, so CSP is intentionally minimal
+  contentSecurityPolicy: false,
+  // Prevent MIME-type sniffing
+  noSniff: true,
+  // Deny framing from any origin
+  frameguard: { action: 'deny' },
+  // Remove X-Powered-By
+  hidePoweredBy: true,
+  // Strict Transport Security (1 year, include subdomains)
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  // Prevent IE from opening downloads in the site's context
+  ieNoOpen: true,
+  // Disable XSS filter (deprecated, modern browsers ignore it — CSP is the right tool)
+  xssFilter: false,
+})); // Required for Render (proxy) — fixes express-rate-limit X-Forwarded-For error
 const PORT = process.env.PORT || 5000;
 
 

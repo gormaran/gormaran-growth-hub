@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Users ────────────────────────────────────────────────────────────────
+    // Authenticated users can only read/write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Generation history sub-collection — same ownership rule
+      match /history/{historyId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Any other sub-collections under a user doc (future-proof)
+      match /{subcollection=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // ─── Deny everything else ─────────────────────────────────────────────────
+    // Explicit deny-all for any collection not matched above.
+    // This is the fail-closed default — new collections are locked until rules are added.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
