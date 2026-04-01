@@ -57,7 +57,10 @@ export function AuthProvider({ children }) {
 
   async function signInWithGoogle() {
     const result = await signInWithPopup(auth, googleProvider);
-    await createUserProfile(result.user);
+    // Pass displayName explicitly — result.user.displayName is guaranteed
+    // to be populated at this point (directly from the popup response),
+    // unlike the user object received later in onAuthStateChanged.
+    await createUserProfile(result.user, result.user.displayName || '');
     return result;
   }
 
@@ -85,7 +88,13 @@ export function AuthProvider({ children }) {
       setCurrentUser(user);
       try {
         if (user) {
-          await createUserProfile(user);
+          // Only load the existing profile — never create here.
+          // Profile creation happens exclusively in register() and signInWithGoogle(),
+          // which have the correct displayName available. Creating here caused a race
+          // condition where onAuthStateChanged fired before signInWithGoogle's
+          // createUserProfile finished, resulting in a duplicate write with a
+          // potentially null displayName.
+          await refreshUserProfile(user.uid);
         } else {
           setUserProfile(null);
         }
