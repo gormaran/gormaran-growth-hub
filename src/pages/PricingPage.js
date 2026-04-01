@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
@@ -48,6 +48,7 @@ export default function PricingPage() {
   const { subscription } = useSubscription();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [error, setError] = useState('');
   const [promoCode, setPromoCode] = useState('');
@@ -58,6 +59,12 @@ export default function PricingPage() {
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/health`).catch(() => {});
   }, []);
+
+  // Pre-fill promo code from URL param: /pricing?promo=PRO50
+  useEffect(() => {
+    const param = searchParams.get('promo');
+    if (param) setPromoCode(param.toUpperCase());
+  }, [searchParams]);
 
   async function handleApplyPromo() {
     const trimmed = promoCode.trim().toUpperCase();
@@ -131,6 +138,21 @@ export default function PricingPage() {
     if (subscription === plan.id) return t('pricing.currentPlan', { defaultValue: '✅ Current Plan' });
     if (plan.id === 'free' && subscription !== 'free') return t('pricing.downgrade', { defaultValue: 'Downgrade' });
     return t(`pricing.plan.${plan.id}.cta`);
+  }
+
+  function getDiscountedPrice(originalPrice) {
+    if (!promoState || originalPrice === 0) return null;
+    // discountLabel is e.g. "50% off" or "€10 off"
+    const pctMatch = promoState.discountLabel?.match(/(\d+(?:\.\d+)?)\s*%/);
+    if (pctMatch) {
+      const pct = parseFloat(pctMatch[1]);
+      return (originalPrice * (1 - pct / 100)).toFixed(2).replace(/\.00$/, '');
+    }
+    const amtMatch = promoState.discountLabel?.match(/€\s*(\d+(?:\.\d+)?)/);
+    if (amtMatch) {
+      return Math.max(0, originalPrice - parseFloat(amtMatch[1])).toFixed(2).replace(/\.00$/, '');
+    }
+    return null;
   }
 
   function translateVal(val) {
@@ -259,12 +281,31 @@ export default function PricingPage() {
                   </div>
 
                   <div className="pricing__plan-price">
-                    <span className="pricing__plan-amount">€{plan.price}</span>
-                    <div className="pricing__plan-period">
-                      {plan.price === 0
-                        ? t('pricing.forever', { defaultValue: 'forever free' })
-                        : t('pricing.month', { defaultValue: '/month' })}
-                    </div>
+                    {getDiscountedPrice(plan.price) ? (
+                      <>
+                        <span className="pricing__plan-amount">
+                          <span style={{ textDecoration: 'line-through', opacity: 0.45, fontSize: '0.7em', marginRight: '0.35em' }}>
+                            €{plan.price}
+                          </span>
+                          €{getDiscountedPrice(plan.price)}
+                        </span>
+                        <div className="pricing__plan-period">
+                          {t('pricing.month', { defaultValue: '/month' })}
+                          <span style={{ marginLeft: '0.4em', color: '#4ade80', fontWeight: 700, fontSize: '0.85em' }}>
+                            ({promoState.discountLabel})
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <span className="pricing__plan-amount">€{plan.price}</span>
+                        <div className="pricing__plan-period">
+                          {plan.price === 0
+                            ? t('pricing.forever', { defaultValue: 'forever free' })
+                            : t('pricing.month', { defaultValue: '/month' })}
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   <button
