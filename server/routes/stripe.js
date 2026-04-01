@@ -191,11 +191,14 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         try {
           const sub = await stripe.subscriptions.retrieve(session.subscription);
           const priceId = sub.items.data[0]?.price?.id;
-          let plan = 'grow'; // fallback
-          if (priceId === process.env.STRIPE_GROW_PRICE_ID) plan = 'grow';
-          if (priceId === process.env.STRIPE_SCALE_PRICE_ID) plan = 'scale';
-          if (priceId === process.env.STRIPE_EVOLUTION_PRICE_ID) plan = 'evolution';
-          await updateUserSubscription(firebaseUid, session.subscription, plan, session.customer);
+          const plan = resolvePlan(priceId);
+          if (!plan) {
+            console.error(`[Webhook] checkout.session.completed: unrecognised priceId "${priceId}" — update Stripe price env vars`);
+            // Still store customer/subscription IDs but don't touch subscription field
+            await updateUserSubscription(firebaseUid, session.subscription, null, session.customer);
+          } else {
+            await updateUserSubscription(firebaseUid, session.subscription, plan, session.customer);
+          }
         } catch (err) {
           console.error('[Webhook] Failed to retrieve subscription on checkout:', err.message);
         }
@@ -210,13 +213,19 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       const sub = event.data.object;
       const firebaseUid = sub.metadata?.firebaseUid;
       if (firebaseUid) {
-        const priceId = sub.items.data[0]?.price?.id;
-        let plan = 'free';
-        if (priceId === process.env.STRIPE_GROW_PRICE_ID) plan = 'grow';
-        if (priceId === process.env.STRIPE_SCALE_PRICE_ID) plan = 'scale';
-        if (priceId === process.env.STRIPE_EVOLUTION_PRICE_ID) plan = 'evolution';
-        if (sub.status !== 'active') plan = 'free';
-        await updateUserSubscription(firebaseUid, sub.id, plan);
+        if (sub.status !== 'active') {
+          // Subscription cancelled / past_due / etc. — downgrade to free
+          await updateUserSubscription(firebaseUid, sub.id, 'free');
+        } else {
+          const priceId = sub.items.data[0]?.price?.id;
+          const plan = resolvePlan(priceId);
+          if (!plan) {
+            console.error(`[Webhook] customer.subscription.updated: unrecognised priceId "${priceId}" — update Stripe price env vars`);
+            // Do NOT overwrite subscription with 'free' for an active sub we can't identify
+          } else {
+            await updateUserSubscription(firebaseUid, sub.id, plan);
+          }
+        }
       }
       break;
     }
@@ -236,6 +245,15 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
   res.json({ received: true });
 });
+
+// Map a Stripe priceId to an internal plan name. Returns null if unknown.
+function resolvePlan(priceId) {
+  if (!priceId) return null;
+  if (priceId === process.env.STRIPE_GROW_PRICE_ID) return 'grow';
+  if (priceId === process.env.STRIPE_SCALE_PRICE_ID) return 'scale';
+  if (priceId === process.env.STRIPE_EVOLUTION_PRICE_ID) return 'evolution';
+  return null;
+}
 
 // Update user subscription in Firestore
 async function updateUserSubscription(uid, subscriptionId, plan, stripeCustomerId) {
