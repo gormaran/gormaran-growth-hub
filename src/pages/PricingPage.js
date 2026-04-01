@@ -69,10 +69,6 @@ export default function PricingPage() {
   async function handleApplyPromo() {
     const trimmed = promoCode.trim().toUpperCase();
     if (!trimmed) return;
-    if (!currentUser) {
-      navigate('/auth?mode=register');
-      return;
-    }
     setPromoError('');
     setPromoState(null);
     setPromoLoading(true);
