@@ -8,8 +8,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder'
   apiVersion: '2024-11-20.acacia',
 });
 
-// POST /api/stripe/validate-promo — Validate a promotion code
-router.post('/validate-promo', verifyToken, async (req, res) => {
+// POST /api/stripe/validate-promo — Validate a promotion code (public — no auth required)
+router.post('/validate-promo', async (req, res) => {
   const { code } = req.body;
 
   if (!code) return res.status(400).json({ error: 'Missing code' });
