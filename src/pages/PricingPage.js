@@ -278,20 +278,18 @@ export default function PricingPage() {
 
                   <div className="pricing__plan-price">
                     {getDiscountedPrice(plan.price) ? (
-                      <>
-                        <span className="pricing__plan-amount">
-                          <span style={{ textDecoration: 'line-through', opacity: 0.45, fontSize: '0.7em', marginRight: '0.35em' }}>
-                            €{plan.price}
-                          </span>
-                          €{getDiscountedPrice(plan.price)}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '2px' }}>
+                        <span style={{ textDecoration: 'line-through', opacity: 0.4, fontSize: '1rem', fontWeight: 500, lineHeight: 1 }}>
+                          €{plan.price}/mo
                         </span>
-                        <div className="pricing__plan-period">
-                          {t('pricing.month', { defaultValue: '/month' })}
-                          <span style={{ marginLeft: '0.4em', color: '#4ade80', fontWeight: 700, fontSize: '0.85em' }}>
-                            ({promoState.discountLabel})
-                          </span>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
+                          <span className="pricing__plan-amount">€{getDiscountedPrice(plan.price)}</span>
+                          <span className="pricing__plan-period">{t('pricing.month', { defaultValue: '/month' })}</span>
                         </div>
-                      </>
+                        <span style={{ color: '#4ade80', fontWeight: 700, fontSize: '0.8rem', marginTop: '2px' }}>
+                          {promoState.discountLabel} applied
+                        </span>
+                      </div>
                     ) : (
                       <>
                         <span className="pricing__plan-amount">€{plan.price}</span>
