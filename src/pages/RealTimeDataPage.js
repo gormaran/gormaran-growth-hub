@@ -196,6 +196,26 @@ export default function RealTimeDataPage() {
           </motion.p>
         </motion.div>
 
+        {/* ── Coming Soon overlay ── */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 10,
+          background: 'rgba(10,10,20,0.82)',
+          backdropFilter: 'blur(6px)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          borderRadius: '1rem',
+          textAlign: 'center',
+          padding: '2rem',
+        }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🚀</div>
+          <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.75rem' }}>
+            Coming Soon
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.65)', maxWidth: '360px', lineHeight: 1.6 }}>
+            Real-time social analytics are on their way. Connect your accounts once this feature launches.
+          </p>
+        </div>
+
         {/* Gradient-border wrapper */}
         <div className="landing__smartdash-frame">
           <div className="landing__smartdash-frame-inner">
