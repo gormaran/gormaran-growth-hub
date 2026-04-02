@@ -15,6 +15,7 @@ const stripeRoutes = require("./routes/stripe");
 const imageRoutes = require("./routes/imageGeneration");
 const oauthRoutes = require("./routes/oauth");
 const instagramWebhook = require("./routes/instagramWebhook");
+const emailTrackingRoutes = require("./routes/emailTracking");
 
 
 const app = express();
@@ -105,6 +106,7 @@ app.use("/api/stripe", stripeRoutes);
 app.use("/api/image", imageRoutes);
 app.use("/api/oauth", oauthRoutes);
 app.use("/api/webhooks/instagram", instagramWebhook);
+app.use("/api/email", emailTrackingRoutes);
 
 /* ===============================
    🔥 404
