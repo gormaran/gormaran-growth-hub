@@ -1,15 +1,22 @@
 const express = require('express');
 const admin = require('firebase-admin');
-const { verifyToken } = require('../middleware/firebaseAuth');
 
 const router = express.Router();
 
 const VALID_EMAIL_TYPES = ['day1', 'day3', 'day12', 'day14', 'reactivation'];
 
+function requireApiKey(req, res, next) {
+  const key = req.headers['x-api-key'];
+  if (!key || key !== process.env.INTERNAL_API_KEY) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  next();
+}
+
 // POST /api/email/mark-sent
 // Body: { uid, emailType }
-// Auth: requires valid Firebase token
-router.post('/mark-sent', verifyToken, async (req, res) => {
+// Auth: x-api-key header must match INTERNAL_API_KEY env var
+router.post('/mark-sent', requireApiKey, async (req, res) => {
   const { uid, emailType } = req.body;
 
   if (!uid || !emailType) {
