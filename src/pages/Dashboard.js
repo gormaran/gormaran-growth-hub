@@ -53,7 +53,7 @@ export default function Dashboard() {
   const inTrial = isInTrial();
   const daysLeft = trialDaysRemaining();
   const trialPct = Math.round((daysLeft / 14) * 100);
-  const isNewUser = (userProfile?.usageCount ?? 0) === 0;
+  const isNewUser = true;
 
   return (
     <div className="page">
@@ -173,4 +173,150 @@ export default function Dashboard() {
           {subscription === 'free' && !inTrial && (
             <motion.div
               className="dashboard__usage"
-              initial={{ opacity: 0
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <p className="dashboard__usage-note" style={{ margin: 0 }}>
+                🔒 {t('dashboard.trialEnded', { defaultValue: 'Your free trial has ended. Only Keyword Research & Meta Tags are available. ' })}
+                <Link to="/pricing">{t('ui.upgrade', { defaultValue: 'Upgrade' })} →</Link>
+              </p>
+            </motion.div>
+          )}
+
+          {/* Category Grid */}
+          <section className="dashboard__categories">
+            <h2 className="dashboard__section-title">
+              <span>🚀</span> {t('ui.aiToolCategories', { defaultValue: 'AI Tool Categories' })}
+            </h2>
+
+            <motion.div
+              className="dashboard__grid"
+              initial="hidden"
+              animate="visible"
+              variants={stagger}
+            >
+              {[...CATEGORIES.filter((c) => !c.isAddon), ...CATEGORIES.filter((c) => c.isAddon)].map((cat) => {
+                const locked = isCategoryLocked(cat.id);
+                const catName = t(`cat.${cat.id}.name`, { defaultValue: cat.name });
+                const catDesc = t(`cat.${cat.id}.desc`, { defaultValue: cat.description });
+
+                if (cat.isAddon) {
+                  return (
+                    <motion.div
+                      key={cat.id}
+                      className="dashboard__addon-card"
+                      variants={fadeUp}
+                    >
+                      <div className="dashboard__addon-left">
+                        <span className="badge badge-primary dashboard__addon-badge">
+                          {t('pricing.addon.badge', { defaultValue: '⚡ Add-on' })}
+                        </span>
+                        <h3 className="dashboard__addon-title">{catName}</h3>
+                        <p className="dashboard__addon-desc">{catDesc}</p>
+                        <ul className="dashboard__addon-features">
+                          {[0, 1, 2, 3].map((i) => (
+                            <li key={i}>✅ {t(`pricing.addon.feature.${i}`)}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="dashboard__addon-right">
+                        <div className="dashboard__addon-price">
+                          <span className="dashboard__addon-amount">
+                            {t('pricing.addon.price', { defaultValue: '€10' })}
+                          </span>
+                          <span className="dashboard__addon-period">
+                            {t('pricing.addon.period', { defaultValue: '/ 10 workflows' })}
+                          </span>
+                        </div>
+                        <p className="dashboard__addon-renew">
+                          {t('pricing.addon.renew', { defaultValue: 'No expiry · Works with any plan · Buy more when you need' })}
+                        </p>
+                        {subscription === 'admin' ? (
+                          <Link to={`/category/${cat.id}`} className="btn btn-primary">
+                            {t('ui.open', { defaultValue: 'Open →' })}
+                          </Link>
+                        ) : (
+                          <Link to="/pricing" className="btn btn-primary">
+                            {t('pricing.addon.cta', { defaultValue: 'Get Add-on →' })}
+                          </Link>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                }
+
+                return (
+                  <motion.div
+                    key={cat.id}
+                    className={`dashboard__cat-card ${locked ? 'dashboard__cat-card--locked' : ''}`}
+                    variants={fadeUp}
+                    whileHover={{ y: -6, scale: 1.01 }}
+                  >
+                    <div
+                      className="dashboard__cat-accent"
+                      style={{ background: `linear-gradient(135deg, ${cat.color}40, ${cat.color}10)` }}
+                    />
+                    <div className="dashboard__cat-top">
+                      <div
+                        className="dashboard__cat-icon"
+                        style={{ background: `${cat.color}20`, borderColor: `${cat.color}40` }}
+                      >
+                        {cat.icon}
+                      </div>
+                      {locked && (
+                        <span className="dashboard__cat-lock">🔒 {CATEGORY_MIN_TIER[cat.id] || 'Grow'}</span>
+                      )}
+                    </div>
+                    <h3 className="dashboard__cat-name">{catName}</h3>
+                    <p className="dashboard__cat-desc">{catDesc}</p>
+                    <div className="dashboard__cat-tools">
+                      {cat.tools.filter((tool) => !tool.hidden).map((tool) => (
+                        <span key={tool.id} className="dashboard__tool-chip">
+                          {tool.icon} {t(`tool.${tool.id}.name`, { defaultValue: tool.name })}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="dashboard__cat-footer">
+                      <span className="dashboard__cat-count">
+                        {cat.tools.length} {t('ui.tools', { defaultValue: 'tools' })}
+                      </span>
+                      {locked ? (
+                        <Link to="/pricing" className="btn btn-secondary btn-sm">
+                          {t('ui.upgrade', { defaultValue: 'Upgrade' })}
+                        </Link>
+                      ) : (
+                        <Link to={`/category/${cat.id}`} className="btn btn-primary btn-sm">
+                          {t('ui.open', { defaultValue: 'Open →' })}
+                        </Link>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </section>
+
+        </div>
+      </div>
+
+      <InstagramAuditSection />
+
+      <div className="container">
+        <div className="dashboard">
+          <motion.div
+            className="dashboard__tip"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <span className="dashboard__tip-icon">💡</span>
+            <p>
+              <strong>Pro tip:</strong> Each tool has custom-engineered AI prompts. Fill in all fields for the most precise, actionable output.
+            </p>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}
