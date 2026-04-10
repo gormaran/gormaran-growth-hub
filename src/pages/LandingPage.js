@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -34,13 +34,14 @@ function AnimatedSection({ children, className, delay = 0 }) {
 
 
 // ── Rotating Hero Text ────────────────────────────────────────────
-const ROTATING_PHRASES = [
-  'Create marketing content',
-  'Your marketing tasks',
-  'Save 3h/day on marketing',
-];
-
 function RotatingText() {
+  const { t, i18n } = useTranslation();
+  const rotatingPhrases = useMemo(() => [
+    t('landing.hero.rotating.0'),
+    t('landing.hero.rotating.1'),
+    t('landing.hero.rotating.2'),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [i18n.language]);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 1024);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [displayed, setDisplayed] = useState('');
@@ -52,10 +53,17 @@ function RotatingText() {
     return () => window.removeEventListener('resize', handler);
   }, []);
 
+  // Reset typewriter when language changes
+  useEffect(() => {
+    setPhraseIndex(0);
+    setDisplayed('');
+    setIsDeleting(false);
+  }, [rotatingPhrases]);
+
   useEffect(() => {
     if (isMobile) return;
 
-    const current = ROTATING_PHRASES[phraseIndex];
+    const current = rotatingPhrases[phraseIndex];
 
     if (!isDeleting && displayed === current) {
       const t = setTimeout(() => setIsDeleting(true), 1800);
@@ -64,7 +72,7 @@ function RotatingText() {
 
     if (isDeleting && displayed === '') {
       setIsDeleting(false);
-      setPhraseIndex((i) => (i + 1) % ROTATING_PHRASES.length);
+      setPhraseIndex((i) => (i + 1) % rotatingPhrases.length);
       return;
     }
 
@@ -76,12 +84,12 @@ function RotatingText() {
       );
     }, speed);
     return () => clearTimeout(t);
-  }, [displayed, isDeleting, phraseIndex, isMobile]);
+  }, [displayed, isDeleting, phraseIndex, isMobile, rotatingPhrases]);
 
   if (isMobile) {
     return (
       <span className="landing__hero-rotating">
-        {ROTATING_PHRASES[0]}
+        {rotatingPhrases[0]}
       </span>
     );
   }
