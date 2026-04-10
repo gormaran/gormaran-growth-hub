@@ -106,8 +106,8 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
 
   try {
     const stream = client.messages.stream({
-      model: tool.model || 'claude-sonnet-4-6', // Vuelto al 4.6
-      max_tokens: 2500, // Ajustado para ser conciso pero dejar espacio a tablas
+      model: tool.model || 'claude-sonnet-4-6',
+      max_tokens: tool.maxTokens || 4000,
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessageContent }],
     });
