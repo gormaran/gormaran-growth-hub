@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "plugins": {
+    "example-skills@anthropic-agent-skills": [
+      {
+        "scope": "user",
+        "installPath": "/Users/gabiorma/.claude/plugins/cache/anthropic-agent-skills/example-skills/7029232b9212",
+        "version": "7029232b9212",
+        "installedAt": "2026-03-05T21:05:23.655Z",
+        "lastUpdated": "2026-03-05T21:05:23.655Z",
+        "gitCommitSha": "7029232b9212482c0476da354b83364bd28fab2f"
+      }
+    ],
+    "claude-api@anthropic-agent-skills": [
+      {
+        "scope": "user",
+        "installPath": "/Users/gabiorma/.claude/plugins/cache/anthropic-agent-skills/claude-api/7029232b9212",
+        "version": "7029232b9212",
+        "installedAt": "2026-03-05T21:05:29.625Z",
+        "lastUpdated": "2026-03-05T21:05:29.625Z",
+        "gitCommitSha": "7029232b9212482c0476da354b83364bd28fab2f"
+      }
+    ],
+    "document-skills@anthropic-agent-skills": [
+      {
+        "scope": "user",
+        "installPath": "/Users/gabiorma/.claude/plugins/cache/anthropic-agent-skills/document-skills/7029232b9212",
+        "version": "7029232b9212",
+        "installedAt": "2026-03-05T21:05:41.168Z",
+        "lastUpdated": "2026-03-05T21:05:41.168Z",
+        "gitCommitSha": "7029232b9212482c0476da354b83364bd28fab2f"
+      }
+    ],
+    "Notion@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/gabiorma/.claude/plugins/cache/claude-plugins-official/Notion/0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-03-05T21:14:29.733Z",
+        "lastUpdated": "2026-03-05T21:14:29.733Z",
+        "gitCommitSha": "9847f2aa1a15f25df35ed1fb7b4557dbb60cd651"
+      }
+    ],
+    "skill-creator@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/gabiorma/.claude/plugins/cache/claude-plugins-official/skill-creator/unknown",
+        "version": "unknown",
+        "installedAt": "2026-03-05T21:15:00.633Z",
+        "lastUpdated": "2026-04-02T05:29:05.795Z",
+        "gitCommitSha": "205b6e0b30366a969412d9aab7b99bea99d58db1"
+      }
+    ]
+  }
+}

@@ -1,0 +1,431 @@
+     1→=DISTRIBUIDORES=
+     2→    PROVINCIA / ALIAS                 NOMBRE DEL DISTRIBUIDOR
+     3→        BARCELONA BCN                  Dicomsa Merchant, S.A.
+     4→               GERONA              Destilerías Bonet  S A    
+     5→              GRANADA                    Vinos Covigran, S.A.
+     6→                 JAÉN                      Latorre Jaen, S.L.
+     7→            LAGUARDIA                  Distrib. Disramo, S.L.
+     8→             VALENCIA                       Dicoval  S L U   
+     9→              MELILLA                          Redialca, S.L.
+    10→            CASTELLÓN                   Fernando Ibañez, S.L.
+    11→             ALICANTE                 Distr  Guillén  S L    
+    12→               MÁLAGA     José M Ordoñez S  e Hijos S L      
+    13→              NAVARRA                    Licores Baines, S.L.
+    14→            SALAMANCA           Cial. Aliment. Williams, S.L.
+    15→            CANTABRIA                Comercial Ferjoe  S A   
+    16→               TERUEL                         José Galo, S.L.
+    17→               TOLEDO                          R. Verde, S.L.
+    18→             ALBACETE           Vinos y Licores Cutanda, S.L.
+    19→                 VIGO                    Gourmet Vigo  S L   
+    20→              CÁCERES                     Almacenes Gil, S.L.
+    21→              MENORCA                  M. Pons Justo-Xoriguer
+    22→               HUELVA           Distr. Rebola Tartessos, S.L.
+    23→            LANZAROTE                   Guillen Morales, S.L.
+    24→              RIBEIRA                  O SECRETO DE MYM, S.L.
+    25→              BADAJOZ          Representaciones Barrero, S.L.
+    26→                CÁDIZ          Exclusivas Bahía de Cádiz, S.L
+    27→               ZAMORA                      Medina Duero, S.L.
+    28→                ÁVILA                   Licores Álvarez, S.L.
+    29→               LERIDA           D. José Antonio Oliva Gaudens
+    30→           LAS PALMAS              Victor Galván Distr., S.L.
+    31→              MARKINA                          Euskitze, S.L.
+    32→              SONDIKA            Distribuciones Arosgar, S.L.
+    33→                 LOIU           Comercial Jon Guisasola, S.L.
+    34→       BILBAO / BILBO                     Diez Berria  S L   
+    35→             LA RIOJA                Exclusivas Lomar  S L   
+    36→             ZARAGOZA       B Carlos Valero  S L   Zaragoza  
+    37→              CORDOBA           Distrib  Diego Canals  S L   
+    38→          SANTA COMBA                         LANDVINUM, S.L.
+    39→GUIPÚZCOA / GUIPUZKOA                     Irizar Ardoak, S.L.
+    40→                 LEÓN                   Garcia Valbuena, S.L.
+    41→             ASTURIAS            Exclusivas Méndez León, S.L.
+    42→             MALLORCA                Rullan Navarro Dos, S.L.
+    43→             CARBALLO          Cándido Representaciones, S.L.
+    44→                SORIA                       PEPECONVINO, S.L.
+    45→              ALMERIA       Equipo Comercial Organizado, S.L.
+    46→                 LUGO                 Envero Coloniales, S.L.
+    47→                  SEO                      Ramón Rovira, S.L.
+    48→             SANTIAGO                       Eruom Viños, S.L.
+    49→             FORCAREI                          Dispraco, S.L.
+    50→               FERROL            Voldistribución Coruña, S.L.
+    51→              ANDORRA                                 CAVIDSA
+    52→          CIUDAD REAL                       ORTEGA 1939, S.L.
+    53→            TARRAGONA Monvins Seleccions Gastronomiques, S.L.
+    54→             TENERIFE         VOLDISTRIBUCION CANARIAS S.L.U.
+    55→                IBIZA                 Beverage and More, S.L.
+    56→        ÁLAVA / ARABA      Gasteiz Banaketa Integrala  S L   
+    57→               MURCIA               Districam Iberica, S.L.U.
+    58→              SEGOVIA               DECANTANDO PLACERES, S.L.
+    59→       VINOTECA ALEJO          D. Rafael Quintanar Martínez  
+    60→               CORUÑA                     1997 EL HORREO S.L.
+    61→                CEUTA               Algo más que vinos,  S.l.
+    62→                  VIC                   PANADÈS ALEMANY, S.L 
+    63→               SARRIA      DISTRIBUCIONES SANGIL SARRIA, S.L.
+    64→               HUESCA                          VINOS ROY, S L
+    65→                EIBAR       Coloniales Anselmo González, S.L.
+    66→             ELGOIBAR       Coloniales Anselmo González, S.L.
+    67→              BERGARA       Coloniales Anselmo González, S.L.
+    68→            BAJO DEBA       Coloniales Anselmo González, S.L.
+    69→              RIBEIRA                    TUCHO SAMPEDRO, S.L.
+    70→              GOIERRI          Comercial Vinícola Arbizu S.L.
+    71→            ALTO DEBA          Comercial Vinícola Arbizu S.L.
+    72→              SEVILLA                        Avanza Vino S.L.
+    73→               TOLOSA                  Villanu Banaketak S.L.
+    74→               CUENCA            VOLDISTRIBUCION CUENCA, S.L.
+    75→              BASAURI                       Cash Basauri S.L.
+    76→          GUADALAJARA  Ricardo Moreno Vinos con Historia S.L.
+    77→          DOÑA TOMASA                     VANGEL NORTE, S.L. 
+    78→             PALENCIA Almacenes Benigno García Cuesta, S.L.U.
+    79→               BURGOS                     Grupal Burgos, S.L.
+    80→           VALLADOLID                  Peñafiel Comerdist S.L
+    81→
+    82→=EQUIPO=
+    83→   Nombre            Apellidos                                                                                                                                                                                                                                                               Cargo en la empresa
+    84→Guillermo   de Aranzabal Agudo                                                                                                                                                                                                                                                                        Presidente
+    85→Guillermo de Aranzabal Bittner                                                                                                                                                                                                                                                            Director General (CEO)
+    86→Alexander de Aranzabal Bittner                                                                                                                                                                                                                                              Director de Marketing y RR.PP. (CMO)
+    87→    Elena              Barrasa                                                                                                                                                                                                                                                        Directora Financiera (CFO)
+    88→  Alberto                 Roth                                                                                                                                                                                                                                                       Director Comercial Nacional
+    89→ Stéphane          Desmarquest                                                                                                                                                                                                                                                 Director de Exportación Comercial
+    90→    Julio                Sáenz                                                                                                                                                                                                   Director Técnico Enólogo de la bodega La Rioja Alta, S.A. y bodega Torre de Oña
+    91→   Miguel                Muela                                                                                                                                                               Enólogo principal de la bodega Áster, Ribera del Duero.\n\nEmai: mmuela@riojalta.com\nWeb: https://sienteaster.com/
+    92→     Olga                Verde                                                                                                             Enóloga principal de la bodega Lagar de Fornelos, Rías Baixas.\n\nEmail: overde@riojalta.com\nWeb: https://www.riojalta.com/enoturismo/lagar-de-fornelos/#main-header
+    93→    Rubén            de Castro                                                                                                                                                                                                             Encargado de viticultura de la bodega Lagar de Fornelos, Rías Baixas.
+    94→  Roberto                Frías                                                                                                                                                                                                                                                           Director de Viticultura
+    95→     José     Domingo Reinares                                                                                                                                                                                                                                              Director de Procesos y Planificación
+    96→   Samuel    Fernández Carrión                                                                                                                                                                                                      Responsable de Comunicación\n\nEmail: prensa@riojalta.com\nWeb: riojalta.com
+    97→    Marta               Enciso                                                                                                              Responsable de Relaciones Públicas / Responsable de Enoturismo de la bodega La Rioja Alta, S.A.\n\nTeéfono: 941 310 346\nEmail: info@riojalta.com\nWeb: riojalta.com
+    98→   Raquel              Rupérez                                                                                                                      Responsable de Relaciones Públicas de la bodega Áster, Ribera del Duero. \n\nTeléfono: 947 522 700\nEmail: aster@riojalta.com\nWeb: https://sienteaster.com/
+    99→     Olga             González                                         Responsable de Relaciones Públicas / Responsable de Enoturismo de la bodega Lagar de Fornelos, Rías Baixas.\n\nTeléfono: 986 62 58 75\nEmail: lagar@riojalta.com\nWeb: https://www.riojalta.com/enoturismo/lagar-de-fornelos/#main-header
+   100→   Alexia          Gómez Armas Responsable de Relaciones Públicas / Responsable de Enoturismo de la bodega Torre de Oña en la Rioja Alavesa.\n\nTeléfono: 945 62 11 54\nEmail: info@torredeona.com\nWeb: https://www.riojalta.com/enoturismo/torre-de-ona/?utm_source=google&utm_medium=organic&utm_campaign=gmb
+   101→    Ángel       Barrasa Sobrón                                                                                                                                                                                                                                             Miembro del Consejo de Administración
+   102→ Gabriela               Rezola                                                                                                                                                                                                                                             Miembro del Consejo de Administración
+   103→     Juan               Montes                                                                                                                                                                                                                                             Miembro del Consejo de Administración
+   104→   Carlos             Delclaux                                                                                                                                                                                                                                             Miembro del Consejo de Administración
+   105→    Iñigo               Meirás                                                                                                                                                                                                                                             Miembro del Consejo de Administración
+   106→    Maite         de Aranzabal                                                                                                                                                                                                                                             Miembro del Consejo de Administración
+   107→ Beatriz          de Aranzabal                                                                                                                                                                                                                                             Miembro del Consejo de Administración
+   108→
+   109→=IMPORTADORES=
+   110→                             Nombre del importador                                                             Nombre país/región               Continente
+   111→                      African & Eastern NE BVI Ltd                                                  Dubai, Emiratos Árabes Unidos                     Asia
+   112→                                      Vertigo SHPK                                                                Vrinas, Albania                   Europa
+   113→                                        Andaco LLC                                                               Yerevan, Armenia                     Asia
+   114→                                       Pinhal S.A.                                                                      Argentina          América del Sur
+   115→                             KVMG Weinhandel GmbH.                                                                 Viena, Austria                   Europa
+   116→                          HW Weinagentur West GmbH                                                              Dornbirn, Austria                   Europa
+   117→                    Doellerer Weinhandelshaus GmbH                                                                 Kuchl, Austria                   Europa
+   118→                       Wein & Co. Handelsges.m.b.H                                                         Vösendorf-Süd, Austria                   Europa
+   119→                                  MoVida Wholesale                                                           Melbourne, Australia                  Oceanía
+   120→                                         CRU Wines                                                                      Australia                  Oceanía
+   121→                                  Creativenture SA                                                                        Bélgica                   Europa
+   122→                                    Wijnen Feys BV                                                                        Bélgica                   Europa
+   123→                                   CORDIER BELGIUM                                                                        Bélgica                   Europa
+   124→                              Evrovin Company EOOD                                                                       Bulgaria                   Europa
+   125→                                    Vayk Wines EAD                                                                       Bulgaria                   Europa
+   126→                        Two Rock Wine Company Ltd.                                                                       Bermudas        América del Norte
+   127→                                       Pámpano SRL                                                                        Bolivia          Amércia del Sur
+   128→                                 Zahil Importadora                                                                         Brasil          América del Sur
+   129→                                              LCBO                                                                         Canadá        Amércia del Norte
+   130→                     Société des alcools du Quebec                                                                         Canadá        América del Norte
+   131→                          Roy + Co Selections Inc.                                                                         Canadá        América del Norte
+   132→                        New Brunswick Liquor Corp.                                                                         Canadá        América del Norte
+   133→                          Nova Scotia Liquor Corp.                                                                         Canadá        América del Norte
+   134→                     PEI Liquor Control Commission                                                                         Canadá        América del Norte
+   135→                Newfoundland Labrador Liquor Corp.                                                                         Canadá        Amércia del Norte
+   136→                                     Bataillard AG                                                                          Suiza                   Europa
+   137→    Shanghai Grand Supply Chain Management Co. Ltd                                                                          China                     Asia
+   138→                 Shanghai Hongqiao Trade Co., Ltd.                                                                          China                     Asia
+   139→                    Shanghai Wine Exchange Co. Ltd                                                                          China                     Asia
+   140→                COFCO W&W INTERNATIONAL CO., LTD .                                                                          China                     Asia
+   141→                 Chengdu Grand Honor Wine Co. Ltd.                                                                          China                     Asia
+   142→         Tianjin Dynasty International Wine Co Ltd                                                                          China                     Asia
+   143→                  Shanghai Spring Trading Co. Ltd.                                                                          China                     Asia
+   144→     Puxia International Trade (Shanghai) Co., Ltd                                                                          China                     Asia
+   145→                          The Fine Wine Experience                                                                          China                     Asia
+   146→Shanghai Vinsights International Trading Co., Ltd.                                                                          China                     Asia
+   147→                               Club del Vino Ltda.                                                                       Colombia          América del Sur
+   148→       Dist. de Vinos y Alimentos por Alpiste S.A.                                                                     Costa Rica          Amércia Central
+   149→                              Art Official Concept                                                                     Cabo Verde          África / Africa
+   150→                CWS Collection of wine samples Ltd                                                                         Chipre            Oriente Medio
+   151→                                    Faktima s.r.o.                                                                        Chequia                   Europa
+   152→                                     8wines S.R.O.                                                                        Chequia                   Europa
+   153→                      Ambra Brands Sp. z o.o. (CZ)                                                                        Chequia                   Europa
+   154→                       Lobenbergs GUTE WEINE GmbH.                                                               Bremen, Alemania                   Europa
+   155→                    Spanischer Garten Import GmbH.                                                           Düsseldorf, Alemania                   Europa
+   156→                    Giesinger Weinhandel, Fattoria                                                               Múnich, Alemania                   Europa
+   157→                                  Silca Import Ag.                                                              Hamburg, Alemania                   Europa
+   158→                           Silkes Weinkeller GmbH.                                                             Mettmann, Alemania                   Europa
+   159→                        VLG Grossverbraucherdienst                                                          Sarrbrücken, Alemania                   Europa
+   160→                    Cielo del Vino Weinhandel GmbH                                                               Múnich, Alemania                   Europa
+   161→                            Prendes GmbH. & co. KG                                                              Uhingen, Alemania                   Europa
+   162→                                Wolfgang Kirschner                                                             Mönchhof, Alemania                   Europa
+   163→                            Videomed Verlags Gmbh.                                                             Freiburg, Alemania                   Europa
+   164→                                Wein & Vinos GmbH.                                                               Berlin, Alemania                   Europa
+   165→                               Wine in Black GmbH.                                                                Mainz, Alemania                   Europa
+   166→                                     WeinGerg GmbH                                                        Rottach-Egern, Alemania                   Europa
+   167→                                     Weinhaus Sued                                                              Colonia, Alemania                   Europa
+   168→                            Weinkontor Freund GmbH                                                       Borgholzhausen, Alemania                   Europa
+   169→                                      Molina GmbH                                                             Darmstadt, Alemania                   Europa
+   170→                                      Hawesko GmbH                                                             Tornesch, Alemania                   Europa
+   171→    Grand Cru Select Distributionsgesellschaft mbH                                                                 Bonn, Alemania                   Europa
+   172→                                    Theis Vine ApS                                                                      Dinamarca                   Europa
+   173→                        Centro Cuesta Nacional SAS                                                           República Dominicana                   Caribe
+   174→                                 Zaphir Trade S.A.                                                                        Ecuador          América del Sur
+   175→                                         Liviko AS                                                                        Estonia                   Europa
+   176→                            Dynamic SA New Company                              Grecia (código alternativo de GR usado por la UE)                   Europa
+   177→                 Halaco Navarra Internacional S.L.                                                                         España                   Europa
+   178→                               Larzabal - LSO S.A.                                                                        Francia                   Europa
+   179→                                      Vinatis SARL                                                                        Francia                   Europa
+   180→                               Le Petit Ballon SAS                                                                        Francia                   Europa
+   181→                              Valade & Transandine                                                                        Francia                   Europa
+   182→                                     SARL DIONYSAL                                                                        Francia                   Europa
+   183→                             Gustoworld France SAS                                                                        Francia                   Europa
+   184→             Waitrose Ltd. Supply Chain Operations                                                                    Reino Unido                   Europa
+   185→                          The Wine Society (IECWS)                                                                    Reino Unido                   Europa
+   186→                     Majestic Wine Warehouses Ltd.                                                                    Reino Unido                   Europa
+   187→                            Berry Bros & Rudd Ltd.                                                                    Reino Unido                   Europa
+   188→                             E.H. Booth & Co. Ltd.                                                                    Reino Unido                   Europa
+   189→                            Hallgarten Wines, Ltd.                                                                    Reino Unido                   Europa
+   190→                               British Airways Plc                                                                    Reino Unido                   Europa
+   191→                                  VINCO FINE WINES                                                                    Reino Unido                   Europa
+   192→                            Anglo Hispano Co. Ltd.                                                                      Gibraltar                   Europa
+   193→                     Distribuidora Alcazaren, S.A.                                                                      Guatemala          América Central
+   194→                                  Kerry Wines Ltd.                                                       Hong Kong (RAE de China)                     Asia
+   195→                    Emptor International (HK) Ltd.                                                       Hong Kong (RAE de China)                     Asia
+   196→                         Isla Inversiones S de RL                                                                        Honduras          Amércia Central
+   197→                                       Atrox d.o.o                                                                        Croacia                   Europa
+   198→                   Drop Shop Bornagykereskedés Kft                                                                        Hungría                   Europa
+   199→                         PT. Bogacitra Nusapratama                                                                      Indonesia                     Asia
+   200→                               Celtic Whiskey Shop                                                                        Irlanda                   Europa
+   201→                              Hacarem Spirits Ltd.                                                                         Israel            Oriente Medio
+   202→                                     Gran Cru Club                                                                          India                     Asia
+   203→                             Mekka Wines & Spirits                                                                       Islandia                   Europa
+   204→                                  Vino.com 3ND Srl                                                                         Italia                   Europa
+   205→                                     Vielmi S.R.L.                                                                         Italia                   Europa
+   206→                     Pescarmoni Importatori S.R.L.                                                                         Italia                   Europa
+   207→                  Al-Kasra For Trading & Marketing                                                                       Jordania            Oriente Medio
+   208→                                    Hatta Co. Ltd.                                                                          Japón            Asia Oriental
+   209→                                 TOKUOKA CO., LTD.                                                                          Japón            Asia Oriental
+   210→                             Inigo Kabushikigaisha                                                                          Japón            Asia Oriental
+   211→                            Vino Paradise Co. Ltd.                                                                  Corea del Sur            Asia Oriental
+   212→                               Tortuga Rum Company                                                                   Islas Caimán                 Ultramar
+   213→                  Clarence Holdings Management Co.                                                                    Santa Lucía                   Caribe
+   214→                           UAB "Duda ir kompanija"                                                                       Lituania                   Europa
+   215→                              UAB AGTM KORPORACIJA                                                                       Lituania                   Europa
+   216→                         Vicente et Fils s.à  r.l.                                                                     Luxemburgo                   Europa
+   217→                                    SIA Rskorpions                                                                        Letonia                   Europa
+   218→                                        LIVIKO SIA                                                                        Letonia                   Europa
+   219→                                      Betastar LLC                                                                       Mongolia            Asia Oriental
+   220→                      Espanha Trading Company Ltd.                                                           Macao (RAE de China)                     Asia
+   221→                               Cassarcamilleri Ltd                                                                          Malta                   Europa
+   222→                                        M&Z p.l.c.                                                                          Malta                   Europa
+   223→                                   Bacchanale ltd.                                                                       Mauricio África Oriental / Africa
+   224→           Importaciones de la Mancha S.A. de C.V.                                                                         México        Amércia del Norte
+   225→                         ECM de Vinos S.A. de C.V.                                                                         México        América del Norte
+   226→                                    Finlux Sdn Bhd                                                                        Malasia                     Asia
+   227→                                      CAFEINE SARL                                                                Nueva Caledonia                  Oceanía
+   228→                      Global Brands Nicaragua S.A.                                                                      Nicaragua          América Central
+   229→                                         Anfors BV                                                                   Países Bajos                   Europa
+   230→                                     Winemarket AS                                                                        Noruega                   Europa
+   231→                     Universal Beverages Pvt. Ltd.                                                                          Nepal                     Asia
+   232→                                        Caros Ltd.                                                                  Nueva Zelanda                  Oceanía
+   233→                                 Felipe Motta S.A.                                                                         Panamá          América Central
+   234→                       Panuts Vinos Memorables SAC                                                                           Perú          América del Sur
+   235→                                 Andes Gourmet SAC                                                                           Perú          América del Sur
+   236→                        Wine Straights Corporation                                                                      Filipinas                     Asia
+   237→                        Super Brands International                                                                       Pakistán             Asia del Sur
+   238→                           Ambra Brands Sp. z o.o.                                                                        Polonia                   Europa
+   239→                                   Lesu Sp. Z.O.O.                                                                        Polonia                   Europa
+   240→                              V. Suarez & Co. Inc.                                                                    Puerto Rico        América del Norte
+   241→                               Decante Vinhos, Lda                                                                       Portugal                   Europa
+   242→                   Fernando Henrique Alves Lacerda                                                                       Paraguay          América del Sur
+   243→                       Monalisa Internacional S.A.                                                                       Paraguay          América del Sur
+   244→                                    Wine Point SRL                                                                        Rumanía                   Europa
+   245→                                  Sun Trade D.O.O.                                                                         Serbia                   Europa
+   246→                            Winepartners Nordic AB                                                                         Suecia                   Europa
+   247→                           Winepartners Finland OY                                                                         Suecia                   Europa
+   248→                       Cellarmaster Wines (S'PORE)                                                                       Singapur                     Asia
+   249→                Premier Distributions S.A. de C.V.                                                                    El Salvador          América Central
+   250→                  S.C. Bangkok Marketing Co., Ltd.                                                                      Tailandia                     Asia
+   251→                 Pasaeli Bagcilik ve Sarapcilik AS                                                                        Turquía   Europa / Oriente Medio
+   252→                         New Century Wine Co. Ltd.                                                                         Taiwán            Asia Oriental
+   253→                                   Wine Bureau LLC                                                                        Ucrania                   Europa
+   254→                        Golden State Wine Co. (CA)                                                                 Estados Unidos        América del Norte
+   255→                      Skurnik Wines & Spirits (NY)                                                                 Estados Unidos        América del Norte
+   256→                             M.S. Walker Inc. (MA)                                                                 Estados Unidos        América del Norte
+   257→                                 Winebow INC. (VA)                                                                 Estados Unidos        América del Norte
+   258→                         Prime Wine & Spirits (GA)                                                                 Estados Unidos        América del Norte
+   259→                              Bourget Imports (MN)                                                                 Estados Unidos        América del Norte
+   260→                          Ad Astra Selections (KS)                                                                 Estados Unidos        América del Norte
+   261→                                 Winebow INC. (IL)                                                                 Estados Unidos        América del Norte
+   262→                          Galaxy Wine Company (OR)                                                                 Estados Unidos        América del Norte
+   263→                     Classic Wine Company LLC (CO)                                                                 Estados Unidos        América del Norte
+   264→                                  Winebow INC (FL)                                                                 Estados Unidos        América del Norte
+   265→                          International Wines (AL)                                                                 Estados Unidos        América del Norte
+   266→                         AHD Wine Imports LLC (MI)                                                                 Estados Unidos        América del Norte
+   267→                                     W. DIRECT LLC                                                                 Estados Unidos        América del Norte
+   268→                                AMI Duty Free, LLC                                                                 Estados Unidos        América del Norte
+   269→                       Skurnik Wines of California                                                                 Estados Unidos        América del Norte
+   270→                        Vehrs Distributing Company                                                                 Estados Unidos        América del Norte
+   271→                                    Astillero S.A.                                                                        Uruguay          América del Sur
+   272→                      Corporacion Fresh Fish, C.A.                                                                      Venezuela          América del Sur
+   273→                          Xuan Dieu Xuan Co., Ltd.                                                                        Vietnam                     Asia
+   274→                                    Daloc Co. Ltd.                                                                        Vietnam                     Asia
+   275→           Direct Wine Shipments - McAlindon Wines Irlanda del Norte \n(código reservado pos-Brexit para aduanas del Reino Unido)                   Europa
+   276→                          Wine Cellar Club Pty Ltd                                                                      Sudáfrica          África / Africa
+   277→
+   278→=PRECIOS=
+   279→Nombre corto                Categoría                    Bodega  Precio (imp. incl.)                                                        URL
+   280→     Raffles                  Bodegas Grupo La Rioja Alta, S.A.                17.61 https://tienda.riojalta.com/1-raffles-london-dry-gin-.html
+   281→         904         Gran Reserva 904       La Rioja Alta, S.A.               420.80            https://tienda.riojalta.com/17-gran-reserva-904
+   282→     Ardanza             Viña Ardanza       La Rioja Alta, S.A.               327.00                https://tienda.riojalta.com/19-vina-ardanza
+   283→     Ardanza             Viña Ardanza       La Rioja Alta, S.A.               163.50                https://tienda.riojalta.com/19-vina-ardanza
+   284→     Ardanza             Viña Ardanza       La Rioja Alta, S.A.               110.05                https://tienda.riojalta.com/19-vina-ardanza
+   285→       Arana  Viña Arana Gran Reserva       La Rioja Alta, S.A.               212.29     https://tienda.riojalta.com/18-vina-arana-gran-reserva
+   286→       Arana  Viña Arana Gran Reserva       La Rioja Alta, S.A.                41.60     https://tienda.riojalta.com/18-vina-arana-gran-reserva
+   287→       Arana  Viña Arana Gran Reserva       La Rioja Alta, S.A.               424.60     https://tienda.riojalta.com/18-vina-arana-gran-reserva
+   288→     Alberdi             Viña Alberdi       La Rioja Alta, S.A.               197.70                https://tienda.riojalta.com/20-vina-alberdi
+   289→     Alberdi             Viña Alberdi       La Rioja Alta, S.A.               197.40                https://tienda.riojalta.com/20-vina-alberdi
+   290→     Alberdi             Viña Alberdi       La Rioja Alta, S.A.                96.00                https://tienda.riojalta.com/20-vina-alberdi
+   291→       Áster                    Áster                     Áster               220.99                       https://tienda.riojalta.com/25-aster
+   292→       Áster                    Áster                     Áster               110.50                       https://tienda.riojalta.com/25-aster
+   293→       Áster    Áster Finca El Otero                      Áster               310.50              https://tienda.riojalta.com/24-finca-el-otero
+   294→       Lagar         Lagar de Cervera         Lagar de Fornelos                89.20      https://tienda.riojalta.com/26-vinos-lagar-de-cervera
+   295→       Lagar         Lagar de Cervera         Lagar de Fornelos               178.40      https://tienda.riojalta.com/26-vinos-lagar-de-cervera
+   296→        Pazo     Pazo de Seoane Rosal         Lagar de Fornelos                93.15        https://tienda.riojalta.com/27-pazo-de-seoane-rosal
+   297→     Martelo            Finca Martelo              Torre de Oña               150.00               https://tienda.riojalta.com/21-finca-martelo
+   298→     Martelo            Finca Martelo              Torre de Oña                25.00               https://tienda.riojalta.com/21-finca-martelo
+   299→     Martelo            Finca Martelo              Torre de Oña                50.00               https://tienda.riojalta.com/21-finca-martelo
+   300→  San Martin         Finca San Martín              Torre de Oña                54.00            https://tienda.riojalta.com/23-finca-san-martin
+   301→  San Martin         Finca San Martín              Torre de Oña               108.00            https://tienda.riojalta.com/23-finca-san-martin
+   302→         890         Gran Reserva 890       La Rioja Alta, S.A.               178.20            https://tienda.riojalta.com/16-gran-reserva-890
+   303→         904         Gran Reserva 904       La Rioja Alta, S.A.                71.35            https://tienda.riojalta.com/17-gran-reserva-904
+   304→         904         Gran Reserva 904       La Rioja Alta, S.A.               140.70            https://tienda.riojalta.com/17-gran-reserva-904
+   305→         904         Gran Reserva 904       La Rioja Alta, S.A.               210.00            https://tienda.riojalta.com/17-gran-reserva-904
+   306→         904         Gran Reserva 904       La Rioja Alta, S.A.               140.70            https://tienda.riojalta.com/17-gran-reserva-904
+   307→       Arana  Viña Arana Gran Reserva       La Rioja Alta, S.A.                40.50     https://tienda.riojalta.com/18-vina-arana-gran-reserva
+   308→       Arana  Viña Arana Gran Reserva       La Rioja Alta, S.A.               121.10     https://tienda.riojalta.com/18-vina-arana-gran-reserva
+   309→       Arana  Viña Arana Gran Reserva       La Rioja Alta, S.A.               235.41     https://tienda.riojalta.com/18-vina-arana-gran-reserva
+   310→       Arana  Viña Arana Gran Reserva       La Rioja Alta, S.A.                74.31     https://tienda.riojalta.com/18-vina-arana-gran-reserva
+   311→     Ardanza             Viña Ardanza       La Rioja Alta, S.A.                29.60                https://tienda.riojalta.com/19-vina-ardanza
+   312→     Ardanza             Viña Ardanza       La Rioja Alta, S.A.                85.10                https://tienda.riojalta.com/19-vina-ardanza
+   313→     Ardanza             Viña Ardanza       La Rioja Alta, S.A.                88.30                https://tienda.riojalta.com/19-vina-ardanza
+   314→     Ardanza             Viña Ardanza       La Rioja Alta, S.A.                57.80                https://tienda.riojalta.com/19-vina-ardanza
+   315→     Alberdi               Especiales       La Rioja Alta, S.A.                51.80                https://tienda.riojalta.com/20-vina-alberdi
+   316→     Alberdi             Viña Alberdi       La Rioja Alta, S.A.                35.10                https://tienda.riojalta.com/20-vina-alberdi
+   317→       Otero    Áster Finca El Otero                      Áster                42.85              https://tienda.riojalta.com/24-finca-el-otero
+   318→       Otero    Áster Finca El Otero                      Áster               310.50              https://tienda.riojalta.com/24-finca-el-otero
+   319→       Lagar Orujos Lagar de Fornelos         Lagar de Fornelos                22.51    https://tienda.riojalta.com/14-bodega-lagar-de-fornelos
+   320→       Lagar Orujos Lagar de Fornelos         Lagar de Fornelos                22.51    https://tienda.riojalta.com/14-bodega-lagar-de-fornelos
+   321→         890          Añadas antiguas       La Rioja Alta, S.A.               993.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   322→         890          Añadas antiguas       La Rioja Alta, S.A.              1973.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   323→         890          Añadas antiguas       La Rioja Alta, S.A.              1973.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   324→         904          Añadas antiguas       La Rioja Alta, S.A.               550.01       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   325→         904          Añadas antiguas       La Rioja Alta, S.A.               889.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   326→     Ardanza          Añadas antiguas       La Rioja Alta, S.A.               443.01       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   327→     Ardanza          Añadas antiguas       La Rioja Alta, S.A.               582.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   328→     Ardanza          Añadas antiguas       La Rioja Alta, S.A.               158.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   329→         904          Añadas antiguas       La Rioja Alta, S.A.               209.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   330→         890          Añadas antiguas       La Rioja Alta, S.A.               348.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   331→     Ardanza          Añadas antiguas       La Rioja Alta, S.A.               113.99       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   332→         904          Añadas antiguas       La Rioja Alta, S.A.               171.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   333→         890          Añadas antiguas       La Rioja Alta, S.A.               316.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   334→         904          Añadas antiguas       La Rioja Alta, S.A.               171.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   335→     Ardanza          Añadas antiguas       La Rioja Alta, S.A.                63.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   336→         904          Añadas antiguas       La Rioja Alta, S.A.               126.51       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   337→     Ardanza          Añadas antiguas       La Rioja Alta, S.A.                63.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   338→         904          Añadas antiguas       La Rioja Alta, S.A.               126.51       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   339→     Ardanza          Añadas antiguas       La Rioja Alta, S.A.                63.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   340→     Ardanza             Viña Ardanza       La Rioja Alta, S.A.               183.00                https://tienda.riojalta.com/19-vina-ardanza
+   341→     Alberdi             Viña Alberdi       La Rioja Alta, S.A.               110.40                https://tienda.riojalta.com/20-vina-alberdi
+   342→     Ardanza          Añadas antiguas       La Rioja Alta, S.A.               171.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   343→     Ardanza          Añadas antiguas       La Rioja Alta, S.A.               171.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   344→         890          Añadas antiguas       La Rioja Alta, S.A.               380.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   345→         890          Añadas antiguas       La Rioja Alta, S.A.               265.99       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   346→       Lagar         Lagar de Cervera         Lagar de Fornelos               102.60      https://tienda.riojalta.com/26-vinos-lagar-de-cervera
+   347→         904         Gran Reserva 904       La Rioja Alta, S.A.               411.85            https://tienda.riojalta.com/17-gran-reserva-904
+   348→      Espino          Áster El Espino                     Áster               193.20             https://tienda.riojalta.com/43-aster-el-espino
+   349→      Espino          Áster El Espino                     Áster                34.26             https://tienda.riojalta.com/43-aster-el-espino
+   350→      Espino          Áster El Espino                     Áster                68.30             https://tienda.riojalta.com/43-aster-el-espino
+   351→       Otero    Áster Finca El Otero                      Áster               106.90              https://tienda.riojalta.com/24-finca-el-otero
+   352→     Alberdi                 Vinoteca Grupo La Rioja Alta, S.A.               222.00                    https://tienda.riojalta.com/47-vinoteca
+   353→       Arana                 Vinoteca Grupo La Rioja Alta, S.A.               432.05                    https://tienda.riojalta.com/47-vinoteca
+   354→     Martelo            Finca Martelo              Torre de Oña                49.45               https://tienda.riojalta.com/21-finca-martelo
+   355→     Ardanza             Viña Ardanza       La Rioja Alta, S.A.                88.35                https://tienda.riojalta.com/19-vina-ardanza
+   356→       Arana          Añadas antiguas       La Rioja Alta, S.A.               306.00       https://tienda.riojalta.com/30-vinos-anadas-antiguas
+   357→       Áster                    Áster                     Áster                42.00                       https://tienda.riojalta.com/25-aster
+   358→  San Martin         Finca San Martín              Torre de Oña               108.00            https://tienda.riojalta.com/23-finca-san-martin
+   359→      Espino          Áster El Espino                     Áster                72.90             https://tienda.riojalta.com/43-aster-el-espino
+   360→       Áster                    Áster                     Áster                45.30                       https://tienda.riojalta.com/25-aster
+   361→       Otero    Áster Finca El Otero                      Áster               103.50              https://tienda.riojalta.com/24-finca-el-otero
+   362→   Lindeiros                Lindeiros         Lagar de Fornelos                67.51                   https://tienda.riojalta.com/54-lindeiros
+   363→
+   364→=FINCAS=
+   365→                Por Finca                    Bodega y subzona Has_finca  Edad media Denominación de Origen Calificada
+   366→                    Aster            Aster - Ribera del Duero     100,6        33.0                       Rías Baixas
+   367→         Ribera del Duero            Aster - Ribera del Duero     100,6        33.0                       Rías Baixas
+   368→                     Caño            Aster - Ribera del Duero      34,0        32.0                       Rías Baixas
+   369→                Dehesilla            Aster - Ribera del Duero       8,7        34.0                       Rías Baixas
+   370→                 Entradas            Aster - Ribera del Duero       7,3        25.0                       Rías Baixas
+   371→               Fuentecojo            Aster - Ribera del Duero      22,8        39.0                       Rías Baixas
+   372→                 La Cueva            Aster - Ribera del Duero       4,2        22.0                  Ribera del Duero
+   373→              Otero Joven            Aster - Ribera del Duero       6,9        22.0                  Ribera del Duero
+   374→              Otero Viejo            Aster - Ribera del Duero       5,8        35.0                  Ribera del Duero
+   375→                    Picón            Aster - Ribera del Duero      10,8        37.0                  Ribera del Duero
+   376→            La Rioja Alta                   La Rioja Alta, SA     591,8        26.0                     Rioja Alavesa
+   377→            Rioja Alavesa   La Rioja Alta, SA - Rioja Alavesa        25        36.0                     Rioja Alavesa
+   378→                Larrazuri   La Rioja Alta, SA - Rioja Alavesa        25        36.0                        Rioja Alta
+   379→               Rioja Alta      La Rioja Alta, SA - Rioja Alta     438,5        27.0                        Rioja Alta
+   380→             El Chaparral      La Rioja Alta, SA - Rioja Alta       9,8        27.0                        Rioja Alta
+   381→                 El Monte      La Rioja Alta, SA - Rioja Alta       8,8         9.0                        Rioja Alta
+   382→                  El Palo      La Rioja Alta, SA - Rioja Alta      58,0        22.0                    Rioja Oriental
+   383→              El Rebollar      La Rioja Alta, SA - Rioja Alta      13,3        18.0                    Rioja Oriental
+   384→                      Aza      La Rioja Alta, SA - Rioja Alta      37,3        18.0                               NaN
+   385→                La Cuesta      La Rioja Alta, SA - Rioja Alta      94,9        35.0                               NaN
+   386→               Las Cuevas      La Rioja Alta, SA - Rioja Alta      41,1        45.0                               NaN
+   387→                La Granja      La Rioja Alta, SA - Rioja Alta       3,1        23.0                               NaN
+   388→               Las Llanas      La Rioja Alta, SA - Rioja Alta       0,5         0.0                               NaN
+   389→               Las Monjas      La Rioja Alta, SA - Rioja Alta      20.4        15.0                               NaN
+   390→               Mayorita I      La Rioja Alta, SA - Rioja Alta      48,4        21.0                               NaN
+   391→              Mayorita II      La Rioja Alta, SA - Rioja Alta      15,8        29.0                               NaN
+   392→               Montecillo      La Rioja Alta, SA - Rioja Alta      25,4        32.0                               NaN
+   393→            Las Cuevas II      La Rioja Alta, SA - Rioja Alta       3,1        20.0                               NaN
+   394→              Los Cuartos      La Rioja Alta, SA - Rioja Alta      65,3        25.0                               NaN
+   395→                  Zaballa      La Rioja Alta, SA - Rioja Alta       8,3         8.0                               NaN
+   396→                Carrascal      La Rioja Alta, SA - Rioja Alta       4,9         7.0                               NaN
+   397→RIOJA Viñedos Artesanales      La Rioja Alta, SA - Rioja Alta      22,6        43.0                               NaN
+   398→                   Sarria      La Rioja Alta, SA - Rioja Alta      11,8        24.0                               NaN
+   399→           Rioja Oriental  La Rioja Alta, SA - Rioja Oriental      73,9        20.0                               NaN
+   400→               La Pedriza  La Rioja Alta, SA - Rioja Oriental      73,9        20.0                               NaN
+   401→        Lagar de Fornelos Lagar de Fornelos, SA - Rías Baixas     107,6        11.0                               NaN
+   402→                 Fornelos Lagar de Fornelos, SA - Rías Baixas    107,63        11.0                               NaN
+   403→              Rías Baixas Lagar de Fornelos, SA - Rías Baixas      6,45         2.0                               NaN
+   404→                   Bornas Lagar de Fornelos, SA - Rías Baixas      4,25         3.0                               NaN
+   405→                Carballas Lagar de Fornelos, SA - Rías Baixas       NaN         NaN                               NaN
+   406→                  Cervera Lagar de Fornelos, SA - Rías Baixas     10,51         8.0                               NaN
+   407→                    Deiro Lagar de Fornelos, SA - Rías Baixas     15,25        36.0                               NaN
+   408→                     Kiwi Lagar de Fornelos, SA - Rías Baixas      1,56         9.0                               NaN
+   409→                  Limeres Lagar de Fornelos, SA - Rías Baixas      5,92         0.0                               NaN
+   410→                 Mosteiro Lagar de Fornelos, SA - Rías Baixas      8,87         1.0                               NaN
+   411→                  Oleiros Lagar de Fornelos, SA - Rías Baixas      3,74         1.0                               NaN
+   412→                     Pino Lagar de Fornelos, SA - Rías Baixas      3,23         3.0                               NaN
+   413→                   Seoane Lagar de Fornelos, SA - Rías Baixas      8,94         4.0                               NaN
+   414→                  Silvosa Lagar de Fornelos, SA - Rías Baixas     15,00         8.0                               NaN
+   415→                   Tamuxa Lagar de Fornelos, SA - Rías Baixas      4,63         3.0                               NaN
+   416→               Troviscoso Lagar de Fornelos, SA - Rías Baixas      3,30        39.0                               NaN
+   417→             Valdemiñotos Lagar de Fornelos, SA - Rías Baixas      4,89         5.0                               NaN
+   418→                  Viveiro Lagar de Fornelos, SA - Rías Baixas      6,02         1.0                               NaN
+   419→                  Cachada Lagar de Fornelos, SA - Rías Baixas      5,07         0.0                               NaN
+   420→             Torre de Oña    Torre de Oña, SA - Rioja Alavesa     134,1        38.0                               NaN
+   421→            Rioja Alavesa    Torre de Oña, SA - Rioja Alavesa     134,1        38.0                               NaN
+   422→               San Martín    Torre de Oña, SA - Rioja Alavesa      52,0        21.0                               NaN
+   423→                  Paterna    Torre de Oña, SA - Rioja Alavesa       4,1        23.0                               NaN
+   424→  OÑA Viñedos Artesanales    Torre de Oña, SA - Rioja Alavesa      62,7        54.0                               NaN
+   425→                   Kripán    Torre de Oña, SA - Rioja Alavesa      15,3         1.0                               NaN
+   426→            Total general                                 NaN     934,1        27.0                               NaN
+   427→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

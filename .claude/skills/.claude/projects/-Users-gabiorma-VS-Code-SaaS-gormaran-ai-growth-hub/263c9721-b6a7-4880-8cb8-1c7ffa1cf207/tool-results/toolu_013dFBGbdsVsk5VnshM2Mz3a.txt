@@ -1,0 +1,413 @@
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/pages/AuthPage.js-120-          <h2 className="auth__left-title">
+src/pages/AuthPage.js:121:            Grow Your Business
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/pages/AuthPage.js-122-            <br />
+--
+src/index.css-220-.badge-primary { background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.2); }
+src/index.css:221:.badge-pro { background: linear-gradient(135deg,rgba(99,102,241,0.2),rgba(139,92,246,0.2)); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3); }
+src/index.css-222-.badge-free { background: rgba(100,116,139,0.15); color: var(--text-muted); border: 1px solid rgba(100,116,139,0.2); }
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/pages/PricingPage.js-52-  const [error, setError] = useState('');
+src/pages/PricingPage.js:53:  const [promoCode, setPromoCode] = useState('');
+src/pages/PricingPage.js:54:  const [promoState, setPromoState] = useState(null); // { promoId, discountLabel, name } | null
+src/pages/PricingPage.js:55:  const [promoError, setPromoError] = useState('');
+src/pages/PricingPage.js:56:  const [promoLoading, setPromoLoading] = useState(false);
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/pages/PricingPage.js-57-
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/pages/PricingPage.js-275-                    {loadingPlan === plan.id ? (
+src/pages/PricingPage.js:276:                      <><span className="spinner" /> {t('pricing.processing', { defaultValue: 'Processing...' })}</>
+src/pages/PricingPage.js-277-                    ) : (
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/pages/Dashboard.js-89-              <div className="dashboard__plan-badge">
+src/pages/Dashboard.js:90:                <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/pages/Dashboard.js-91-                  {subscription === 'free' && inTrial
+--
+src/i18n/es.json-7-  "free": "Gratis",
+src/i18n/es.json:8:  "pro": "Pro",
+src/i18n/es.json-9-  "enterprise": "Enterprise",
+--
+src/i18n/es.json-19-  "ui.fillInputs": "Rellena los datos de la izquierda y haz clic en",
+src/i18n/es.json:20:  "ui.proFeature": "Función Pro",
+src/i18n/es.json-21-  "ui.dailyLimitReached": "Límite diario alcanzado",
+--
+src/i18n/es.json-29-  "ui.freePlan": "Plan Gratuito",
+src/i18n/es.json:30:  "ui.proPlan": "Plan Pro",
+src/i18n/es.json:31:  "ui.businessPlan": "Plan Business",
+src/i18n/es.json:32:  "ui.proRequired": "Se requiere Pro",
+src/i18n/es.json-33-  "ui.upgradeToUnlock": "Mejora para desbloquear todas las herramientas",
+--
+src/i18n/es.json-40-  "ui.dailyLimitText": "Has usado tus {{limit}} solicitudes gratuitas diarias. Mejora a Pro para acceso ilimitado.",
+src/i18n/es.json:41:  "ui.proOnlyText": "Esta categoría está disponible en los planes Pro y Business.",
+src/i18n/es.json-42-  "ui.history": "Consultas recientes",
+--
+src/i18n/es.json-46-  "footer.brand.desc": "El hub de crecimiento con IA para freelances, marketers, agencias y emprendedores. Creado para ayudarte a moverte más rápido y crecer de forma más inteligente.",
+src/i18n/es.json:47:  "footer.product.title": "Producto",
+src/i18n/es.json-48-  "footer.product.pricing": "Precios",
+--
+src/i18n/es.json-104-  "tool.amazon-listing.desc": "Optimiza tu listado de Amazon con títulos para el algoritmo A9, bullet points con palabras clave y términos de búsqueda backend",
+src/i18n/es.json:105:  "tool.product-description.name": "Escritor de Descripciones de Producto",
+src/i18n/es.json-106-  "tool.product-description.desc": "Crea copy de página de producto persuasivo para Shopify, WooCommerce y Etsy que convierte visitantes en compradores",
+--
+src/i18n/es.json-108-  "tool.cro-audit.desc": "Obtén una auditoría CRO completa con tests A/B priorizados, victorias rápidas, disparadores psicológicos y hoja de ruta de 90 días",
+src/i18n/es.json:109:  "tool.client-proposal.name": "Generador de Propuestas de Cliente",
+src/i18n/es.json-110-  "tool.client-proposal.desc": "Crea propuestas profesionales para ganar clientes con resumen ejecutivo, alcance del trabajo, precios y próximos pasos claros",
+--
+src/i18n/es.json-134-  "tool.photo-direction.desc": "Obtén un brief fotográfico completo con lista de tomas, guía de iluminación, reglas de composición y dirección de postproducción",
+src/i18n/es.json:135:  "tool.video-production.name": "Plan de Producción de Vídeo",
+src/i18n/es.json-136-  "tool.video-production.desc": "Crea un brief de producción de vídeo completo con concepto creativo, lista de tomas, esquema de guión y estrategia de distribución",
+--
+src/i18n/es.json-195-  "landing.problem.card2": "Campañas de ads que consumen tiempo y no convierten",
+src/i18n/es.json:196:  "landing.problem.card3": "Propuestas y reportes que te roban el día",
+src/i18n/es.json-197-  "landing.how.title": "Así funciona",
+--
+src/i18n/es.json-247-  "landing.plans.scale.tool1": "Client Proposal Generator",
+src/i18n/es.json:248:  "landing.plans.scale.tool2": "Business Plan Developer",
+src/i18n/es.json-249-  "landing.plans.scale.tool3": "Brand Identity Guide",
+--
+src/i18n/es.json-306-  "pricing.downgrade": "Bajar de Plan",
+src/i18n/es.json:307:  "pricing.processing": "Procesando...",
+src/i18n/es.json-308-  "pricing.plan.free.name": "Gratis",
+--
+src/i18n/es.json-428-  "input.seo-meta-tags.page_type.label": "Tipo de Página",
+src/i18n/es.json:429:  "input.copywriting-headlines.product.label": "Producto / Servicio / Contenido",
+src/i18n/es.json-430-  "input.copywriting-headlines.product.placeholder": "ej., Software CRM para equipos de ventas",
+--
+src/i18n/es.json-444-  "input.email-campaign.campaign_type.label": "Tipo de Campaña",
+src/i18n/es.json:445:  "input.email-campaign.product.label": "Producto / Servicio",
+src/i18n/es.json-446-  "input.email-campaign.product.placeholder": "ej., Curso online sobre marketing en redes sociales",
+--
+src/i18n/es.json-462-  "input.business-plan.industry.placeholder": "ej., B2B SaaS / E-commerce / Salud",
+src/i18n/es.json:463:  "input.business-plan.product.label": "Descripción del Producto / Servicio",
+src/i18n/es.json-464-  "input.business-plan.product.placeholder": "¿Qué hace tu negocio? ¿Qué problema resuelve?",
+--
+src/i18n/es.json-481-  "input.competitor-research.business_url.placeholder": "ej., https://gormaran.io",
+src/i18n/es.json:482:  "input.competitor-research.your_product.label": "Tu Producto / Servicio",
+src/i18n/es.json-483-  "input.competitor-research.your_product.placeholder": "ej., Herramientas de marketing con IA para PYMEs",
+--
+src/i18n/es.json-503-  "input.business-strategy-developer.industry.placeholder": "ej., Marketing digital, SaaS, Retail...",
+src/i18n/es.json:504:  "input.business-strategy-developer.product_service.label": "Producto o Servicio Principal",
+src/i18n/es.json-505-  "input.business-strategy-developer.product_service.placeholder": "Describe qué vendes u ofreces y a quién va dirigido",
+--
+src/i18n/es.json-557-  "input.newsletter.sections.placeholder": "ej., Consejo de la semana, Herramienta destacada, Cita",
+src/i18n/es.json:558:  "input.google-ads.product.label": "Producto / Servicio",
+src/i18n/es.json-559-  "input.google-ads.product.placeholder": "ej., Software de contabilidad en la nube para pequeñas empresas",
+--
+src/i18n/es.json-567-  "input.google-ads.usp.placeholder": "ej., Prueba gratuita 30 días, Sin contratos, Soporte 24/7",
+src/i18n/es.json:568:  "input.meta-ads.product.label": "Producto / Servicio",
+src/i18n/es.json:569:  "input.meta-ads.product.placeholder": "ej., Programa de coaching fitness online",
+src/i18n/es.json-570-  "input.meta-ads.target_audience.label": "Público Objetivo",
+--
+src/i18n/es.json-576-  "input.meta-ads.funnel_stage.label": "Etapa del Embudo",
+src/i18n/es.json:577:  "input.landing-page.product.label": "Producto / Servicio",
+src/i18n/es.json-578-  "input.landing-page.product.placeholder": "ej., Herramienta SaaS de gestión de proyectos",
+--
+src/i18n/es.json-588-  "input.landing-page.social_proof.placeholder": "ej., 2.500 clientes, 4.8/5 estrellas, presentado en Forbes",
+src/i18n/es.json:589:  "input.amazon-listing.product_name.label": "Nombre del Producto",
+src/i18n/es.json-590-  "input.amazon-listing.product_name.placeholder": "ej., Botella de Agua Aislada de Acero Inoxidable",
+--
+src/i18n/es.json-600-  "input.amazon-listing.competitors.placeholder": "ej., ASIN: B08XXXXX o nombre del producto competidor",
+src/i18n/es.json:601:  "input.product-description.product.label": "Nombre del Producto",
+src/i18n/es.json-602-  "input.product-description.product.placeholder": "ej., Cuaderno de Cuero Artesanal",
+src/i18n/es.json:603:  "input.product-description.features.label": "Características y Detalles del Producto",
+src/i18n/es.json-604-  "input.product-description.features.placeholder": "Materiales, dimensiones, colores, especificaciones",
+--
+src/i18n/es.json-611-  "input.cro-audit.current_cr.placeholder": "ej., 1.5% o desconocida",
+src/i18n/es.json:612:  "input.cro-audit.product_type.label": "Tipo de Producto",
+src/i18n/es.json-613-  "input.cro-audit.product_type.placeholder": "ej., Joyería artesanal, suscripción SaaS, curso digital",
+--
+src/i18n/es.json-621-  "input.client-proposal.client_name.placeholder": "ej., BlueSky Retail Co.",
+src/i18n/es.json:622:  "input.client-proposal.service.label": "Servicio(s) Propuesto(s)",
+src/i18n/es.json-623-  "input.client-proposal.service.placeholder": "ej., SEO + Marketing de Contenidos + Google Ads",
+--
+src/i18n/es.json-625-  "input.client-proposal.client_goal.placeholder": "ej., Aumentar el tráfico orgánico un 200% en 12 meses",
+src/i18n/es.json:626:  "input.client-proposal.budget.label": "Presupuesto Propuesto / Retención",
+src/i18n/es.json-627-  "input.client-proposal.budget.placeholder": "ej., $3.500/mes o $42.000/año",
+--
+src/i18n/es.json-656-  "input.investor-pitch.one_liner.placeholder": "ej., La plataforma de análisis impulsada por IA para marcas de e-commerce",
+src/i18n/es.json:657:  "input.investor-pitch.problem.label": "Problema que Resuelves",
+src/i18n/es.json-658-  "input.investor-pitch.problem.placeholder": "Describe el problema en detalle — quién lo tiene, qué tan doloroso es, qué tan grande es",
+--
+src/i18n/es.json-664-  "input.investor-pitch.ask.placeholder": "ej., Buscamos $1.5M ronda semilla a valoración pre-money de $8M",
+src/i18n/es.json:665:  "input.gtm-strategy.product.label": "Producto / Servicio",
+src/i18n/es.json-666-  "input.gtm-strategy.product.placeholder": "ej., Herramienta SaaS de gestión de proyectos B2B",
+--
+src/i18n/es.json-673-  "input.gtm-strategy.current_stage.label": "Etapa Actual",
+src/i18n/es.json:674:  "input.user-stories.product.label": "Producto / Funcionalidad",
+src/i18n/es.json-675-  "input.user-stories.product.placeholder": "ej., Flujo de incorporación de usuarios para SaaS B2B",
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/components/AIToolInterface.css-35-
+src/components/AIToolInterface.css:36:/* Business context block */
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/components/AIToolInterface.css-37-.ai-tool__biz-context {
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/pages/SettingsPage.js-90-                  <span className="settings__plan-label">Current Plan</span>
+src/pages/SettingsPage.js:91:                  <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
+src/pages/SettingsPage.js:92:                    {subscription === 'free' ? 'Free' : subscription === 'pro' ? '⭐ Pro' : '💎 Business'}
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/pages/SettingsPage.js-93-                  </span>
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/components/Navbar.js-134-              {/* Plan badge */}
+src/components/Navbar.js:135:              <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/components/Navbar.js-136-                {
+--
+src/i18n/en.json-7-  "free": "Free",
+src/i18n/en.json:8:  "pro": "Pro",
+src/i18n/en.json-9-  "enterprise": "Enterprise",
+--
+src/i18n/en.json-19-  "ui.fillInputs": "Fill in the inputs on the left and click",
+src/i18n/en.json:20:  "ui.proFeature": "Pro feature",
+src/i18n/en.json-21-  "ui.dailyLimitReached": "Daily limit reached",
+--
+src/i18n/en.json-29-  "ui.freePlan": "Free Plan",
+src/i18n/en.json:30:  "ui.proPlan": "Pro Plan",
+src/i18n/en.json:31:  "ui.businessPlan": "Business Plan",
+src/i18n/en.json:32:  "ui.proRequired": "Pro Required",
+src/i18n/en.json-33-  "ui.upgradeToUnlock": "Upgrade to unlock all tools",
+--
+src/i18n/en.json-40-  "ui.dailyLimitText": "You've used all {{limit}} free daily requests. Upgrade to Pro for unlimited access.",
+src/i18n/en.json:41:  "ui.proOnlyText": "This category is available on Pro and Business plans.",
+src/i18n/en.json-42-  "ui.history": "Recent queries",
+--
+src/i18n/en.json-46-  "footer.brand.desc": "The AI-powered growth hub for freelances, marketers, agencies and founders. Built to help you move faster and grow smarter.",
+src/i18n/en.json:47:  "footer.product.title": "Product",
+src/i18n/en.json-48-  "footer.product.pricing": "Pricing",
+--
+src/i18n/en.json-56-  "cat.marketing.desc": "SEO, copywriting, social media, ads, and email campaigns",
+src/i18n/en.json:57:  "cat.strategy.name": "Business Strategy",
+src/i18n/en.json:58:  "cat.strategy.desc": "Business plans, market analysis, competitor research, and SWOT",
+src/i18n/en.json-59-  "cat.content.name": "Content Creation",
+--
+src/i18n/en.json-80-  "tool.email-campaign.desc": "Build complete email sequences — welcome flows, product launches, re-engagement — that convert subscribers into customers",
+src/i18n/en.json:81:  "tool.business-plan.name": "Business Plan Developer",
+src/i18n/en.json-82-  "tool.business-plan.desc": "Generate a full investor-ready business plan with executive summary, market analysis, financial projections and GTM strategy",
+--
+src/i18n/en.json-104-  "tool.amazon-listing.desc": "Fully optimize your Amazon listing with A9-algorithm titles, keyword-rich bullet points and backend search terms",
+src/i18n/en.json:105:  "tool.product-description.name": "Product Description Writer",
+src/i18n/en.json-106-  "tool.product-description.desc": "Create persuasive product page copy for Shopify, WooCommerce and Etsy that turns browsers into buyers",
+--
+src/i18n/en.json-108-  "tool.cro-audit.desc": "Get a full CRO audit with prioritized A/B tests, quick wins, psychological trigger checklist and a 90-day roadmap",
+src/i18n/en.json:109:  "tool.client-proposal.name": "Client Proposal Generator",
+src/i18n/en.json-110-  "tool.client-proposal.desc": "Create professional, client-winning proposals with executive summary, scope of work, pricing and clear next steps",
+--
+src/i18n/en.json-122-  "tool.instagram-audit.desc": "Analyze your Instagram profile in 5 minutes and get the 3 priority actions to optimize your bio, content strategy, and CTA for faster growth",
+src/i18n/en.json:123:  "tool.business-strategy-developer.name": "Business Strategy Developer",
+src/i18n/en.json-124-  "tool.business-strategy-developer.desc": "Build a full competitive business strategy with market positioning, growth levers, KPIs and a 90-day action plan based on your context and competitors",
+--
+src/i18n/en.json-134-  "tool.photo-direction.desc": "Get a full photography brief with shot list, lighting guide, composition rules, and post-processing direction",
+src/i18n/en.json:135:  "tool.video-production.name": "Video Production Plan",
+src/i18n/en.json-136-  "tool.video-production.desc": "Create a full video production brief with creative concept, shot list, script outline, and distribution strategy",
+--
+src/i18n/en.json-199-  "landing.problem.card2": "Ad campaigns that drain your time without converting",
+src/i18n/en.json:200:  "landing.problem.card3": "Proposals and reports that steal your day",
+src/i18n/en.json-201-  "landing.how.title": "See how it works",
+--
+src/i18n/en.json-254-  "landing.plans.scale.tool1": "Client Proposal Generator",
+src/i18n/en.json:255:  "landing.plans.scale.tool2": "Business Plan Developer",
+src/i18n/en.json-256-  "landing.plans.scale.tool3": "Brand Identity Guide",
+--
+src/i18n/en.json-310-  "pricing.downgrade": "Downgrade",
+src/i18n/en.json:311:  "pricing.processing": "Processing...",
+src/i18n/en.json-312-  "pricing.plan.free.name": "Free",
+--
+src/i18n/en.json-331-  "pricing.plan.grow.feature.3": "Digital Marketing Tools (all tools)",
+src/i18n/en.json:332:  "pricing.plan.grow.feature.4": "Business Plan Developer",
+src/i18n/en.json-333-  "pricing.plan.grow.feature.5": "Real-time streaming & copy",
+--
+src/i18n/en.json-343-  "pricing.plan.scale.feature.3": "Creative Studio (all tools)",
+src/i18n/en.json:344:  "pricing.plan.scale.feature.4": "Business Plan Developer",
+src/i18n/en.json-345-  "pricing.plan.scale.feature.5": "Priority support",
+--
+src/i18n/en.json-364-  "pricing.comparison.row.3": "Digital Marketing",
+src/i18n/en.json:365:  "pricing.comparison.row.4": "Business Strategy",
+src/i18n/en.json-366-  "pricing.comparison.row.5": "E-commerce Growth",
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/components/Footer.js-29-          <div className="footer__col">
+src/components/Footer.js:30:            <h4>{t('footer.product.title', { defaultValue: 'Product' })}</h4>
+src/components/Footer.js-31-            <Link to="/pricing">{t('footer.product.pricing', { defaultValue: 'Pricing' })}</Link>
+--
+src/components/Footer.js-38-            <Link to="/category/marketing">{t('cat.marketing.name', { defaultValue: 'Marketing & Growth' })}</Link>
+src/components/Footer.js:39:            <Link to="/category/strategy">{t('cat.strategy.name', { defaultValue: 'Business Strategy' })}</Link>
+src/components/Footer.js-40-            <Link to="/category/content">{t('cat.content.name', { defaultValue: 'Content Creation' })}</Link>
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/components/AIToolInterface.js-406-          <div>
+src/components/AIToolInterface.js:407:            <strong>{t('ui.proFeature', { defaultValue: 'Pro feature' })}</strong>
+src/components/AIToolInterface.js-408-            <p>{t('ui.proOnlyText', { defaultValue: 'This tool is available on Grow plan and above.' })}</p>
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/components/AIToolInterface.js-420-              <div className="ai-tool__biz-context">
+src/components/AIToolInterface.js:421:                <span className="ai-tool__biz-context-label">🏢 {t('ui.bizContext', { defaultValue: 'Business context' })}</span>
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/components/AIToolInterface.js-422-                <FormField
+--
+src/data/categories.js-35-        buildUserMessage: (inputs) =>
+src/data/categories.js:36:          `Please conduct a comprehensive keyword research analysis:\n\n**Target Keyword:** ${inputs.keyword}\n**Industry/Niche:** ${inputs.industry}\n**Content Type:** ${inputs.content_type}\n**Target Audience:** ${inputs.audience || 'General audience'}\n**Competitor URL:** ${inputs.competitor || 'Not provided'}\n\nProvide the full keyword research report with all sections.`,
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-37-      },
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-54-2. **5 Meta Description Variations** — Exactly 150-160 characters each. Include primary keyword, clear benefit, and a CTA. Show character count for each.
+src/data/categories.js:55:3. **Schema Markup Recommendation** — Suggest the most appropriate schema type (Article, Product, FAQ, etc.) with a brief explanation.
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-56-4. **Open Graph Title & Description** — Optimized for social sharing, can be slightly different from SEO meta tags.
+--
+src/data/categories.js-68-        inputs: [
+src/data/categories.js:69:          { id: 'product', label: 'Product / Service / Content', type: 'text', placeholder: 'e.g., CRM software for sales teams', required: true },
+src/data/categories.js-70-          { id: 'benefit', label: 'Primary Benefit / Outcome', type: 'text', placeholder: 'e.g., close 40% more deals', required: true },
+--
+src/data/categories.js-98-        buildUserMessage: (inputs) =>
+src/data/categories.js:99:          `Create high-converting headlines for:\n\n**Product/Service:** ${inputs.product}\n**Primary Benefit:** ${inputs.benefit}\n**Target Audience:** ${inputs.audience}\n**Medium:** ${inputs.medium || 'Landing Page'}\n**Tone:** ${inputs.tone || 'Professional'}\n\nProvide the full headline toolkit with all categories and ratings.`,
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-100-      },
+--
+src/data/categories.js-149-          { id: 'campaign_type', label: 'Campaign Type', type: 'select', options: ['Welcome Series', 'Product Launch', 'Abandoned Cart', 'Re-engagement', 'Promotional Offer', 'Newsletter', 'Post-Purchase'], required: true },
+src/data/categories.js:150:          { id: 'product', label: 'Product / Service', type: 'text', placeholder: 'e.g., Online course about social media marketing', required: true },
+src/data/categories.js-151-          { id: 'audience', label: 'Audience Segment', type: 'text', placeholder: 'e.g., Free trial users who haven\'t upgraded' },
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-172-
+src/data/categories.js:173:Use proven copywriting frameworks: AIDA, PAS (Problem-Agitate-Solution), and storytelling. Include specific personalization opportunities.`,
+src/data/categories.js-174-        buildUserMessage: (inputs) =>
+src/data/categories.js:175:          `Create a complete email campaign:\n\n**Campaign Type:** ${inputs.campaign_type}\n**Product/Service:** ${inputs.product}\n**Audience:** ${inputs.audience || 'General subscribers'}\n**Goal:** ${inputs.goal || 'Increase engagement'}\n**Brand Tone:** ${inputs.tone || 'Professional'}\n\nCreate the full campaign with all emails and supporting materials.`,
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-176-      },
+--
+src/data/categories.js-228-        buildUserMessage: (inputs) =>
+src/data/categories.js:229:          `Write a professional press release in ${inputs.language || 'English'}:\n\n**Company:** ${inputs.company}\n**Type of News:** ${inputs.news_type}\n**Main Announcement:** ${inputs.headline}\n**Key Details & Facts:** ${inputs.details}\n**Spokesperson:** ${inputs.spokesperson || 'Not specified'}\n\nProvide the complete press release, distribution checklist, pitch email, and SEO version. Respond entirely in ${inputs.language || 'English'}.`,
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-230-      },
+--
+src/data/categories.js-234-    id: 'strategy',
+src/data/categories.js:235:    name: 'Business Strategy',
+src/data/categories.js:236:    description: 'Business plans, market analysis, competitor research, and SWOT',
+src/data/categories.js-237-    icon: '🎯',
+--
+src/data/categories.js-242-        id: 'business-plan',
+src/data/categories.js:243:        name: 'Business Plan Developer',
+src/data/categories.js-244-        description: 'Generate a full investor-ready business plan with executive summary, market analysis, financial projections and GTM strategy',
+--
+src/data/categories.js-246-        inputs: [
+src/data/categories.js:247:          { id: 'business_name', label: 'Business Name', type: 'text', placeholder: 'e.g., TechFlow SaaS', required: true },
+src/data/categories.js-248-          { id: 'industry', label: 'Industry', type: 'text', placeholder: 'e.g., B2B SaaS / E-commerce / Healthcare', required: true },
+src/data/categories.js:249:          { id: 'product', label: 'Product / Service Description', type: 'textarea', placeholder: 'What does your business do? What problem does it solve?', required: true },
+src/data/categories.js-250-          { id: 'target_market', label: 'Target Market', type: 'text', placeholder: 'e.g., SMBs in the US with 10-100 employees' },
+src/data/categories.js-251-          { id: 'revenue_model', label: 'Revenue Model', type: 'text', placeholder: 'e.g., Monthly SaaS subscription, $49-199/mo' },
+src/data/categories.js:252:          { id: 'stage', label: 'Business Stage', type: 'select', options: ['Idea Stage', 'Pre-revenue', 'Early Stage (< $100k ARR)', 'Growth Stage ($100k-$1M ARR)', 'Scaling ($1M+ ARR)'] },
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-253-        ],
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-261-4. **Market Opportunity** — TAM (Total Addressable Market), SAM (Serviceable Addressable Market), SOM (Serviceable Obtainable Market) with methodology
+src/data/categories.js:262:5. **Business Model** — Revenue streams, pricing strategy, unit economics outline (LTV, CAC estimates)
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-263-6. **Go-to-Market Strategy** — Customer acquisition channels, launch strategy, first 100 customers plan
+--
+src/data/categories.js-270-        buildUserMessage: (inputs) =>
+src/data/categories.js:271:          `Create a comprehensive business plan for:\n\n**Business Name:** ${inputs.business_name}\n**Industry:** ${inputs.industry}\n**Product/Service:** ${inputs.product}\n**Target Market:** ${inputs.target_market || 'To be defined'}\n**Revenue Model:** ${inputs.revenue_model || 'To be defined'}\n**Stage:** ${inputs.stage || 'Idea Stage'}\n\nCreate the full business plan with all sections.`,
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-272-      },
+--
+src/data/categories.js-308-        inputs: [
+src/data/categories.js:309:          { id: 'business_name', label: 'Business Name', type: 'text', placeholder: 'e.g., Gormaran', required: true },
+src/data/categories.js-310-          { id: 'business_url', label: 'Company URL', type: 'text', placeholder: 'e.g., https://gormaran.io', required: true },
+src/data/categories.js:311:          { id: 'your_product', label: 'Product / Service', type: 'text', placeholder: 'e.g., AI-powered marketing tools for SMBs', required: true },
+src/data/categories.js-312-          { id: 'location', label: 'Location / Market', type: 'text', placeholder: 'e.g., Spain, Latin America, Global', required: true },
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-321-**1. PERFILES DE COMPETIDORES**
+src/data/categories.js:322:Identify the top 3–4 competitors if not provided. Table: Competitor | Website | Product/Service | Target Customer | Price Range | Key Strengths | Key Weaknesses
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-323-
+--
+src/data/categories.js-358-        buildUserMessage: (inputs) =>
+src/data/categories.js:359:[Omitted long matching line]
+src/data/categories.js-360-        maxTokens: 8000,
+--
+src/data/categories.js-368-          { id: 'company', label: 'Company / Product Name', type: 'text', placeholder: 'e.g., GrowthApp', required: true },
+src/data/categories.js:369:          { id: 'description', label: 'Business Description', type: 'textarea', placeholder: 'Describe your business, what you do, and your current situation', required: true },
+src/data/categories.js-370-          { id: 'goal', label: 'Strategic Goal', type: 'text', placeholder: 'e.g., Reach $1M ARR in 12 months' },
+--
+src/data/categories.js-395-        buildUserMessage: (inputs) =>
+src/data/categories.js:396:          `Conduct a strategic SWOT analysis:\n\n**Company/Product:** ${inputs.company}\n**Business Description:** ${inputs.description}\n**Strategic Goal:** ${inputs.goal || 'Grow and scale the business'}\n\nProvide the full SWOT analysis with TOWS strategies and priority actions.`,
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-397-      },
+--
+src/data/categories.js-399-        id: 'business-strategy-developer',
+src/data/categories.js:400:        name: 'Business Strategy Developer',
+src/data/categories.js-401-        description: 'Build a full competitive business strategy with market positioning, growth levers, KPIs and a 90-day action plan based on your context and competitors',
+--
+src/data/categories.js-406-          { id: 'industry', label: 'Industry / Sector', type: 'text', placeholder: 'e.g., Digital marketing, SaaS, Retail...', required: true },
+src/data/categories.js:407:          { id: 'product_service', label: 'Main Product or Service', type: 'textarea', placeholder: 'Describe what you sell or offer and who it is for', required: true },
+src/data/categories.js-408-          { id: 'competitors', label: 'Competitor Websites (up to 3)', type: 'text', placeholder: 'https://competitor1.com, https://competitor2.com, https://competitor3.com' },
+--
+src/data/categories.js-410-          { id: 'target_customer', label: 'Target Customer', type: 'text', placeholder: 'e.g., Small business owners aged 30-50, local service companies' },
+src/data/categories.js:411:          { id: 'goal', label: 'Main Business Goal', type: 'text', placeholder: 'e.g., Double revenue in 12 months, enter new market' },
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-412-        ],
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-414-
+src/data/categories.js:415:Given the company information, competitive context, and location, deliver a comprehensive Business Strategy:
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-416-
+--
+src/data/categories.js-444-        buildUserMessage: (inputs) =>
+src/data/categories.js:445:[Omitted long matching line]
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-446-      },
+--
+src/data/categories.js-712-        inputs: [
+src/data/categories.js:713:          { id: 'product', label: 'Product / Service', type: 'text', placeholder: 'e.g., Cloud-based accounting software for small businesses', required: true },
+src/data/categories.js-714-          { id: 'landing_page', label: 'Landing Page URL (or topic)', type: 'text', placeholder: 'https://yoursite.com/product or describe your page' },
+--
+src/data/categories.js-770-        inputs: [
+src/data/categories.js:771:          { id: 'product', label: 'Product / Service', type: 'text', placeholder: 'e.g., Online fitness coaching program', required: true },
+src/data/categories.js-772-          { id: 'target_audience', label: 'Target Audience', type: 'text', placeholder: 'e.g., Women 25-45, interested in fitness, health, weight loss', required: true },
+--
+src/data/categories.js-826-        inputs: [
+src/data/categories.js:827:          { id: 'product', label: 'Product / Service', type: 'text', placeholder: 'e.g., SaaS project management tool', required: true },
+src/data/categories.js-828-          { id: 'offer', label: 'Primary Offer / CTA', type: 'text', placeholder: 'e.g., Start your free 14-day trial', required: true },
+--
+src/data/categories.js-831-          { id: 'pain_points', label: 'Top 3 Pain Points', type: 'textarea', placeholder: 'e.g., Projects always run late\nTeams lack visibility\nToo many tools to manage' },
+src/data/categories.js:832:          { id: 'social_proof', label: 'Social Proof Available', type: 'text', placeholder: 'e.g., 2,500 customers, 4.8/5 stars, featured in Forbes' },
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-833-        ],
+--
+src/data/categories.js-880-        buildUserMessage: (inputs) =>
+src/data/categories.js:881:          `Write high-converting landing page copy:\n\n**Product/Service:** ${inputs.product}\n**Primary Offer/CTA:** ${inputs.offer}\n**Target Visitor:** ${inputs.audience || 'General visitors'}\n**Primary Benefit:** ${inputs.main_benefit || 'Not specified'}\n**Pain Points:** ${inputs.pain_points || 'Not specified'}\n**Social Proof:** ${inputs.social_proof || 'None available yet'}\n\nCreate the complete landing page copy with all sections.`,
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-882-      },
+--
+src/data/categories.js-898-        inputs: [
+src/data/categories.js:899:          { id: 'product_name', label: 'Product Name', type: 'text', placeholder: 'e.g., Stainless Steel Insulated Water Bottle', required: true },
+src/data/categories.js-900-          { id: 'category', label: 'Amazon Category', type: 'text', placeholder: 'e.g., Sports & Outdoors > Water Bottles', required: true },
+--
+src/data/categories.js-956-        inputs: [
+src/data/categories.js:957:          { id: 'product', label: 'Product Name', type: 'text', placeholder: 'e.g., Handmade Leather Journal', required: true },
+src/data/categories.js-958-          { id: 'features', label: 'Product Features & Details', type: 'textarea', placeholder: 'Materials, dimensions, colors, specifications', required: true },
+--
+src/data/categories.js-995-        buildUserMessage: (inputs) =>
+src/data/categories.js:996:          `Write product page copy:\n\n**Product:** ${inputs.product}\n**Features/Details:** ${inputs.features}\n**Target Buyer:** ${inputs.audience || 'General shoppers'}\n**Platform:** ${inputs.platform || 'Shopify'}\n**Price Range:** ${inputs.price_tier || 'Mid-range'}\n\nCreate the complete product page copy package.`,
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-997-      },
+--
+src/data/categories.js-1005-          { id: 'current_cr', label: 'Current Conversion Rate', type: 'text', placeholder: 'e.g., 1.5% or "unknown"' },
+src/data/categories.js:1006:          { id: 'product_type', label: 'Product Type', type: 'text', placeholder: 'e.g., Handmade jewelry, SaaS subscription, digital course' },
+src/data/categories.js-1007-          { id: 'avg_order', label: 'Average Order Value', type: 'text', placeholder: 'e.g., $65' },
+--
+src/data/categories.js-1058-        buildUserMessage: (inputs) =>
+src/data/categories.js:1059:          `Conduct a CRO audit:\n\n**Page Type:** ${inputs.page_type}\n**Current Conversion Rate:** ${inputs.current_cr || 'Unknown'}\n**Product Type:** ${inputs.product_type}\n**Average Order Value:** ${inputs.avg_order || 'Unknown'}\n**Suspected Issue:** ${inputs.main_issue || 'General optimization needed'}\n\nProvide the complete CRO audit with all sections and prioritized action items.`,
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-1060-      },
+--
+src/data/categories.js-1240-**[THE CHALLENGE]** — Tell the story of where they were:
+src/data/categories.js:1241:- Business context and background
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-1242-- The specific pain points (quantified where possible)
+--
+src/data/categories.js-1289-          { id: 'one_liner', label: 'One-liner Description', type: 'text', placeholder: 'e.g., The AI-powered analytics platform for e-commerce brands', required: true },
+src/data/categories.js:1290:          { id: 'problem', label: 'Problem You Solve', type: 'textarea', placeholder: 'Describe the problem in detail — who has it, how painful is it, how big is it?' },
+src/data/categories.js-1291-          { id: 'solution', label: 'Your Solution', type: 'textarea', placeholder: 'How does your product solve the problem? What\'s the "magic"?' },
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-1327-
+src/data/categories.js:1328:**Slide 6: Business Model**
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-1329-- Revenue model explained simply
+--
+src/data/categories.js-1383-        inputs: [
+src/data/categories.js:1384:          { id: 'product', label: 'Product / Service', type: 'text', placeholder: 'e.g., B2B project management SaaS tool', required: true },
+src/data/categories.js-1385-          { id: 'target_customer', label: 'Target Customer (ICP)', type: 'text', placeholder: 'e.g., Operations managers at logistics companies, 50-500 employees', required: true },
+--
+src/data/categories.js-1455-        inputs: [
+src/data/categories.js:1456:          { id: 'product', label: 'Product / Feature', type: 'text', placeholder: 'e.g., User onboarding flow for B2B SaaS', required: true },
+src/data/categories.js-1457-          { id: 'user_type', label: 'User Type(s)', type: 'text', placeholder: 'e.g., New users, Admin users, Guest users' },
+--
+src/data/categories.js-1528-        inputs: [
+src/data/categories.js:1529:          { id: 'brand_name', label: 'Brand / Business name', type: 'text', placeholder: 'e.g., Studio Nova', required: true },
+src/data/categories.js-1530-          { id: 'industry', label: 'Industry / niche', type: 'text', placeholder: 'e.g., wellness coaching, tech startup', required: true },
+--
+src/data/categories.js-1640-        inputs: [
+src/data/categories.js:1641:          { id: 'business_type', label: 'Business type', type: 'text', placeholder: 'e.g., SaaS, e-commerce, agency, freelance', required: true },
+src/data/categories.js-1642-          { id: 'current_revenue', label: 'Current monthly revenue', type: 'text', placeholder: 'e.g., €5,000/month or pre-revenue', required: true },
+--
+src/data/categories.js-1656-        inputs: [
+src/data/categories.js:1657:          { id: 'investment_type', label: 'Investment type', type: 'select', options: ['Equities / Stocks', 'Real estate', 'Startup / Angel', 'Crypto / Digital assets', 'Business acquisition', 'ETF / Funds', 'Bonds / Fixed income'], required: true },
+src/data/categories.js-1658-          { id: 'description', label: 'Asset / company description', type: 'textarea', placeholder: 'Describe the investment opportunity in detail', required: true },
+--
+src/data/categories.js-1672-        inputs: [
+src/data/categories.js:1673:          { id: 'business_type', label: 'Business type', type: 'text', placeholder: 'e.g., agency, freelance, retail, SaaS', required: true },
+src/data/categories.js-1674-          { id: 'monthly_revenue', label: 'Monthly revenue', type: 'text', placeholder: 'e.g., €15,000/month', required: true },
+--
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-1712-- Automation name and purpose
+src/data/categories.js:1713:- Business value: what this saves or enables
+/Users/gabiorma/VS Code/SaaS-gormaran-ai-growth-hub/src/data/categories.js-1714-- Estimated time saved per week

@@ -1,0 +1,93 @@
+{
+  "skill_name": "sales-email-expert",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Write a welcome email for TaskFlow, a project management SaaS. The user just signed up for a free account. Our tone is friendly and professional. Key differentiator: AI-powered task prioritization.",
+      "expected_output": "A welcome email with 3 subject line options, a well-structured body (150-250 words), and quick notes. Should feel warm, not generic. Should include a single clear CTA.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Output contains exactly 3 subject line options",
+          "method": "programmatic"
+        },
+        {
+          "text": "Email body word count is between 150 and 250 words",
+          "method": "programmatic"
+        },
+        {
+          "text": "Email does not open with banned generic openers like 'I hope this email finds you well'",
+          "method": "programmatic"
+        },
+        {
+          "text": "Output includes a QUICK NOTES section",
+          "method": "programmatic"
+        },
+        {
+          "text": "Email body contains exactly one call-to-action",
+          "method": "llm-graded"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "I need an upgrade email for TaskFlow. Free users are capped at 5 projects and 3 team members. Paid plan ($19/mo) gives unlimited projects, unlimited members, and AI prioritization. This user has been active for 30 days and has hit the project limit twice. No discount available.",
+      "expected_output": "An upgrade/upsell email with 3 subject options, body 200-350 words, and quick notes. Should acknowledge usage behavior, list upgrade benefits, have a single upgrade CTA. Should not feel desperate or salesy.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Output contains exactly 3 subject line options",
+          "method": "programmatic"
+        },
+        {
+          "text": "Email body word count is between 200 and 350 words",
+          "method": "programmatic"
+        },
+        {
+          "text": "Email acknowledges the user hitting the project limit",
+          "method": "programmatic"
+        },
+        {
+          "text": "Email lists at least 2 specific paid plan benefits",
+          "method": "programmatic"
+        },
+        {
+          "text": "Email body contains exactly one call-to-action",
+          "method": "llm-graded"
+        },
+        {
+          "text": "No spam trigger words: FREE in caps, '!!!', 'click here'",
+          "method": "programmatic"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Write a win-back email for TaskFlow. This user signed up 3 months ago, was active for 2 weeks, then went completely silent for 60 days. We don't know why they stopped. We want to re-engage them — not immediately push them to upgrade, just get them back in the app.",
+      "expected_output": "A win-back email 100-200 words. 3 subject options. Should not start with 'We miss you'. Should be human, light CTA to come back — not an upgrade push.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Output contains exactly 3 subject line options",
+          "method": "programmatic"
+        },
+        {
+          "text": "Email body word count is between 100 and 200 words",
+          "method": "programmatic"
+        },
+        {
+          "text": "Email does not start with or prominently use 'We miss you'",
+          "method": "programmatic"
+        },
+        {
+          "text": "Email CTA is about returning to the app, not upgrading",
+          "method": "llm-graded"
+        },
+        {
+          "text": "Email body contains exactly one call-to-action",
+          "method": "llm-graded"
+        }
+      ]
+    }
+  ]
+}

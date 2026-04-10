@@ -1,0 +1,134 @@
+import express, { Request, Response } from 'express';
+import Anthropic from '@anthropic-ai/sdk';
+import NodeCache from 'node-cache';
+import { config } from 'dotenv';
+import logger from './logger';
+import RagService from './services/rag-service';
+import { AIConfig, CONFIG } from './config';
+import { ensureTablesExist } from './db/init';
+
+config();
+ensureTablesExist();
+
+const app = express();
+app.use(express.json());
+
+const anthropic = new Anthropic({ apiKey: AIConfig.ChatConfig.apiKey });
+
+// Per-chatId conversation history (kept in memory, TTL from config)
+const chatHistory = new NodeCache({ stdTTL: CONFIG.BotConfig.nodeCacheTime });
+
+// ─── Health check ────────────────────────────────────────────────────────────
+
+app.get('/health', (_req: Request, res: Response) => {
+  res.json({ status: 'ok', bot: CONFIG.BotConfig.botName });
+});
+
+// ─── Main chat endpoint ──────────────────────────────────────────────────────
+//
+// n8n calls: POST /chat
+// Body:  { "message": "texto del usuario", "chatId": "34612345678@c.us" }
+// Reply: { "reply": "respuesta del bot" }
+
+app.post('/chat', async (req: Request, res: Response) => {
+
+  // Optional API-key guard (set SERVER_API_KEY in .env to enable)
+  const apiKey = process.env.SERVER_API_KEY;
+  if (apiKey && req.headers['x-api-key'] !== apiKey) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { message, chatId = 'default' } = req.body as { message?: string; chatId?: string };
+
+  if (!message?.trim()) {
+    return res.status(400).json({ error: '"message" field is required' });
+  }
+
+  try {
+    // 1. Fetch relevant knowledge from Excel files
+    const ragContext = await RagService.query(message).catch(e => {
+      logger.warn(`[Server] RAG query failed: ${e.message}`);
+      return '';
+    });
+
+    // 2. Build system prompt
+    const basePrompt = CONFIG.BotConfig.promptInfo ||
+      'Eres un asistente útil y conciso.';
+    const systemPrompt = ragContext
+      ? `${basePrompt}\n\n${ragContext}`
+      : basePrompt;
+
+    // 3. Load conversation history for this chat
+    const history: Anthropic.MessageParam[] = chatHistory.get<Anthropic.MessageParam[]>(chatId) ?? [];
+    history.push({ role: 'user', content: message });
+
+    // 4. Call Claude
+    const response = await anthropic.messages.create({
+      model: AIConfig.ChatConfig.model,
+      max_tokens: CONFIG.BotConfig.maxCharacters,
+      system: systemPrompt,
+      messages: history,
+    });
+
+    const reply = response.content[0].type === 'text'
+      ? response.content[0].text
+      : '';
+
+    // 5. Save updated history (keep last N exchanges to limit token growth)
+    history.push({ role: 'assistant', content: reply });
+    const maxPairs = CONFIG.BotConfig.maxMsgsLimit * 2;
+    chatHistory.set(chatId, history.slice(-maxPairs), CONFIG.BotConfig.nodeCacheTime);
+
+    logger.info(`[Server] [${chatId}] → "${message.slice(0, 60)}" | reply: ${reply.slice(0, 60)}`);
+    return res.json({ reply });
+
+  } catch (e: any) {
+    logger.error(`[Server] /chat error: ${e.message}`);
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── Reset conversation history for a chat ───────────────────────────────────
+//
+// POST /reset  { "chatId": "34612345678@c.us" }
+
+app.post('/reset', (req: Request, res: Response) => {
+  const { chatId = 'default' } = req.body as { chatId?: string };
+  chatHistory.del(chatId);
+  logger.info(`[Server] History cleared for chatId: ${chatId}`);
+  return res.json({ ok: true });
+});
+
+// ─── Re-index knowledge base ──────────────────────────────────────────────────
+//
+// POST /reindex   (admin only — requires x-api-key header if SERVER_API_KEY is set)
+
+app.post('/reindex', async (req: Request, res: Response) => {
+  const apiKey = process.env.SERVER_API_KEY;
+  if (apiKey && req.headers['x-api-key'] !== apiKey) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  const dataDir = process.env.KNOWLEDGE_BASE_DIR || './data';
+  res.json({ ok: true, message: 'Re-indexing started in background' });
+  RagService.reindexAll(dataDir).catch(e => logger.error(`[Server] reindex error: ${e.message}`));
+});
+
+// ─── Start ────────────────────────────────────────────────────────────────────
+
+const PORT = parseInt(process.env.SERVER_PORT ?? '3000', 10);
+const dataDir = process.env.KNOWLEDGE_BASE_DIR || './data';
+
+logger.info(`[Server] Indexing knowledge base from "${dataDir}"...`);
+
+RagService.indexDataDir(dataDir)
+  .catch(e => logger.error(`[RAG] Startup indexing failed: ${e.message}`))
+  .finally(() => {
+    app.listen(PORT, () => {
+      logger.info(`[Server] ✓ Running on http://localhost:${PORT}`);
+      logger.info(`[Server] Endpoints:`);
+      logger.info(`[Server]   POST /chat     { message, chatId }`);
+      logger.info(`[Server]   POST /reset    { chatId }`);
+      logger.info(`[Server]   POST /reindex  (admin)`);
+      logger.info(`[Server]   GET  /health`);
+    });
+  });

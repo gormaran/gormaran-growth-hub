@@ -1,0 +1,491 @@
+#!/usr/bin/env python3
+"""
+Instagram carousel: Cómo configurar Skills en Claude Code + VS Code
+Estilo editorial — fondo crema, rojo coral, serif/sans mixto
+7 slides 1080x1080px
+"""
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch, Rectangle, FancyArrowPatch
+from matplotlib import font_manager
+import numpy as np
+import os
+
+FONT_DIR = "/Users/gabiorma/.claude/plugins/cache/anthropic-agent-skills/example-skills/7029232b9212/skills/canvas-design/canvas-fonts"
+
+def reg(name):
+    p = os.path.join(FONT_DIR, name)
+    font_manager.fontManager.addfont(p)
+    return font_manager.FontProperties(fname=p).get_name()
+
+DISPLAY   = reg("Gloock-Regular.ttf")          # large editorial serif
+ITALIC    = reg("InstrumentSerif-Italic.ttf")   # italic serif "code"
+SERIF     = reg("InstrumentSerif-Regular.ttf")  # body serif
+CAPS      = reg("BricolageGrotesque-Bold.ttf")  # bold caps headings
+BODY      = reg("InstrumentSans-Regular.ttf")   # body sans
+BODY_BOLD = reg("InstrumentSans-Bold.ttf")      # bold sans
+NUM       = reg("CrimsonPro-Italic.ttf")        # large red numerals
+
+# Palette
+CREAM  = "#F7F1E6"
+RED    = "#E0513A"
+RED_LT = "#FAEAE7"
+BLACK  = "#1A1918"
+GRAY   = "#7A7570"
+LGRAY  = "#D8D2CA"
+WHITE  = "#FFFFFF"
+
+OUT_DIR = "/Users/gabiorma/video-editor/Meta-Ads/carousel"
+os.makedirs(OUT_DIR, exist_ok=True)
+
+DPI = 150
+SZ  = 7.2  # 1080px
+
+def new_slide():
+    fig = plt.figure(figsize=(SZ, SZ), dpi=DPI, facecolor=CREAM)
+    ax  = fig.add_axes([0, 0, 1, 1])
+    ax.set_facecolor(CREAM)
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+    ax.axis('off')
+    return fig, ax
+
+def save(fig, n):
+    path = f"{OUT_DIR}/slide_{n:02d}.png"
+    fig.savefig(path, dpi=DPI, bbox_inches='tight', facecolor=CREAM, pad_inches=0)
+    plt.close(fig)
+    print(f"  -> {path}")
+
+def footer_line(ax):
+    """Bottom thin rule + handle"""
+    ax.axhline(0.07, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+    ax.text(0.5, 0.043, "@gormaran_ai_marketing",
+            fontfamily=BODY, fontsize=9, color=GRAY,
+            ha='center', va='center', zorder=10)
+
+def arrow_btn(ax, x=0.88, y=0.092):
+    """Rounded arrow button bottom right"""
+    ax.add_patch(FancyBboxPatch((x-0.055, y-0.038), 0.11, 0.076,
+                                boxstyle='round,pad=0.018',
+                                facecolor=WHITE, edgecolor=RED,
+                                linewidth=1.2, zorder=8))
+    ax.annotate('', xy=(x+0.018, y), xytext=(x-0.018, y),
+                arrowprops=dict(arrowstyle='->', color=RED, lw=1.5),
+                zorder=10)
+
+def step_badge(ax, num, label, x=0.07, y=0.88):
+    """Large red numeral + caps label"""
+    ax.text(x, y, num,
+            fontfamily=NUM, fontsize=60, color=RED,
+            ha='left', va='top', zorder=10)
+    ax.text(x + 0.14, y - 0.01, label,
+            fontfamily=CAPS, fontsize=20, color=BLACK,
+            ha='left', va='top', zorder=10)
+
+def red_pill(ax, text, x, y, w=0.26):
+    """Outlined pill button"""
+    h = 0.058
+    ax.add_patch(FancyBboxPatch((x - w/2, y - h/2), w, h,
+                                boxstyle='round,pad=0.022',
+                                facecolor=WHITE, edgecolor=RED,
+                                linewidth=1.3, zorder=8))
+    ax.text(x, y, text, fontfamily=BODY_BOLD, fontsize=10,
+            color=RED, ha='center', va='center', zorder=10)
+
+def code_block(ax, lines, x, y, w, lh=0.048):
+    """Minimal code block — cream bg, red left border"""
+    h = len(lines) * lh + 0.036
+    ax.add_patch(Rectangle((x, y - h + 0.018), w, h,
+                            facecolor="#EDE8DF", edgecolor='none', zorder=5))
+    ax.add_patch(Rectangle((x, y - h + 0.018), 0.006, h,
+                            facecolor=RED, edgecolor='none', zorder=6))
+    for i, line in enumerate(lines):
+        yy = y - 0.012 - i * lh
+        ax.text(x + 0.022, yy, line,
+                fontfamily="JetBrainsMono-Regular" if False else reg("JetBrainsMono-Regular.ttf"),
+                fontsize=8.5, color=BLACK, ha='left', va='center', zorder=7)
+
+MONO = reg("JetBrainsMono-Regular.ttf")
+
+def cblock(ax, lines, x, y, w, lh=0.048):
+    h = len(lines) * lh + 0.036
+    ax.add_patch(Rectangle((x, y - h + 0.018), w, h,
+                            facecolor="#EDE8DF", edgecolor='none', zorder=5))
+    ax.add_patch(Rectangle((x, y - h + 0.018), 0.006, h,
+                            facecolor=RED, edgecolor='none', zorder=6))
+    for i, line in enumerate(lines):
+        yy = y - 0.012 - i * lh
+        ax.text(x + 0.022, yy, line,
+                fontfamily=MONO, fontsize=8.5, color=BLACK,
+                ha='left', va='center', zorder=7)
+
+def pixel_mascot(ax, cx=0.5, cy=0.82, scale=0.055):
+    """Simple pixel robot mascot"""
+    s = scale
+    def px(gx, gy, w=1, h=1, color=BLACK):
+        ax.add_patch(Rectangle((cx + gx*s - s*3, cy + gy*s - s*3),
+                                w*s, h*s, facecolor=color, edgecolor='none', zorder=8))
+    # body (brown tones)
+    BODY_C  = "#C4855A"
+    BODY_D  = "#A06840"
+    CAPE_C  = "#8B3A2A"
+
+    # head
+    px(1,5, 4, 2, BODY_C)
+    # eyes
+    px(1.5,6, 1, 0.7, BLACK)
+    px(3.5,6, 1, 0.7, BLACK)
+    # torso
+    px(0.5,3, 5, 2, BODY_C)
+    # badge C
+    px(2,3.5, 2, 1, CAPE_C)
+    ax.text(cx + 2.5*s - s*3 + s, cy + 4*s - s*3,
+            "C", fontfamily=BODY_BOLD, fontsize=int(scale*90), color=WHITE,
+            ha='center', va='center', zorder=9)
+    # cape / shoulders
+    px(-0.5,3, 1.5, 2, CAPE_C)
+    px(5,3, 1.5, 2, CAPE_C)
+    # legs
+    px(1,1, 1.5, 2, BODY_D)
+    px(3.5,1, 1.5, 2, BODY_D)
+    # arms
+    px(-1,2.5, 1.5, 1, BODY_D)
+    px(5.5,2.5, 1.5, 1, BODY_D)
+    # antenna
+    px(2.8,7, 0.5, 1, BLACK)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 1 — Cover
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+pixel_mascot(ax, cx=0.5, cy=0.87, scale=0.048)
+
+ax.text(0.5, 0.72, "COMO CONFIGURAR",
+        fontfamily=CAPS, fontsize=22, color=RED,
+        ha='center', va='center', zorder=10)
+ax.text(0.5, 0.655, "LAS SKILLS DE",
+        fontfamily=CAPS, fontsize=22, color=RED,
+        ha='center', va='center', zorder=10)
+
+ax.text(0.5, 0.545, "CLAUDE",
+        fontfamily=DISPLAY, fontsize=62, color=BLACK,
+        ha='center', va='center', zorder=10)
+ax.text(0.5, 0.435, "code",
+        fontfamily=ITALIC, fontsize=52, color=BLACK,
+        ha='center', va='center', zorder=10)
+
+ax.text(0.33, 0.325, "EN",
+        fontfamily=SERIF, fontsize=14, color=BLACK,
+        ha='center', va='center', zorder=10)
+red_pill(ax, "VS CODE", x=0.56, y=0.325, w=0.28)
+
+ax.axhline(0.225, xmin=0.07, xmax=0.77, color=LGRAY, lw=0.9, zorder=5)
+arrow_btn(ax, x=0.88, y=0.225)
+
+footer_line(ax)
+save(fig, 1)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 2 — Que son las Skills
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+ax.text(0.07, 0.92, "QUE SON",
+        fontfamily=CAPS, fontsize=16, color=RED,
+        ha='left', va='top', zorder=10)
+ax.text(0.07, 0.86, "las Skills",
+        fontfamily=DISPLAY, fontsize=48, color=BLACK,
+        ha='left', va='top', zorder=10)
+
+ax.axhline(0.80, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.765,
+        "Archivos de instrucciones que convierten\n"
+        "a Claude en un experto especializado.",
+        fontfamily=SERIF, fontsize=14, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.6)
+
+rows = [
+    ("Se guardan en tu proyecto",  ".claude/skills/",          "dentro de tu carpeta de trabajo"),
+    ("Se activan solos",           "Claude detecta el momento", "sin que tengas que pedirlo"),
+    ("Memoria permanente",         "Conoce tu negocio siempre","sin repetir el contexto"),
+]
+for i, (title, subtitle, desc) in enumerate(rows):
+    y0 = 0.630 - i * 0.165
+    ax.axhline(y0 + 0.01, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.5, alpha=0.6, zorder=4)
+    ax.text(0.07, y0 - 0.01, title,
+            fontfamily=BODY_BOLD, fontsize=11.5, color=BLACK,
+            ha='left', va='top', zorder=10)
+    ax.text(0.07, y0 - 0.052, subtitle,
+            fontfamily=BODY, fontsize=10, color=RED,
+            ha='left', va='top', zorder=10)
+    ax.text(0.93, y0 - 0.030, desc,
+            fontfamily=BODY, fontsize=9, color=GRAY,
+            ha='right', va='top', zorder=10)
+
+arrow_btn(ax, x=0.88, y=0.092)
+footer_line(ax)
+save(fig, 2)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 3 — Paso 1
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+step_badge(ax, "1", "INSTALAR\nCLAUDE CODE", x=0.07, y=0.92)
+ax.axhline(0.775, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.745,
+        "Abre VS Code y ve al panel de extensiones.\nBusca la extension oficial de Anthropic:",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.6)
+
+# extension card
+ax.add_patch(FancyBboxPatch((0.07, 0.555), 0.86, 0.095,
+                            boxstyle='round,pad=0.012',
+                            facecolor=WHITE, edgecolor=LGRAY,
+                            linewidth=1, zorder=6))
+ax.add_patch(Rectangle((0.07, 0.555), 0.007, 0.095,
+                        facecolor=RED, edgecolor='none', zorder=7))
+ax.text(0.16, 0.617, "Claude Code",
+        fontfamily=BODY_BOLD, fontsize=12, color=BLACK,
+        ha='left', va='center', zorder=8)
+ax.text(0.16, 0.585, "by Anthropic  —  Extensions Marketplace",
+        fontfamily=BODY, fontsize=9, color=GRAY,
+        ha='left', va='center', zorder=8)
+
+ax.text(0.07, 0.520, "Atajo de teclado:",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+cblock(ax, [
+    "Mac:    Cmd + Shift + X",
+    "Win:    Ctrl + Shift + X",
+    "Buscar: Claude Code  ->  Install",
+], x=0.07, y=0.475, w=0.86, lh=0.050)
+
+ax.text(0.07, 0.255,
+        "Una vez instalada, el panel de Claude Code\naparece en la barra lateral izquierda.",
+        fontfamily=SERIF, fontsize=12.5, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.6)
+
+arrow_btn(ax, x=0.88, y=0.092)
+footer_line(ax)
+save(fig, 3)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 4 — Paso 2
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+step_badge(ax, "2", "INSTALAR\nSKILLS", x=0.07, y=0.92)
+ax.axhline(0.775, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.745,
+        "Abre la terminal dentro de VS Code\ny ejecuta el siguiente comando:",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.6)
+
+cblock(ax, [
+    "# Instalar skills de marketing (32 tools)",
+    "npx skills add coreyhaines31/marketingskills",
+], x=0.07, y=0.640, w=0.86, lh=0.052)
+
+ax.text(0.07, 0.520,
+        "Cuando se active Claude Code, escribe\nel comando ",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10)
+ax.text(0.07, 0.455,
+        "/skill-creator",
+        fontfamily=BODY_BOLD, fontsize=14, color=RED,
+        ha='left', va='top', zorder=10)
+ax.text(0.295, 0.458,
+        " y describe lo que quieres crear.",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10)
+
+# note card
+ax.add_patch(FancyBboxPatch((0.07, 0.285), 0.86, 0.10,
+                            boxstyle='round,pad=0.012',
+                            facecolor=RED_LT, edgecolor=RED,
+                            linewidth=0.8, zorder=6))
+ax.text(0.14, 0.336, "Las skills se instalan en",
+        fontfamily=BODY, fontsize=10, color=BLACK,
+        ha='left', va='center', zorder=8)
+ax.text(0.14, 0.308, ".claude/skills/  y  .agents/skills/",
+        fontfamily=MONO, fontsize=9, color=RED,
+        ha='left', va='center', zorder=8)
+
+arrow_btn(ax, x=0.88, y=0.092)
+footer_line(ax)
+save(fig, 4)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 5 — Paso 3
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+step_badge(ax, "3", "ACTIVAR\nSKILLS", x=0.07, y=0.92)
+ax.axhline(0.775, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.745,
+        "Crea el contexto de tu negocio en:",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10)
+
+cblock(ax, [".agents/product-marketing-context.md"],
+       x=0.07, y=0.685, w=0.86, lh=0.052)
+
+ax.text(0.07, 0.600,
+        "Incluye la informacion clave de tu empresa:",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+items = [
+    "Que hace tu producto",
+    "A quien va dirigido y precios",
+    "Competidores y diferenciadores",
+    "Voz de marca y objetivos",
+]
+for i, txt in enumerate(items):
+    yy = 0.550 - i * 0.068
+    ax.add_patch(Rectangle((0.07, yy - 0.008), 0.018, 0.018,
+                            facecolor=RED, edgecolor='none', zorder=7))
+    ax.text(0.105, yy + 0.001, txt,
+            fontfamily=SERIF, fontsize=12.5, color=BLACK,
+            ha='left', va='center', zorder=10)
+
+# result
+ax.axhline(0.270, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.5, alpha=0.6, zorder=5)
+ax.text(0.07, 0.240,
+        "Todas las skills leen este archivo primero.",
+        fontfamily=BODY_BOLD, fontsize=11.5, color=BLACK,
+        ha='left', va='top', zorder=10)
+ax.text(0.07, 0.200,
+        "Claude ya sabe de tu negocio sin que se lo cuentes.",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+arrow_btn(ax, x=0.88, y=0.092)
+footer_line(ax)
+save(fig, 5)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 6 — Resultado
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+ax.text(0.5, 0.93,
+        "RESULTADO",
+        fontfamily=CAPS, fontsize=18, color=RED,
+        ha='center', va='top', zorder=10)
+ax.text(0.5, 0.865,
+        "Claude actua como experto\nen tu negocio desde\nel primer mensaje",
+        fontfamily=DISPLAY, fontsize=30, color=BLACK,
+        ha='center', va='top', zorder=10, linespacing=1.3)
+
+ax.axhline(0.670, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+# Two columns
+col_data = [
+    ("SIN Skills", RED, [
+        "Explicas el contexto cada vez",
+        "Respuestas genericas",
+        "No conoce tu producto",
+        "Pierde tiempo en cada sesion",
+    ]),
+    ("CON Skills", BLACK, [
+        "Recuerda tu negocio siempre",
+        "Respuestas especializadas",
+        "Activa el rol correcto solo",
+        "Listo desde el primer mensaje",
+    ]),
+]
+for i, (label, col, items) in enumerate(col_data):
+    xc = 0.26 + i * 0.48
+    ax.text(xc, 0.640, label,
+            fontfamily=CAPS, fontsize=12, color=col,
+            ha='center', va='top', zorder=10)
+    ax.axhline(0.610, xmin=0.07+i*0.48, xmax=0.07+i*0.48+0.44,
+               color=col, lw=1.2 if col==BLACK else 0.6,
+               alpha=0.4, zorder=5)
+    for j, txt in enumerate(items):
+        yy = 0.578 - j * 0.080
+        prefix = "+ " if col == BLACK else "- "
+        pfcol  = BLACK if col == BLACK else GRAY
+        ax.text(xc - 0.15, yy, prefix,
+                fontfamily=BODY_BOLD, fontsize=10, color=col,
+                ha='left', va='center', zorder=8)
+        ax.text(xc - 0.12, yy, txt,
+                fontfamily=BODY, fontsize=9.5, color=pfcol,
+                ha='left', va='center', zorder=8)
+
+# divider between columns
+ax.axvline(0.5, ymin=0.22, ymax=0.67,
+           color=LGRAY, lw=0.8, zorder=5)
+
+arrow_btn(ax, x=0.88, y=0.092)
+footer_line(ax)
+save(fig, 6)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 7 — CTA
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+ax.text(0.5, 0.935, "EMPIEZA HOY",
+        fontfamily=CAPS, fontsize=16, color=RED,
+        ha='center', va='top', zorder=10)
+
+ax.text(0.5, 0.875,
+        "Instala las skills de\nmarketing en 30 segundos",
+        fontfamily=DISPLAY, fontsize=34, color=BLACK,
+        ha='center', va='top', zorder=10, linespacing=1.25)
+
+ax.axhline(0.740, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.710,
+        "Copia y pega este comando en la terminal de VS Code:",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+cblock(ax, [
+    "npx skills add coreyhaines31/marketingskills",
+], x=0.07, y=0.645, w=0.86, lh=0.054)
+
+ax.text(0.5, 0.565,
+        "32 skills listas para usar",
+        fontfamily=BODY_BOLD, fontsize=13, color=BLACK,
+        ha='center', va='center', zorder=10)
+ax.text(0.5, 0.525,
+        "Ads  .  SEO  .  Email  .  CRO  .  Copy  .  y mas",
+        fontfamily=BODY, fontsize=11, color=RED,
+        ha='center', va='center', zorder=10)
+
+ax.axhline(0.490, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.5, alpha=0.5, zorder=5)
+
+actions = [
+    "Guarda este carrusel",
+    "Activa notificaciones para mas tutoriales",
+    "Pregunta lo que quieras en comentarios",
+]
+for i, txt in enumerate(actions):
+    yy = 0.445 - i * 0.070
+    ax.add_patch(Rectangle((0.07, yy - 0.010), 0.020, 0.020,
+                            facecolor=RED, edgecolor='none', zorder=7))
+    ax.text(0.105, yy + 0.001, txt,
+            fontfamily=SERIF, fontsize=12.5, color=BLACK,
+            ha='left', va='center', zorder=10)
+
+ax.axhline(0.225, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+ax.text(0.5, 0.170,
+        "gormaran.io  .  @gormaran_ai_marketing",
+        fontfamily=BODY_BOLD, fontsize=10.5, color=RED,
+        ha='center', va='center', zorder=10)
+
+footer_line(ax)
+save(fig, 7)
+
+print("\nCarrusel listo ->", OUT_DIR)

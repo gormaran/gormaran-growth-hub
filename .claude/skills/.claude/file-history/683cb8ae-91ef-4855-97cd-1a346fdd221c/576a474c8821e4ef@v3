@@ -1,0 +1,33 @@
+# Gormaran — Marketing Context
+
+Este proyecto contiene las herramientas de marketing para **Gormaran.io**, un SaaS de IA para marketing.
+
+## Contexto del producto
+
+Lee siempre `.agents/product-marketing-context.md` antes de responder cualquier pregunta de marketing. Contiene el briefing completo: producto, audiencia, precios, competidores, voz de marca y objetivos.
+
+## Skills disponibles
+
+Hay 32 skills de marketing instaladas en `.claude/skills/`. Se activan automáticamente según el contexto. Las más relevantes para este proyecto:
+
+- **paid-ads** — campañas de Google Ads, Meta Ads, LinkedIn
+- **ad-creative** — generación de creatividades y copy para anuncios
+- **copywriting** — copy para landing pages y webs
+- **page-cro** — optimización de conversión de páginas
+- **analytics-tracking** — setup de tracking y conversiones
+- **email-sequence** — secuencias de email marketing
+- **social-content** — contenido para redes sociales
+- **content-strategy** — estrategia de contenido
+
+## Idioma
+
+Responde siempre en **español** salvo que el usuario escriba en otro idioma.
+
+## Negocio
+
+- **Web:** gormaran.io
+- **Instagram:** @gormaran_ai_marketing
+- **Producto:** 30+ herramientas de IA para marketing (no chat genérico)
+- **Precio entrada:** €19/mes con trial 14 días sin tarjeta
+- **Mercado:** Hispanohablantes — España y Latam
+- **Objetivo principal:** Conseguir registros de prueba gratuita

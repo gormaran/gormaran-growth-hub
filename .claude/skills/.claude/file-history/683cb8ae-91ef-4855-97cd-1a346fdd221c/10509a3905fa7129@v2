@@ -1,0 +1,451 @@
+#!/usr/bin/env python3
+"""
+Instagram carousel: Crea tu primera Skill en Claude Code con VS Code
+Estilo editorial — fondo crema, rojo coral, serif/sans mixto
+7 slides 1080x1080px
+"""
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch, Rectangle
+from matplotlib import font_manager
+import os
+
+FONT_DIR = "/Users/gabiorma/.claude/plugins/cache/anthropic-agent-skills/example-skills/7029232b9212/skills/canvas-design/canvas-fonts"
+
+def reg(name):
+    p = os.path.join(FONT_DIR, name)
+    font_manager.fontManager.addfont(p)
+    return font_manager.FontProperties(fname=p).get_name()
+
+DISPLAY   = reg("Gloock-Regular.ttf")
+ITALIC    = reg("InstrumentSerif-Italic.ttf")
+SERIF     = reg("InstrumentSerif-Regular.ttf")
+CAPS      = reg("BricolageGrotesque-Bold.ttf")
+BODY      = reg("InstrumentSans-Regular.ttf")
+BODY_BOLD = reg("InstrumentSans-Bold.ttf")
+NUM       = reg("CrimsonPro-Italic.ttf")
+MONO      = reg("JetBrainsMono-Regular.ttf")
+
+CREAM  = "#F7F1E6"
+RED    = "#E0513A"
+RED_LT = "#FAEAE7"
+BLACK  = "#1A1918"
+GRAY   = "#7A7570"
+LGRAY  = "#D8D2CA"
+WHITE  = "#FFFFFF"
+
+OUT_DIR = "/Users/gabiorma/video-editor/Meta-Ads/carousel2"
+os.makedirs(OUT_DIR, exist_ok=True)
+
+DPI = 150
+SZ  = 7.2
+
+def new_slide():
+    fig = plt.figure(figsize=(SZ, SZ), dpi=DPI, facecolor=CREAM)
+    ax  = fig.add_axes([0, 0, 1, 1])
+    ax.set_facecolor(CREAM)
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+    ax.axis('off')
+    return fig, ax
+
+def save(fig, n):
+    path = f"{OUT_DIR}/slide_{n:02d}.png"
+    fig.savefig(path, dpi=DPI, bbox_inches='tight', facecolor=CREAM, pad_inches=0)
+    plt.close(fig)
+    print(f"  -> {path}")
+
+def footer_line(ax):
+    ax.axhline(0.07, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+    ax.text(0.5, 0.043, "@gormaran_ai_marketing",
+            fontfamily=BODY, fontsize=9, color=GRAY,
+            ha='center', va='center', zorder=10)
+
+def arrow_btn(ax, x=0.88, y=0.092):
+    ax.add_patch(FancyBboxPatch((x-0.055, y-0.038), 0.11, 0.076,
+                                boxstyle='round,pad=0.018',
+                                facecolor=WHITE, edgecolor=RED,
+                                linewidth=1.2, zorder=8))
+    ax.annotate('', xy=(x+0.018, y), xytext=(x-0.018, y),
+                arrowprops=dict(arrowstyle='->', color=RED, lw=1.5),
+                zorder=10)
+
+def step_badge(ax, num, label, x=0.07, y=0.92):
+    ax.text(x, y, num,
+            fontfamily=NUM, fontsize=60, color=RED,
+            ha='left', va='top', zorder=10)
+    ax.text(x + 0.14, y - 0.01, label,
+            fontfamily=CAPS, fontsize=20, color=BLACK,
+            ha='left', va='top', zorder=10)
+
+def red_pill(ax, text, x, y, w=0.26):
+    h = 0.058
+    ax.add_patch(FancyBboxPatch((x - w/2, y - h/2), w, h,
+                                boxstyle='round,pad=0.022',
+                                facecolor=WHITE, edgecolor=RED,
+                                linewidth=1.3, zorder=8))
+    ax.text(x, y, text, fontfamily=BODY_BOLD, fontsize=10,
+            color=RED, ha='center', va='center', zorder=10)
+
+def cblock(ax, lines, x, y, w, lh=0.048):
+    h = len(lines) * lh + 0.036
+    ax.add_patch(Rectangle((x, y - h + 0.018), w, h,
+                            facecolor="#EDE8DF", edgecolor='none', zorder=5))
+    ax.add_patch(Rectangle((x, y - h + 0.018), 0.006, h,
+                            facecolor=RED, edgecolor='none', zorder=6))
+    for i, line in enumerate(lines):
+        yy = y - 0.012 - i * lh
+        color = RED if line.startswith("#") else BLACK
+        ax.text(x + 0.022, yy, line,
+                fontfamily=MONO, fontsize=8.2, color=color,
+                ha='left', va='center', zorder=7)
+
+def pixel_mascot(ax, cx=0.5, cy=0.82, scale=0.048):
+    s = scale
+    def px(gx, gy, w=1, h=1, color=BLACK):
+        ax.add_patch(Rectangle((cx + gx*s - s*3, cy + gy*s - s*3),
+                                w*s, h*s, facecolor=color, edgecolor='none', zorder=8))
+    BODY_C = "#C4855A"; BODY_D = "#A06840"; CAPE_C = "#8B3A2A"
+    px(1,5, 4, 2, BODY_C)
+    px(1.5,6, 1, 0.7, BLACK); px(3.5,6, 1, 0.7, BLACK)
+    px(0.5,3, 5, 2, BODY_C)
+    px(2,3.5, 2, 1, CAPE_C)
+    ax.text(cx + 2.5*s - s*3 + s, cy + 4*s - s*3,
+            "C", fontfamily=BODY_BOLD, fontsize=int(scale*90), color=WHITE,
+            ha='center', va='center', zorder=9)
+    px(-0.5,3, 1.5, 2, CAPE_C); px(5,3, 1.5, 2, CAPE_C)
+    px(1,1, 1.5, 2, BODY_D); px(3.5,1, 1.5, 2, BODY_D)
+    px(-1,2.5, 1.5, 1, BODY_D); px(5.5,2.5, 1.5, 1, BODY_D)
+    px(2.8,7, 0.5, 1, BLACK)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 1 — Cover
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+pixel_mascot(ax, cx=0.5, cy=0.87, scale=0.048)
+
+ax.text(0.5, 0.720, "CREA TU PRIMERA",
+        fontfamily=CAPS, fontsize=22, color=RED,
+        ha='center', va='center', zorder=10)
+ax.text(0.5, 0.655, "SKILL EN",
+        fontfamily=CAPS, fontsize=22, color=RED,
+        ha='center', va='center', zorder=10)
+
+ax.text(0.5, 0.545, "CLAUDE",
+        fontfamily=DISPLAY, fontsize=62, color=BLACK,
+        ha='center', va='center', zorder=10)
+ax.text(0.5, 0.435, "code",
+        fontfamily=ITALIC, fontsize=52, color=BLACK,
+        ha='center', va='center', zorder=10)
+
+ax.text(0.33, 0.325, "EN",
+        fontfamily=SERIF, fontsize=14, color=BLACK,
+        ha='center', va='center', zorder=10)
+red_pill(ax, "VS CODE", x=0.56, y=0.325, w=0.28)
+
+ax.axhline(0.225, xmin=0.07, xmax=0.77, color=LGRAY, lw=0.9, zorder=5)
+arrow_btn(ax, x=0.88, y=0.225)
+
+footer_line(ax)
+save(fig, 1)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 2 — Que es una Skill
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+ax.text(0.07, 0.92, "QUE ES",
+        fontfamily=CAPS, fontsize=16, color=RED,
+        ha='left', va='top', zorder=10)
+ax.text(0.07, 0.86, "una Skill",
+        fontfamily=DISPLAY, fontsize=48, color=BLACK,
+        ha='left', va='top', zorder=10)
+
+ax.axhline(0.80, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.765,
+        "Un archivo de texto con instrucciones\n"
+        "que convierte a Claude en un experto\n"
+        "especializado en lo que tu definas.",
+        fontfamily=SERIF, fontsize=13.5, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.65)
+
+# file anatomy
+ax.text(0.07, 0.600, "Una Skill es simplemente esto:",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+cblock(ax, [
+    "# tu-skill/SKILL.md",
+    "---",
+    "name: tu-skill",
+    'description: "Cuando usar esta skill"',
+    "---",
+    "",
+    "# Instrucciones para Claude",
+    "Eres un experto en...",
+], x=0.07, y=0.555, w=0.86, lh=0.044)
+
+ax.text(0.07, 0.215,
+        "Eso es todo. Claude la lee y actua\n"
+        "como el experto que describiste.",
+        fontfamily=BODY_BOLD, fontsize=12, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.55)
+
+arrow_btn(ax)
+footer_line(ax)
+save(fig, 2)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 3 — Paso 1: Crear la estructura
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+step_badge(ax, "1", "CREAR LA\nESTRUCTURA", x=0.07, y=0.92)
+ax.axhline(0.775, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.745,
+        "En tu proyecto, crea esta carpeta\ny este archivo:",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.6)
+
+cblock(ax, [
+    "tu-proyecto/",
+    "  .claude/",
+    "    skills/",
+    "      mi-skill/",
+    "        SKILL.md    <-- este archivo",
+], x=0.07, y=0.648, w=0.86, lh=0.050)
+
+ax.text(0.07, 0.435,
+        "O desde la terminal de VS Code:",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+cblock(ax, [
+    "mkdir -p .claude/skills/mi-skill",
+    "touch .claude/skills/mi-skill/SKILL.md",
+], x=0.07, y=0.388, w=0.86, lh=0.050)
+
+ax.add_patch(FancyBboxPatch((0.07, 0.200), 0.86, 0.080,
+                            boxstyle='round,pad=0.012',
+                            facecolor=RED_LT, edgecolor=RED,
+                            linewidth=0.8, zorder=6))
+ax.text(0.5, 0.241,
+        "El nombre de la carpeta = nombre de la skill",
+        fontfamily=BODY_BOLD, fontsize=10.5, color=RED,
+        ha='center', va='center', zorder=8)
+
+arrow_btn(ax)
+footer_line(ax)
+save(fig, 3)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 4 — Paso 2: Escribir el SKILL.md
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+step_badge(ax, "2", "ESCRIBIR EL\nSKILL.MD", x=0.07, y=0.92)
+ax.axhline(0.775, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.745,
+        "El archivo tiene dos partes:",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10)
+
+# part 1
+ax.text(0.07, 0.698, "1. Cabecera (obligatoria)",
+        fontfamily=BODY_BOLD, fontsize=11, color=RED,
+        ha='left', va='top', zorder=10)
+cblock(ax, [
+    "---",
+    "name: mi-skill",
+    'description: "Usar cuando el usuario pida X.',
+    '             Activo para tareas de Y."',
+    "---",
+], x=0.07, y=0.658, w=0.86, lh=0.044)
+
+# part 2
+ax.text(0.07, 0.470, "2. Instrucciones (libre)",
+        fontfamily=BODY_BOLD, fontsize=11, color=RED,
+        ha='left', va='top', zorder=10)
+cblock(ax, [
+    "# Mi Skill",
+    "",
+    "Eres un experto en [tema].",
+    "Cuando el usuario pregunte, siempre:",
+    "- Haz esto primero",
+    "- Luego esto",
+    "- Responde en este formato",
+], x=0.07, y=0.432, w=0.86, lh=0.042)
+
+ax.text(0.07, 0.188,
+        "La description es clave — Claude decide\nactivar la skill basandose en ella.",
+        fontfamily=SERIF, fontsize=12, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.55)
+
+arrow_btn(ax)
+footer_line(ax)
+save(fig, 4)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 5 — Paso 3: Usar /skill-creator
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+step_badge(ax, "3", "ATAJO CON\n/SKILL-CREATOR", x=0.07, y=0.92)
+ax.axhline(0.775, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.745,
+        "En lugar de escribirlo a mano,\npuedes pedirle a Claude que lo cree:",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.6)
+
+cblock(ax, [
+    "/skill-creator",
+    "# Describe lo que quieres:",
+    "Skill para emails de ventas",
+], x=0.07, y=0.650, w=0.86, lh=0.048)
+
+# 3 lines: h = 3*0.048 + 0.036 = 0.180 → bottom at 0.650 - 0.180 + 0.018 = 0.488
+ax.text(0.07, 0.450, "Claude generara automaticamente:",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+items = [
+    ("El SKILL.md completo",         "con name y description optimizados"),
+    ("Las instrucciones detalladas",  "basadas en lo que describiste"),
+    ("Casos de prueba",               "para verificar que funciona bien"),
+]
+for i, (title, sub) in enumerate(items):
+    yy = 0.400 - i * 0.080
+    ax.add_patch(Rectangle((0.07, yy - 0.010), 0.018, 0.018,
+                            facecolor=RED, edgecolor='none', zorder=7))
+    ax.text(0.105, yy + 0.001, title,
+            fontfamily=BODY_BOLD, fontsize=11, color=BLACK,
+            ha='left', va='center', zorder=10)
+    ax.text(0.105, yy - 0.028, sub,
+            fontfamily=BODY, fontsize=9.5, color=GRAY,
+            ha='left', va='center', zorder=10)
+
+arrow_btn(ax)
+footer_line(ax)
+save(fig, 5)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 6 — Resultado
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+ax.text(0.5, 0.935, "RESULTADO",
+        fontfamily=CAPS, fontsize=18, color=RED,
+        ha='center', va='top', zorder=10)
+ax.text(0.5, 0.870,
+        "Claude usa tu skill\nautomaticamente",
+        fontfamily=DISPLAY, fontsize=36, color=BLACK,
+        ha='center', va='top', zorder=10, linespacing=1.25)
+
+ax.axhline(0.740, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+# mini conversation mockup
+ax.text(0.07, 0.710, "En la practica:",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+convos = [
+    (True,  "Escribe un email de ventas para mi SaaS"),
+    (False, "Veo que quieres un email de ventas.\nAplicando mi skill especializada..."),
+    (True,  "Perfecto, usaste el tono correcto"),
+    (False, "La skill define exactamente como\nresponder en este contexto."),
+]
+for i, (is_user, txt) in enumerate(convos):
+    yy = 0.655 - i * 0.125
+    xpos = 0.55 if is_user else 0.07
+    align = 'right' if is_user else 'left'
+    bg = RED_LT if is_user else "#EDE8DF"
+    border = RED if is_user else LGRAY
+    w = 0.38
+    xrect = (0.93 - w) if is_user else 0.07
+    lines = txt.count('\n') + 1
+    h = 0.045 + lines * 0.032
+    ax.add_patch(FancyBboxPatch((xrect, yy - h + 0.01), w, h,
+                                boxstyle='round,pad=0.012',
+                                facecolor=bg, edgecolor=border,
+                                linewidth=0.7, zorder=6))
+    label = "Tu" if is_user else "Claude"
+    col   = RED if is_user else GRAY
+    ax.text(xrect + (w if is_user else 0), yy + 0.010,
+            label, fontfamily=BODY_BOLD, fontsize=7.5, color=col,
+            ha='right' if is_user else 'left', va='center', zorder=8)
+    ax.text(xrect + w/2, yy - h/2 + 0.018, txt,
+            fontfamily=BODY, fontsize=8.5, color=BLACK,
+            ha='center', va='center', zorder=8, linespacing=1.4)
+
+ax.axhline(0.195, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.5, alpha=0.6, zorder=5)
+ax.text(0.07, 0.168,
+        "Sin configurar nada mas. Solo crea el SKILL.md y funciona.",
+        fontfamily=BODY_BOLD, fontsize=10.5, color=BLACK,
+        ha='left', va='top', zorder=10)
+
+arrow_btn(ax)
+footer_line(ax)
+save(fig, 6)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 7 — CTA
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+ax.text(0.5, 0.935, "PRUEBALO AHORA",
+        fontfamily=CAPS, fontsize=16, color=RED,
+        ha='center', va='top', zorder=10)
+
+ax.text(0.5, 0.875,
+        "Tu primera Skill\nen menos de 5 minutos",
+        fontfamily=DISPLAY, fontsize=36, color=BLACK,
+        ha='center', va='top', zorder=10, linespacing=1.25)
+
+ax.axhline(0.748, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.718,
+        "Abre Claude Code y escribe:",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+cblock(ax, ["/skill-creator"], x=0.07, y=0.670, w=0.86, lh=0.056)
+
+ax.text(0.5, 0.578,
+        "Describe que quieres que haga tu skill\ny Claude la construye contigo.",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='center', va='center', zorder=10, linespacing=1.5)
+
+ax.axhline(0.510, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.5, alpha=0.5, zorder=5)
+
+ideas = [
+    "Skill para escribir copy publicitario",
+    "Skill para analizar resultados de campanas",
+    "Skill para generar ideas de contenido",
+]
+ax.text(0.07, 0.488, "Ideas para empezar:",
+        fontfamily=BODY_BOLD, fontsize=10, color=RED,
+        ha='left', va='top', zorder=10)
+for i, txt in enumerate(ideas):
+    yy = 0.440 - i * 0.065
+    ax.add_patch(Rectangle((0.07, yy - 0.009), 0.016, 0.016,
+                            facecolor=RED, edgecolor='none', zorder=7))
+    ax.text(0.100, yy + 0.001, txt,
+            fontfamily=SERIF, fontsize=12, color=BLACK,
+            ha='left', va='center', zorder=10)
+
+ax.axhline(0.225, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+ax.text(0.5, 0.170,
+        "gormaran.io  .  @gormaran_ai_marketing",
+        fontfamily=BODY_BOLD, fontsize=10.5, color=RED,
+        ha='center', va='center', zorder=10)
+
+footer_line(ax)
+save(fig, 7)
+
+print("\nCarrusel 2 listo ->", OUT_DIR)

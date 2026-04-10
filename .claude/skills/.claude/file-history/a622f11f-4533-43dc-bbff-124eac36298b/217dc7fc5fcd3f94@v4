@@ -1,0 +1,205 @@
+import * as XLSX from 'xlsx';
+import * as fs from 'fs';
+import * as path from 'path';
+import OpenAI from 'openai';
+import sqlite from 'better-sqlite3';
+import logger from '../logger';
+
+const DB_PATH = 'roboto.sqlite';
+
+function getDb() {
+  return sqlite(DB_PATH);
+}
+
+function cosineSimilarity(a: Float32Array, b: Float32Array): number {
+  let dot = 0, normA = 0, normB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+function bufferToFloat32(buf: Buffer): Float32Array {
+  // SQLite returns a Buffer whose underlying ArrayBuffer may be shared; copy to own ArrayBuffer
+  const copy = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+  return new Float32Array(copy);
+}
+
+function float32ToBuffer(arr: Float32Array): Buffer {
+  return Buffer.from(arr.buffer);
+}
+
+/**
+ * Converts an Excel file to an array of text chunks.
+ * Each row becomes one chunk: "Header1: value1 | Header2: value2 | ..."
+ */
+function excelToChunks(filePath: string): Array<{ text: string; source: string }> {
+  const wb = XLSX.readFile(filePath);
+  const fileName = path.basename(filePath);
+  const chunks: Array<{ text: string; source: string }> = [];
+
+  for (const sheetName of wb.SheetNames) {
+    const rows: any[][] = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {
+      header: 1,
+      defval: '',
+    });
+    if (rows.length < 2) continue;
+
+    const headers = (rows[0] as any[]).map(h => String(h).trim());
+
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i] as any[];
+      const pairs = headers
+        .map((h, j) => ({ h, v: String(row[j] ?? '').trim() }))
+        .filter(({ h, v }) => h && v);
+
+      if (pairs.length === 0) continue;
+
+      chunks.push({
+        text: pairs.map(({ h, v }) => `${h}: ${v}`).join(' | '),
+        source: `${fileName} › ${sheetName} › row ${i + 1}`,
+      });
+    }
+  }
+
+  return chunks;
+}
+
+class RagService {
+  private openai: OpenAI;
+  private enabled: boolean;
+
+  constructor() {
+    this.enabled = !!process.env.OPENAI_API_KEY;
+    if (!this.enabled) {
+      logger.warn('[RAG] OPENAI_API_KEY not set — RAG knowledge base is disabled.');
+    }
+    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'placeholder' });
+  }
+
+  private async embed(text: string): Promise<Float32Array> {
+    const res = await this.openai.embeddings.create({
+      model: 'text-embedding-3-small',
+      input: text.slice(0, 8000),
+    });
+    return new Float32Array(res.data[0].embedding);
+  }
+
+  /**
+   * Index all Excel files in dataDir.
+   * Uses file mtime to skip unchanged files — safe to call on every startup.
+   */
+  public async indexDataDir(dataDir: string): Promise<void> {
+    if (!this.enabled) return;
+
+    if (!fs.existsSync(dataDir)) {
+      logger.warn(`[RAG] Data directory "${dataDir}" not found. Create it and add .xlsx files.`);
+      return;
+    }
+
+    const files = fs.readdirSync(dataDir).filter(f => /\.(xlsx|xls)$/i.test(f));
+    if (files.length === 0) {
+      logger.info('[RAG] No Excel files found in data directory.');
+      return;
+    }
+
+    const db = getDb();
+    for (const file of files) {
+      const filePath = path.join(dataDir, file);
+      const mtimeMs = fs.statSync(filePath).mtimeMs;
+
+      const existing = db.prepare(
+        `SELECT mtime_ms FROM knowledge_files WHERE filename = ?`
+      ).get(file) as { mtime_ms: number } | undefined;
+
+      if (existing?.mtime_ms === mtimeMs) {
+        logger.info(`[RAG] ${file} unchanged — skipping.`);
+        continue;
+      }
+
+      logger.info(`[RAG] Indexing ${file}...`);
+
+      // Remove stale data for this file
+      db.prepare(`DELETE FROM knowledge_chunks WHERE source LIKE ?`).run(`${file}%`);
+      db.prepare(`DELETE FROM knowledge_files WHERE filename = ?`).run(file);
+
+      const chunks = excelToChunks(filePath);
+      const insert = db.prepare(
+        `INSERT INTO knowledge_chunks (source, chunk_text, embedding) VALUES (?, ?, ?)`
+      );
+
+      let indexed = 0;
+      for (const chunk of chunks) {
+        try {
+          const embedding = await this.embed(chunk.text);
+          insert.run(chunk.source, chunk.text, float32ToBuffer(embedding));
+          indexed++;
+        } catch (e: any) {
+          logger.error(`[RAG] Failed to embed "${chunk.source}": ${e.message}`);
+        }
+      }
+
+      db.prepare(
+        `INSERT OR REPLACE INTO knowledge_files (filename, mtime_ms, chunk_count) VALUES (?, ?, ?)`
+      ).run(file, mtimeMs, indexed);
+
+      logger.info(`[RAG] Indexed ${indexed}/${chunks.length} chunks from ${file}`);
+    }
+    db.close();
+  }
+
+  /**
+   * Force re-index all files (wipes and rebuilds the knowledge base).
+   */
+  public async reindexAll(dataDir: string): Promise<void> {
+    if (!this.enabled) return;
+    const db = getDb();
+    db.prepare(`DELETE FROM knowledge_chunks`).run();
+    db.prepare(`DELETE FROM knowledge_files`).run();
+    db.close();
+    await this.indexDataDir(dataDir);
+  }
+
+  /**
+   * Find the top-K most relevant chunks for a user query.
+   * Returns a formatted SYSTEM string ready to inject into the system prompt.
+   */
+  public async query(userQuery: string, topK = 5): Promise<string> {
+    if (!this.enabled) return '';
+
+    const db = getDb();
+    const rows = db.prepare(
+      `SELECT source, chunk_text, embedding FROM knowledge_chunks`
+    ).all() as Array<{ source: string; chunk_text: string; embedding: Buffer }>;
+    db.close();
+
+    if (rows.length === 0) return '';
+
+    const queryVec = await this.embed(userQuery);
+    const SCORE_THRESHOLD = 0.35;
+
+    const scored = rows
+      .map(row => ({
+        text: row.chunk_text,
+        source: row.source,
+        score: cosineSimilarity(queryVec, bufferToFloat32(row.embedding)),
+      }))
+      .filter(r => r.score >= SCORE_THRESHOLD)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, topK);
+
+    if (scored.length === 0) return '';
+
+    logger.debug(`[RAG] Found ${scored.length} relevant chunks (top score: ${scored[0].score.toFixed(3)})`);
+
+    return (
+      'SYSTEM: The following internal records are relevant to the user\'s question. ' +
+      'Use them to answer accurately. Do not reveal source file paths to the user.\n' +
+      scored.map(r => `• [${r.source}] ${r.text}`).join('\n')
+    );
+  }
+}
+
+export default new RagService();

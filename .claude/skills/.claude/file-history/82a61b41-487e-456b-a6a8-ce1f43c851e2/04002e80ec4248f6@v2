@@ -1,0 +1,27 @@
+{
+  "eval_id": 2,
+  "eval_name": "winback-email-60day-inactive",
+  "prompt": "Write a win-back email for TaskFlow. This user signed up 3 months ago, was active for 2 weeks, then went completely silent for 60 days. We don't know why they stopped. We want to re-engage them — not immediately push them to upgrade, just get them back in the app.",
+  "assertions": [
+    {
+      "text": "Output contains exactly 3 subject line options (numbered or bulleted)",
+      "method": "programmatic"
+    },
+    {
+      "text": "Email body word count is between 100 and 200 words",
+      "method": "programmatic"
+    },
+    {
+      "text": "Email does not start with or prominently feature the phrase 'We miss you'",
+      "method": "programmatic"
+    },
+    {
+      "text": "Email does not push the user to upgrade to a paid plan — the CTA is about returning to the app, not upgrading",
+      "method": "llm-graded"
+    },
+    {
+      "text": "Email body contains exactly one call-to-action",
+      "method": "llm-graded"
+    }
+  ]
+}

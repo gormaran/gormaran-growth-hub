@@ -1,0 +1,188 @@
+# Auditoría SEO — riojalta.com
+*Fecha: 7 de abril de 2026*
+
+---
+
+## Resumen ejecutivo
+
+El sitio tiene una base técnica funcional pero presenta **carencias SEO significativas** que limitan su visibilidad orgánica. La marca tiene autoridad, historia y contenido de calidad — el problema es que Google no puede leerlo ni indexarlo bien. Las prioridades son claras y la mayoría son correcciones rápidas.
+
+**Puntuación estimada de salud SEO: 4/10**
+
+### Top 5 problemas críticos
+1. **Sitemap XML no existe** (404) — Google no tiene mapa del sitio
+2. **Sin meta descriptions** en ninguna página detectada
+3. **Títulos sin keywords** — la homepage solo dice "La Rioja Alta, S.A."
+4. **URLs con guiones bajos** en lugar de guiones — penalización técnica de Google
+5. **Hreflang probablemente ausente** — el sitio ES/EN no está declarado para Google
+
+---
+
+## Hallazgos Técnicos
+
+### 1. Sitemap XML
+- **Problema:** `/sitemap.xml` y `/sitemap_index.xml` devuelven **404**. El sitio no tiene sitemap accesible.
+- **Impacto:** CRÍTICO
+- **Fix:** Generar sitemap XML con todas las URLs canónicas (vinos, bodegas, enoturismo, blog, tienda) y subirlo. Recomendado: `riojalta.com/sitemap.xml`
+- **Prioridad:** 1
+
+### 2. Robots.txt incompleto
+- **Problema:** El `robots.txt` solo tiene 6 líneas para 3 bots de Google, sin directiva `Sitemap:` y sin cobertura de otros crawlers (Bingbot, etc.)
+- **Impacto:** ALTO
+- **Fix:** Añadir al robots.txt:
+  ```
+  User-agent: *
+  Disallow:
+
+  Sitemap: https://www.riojalta.com/sitemap.xml
+  ```
+- **Prioridad:** 1
+
+### 3. URLs con guiones bajos
+- **Problema:** Estructura actual: `/vinos_rioja-alta/`, `/grupo-la-rioja-alta/`. Google trata `_` como concatenador de palabras, no como separador. `vinos_rioja` se indexa como una sola palabra.
+- **Impacto:** ALTO
+- **Fix:** Migrar a `/vinos/rioja-alta/` con redirecciones 301 desde las URLs actuales.
+- **Prioridad:** 2
+
+### 4. Hreflang ES/EN
+- **Problema:** El sitio tiene versión española (`/`) e inglesa (`/en/`) pero no se detectan etiquetas `hreflang`. Google puede indexar ambas como contenido duplicado o mostrar la versión incorrecta por país.
+- **Impacto:** ALTO (especialmente relevante dado el mercado UK, Alemania, EE.UU.)
+- **Fix:** Añadir en el `<head>` de cada página:
+  ```html
+  <link rel="alternate" hreflang="es" href="https://www.riojalta.com/[ruta]" />
+  <link rel="alternate" hreflang="en" href="https://www.riojalta.com/en/[ruta]" />
+  <link rel="alternate" hreflang="x-default" href="https://www.riojalta.com/[ruta]" />
+  ```
+- **Prioridad:** 2
+
+### 5. Canonical tags
+- **Problema:** No se detectan en el HTML. Pueden estar inyectados por JavaScript (no confirmable vía esta auditoría).
+- **Fix:** Verificar con [Rich Results Test](https://search.google.com/test/rich-results) y Google Search Console → Cobertura. Asegurar canonical self-referencing en todas las páginas.
+- **Prioridad:** 2
+
+---
+
+## Hallazgos On-Page
+
+### 6. Meta descriptions — ausentes en todo el sitio
+- **Problema:** Ninguna página auditada tiene meta description. Google genera snippets automáticos que suelen ser fragmentos de texto descontextualizados.
+- **Impacto:** CRÍTICO — afecta CTR directamente
+- **Páginas prioritarias a corregir:**
+
+| Página | Meta description sugerida |
+|--------|--------------------------|
+| Homepage | `Bodegas fundada en 1890 en Haro. Gran Reserva 904, Viña Ardanza y más. Vinos de Rioja, Rías Baixas y Ribera del Duero de referencia mundial.` |
+| /vinos_rioja-alta/ | `Descubre Gran Reserva 890, Gran Reserva 904, Viña Ardanza y Viña Alberdi — los grandes vinos de La Rioja Alta, S.A. con décadas de crianza tradicional.` |
+| /enoturismo/ | `Visita nuestras bodegas en Haro, Laguardia, Rías Baixas y Ribera del Duero. Catas, visitas guiadas y experiencias exclusivas desde 15€.` |
+| /blog-noticias/ | `Noticias, premios y artículos sobre los vinos del Grupo La Rioja Alta, S.A. Actualidad del mundo del vino con 130 años de perspectiva.` |
+
+- **Prioridad:** 1
+
+### 7. Title tags sin keywords
+- **Problema:** La homepage tiene como título únicamente `La Rioja Alta, S.A.`. No incluye ningún término de búsqueda relevante.
+- **Impacto:** ALTO
+- **Fix sugerido:**
+
+| Página | Título actual | Título propuesto |
+|--------|--------------|-----------------|
+| Homepage | `La Rioja Alta, S.A.` | `Vinos de Rioja Premium · La Rioja Alta, S.A. desde 1890` |
+| /vinos_rioja-alta/ | No detectado | `Gran Reserva 904, Viña Ardanza y más · La Rioja Alta, S.A.` |
+| /enoturismo/ | No detectado | `Enoturismo en La Rioja, Rías Baixas y Ribera del Duero · RASA` |
+| /blog-noticias/ | `Blog y noticias del Grupo La Rioja Alta, S.A.` | `Noticias y Blog de Vinos · Grupo La Rioja Alta, S.A.` ✓ |
+
+- **Prioridad:** 1
+
+### 8. H1 no alineado con intención de búsqueda
+- **Problema:** `"El fruto del tiempo"` es una frase de marca poética pero invisible para Google. Nadie busca esa frase. Lo mismo en inglés: `"The fruits of our history"`.
+- **Impacto:** MEDIO
+- **Opciones:** Mantener el copy creativo visible pero añadir un H1 semántico oculto visualmente, o rediseñar la sección hero con keyword + claim.
+- **Ejemplo:** H1: `Vinos de Rioja de alta expresión` / Subtítulo: *"El fruto del tiempo"*
+- **Prioridad:** 3
+
+### 9. H1 ausente en la página de Blog
+- **Problema:** `/blog-noticias/` no tiene H1 detectado. La página tiene buen título (`Blog y noticias...`) pero sin H1 el signal de keyword no llega al contenido.
+- **Fix:** Añadir `<h1>Blog y Noticias · Grupo La Rioja Alta, S.A.</h1>`
+- **Prioridad:** 2
+
+### 10. Headers semánticos en página de Historia
+- **Problema:** La página `/grupo-la-rioja-alta/` usa años (1890, 1904…) como separadores de sección en lugar de H2s con keywords. El contenido histórico es valioso pero Google no lo estructura correctamente.
+- **Fix:** Wrappear cada bloque histórico en `<h2>` con título descriptivo: `<h2>1890 — Fundación en Haro</h2>`
+- **Prioridad:** 3
+
+### 11. Alt text de imágenes genérico
+- **Problema:** Se detecta `alt="rasa-logo"` repetido varias veces. Las imágenes de producto (botellas, viñedos) probablemente tienen alt vacío o genérico.
+- **Impacto:** MEDIO — pérdida de tráfico de Google Images y señal de relevancia
+- **Fix:** Ejemplos de alt text correctos:
+  - `alt="Botella Gran Reserva 904 de La Rioja Alta, S.A."`
+  - `alt="Viñedo de Torre de Oña en Rioja Alavesa en otoño"`
+  - `alt="Logo La Rioja Alta, S.A."` (no "rasa-logo")
+- **Prioridad:** 2
+
+---
+
+## Hallazgos de Contenido
+
+### 12. Oportunidades de keyword targeting
+
+| Keyword | Intención | Página sugerida |
+|---------|-----------|----------------|
+| `comprar vino rioja gran reserva` | Transaccional | Tienda / fichas de producto |
+| `mejores vinos rioja alta` | Informacional | Blog / categoría |
+| `visita bodegas Haro` | Local/transaccional | /enoturismo/ |
+| `viña ardanza reserva 2016` | Transaccional | Ficha de producto |
+| `best rioja wine to buy` | Transaccional EN | Versión inglesa |
+| `albariño rias baixas` | Informacional | Lagar de Fornelos |
+
+### 13. Schema Markup — pendiente de verificación
+- **No detectable** vía auditoría estática (Google Tag Manager puede inyectarlo dinámicamente)
+- **Verificar en:** [Rich Results Test](https://search.google.com/test/rich-results)
+- **Schemas prioritarios a implementar si no existen:**
+  - `Organization` — homepage
+  - `Product` / `Wine` — fichas de vino
+  - `TouristAttraction` / `LocalBusiness` — enoturismo
+  - `Article` — posts de blog
+  - `BreadcrumbList` — navegación
+
+### 14. E-E-A-T
+- **Fortalezas:** Historia verificable (130+ años), premios recientes (Top 10 mundial, Premios Verema), personas nombradas (Roberto Frías, Raquel Pérez Cuevas)
+- **Gap:** No se detectan páginas de autor en el blog, ni bylines en artículos.
+- **Fix:** Añadir páginas de autor con bio y foto para el equipo que firma artículos.
+
+---
+
+## Plan de Acción Priorizado
+
+### Semana 1 — Crítico (máximo impacto, mínimo esfuerzo)
+- [ ] Crear y publicar `sitemap.xml` con todas las URLs indexables
+- [ ] Añadir directiva `Sitemap:` y `User-agent: *` al robots.txt
+- [ ] Escribir meta descriptions para las 10 páginas principales
+- [ ] Corregir title tags de homepage y páginas de bodega
+
+### Semana 2-3 — Alto impacto
+- [ ] Implementar hreflang en todas las páginas ES/EN
+- [ ] Verificar y corregir canonical tags (Search Console → Cobertura)
+- [ ] Auditar alt text de todas las imágenes (Screaming Frog recomendado)
+- [ ] Añadir H1 a la página de Blog
+- [ ] Verificar schema markup con Rich Results Test
+
+### Mes 2 — Mejoras estructurales
+- [ ] Migrar URLs con `_` a `-` con redirecciones 301
+- [ ] Implementar schemas Product y Organization si no existen
+- [ ] Crear páginas de autor para el blog
+- [ ] Optimizar posts de blog existentes para keywords de intención
+
+### Largo plazo
+- [ ] Estrategia de contenido basada en keywords (ver plan-editorial-2026.md)
+- [ ] SEO para mercados internacionales (UK, DE, USA, JP)
+- [ ] Link building mediante notas de prensa y menciones en prensa especializada
+
+---
+
+## Herramientas recomendadas
+
+| Herramienta | Para qué | Coste |
+|-------------|---------|-------|
+| **Google Search Console** | Cobertura, Core Web Vitals, rendimiento | Gratis |
+| **Rich Results Test** | Verificar schema markup real | Gratis |
+| **Screaming Frog** | Audit completo de alt texts, redirects, canonicals | €149/año |
+| **PageSpeed Insights** | Core Web Vitals de todas las páginas | Gratis |

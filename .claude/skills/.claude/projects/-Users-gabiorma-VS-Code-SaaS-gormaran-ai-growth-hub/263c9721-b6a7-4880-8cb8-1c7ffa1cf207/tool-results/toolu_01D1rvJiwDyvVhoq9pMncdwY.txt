@@ -1,0 +1,2575 @@
+     1→/* ========== HERO ========== */
+     2→.landing__hero {
+     3→  position: relative;
+     4→  min-height: 100vh;
+     5→  display: flex;
+     6→  align-items: center;
+     7→  overflow: hidden;
+     8→  padding: 8rem 0 4rem;
+     9→}
+    10→
+    11→.landing__hero .container {
+    12→  display: grid;
+    13→  grid-template-columns: 1fr 1fr;
+    14→  gap: 4rem;
+    15→  align-items: center;
+    16→  width: 100%;
+    17→}
+    18→
+    19→/* Background */
+    20→.landing__hero-bg {
+    21→  position: absolute;
+    22→  inset: 0;
+    23→  pointer-events: none;
+    24→  overflow: hidden;
+    25→}
+    26→
+    27→.landing__orb {
+    28→  position: absolute;
+    29→  border-radius: 50%;
+    30→  filter: blur(80px);
+    31→  opacity: 0.12;
+    32→}
+    33→
+    34→.landing__orb-1 {
+    35→  width: 600px; height: 600px;
+    36→  background: radial-gradient(circle, #6366f1, transparent 70%);
+    37→  top: -200px; left: -200px;
+    38→  animation: float-orb 12s ease-in-out infinite;
+    39→}
+    40→
+    41→.landing__orb-2 {
+    42→  width: 400px; height: 400px;
+    43→  background: radial-gradient(circle, #8b5cf6, transparent 70%);
+    44→  bottom: -100px; right: 10%;
+    45→  animation: float-orb 15s ease-in-out infinite reverse;
+    46→}
+    47→
+    48→.landing__orb-3 {
+    49→  width: 300px; height: 300px;
+    50→  background: radial-gradient(circle, #06b6d4, transparent 70%);
+    51→  top: 40%; right: 30%;
+    52→  animation: float-orb 10s ease-in-out infinite 3s;
+    53→}
+    54→
+    55→@keyframes float-orb {
+    56→  0%, 100% { transform: translate(0, 0) scale(1); }
+    57→  33% { transform: translate(30px, -20px) scale(1.05); }
+    58→  66% { transform: translate(-20px, 30px) scale(0.95); }
+    59→}
+    60→
+    61→.landing__grid-pattern {
+    62→  position: absolute;
+    63→  inset: 0;
+    64→  background-image:
+    65→    linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+    66→    linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+    67→  background-size: 48px 48px;
+    68→  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    69→}
+    70→
+    71→/* Hero content */
+    72→.landing__hero-content {
+    73→  display: flex;
+    74→  flex-direction: column;
+    75→  gap: 1.5rem;
+    76→  z-index: 1;
+    77→}
+    78→
+    79→.landing__hero-badge {
+    80→  display: inline-flex;
+    81→  align-items: center;
+    82→  gap: 0.5rem;
+    83→  padding: 0.4rem 1rem;
+    84→  border-radius: 100px;
+    85→  background: rgba(99,102,241,0.1);
+    86→  border: 1px solid rgba(99,102,241,0.25);
+    87→  color: #a5b4fc;
+    88→  font-size: 0.82rem;
+    89→  font-weight: 600;
+    90→  letter-spacing: 0.04em;
+    91→}
+    92→
+    93→.landing__hero-title {
+    94→  font-size: clamp(2.4rem, 5vw, 4rem);
+    95→  font-weight: 900;
+    96→  line-height: 1.1;
+    97→  letter-spacing: -0.04em;
+    98→}
+    99→
+   100→.landing__hero-subtitle {
+   101→  font-size: 1.1rem;
+   102→  line-height: 1.7;
+   103→  max-width: 500px;
+   104→  color: var(--text-secondary);
+   105→}
+   106→
+   107→.landing__hero-actions {
+   108→  display: flex;
+   109→  gap: 1rem;
+   110→  flex-wrap: wrap;
+   111→}
+   112→
+   113→.landing__cta-btn {
+   114→  position: relative;
+   115→  overflow: hidden;
+   116→}
+   117→
+   118→.landing__cta-btn::before {
+   119→  content: '';
+   120→  position: absolute;
+   121→  top: 0; left: -100%;
+   122→  width: 100%; height: 100%;
+   123→  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+   124→  transition: left 0.5s ease;
+   125→}
+   126→
+   127→.landing__cta-btn:hover::before { left: 100%; }
+   128→
+   129→.landing__cta-arrow {
+   130→  transition: transform 0.2s ease;
+   131→}
+   132→
+   133→.landing__cta-btn:hover .landing__cta-arrow {
+   134→  transform: translateX(4px);
+   135→}
+   136→
+   137→/* Trust badges */
+   138→.landing__hero-trust {
+   139→  display: flex;
+   140→  align-items: center;
+   141→  gap: 0.5rem;
+   142→  flex-wrap: wrap;
+   143→}
+   144→
+   145→.landing__trust-item {
+   146→  display: inline-flex;
+   147→  align-items: center;
+   148→  gap: 0.3rem;
+   149→  font-size: 0.8rem;
+   150→  color: var(--text-muted);
+   151→}
+   152→
+   153→.landing__trust-check {
+   154→  color: #22c55e;
+   155→  font-weight: 700;
+   156→  font-size: 0.75rem;
+   157→}
+   158→
+   159→.landing__trust-divider {
+   160→  color: var(--border-color);
+   161→  font-size: 0.9rem;
+   162→}
+   163→
+   164→.landing__cta-trust {
+   165→  display: flex;
+   166→  align-items: center;
+   167→  gap: 0.5rem;
+   168→  flex-wrap: wrap;
+   169→  justify-content: center;
+   170→  margin-top: 0.25rem;
+   171→}
+   172→
+   173→.landing__hero-social-proof {
+   174→  display: flex;
+   175→  align-items: center;
+   176→  gap: 0.75rem;
+   177→  font-size: 0.875rem;
+   178→  color: var(--text-muted);
+   179→}
+   180→
+   181→.landing__hero-social-proof strong { color: var(--text-secondary); }
+   182→
+   183→.landing__avatars {
+   184→  display: flex;
+   185→}
+   186→
+   187→.landing__avatar {
+   188→  width: 28px; height: 28px;
+   189→  border-radius: 50%;
+   190→  background: var(--gradient-primary);
+   191→  border: 2px solid var(--bg-base);
+   192→  display: flex;
+   193→  align-items: center;
+   194→  justify-content: center;
+   195→  font-size: 0.65rem;
+   196→  font-weight: 700;
+   197→  color: white;
+   198→  margin-left: -8px;
+   199→}
+   200→
+   201→.landing__avatar:first-child { margin-left: 0; }
+   202→
+   203→/* Preview window */
+   204→.landing__hero-preview {
+   205→  z-index: 1;
+   206→}
+   207→
+   208→.landing__preview-window {
+   209→  background: var(--bg-surface);
+   210→  border: 1px solid var(--border-color);
+   211→  border-radius: 16px;
+   212→  overflow: hidden;
+   213→  box-shadow: var(--shadow-lg), 0 0 80px rgba(99,102,241,0.1);
+   214→}
+   215→
+   216→.landing__preview-header {
+   217→  background: var(--bg-surface-2);
+   218→  border-bottom: 1px solid var(--border-color);
+   219→  padding: 0.75rem 1rem;
+   220→  display: flex;
+   221→  align-items: center;
+   222→  gap: 1rem;
+   223→}
+   224→
+   225→.landing__preview-dots {
+   226→  display: flex;
+   227→  gap: 6px;
+   228→}
+   229→
+   230→.landing__preview-dots span {
+   231→  width: 10px; height: 10px;
+   232→  border-radius: 50%;
+   233→  background: var(--text-muted);
+   234→  opacity: 0.4;
+   235→}
+   236→
+   237→.landing__preview-title {
+   238→  font-size: 0.78rem;
+   239→  color: var(--text-muted);
+   240→  font-weight: 500;
+   241→}
+   242→
+   243→.landing__hero-video {
+   244→  display: block;
+   245→  width: 100%;
+   246→  height: auto;
+   247→  max-height: 480px;
+   248→  object-fit: cover;
+   249→}
+   250→
+   251→.landing__preview-body {
+   252→  display: grid;
+   253→  grid-template-columns: 160px 1fr;
+   254→  height: 320px;
+   255→}
+   256→
+   257→.landing__preview-sidebar {
+   258→  border-right: 1px solid var(--border-color);
+   259→  padding: 0.75rem;
+   260→  display: flex;
+   261→  flex-direction: column;
+   262→  gap: 0.25rem;
+   263→}
+   264→
+   265→.landing__preview-cat {
+   266→  padding: 0.5rem 0.75rem;
+   267→  border-radius: 8px;
+   268→  font-size: 0.72rem;
+   269→  color: var(--text-muted);
+   270→  cursor: default;
+   271→  transition: background 0.4s ease, color 0.4s ease;
+   272→}
+   273→
+   274→.landing__preview-cat.active {
+   275→  background: rgba(99,102,241,0.15);
+   276→  color: var(--color-primary-light);
+   277→  font-weight: 600;
+   278→}
+   279→
+   280→/* ── Generating indicator ── */
+   281→.preview-generating {
+   282→  display: flex;
+   283→  align-items: center;
+   284→  gap: 4px;
+   285→  margin-top: 0.75rem;
+   286→}
+   287→
+   288→.preview-dot {
+   289→  width: 5px;
+   290→  height: 5px;
+   291→  border-radius: 50%;
+   292→  background: var(--color-primary);
+   293→  opacity: 0.6;
+   294→  animation: preview-bounce 1.1s ease-in-out infinite;
+   295→}
+   296→
+   297→@keyframes preview-bounce {
+   298→  0%, 100% { transform: translateY(0);    opacity: 0.35; }
+   299→  50%       { transform: translateY(-4px); opacity: 1;    }
+   300→}
+   301→
+   302→.preview-generating-text {
+   303→  font-size: 0.65rem;
+   304→  color: var(--text-muted);
+   305→  margin-left: 4px;
+   306→  animation: preview-blink 2s ease-in-out infinite;
+   307→}
+   308→
+   309→@keyframes preview-blink {
+   310→  0%, 100% { opacity: 0.35; }
+   311→  50%       { opacity: 0.8;  }
+   312→}
+   313→
+   314→.landing__preview-main {
+   315→  padding: 1rem;
+   316→  overflow: hidden;
+   317→}
+   318→
+   319→.landing__preview-tool-header {
+   320→  font-size: 0.82rem;
+   321→  font-weight: 700;
+   322→  color: var(--text-primary);
+   323→  margin-bottom: 0.75rem;
+   324→}
+   325→
+   326→.landing__preview-label {
+   327→  font-size: 0.68rem;
+   328→  color: var(--text-muted);
+   329→  text-transform: uppercase;
+   330→  letter-spacing: 0.06em;
+   331→  margin-bottom: 0.25rem;
+   332→}
+   333→
+   334→.landing__preview-value {
+   335→  background: var(--bg-surface-2);
+   336→  border: 1px solid var(--border-color);
+   337→  border-radius: 6px;
+   338→  padding: 0.4rem 0.75rem;
+   339→  font-size: 0.78rem;
+   340→  color: var(--text-secondary);
+   341→  margin-bottom: 1rem;
+   342→}
+   343→
+   344→.landing__preview-output {
+   345→  display: flex;
+   346→  flex-direction: column;
+   347→  gap: 0.5rem;
+   348→}
+   349→
+   350→.landing__preview-line {
+   351→  height: 10px;
+   352→  background: linear-gradient(90deg, var(--bg-surface-2), var(--bg-surface-3));
+   353→  border-radius: 4px;
+   354→  animation: shimmer 2s ease infinite;
+   355→}
+   356→
+   357→@keyframes shimmer {
+   358→  0% { opacity: 0.4; }
+   359→  50% { opacity: 0.8; }
+   360→  100% { opacity: 0.4; }
+   361→}
+   362→
+   363→/* ========== STATS ========== */
+   364→.landing__stats {
+   365→  padding: 3rem 0;
+   366→  background: var(--bg-surface);
+   367→  border-top: 1px solid var(--border-color);
+   368→  border-bottom: 1px solid var(--border-color);
+   369→}
+   370→
+   371→.landing__stats-grid {
+   372→  display: grid;
+   373→  grid-template-columns: repeat(4, 1fr);
+   374→  gap: 2rem;
+   375→  text-align: center;
+   376→}
+   377→
+   378→.landing__stat-value {
+   379→  font-size: 2.5rem;
+   380→  font-weight: 900;
+   381→  letter-spacing: -0.04em;
+   382→  line-height: 1;
+   383→  margin-bottom: 0.5rem;
+   384→}
+   385→
+   386→.landing__stat-value span { font-size: inherit; }
+   387→
+   388→.landing__stat-label {
+   389→  font-size: 0.875rem;
+   390→  color: var(--text-muted);
+   391→  font-weight: 500;
+   392→}
+   393→
+   394→/* ========== CATEGORIES ========== */
+   395→.landing__badge-wrap { text-align: center; }
+   396→
+   397→.landing__categories-grid {
+   398→  display: grid;
+   399→  grid-template-columns: repeat(4, 1fr);
+   400→  gap: 1.25rem;
+   401→}
+   402→
+   403→.landing__category-card {
+   404→  background: var(--bg-card);
+   405→  border: 1px solid var(--border-color);
+   406→  border-radius: var(--border-radius-lg);
+   407→  padding: 1.5rem;
+   408→  cursor: default;
+   409→  transition: all var(--transition);
+   410→  display: flex;
+   411→  flex-direction: column;
+   412→  gap: 0.75rem;
+   413→}
+   414→
+   415→.landing__category-card:hover {
+   416→  border-color: var(--border-hover);
+   417→  background: var(--bg-card-hover);
+   418→  box-shadow: var(--shadow-glow);
+   419→}
+   420→
+   421→.landing__category-icon {
+   422→  width: 48px; height: 48px;
+   423→  border-radius: 12px;
+   424→  border: 1px solid;
+   425→  display: flex;
+   426→  align-items: center;
+   427→  justify-content: center;
+   428→  font-size: 1.5rem;
+   429→}
+   430→
+   431→.landing__category-name {
+   432→  font-size: 1rem;
+   433→  font-weight: 700;
+   434→  color: var(--text-primary);
+   435→}
+   436→
+   437→.landing__category-desc {
+   438→  font-size: 0.8rem;
+   439→  color: var(--text-muted);
+   440→  line-height: 1.5;
+   441→}
+   442→
+   443→.landing__category-tools {
+   444→  display: flex;
+   445→  flex-wrap: wrap;
+   446→  gap: 0.4rem;
+   447→  margin-top: auto;
+   448→}
+   449→
+   450→.landing__tool-tag {
+   451→  font-size: 0.72rem;
+   452→  padding: 0.2rem 0.6rem;
+   453→  background: var(--bg-surface-2);
+   454→  border: 1px solid var(--border-color);
+   455→  border-radius: 100px;
+   456→  color: var(--text-muted);
+   457→}
+   458→
+   459→.landing__tool-tag--more {
+   460→  color: var(--color-primary-light);
+   461→  border-color: rgba(99,102,241,0.2);
+   462→  background: rgba(99,102,241,0.05);
+   463→}
+   464→
+   465→/* ========== FEATURES ========== */
+   466→.landing__feature-card {
+   467→  background: var(--bg-card);
+   468→  border: 1px solid var(--border-color);
+   469→  border-radius: var(--border-radius-lg);
+   470→  padding: 1.75rem;
+   471→  transition: all var(--transition);
+   472→}
+   473→
+   474→.landing__feature-card:hover {
+   475→  border-color: var(--border-hover);
+   476→  box-shadow: var(--shadow-glow);
+   477→  transform: translateY(-4px);
+   478→}
+   479→
+   480→.landing__feature-icon {
+   481→  font-size: 2rem;
+   482→  margin-bottom: 1rem;
+   483→}
+   484→
+   485→.landing__feature-title {
+   486→  font-size: 1.1rem;
+   487→  margin-bottom: 0.75rem;
+   488→}
+   489→
+   490→/* ========== CLIENT LOGOS ========== */
+   491→.landing__clients {
+   492→  padding: 3rem 0;
+   493→  background: var(--bg-surface);
+   494→  border-top: 1px solid var(--border-color);
+   495→  border-bottom: 1px solid var(--border-color);
+   496→}
+   497→
+   498→.landing__clients-label {
+   499→  text-align: center;
+   500→  font-size: 0.75rem;
+   501→  font-weight: 700;
+   502→  text-transform: uppercase;
+   503→  letter-spacing: 0.14em;
+   504→  color: var(--text-muted);
+   505→  margin-bottom: 2rem;
+   506→}
+   507→
+   508→.landing__clients-strip {
+   509→  display: flex;
+   510→  align-items: center;
+   511→  justify-content: center;
+   512→  gap: 3.5rem;
+   513→  flex-wrap: wrap;
+   514→}
+   515→
+   516→.landing__client-logo {
+   517→  display: flex;
+   518→  align-items: center;
+   519→  opacity: 0.45;
+   520→  transition: opacity 0.22s ease;
+   521→  text-decoration: none;
+   522→}
+   523→
+   524→.landing__client-logo:hover {
+   525→  opacity: 0.85;
+   526→}
+   527→
+   528→.landing__client-logo img {
+   529→  height: 34px;
+   530→  max-width: 130px;
+   531→  object-fit: contain;
+   532→  filter: brightness(0) invert(1);
+   533→}
+   534→
+   535→.landing__client-name {
+   536→  font-size: 1rem;
+   537→  font-weight: 800;
+   538→  color: var(--text-secondary);
+   539→  letter-spacing: -0.02em;
+   540→  white-space: nowrap;
+   541→}
+   542→
+   543→/* ========== TESTIMONIALS ========== */
+   544→.landing__testimonial {
+   545→  background: var(--bg-card);
+   546→  border: 1px solid var(--border-color);
+   547→  border-radius: var(--border-radius-lg);
+   548→  padding: 1.75rem;
+   549→  display: flex;
+   550→  flex-direction: column;
+   551→  gap: 1rem;
+   552→  transition: all var(--transition);
+   553→}
+   554→
+   555→.landing__testimonial:hover {
+   556→  border-color: var(--border-hover);
+   557→  box-shadow: var(--shadow-glow);
+   558→}
+   559→
+   560→.landing__testimonial-stars { color: #f59e0b; font-size: 1rem; }
+   561→
+   562→.landing__testimonial-text {
+   563→  font-size: 0.925rem;
+   564→  line-height: 1.7;
+   565→  color: var(--text-secondary);
+   566→  font-style: italic;
+   567→  flex: 1;
+   568→}
+   569→
+   570→.landing__testimonial-author {
+   571→  display: flex;
+   572→  align-items: center;
+   573→  gap: 0.75rem;
+   574→}
+   575→
+   576→.landing__testimonial-avatar {
+   577→  width: 36px; height: 36px;
+   578→  border-radius: 50%;
+   579→  background: var(--gradient-primary);
+   580→  display: flex;
+   581→  align-items: center;
+   582→  justify-content: center;
+   583→  font-weight: 700;
+   584→  font-size: 0.875rem;
+   585→  color: white;
+   586→  flex-shrink: 0;
+   587→}
+   588→
+   589→.landing__testimonial-author strong {
+   590→  display: block;
+   591→  font-size: 0.875rem;
+   592→  color: var(--text-primary);
+   593→}
+   594→
+   595→.landing__testimonial-author small {
+   596→  font-size: 0.775rem;
+   597→  color: var(--text-muted);
+   598→}
+   599→
+   600→/* ========== CTA ========== */
+   601→.landing__cta-card {
+   602→  position: relative;
+   603→  text-align: center;
+   604→  background: var(--bg-surface);
+   605→  border: 1px solid rgba(99,102,241,0.2);
+   606→  border-radius: var(--border-radius-xl);
+   607→  padding: 5rem 3rem;
+   608→  overflow: hidden;
+   609→}
+   610→
+   611→.landing__cta-orb {
+   612→  position: absolute;
+   613→  width: 500px; height: 500px;
+   614→  background: radial-gradient(circle, rgba(99,102,241,0.15), transparent 70%);
+   615→  border-radius: 50%;
+   616→  top: 50%; left: 50%;
+   617→  transform: translate(-50%, -50%);
+   618→  pointer-events: none;
+   619→}
+   620→
+   621→.landing__cta-title {
+   622→  font-size: clamp(1.75rem, 4vw, 3rem);
+   623→  margin-bottom: 1.5rem;
+   624→  font-weight: 900;
+   625→}
+   626→
+   627→.landing__cta-card > p {
+   628→  font-size: 1.05rem;
+   629→  max-width: 500px;
+   630→  margin: 0 auto 2.5rem;
+   631→}
+   632→
+   633→.landing__cta-actions {
+   634→  display: flex;
+   635→  gap: 1rem;
+   636→  justify-content: center;
+   637→  flex-wrap: wrap;
+   638→  margin-bottom: 1.5rem;
+   639→}
+   640→
+   641→.landing__cta-note {
+   642→  color: var(--text-muted);
+   643→  font-size: 0.82rem;
+   644→}
+   645→
+   646→/* ========== N8N ADD-ON BLOCK ========== */
+   647→.landing__addon-block {
+   648→  display: flex;
+   649→  align-items: center;
+   650→  justify-content: space-between;
+   651→  gap: 2rem;
+   652→  background: linear-gradient(135deg, rgba(99,102,241,0.07), rgba(139,92,246,0.04));
+   653→  border: 1px solid rgba(99,102,241,0.3);
+   654→  border-radius: var(--border-radius-xl);
+   655→  padding: 2rem 2.5rem;
+   656→  margin-top: 1.5rem;
+   657→}
+   658→
+   659→.landing__addon-badge { margin-bottom: 0.75rem; }
+   660→
+   661→.landing__addon-title {
+   662→  font-size: 1.35rem;
+   663→  font-weight: 800;
+   664→  color: var(--text-primary);
+   665→  margin-bottom: 0.4rem;
+   666→}
+   667→
+   668→.landing__addon-desc {
+   669→  font-size: 0.9rem;
+   670→  color: var(--text-secondary);
+   671→  max-width: 420px;
+   672→  margin-bottom: 1rem;
+   673→}
+   674→
+   675→.landing__addon-features {
+   676→  list-style: none;
+   677→  padding: 0;
+   678→  margin: 0;
+   679→  display: flex;
+   680→  flex-direction: column;
+   681→  gap: 0.35rem;
+   682→}
+   683→
+   684→.landing__addon-features li {
+   685→  font-size: 0.85rem;
+   686→  color: var(--text-secondary);
+   687→}
+   688→
+   689→.landing__addon-right {
+   690→  display: flex;
+   691→  flex-direction: column;
+   692→  align-items: center;
+   693→  gap: 0.6rem;
+   694→  flex-shrink: 0;
+   695→  min-width: 180px;
+   696→  text-align: center;
+   697→}
+   698→
+   699→.landing__addon-price {
+   700→  display: flex;
+   701→  align-items: baseline;
+   702→  gap: 0.3rem;
+   703→}
+   704→
+   705→.landing__addon-amount {
+   706→  font-size: 2.4rem;
+   707→  font-weight: 900;
+   708→  background: linear-gradient(135deg, #6366f1, #a78bfa);
+   709→  -webkit-background-clip: text;
+   710→  -webkit-text-fill-color: transparent;
+   711→  background-clip: text;
+   712→}
+   713→
+   714→.landing__addon-period {
+   715→  font-size: 0.9rem;
+   716→  color: var(--text-muted);
+   717→}
+   718→
+   719→.landing__addon-renew {
+   720→  font-size: 0.75rem;
+   721→  color: var(--text-muted);
+   722→  margin: 0;
+   723→}
+   724→
+   725→/* ========== PROBLEM ========== */
+   726→.landing__problem {
+   727→  background: var(--bg-surface);
+   728→  border-top: 1px solid var(--border-color);
+   729→  border-bottom: 1px solid var(--border-color);
+   730→}
+   731→
+   732→.landing__problem-grid {
+   733→  display: grid;
+   734→  grid-template-columns: repeat(3, 1fr);
+   735→  gap: 1.5rem;
+   736→}
+   737→
+   738→.landing__problem-card {
+   739→  background: var(--bg-card);
+   740→  border: 1px solid var(--border-color);
+   741→  border-radius: var(--border-radius-lg);
+   742→  padding: 2rem 1.75rem;
+   743→  display: flex;
+   744→  flex-direction: column;
+   745→  gap: 1rem;
+   746→  transition: all var(--transition);
+   747→}
+   748→
+   749→.landing__problem-card:hover {
+   750→  border-color: rgba(99,102,241,0.35);
+   751→  box-shadow: var(--shadow-glow);
+   752→  transform: translateY(-3px);
+   753→}
+   754→
+   755→.landing__problem-icon {
+   756→  font-size: 1.75rem;
+   757→  width: 52px; height: 52px;
+   758→  background: rgba(99,102,241,0.1);
+   759→  border-radius: 12px;
+   760→  display: flex;
+   761→  align-items: center;
+   762→  justify-content: center;
+   763→  flex-shrink: 0;
+   764→}
+   765→
+   766→.landing__problem-text {
+   767→  font-size: 1rem;
+   768→  font-weight: 600;
+   769→  color: var(--text-secondary);
+   770→  line-height: 1.55;
+   771→  margin: 0;
+   772→}
+   773→
+   774→/* ========== HOW IT WORKS ========== */
+   775→.landing__how .section-title {
+   776→  text-align: center;
+   777→}
+   778→
+   779→.landing__how-steps {
+   780→  display: grid;
+   781→  grid-template-columns: repeat(3, 1fr);
+   782→  gap: 1.5rem;
+   783→  margin-top: 3rem;
+   784→}
+   785→
+   786→/* ── Step card ── */
+   787→.landing__how-step {
+   788→  background: var(--bg-surface);
+   789→  border: 1px solid var(--border-color);
+   790→  border-radius: 20px;
+   791→  overflow: hidden;
+   792→  position: relative;
+   793→  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+   794→}
+   795→
+   796→.landing__how-step:hover {
+   797→  transform: translateY(-8px);
+   798→  box-shadow: var(--shadow-lg), 0 0 50px rgba(99, 102, 241, 0.2);
+   799→  border-color: rgba(99, 102, 241, 0.4);
+   800→}
+   801→
+   802→/* ── Visual area ── */
+   803→.how-visual {
+   804→  height: 172px;
+   805→  padding: 1.25rem;
+   806→  display: flex;
+   807→  align-items: center;
+   808→  justify-content: center;
+   809→  border-bottom: 1px solid var(--border-color);
+   810→  overflow: hidden;
+   811→  position: relative;
+   812→}
+   813→
+   814→.how-visual--1 {
+   815→  background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(139,92,246,0.06) 100%);
+   816→}
+   817→.how-visual--2 {
+   818→  background: linear-gradient(135deg, rgba(16,185,129,0.09) 0%, rgba(99,102,241,0.07) 100%);
+   819→}
+   820→.how-visual--3 {
+   821→  background: linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(99,102,241,0.06) 100%);
+   822→}
+   823→
+   824→/* Card 1 – category tag cloud */
+   825→.how-visual__tags {
+   826→  display: flex;
+   827→  flex-wrap: wrap;
+   828→  gap: 0.45rem;
+   829→  justify-content: center;
+   830→}
+   831→
+   832→.how-visual__tag {
+   833→  padding: 0.3rem 0.7rem;
+   834→  background: var(--bg-surface);
+   835→  border: 1px solid var(--border-color);
+   836→  border-radius: 100px;
+   837→  font-size: 0.72rem;
+   838→  font-weight: 600;
+   839→  color: var(--text-secondary);
+   840→  white-space: nowrap;
+   841→  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+   842→  transition: border-color 0.25s, color 0.25s;
+   843→}
+   844→
+   845→.landing__how-step:hover .how-visual__tag:nth-child(odd) {
+   846→  border-color: rgba(99,102,241,0.4);
+   847→  color: var(--color-primary-light);
+   848→}
+   849→
+   850→/* Card 2 – mini form */
+   851→.how-visual__form {
+   852→  width: 100%;
+   853→  display: flex;
+   854→  flex-direction: column;
+   855→  gap: 0.5rem;
+   856→}
+   857→
+   858→.how-visual__field {
+   859→  display: flex;
+   860→  flex-direction: column;
+   861→  gap: 0.2rem;
+   862→}
+   863→
+   864→.how-visual__label {
+   865→  font-size: 0.58rem;
+   866→  font-weight: 700;
+   867→  text-transform: uppercase;
+   868→  letter-spacing: 0.07em;
+   869→  color: var(--text-muted);
+   870→}
+   871→
+   872→.how-visual__input {
+   873→  background: var(--bg-surface);
+   874→  border: 1px solid var(--border-color);
+   875→  border-radius: 7px;
+   876→  padding: 0.35rem 0.65rem;
+   877→  font-size: 0.72rem;
+   878→  color: var(--text-secondary);
+   879→  display: flex;
+   880→  align-items: center;
+   881→}
+   882→
+   883→.how-visual__cursor {
+   884→  display: inline-block;
+   885→  width: 1.5px;
+   886→  height: 0.82em;
+   887→  background: var(--color-primary-light);
+   888→  margin-left: 2px;
+   889→  vertical-align: middle;
+   890→  animation: cursor-blink 0.75s ease-in-out infinite;
+   891→}
+   892→
+   893→@keyframes cursor-blink {
+   894→  0%, 100% { opacity: 1; }
+   895→  50%       { opacity: 0; }
+   896→}
+   897→
+   898→.how-visual__btn {
+   899→  display: flex;
+   900→  align-items: center;
+   901→  gap: 4px;
+   902→  padding: 0.4rem 0.8rem;
+   903→  background: var(--gradient-primary);
+   904→  border-radius: 7px;
+   905→  font-size: 0.72rem;
+   906→  font-weight: 700;
+   907→  color: white;
+   908→  align-self: flex-start;
+   909→  margin-top: 0.1rem;
+   910→}
+   911→
+   912→/* Card 3 – AI output lines */
+   913→.how-visual__output {
+   914→  width: 100%;
+   915→  display: flex;
+   916→  flex-direction: column;
+   917→  gap: 0.5rem;
+   918→}
+   919→
+   920→.how-visual__output-badge {
+   921→  font-size: 0.68rem;
+   922→  font-weight: 700;
+   923→  color: var(--color-primary-light);
+   924→  margin-bottom: 0.15rem;
+   925→  display: block;
+   926→}
+   927→
+   928→.how-visual__line {
+   929→  height: 9px;
+   930→  border-radius: 100px;
+   931→  background: linear-gradient(90deg, rgba(99,102,241,0.55), rgba(139,92,246,0.3));
+   932→}
+   933→
+   934→/* ── Step body ── */
+   935→.landing__how-step-body {
+   936→  padding: 1.5rem;
+   937→}
+   938→
+   939→.landing__how-step-num {
+   940→  font-size: 3rem;
+   941→  font-weight: 900;
+   942→  line-height: 1;
+   943→  letter-spacing: -0.04em;
+   944→  background: var(--gradient-primary);
+   945→  -webkit-background-clip: text;
+   946→  -webkit-text-fill-color: transparent;
+   947→  background-clip: text;
+   948→  margin-bottom: 0.75rem;
+   949→}
+   950→
+   951→.landing__how-step-title {
+   952→  font-size: 1.1rem;
+   953→  font-weight: 700;
+   954→  color: var(--text-primary);
+   955→  margin: 0 0 0.55rem;
+   956→  line-height: 1.3;
+   957→}
+   958→
+   959→.landing__how-step-desc {
+   960→  font-size: 0.875rem;
+   961→  color: var(--text-muted);
+   962→  line-height: 1.65;
+   963→  margin: 0;
+   964→}
+   965→
+   966→/* ========== PLANS ========== */
+   967→.landing__plans .section-title {
+   968→  text-align: center;
+   969→}
+   970→
+   971→.landing__plans-grid {
+   972→  display: grid;
+   973→  grid-template-columns: repeat(3, 1fr);
+   974→  gap: 1.5rem;
+   975→  margin-top: 3rem;
+   976→}
+   977→
+   978→.landing__plan-card {
+   979→  background: var(--bg-card);
+   980→  border: 1px solid var(--border-color);
+   981→  border-radius: var(--border-radius-lg);
+   982→  padding: 2rem;
+   983→  display: flex;
+   984→  flex-direction: column;
+   985→  gap: 0;
+   986→  transition: all var(--transition);
+   987→}
+   988→
+   989→.landing__plan-card--featured {
+   990→  border-color: rgba(99,102,241,0.5);
+   991→  background: linear-gradient(160deg, rgba(99,102,241,0.07), var(--bg-card));
+   992→  box-shadow: 0 0 30px rgba(99,102,241,0.12);
+   993→}
+   994→
+   995→.landing__plan-card:hover {
+   996→  border-color: rgba(99,102,241,0.4);
+   997→  box-shadow: var(--shadow-glow);
+   998→  transform: translateY(-3px);
+   999→}
+  1000→
+  1001→.landing__plan-name {
+  1002→  font-size: 0.78rem;
+  1003→  font-weight: 800;
+  1004→  text-transform: uppercase;
+  1005→  letter-spacing: 0.1em;
+  1006→  color: var(--color-primary-light);
+  1007→  margin-bottom: 0.75rem;
+  1008→}
+  1009→
+  1010→.landing__plan-price {
+  1011→  font-size: 2.75rem;
+  1012→  font-weight: 900;
+  1013→  letter-spacing: -0.04em;
+  1014→  color: var(--text-primary);
+  1015→  line-height: 1;
+  1016→  margin-bottom: 0.2rem;
+  1017→  display: flex;
+  1018→  align-items: baseline;
+  1019→  gap: 0.25rem;
+  1020→}
+  1021→
+  1022→.landing__plan-period {
+  1023→  font-size: 0.875rem;
+  1024→  font-weight: 400;
+  1025→  color: var(--text-muted);
+  1026→  letter-spacing: 0;
+  1027→}
+  1028→
+  1029→.landing__plan-tools {
+  1030→  list-style: none;
+  1031→  padding: 0;
+  1032→  margin: 1.5rem 0;
+  1033→  display: flex;
+  1034→  flex-direction: column;
+  1035→  gap: 0.6rem;
+  1036→  flex: 1;
+  1037→}
+  1038→
+  1039→.landing__plan-tools li {
+  1040→  color: var(--text-secondary);
+  1041→  display: flex;
+  1042→  align-items: flex-start;
+  1043→  gap: 0.6rem;
+  1044→}
+  1045→
+  1046→.landing__plan-tools li::before {
+  1047→  content: '✓';
+  1048→  color: var(--color-primary-light);
+  1049→  font-weight: 700;
+  1050→  font-size: 0.8rem;
+  1051→  flex-shrink: 0;
+  1052→  margin-top: 2px;
+  1053→}
+  1054→
+  1055→.landing__plan-tool-name {
+  1056→  font-size: 0.875rem;
+  1057→  font-weight: 600;
+  1058→  line-height: 1.3;
+  1059→}
+  1060→
+  1061→.landing__plan-tool-benefit {
+  1062→  font-size: 0.76rem;
+  1063→  color: var(--text-muted);
+  1064→  line-height: 1.4;
+  1065→  margin-top: 1px;
+  1066→}
+  1067→
+  1068→.landing__plan-cta {
+  1069→  width: 100%;
+  1070→  justify-content: center;
+  1071→  margin-top: auto;
+  1072→}
+  1073→
+  1074→/* ========== CTA FINAL (simple) ========== */
+  1075→.landing__cta-card {
+  1076→  position: relative;
+  1077→  text-align: center;
+  1078→  background: var(--bg-surface);
+  1079→  border: 1px solid rgba(99,102,241,0.2);
+  1080→  border-radius: var(--border-radius-xl);
+  1081→  padding: 5rem 3rem;
+  1082→  overflow: hidden;
+  1083→  display: flex;
+  1084→  align-items: center;
+  1085→  justify-content: center;
+  1086→}
+  1087→
+  1088→.landing__cta-main-btn {
+  1089→  position: relative;
+  1090→  z-index: 1;
+  1091→  font-size: 1.1rem;
+  1092→  padding: 1rem 2.5rem;
+  1093→}
+  1094→
+  1095→/* ========== INSTAGRAM COMPACT ========== */
+  1096→.landing__ig-compact {
+  1097→  background: var(--bg-surface);
+  1098→  border-top: 1px solid var(--border-color);
+  1099→  border-bottom: 1px solid var(--border-color);
+  1100→}
+  1101→
+  1102→.landing__ig-compact-inner {
+  1103→  display: grid;
+  1104→  grid-template-columns: 1fr 1fr;
+  1105→  gap: 4rem;
+  1106→  align-items: center;
+  1107→}
+  1108→
+  1109→.landing__ig-compact-badge {
+  1110→  display: inline-flex;
+  1111→  align-items: center;
+  1112→  gap: 0.5rem;
+  1113→  padding: 0.35rem 0.9rem;
+  1114→  border-radius: 100px;
+  1115→  background: rgba(225,48,108,0.1);
+  1116→  border: 1px solid rgba(225,48,108,0.25);
+  1117→  color: #f472b6;
+  1118→  font-size: 0.8rem;
+  1119→  font-weight: 600;
+  1120→  margin-bottom: 1rem;
+  1121→}
+  1122→
+  1123→.landing__ig-compact-title {
+  1124→  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  1125→  font-weight: 900;
+  1126→  line-height: 1.15;
+  1127→  margin-bottom: 0.75rem;
+  1128→}
+  1129→
+  1130→.landing__ig-compact-subtitle {
+  1131→  font-size: 1rem;
+  1132→  line-height: 1.65;
+  1133→  color: var(--text-secondary);
+  1134→  margin-bottom: 1.75rem;
+  1135→  max-width: 420px;
+  1136→}
+  1137→
+  1138→.landing__ig-compact-preview {
+  1139→  display: flex;
+  1140→  align-items: center;
+  1141→  gap: 2rem;
+  1142→}
+  1143→
+  1144→.landing__ig-score-ring {
+  1145→  width: 110px;
+  1146→  height: 110px;
+  1147→  border-radius: 50%;
+  1148→  background: conic-gradient(
+  1149→    #e1306c 0deg,
+  1150→    #833ab4 calc(0.72 * 360deg),
+  1151→    var(--border-color) calc(0.72 * 360deg)
+  1152→  );
+  1153→  display: flex;
+  1154→  align-items: center;
+  1155→  justify-content: center;
+  1156→  flex-shrink: 0;
+  1157→  box-shadow: 0 0 24px rgba(225,48,108,0.2);
+  1158→}
+  1159→
+  1160→.landing__ig-score-inner {
+  1161→  width: 84px;
+  1162→  height: 84px;
+  1163→  border-radius: 50%;
+  1164→  background: var(--bg-surface);
+  1165→  display: flex;
+  1166→  flex-direction: column;
+  1167→  align-items: center;
+  1168→  justify-content: center;
+  1169→}
+  1170→
+  1171→.landing__ig-score-num {
+  1172→  font-size: 1.75rem;
+  1173→  font-weight: 900;
+  1174→  background: linear-gradient(135deg, #e1306c, #833ab4);
+  1175→  -webkit-background-clip: text;
+  1176→  -webkit-text-fill-color: transparent;
+  1177→  background-clip: text;
+  1178→  line-height: 1;
+  1179→}
+  1180→
+  1181→.landing__ig-score-label {
+  1182→  font-size: 0.7rem;
+  1183→  color: var(--text-muted);
+  1184→  font-weight: 600;
+  1185→}
+  1186→
+  1187→.landing__ig-compact-actions {
+  1188→  display: flex;
+  1189→  flex-direction: column;
+  1190→  gap: 0.65rem;
+  1191→  flex: 1;
+  1192→}
+  1193→
+  1194→.landing__ig-action-item {
+  1195→  display: flex;
+  1196→  align-items: center;
+  1197→  gap: 0.65rem;
+  1198→  font-size: 0.875rem;
+  1199→  color: var(--text-secondary);
+  1200→}
+  1201→
+  1202→.landing__ig-action-num {
+  1203→  width: 22px;
+  1204→  height: 22px;
+  1205→  border-radius: 50%;
+  1206→  background: rgba(225,48,108,0.12);
+  1207→  border: 1px solid rgba(225,48,108,0.25);
+  1208→  display: flex;
+  1209→  align-items: center;
+  1210→  justify-content: center;
+  1211→  font-size: 0.7rem;
+  1212→  font-weight: 800;
+  1213→  color: #f472b6;
+  1214→  flex-shrink: 0;
+  1215→}
+  1216→
+  1217→/* ========== STOP WASTING TIME (CTA FULL) ========== */
+  1218→.landing__cta-full-card {
+  1219→  position: relative;
+  1220→  text-align: center;
+  1221→  background: linear-gradient(160deg, rgba(99,102,241,0.08), var(--bg-surface));
+  1222→  border: 1px solid rgba(99,102,241,0.25);
+  1223→  border-radius: var(--border-radius-xl);
+  1224→  padding: 4rem 3rem;
+  1225→  overflow: hidden;
+  1226→}
+  1227→
+  1228→.landing__cta-full-badge {
+  1229→  display: inline-flex;
+  1230→  align-items: center;
+  1231→  gap: 0.5rem;
+  1232→  padding: 0.35rem 0.9rem;
+  1233→  border-radius: 100px;
+  1234→  background: rgba(99,102,241,0.1);
+  1235→  border: 1px solid rgba(99,102,241,0.25);
+  1236→  color: #a5b4fc;
+  1237→  font-size: 0.8rem;
+  1238→  font-weight: 600;
+  1239→  margin-bottom: 1.5rem;
+  1240→}
+  1241→
+  1242→.landing__cta-full-title {
+  1243→  font-size: clamp(1.75rem, 4vw, 3rem);
+  1244→  font-weight: 900;
+  1245→  line-height: 1.15;
+  1246→  margin-bottom: 1.25rem;
+  1247→}
+  1248→
+  1249→.landing__cta-full-subtitle {
+  1250→  font-size: 1.05rem;
+  1251→  max-width: 680px;
+  1252→  margin: 0 auto 2.5rem;
+  1253→  color: var(--text-secondary);
+  1254→  line-height: 1.65;
+  1255→}
+  1256→
+  1257→/* ========== PLAN FLIP CARDS ========== */
+  1258→.landing__plan-flip {
+  1259→  height: 480px;
+  1260→  perspective: 1200px;
+  1261→  cursor: pointer;
+  1262→  position: relative;
+  1263→}
+  1264→
+  1265→.landing__plan-flip__inner {
+  1266→  position: relative;
+  1267→  width: 100%;
+  1268→  height: 100%;
+  1269→  transform-style: preserve-3d;
+  1270→  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  1271→  will-change: transform;
+  1272→}
+  1273→
+  1274→/* Desktop: CSS hover */
+  1275→@media (hover: hover) {
+  1276→  .landing__plan-flip:hover .landing__plan-flip__inner {
+  1277→    transform: rotateY(180deg);
+  1278→  }
+  1279→}
+  1280→
+  1281→/* Mobile tap + desktop click: JS class */
+  1282→.landing__plan-flip.is-flipped .landing__plan-flip__inner {
+  1283→  transform: rotateY(180deg);
+  1284→}
+  1285→
+  1286→/* Shared face */
+  1287→.landing__plan-flip__front,
+  1288→.landing__plan-flip__back {
+  1289→  position: absolute;
+  1290→  inset: 0;
+  1291→  border-radius: var(--border-radius-lg);
+  1292→  overflow: hidden;
+  1293→  backface-visibility: hidden;
+  1294→  -webkit-backface-visibility: hidden;
+  1295→}
+  1296→
+  1297→/* ── Front ── */
+  1298→.landing__plan-flip__front {
+  1299→  background: var(--bg-card);
+  1300→  border: 1px solid var(--border-color);
+  1301→  padding: 2rem;
+  1302→  display: flex;
+  1303→  flex-direction: column;
+  1304→  gap: 0;
+  1305→  transition: border-color 0.3s, box-shadow 0.3s;
+  1306→}
+  1307→
+  1308→.landing__plan-flip--featured .landing__plan-flip__front {
+  1309→  border-color: rgba(99,102,241,0.5);
+  1310→  background: linear-gradient(160deg, rgba(99,102,241,0.07), var(--bg-card));
+  1311→  box-shadow: 0 0 30px rgba(99,102,241,0.12);
+  1312→}
+  1313→
+  1314→@media (hover: hover) {
+  1315→  .landing__plan-flip:hover .landing__plan-flip__front {
+  1316→    border-color: rgba(99,102,241,0.4);
+  1317→    box-shadow: 0 0 32px rgba(99,102,241,0.18);
+  1318→  }
+  1319→}
+  1320→
+  1321→.landing__plan-flip__desc {
+  1322→  font-size: 0.9rem;
+  1323→  color: var(--text-muted);
+  1324→  line-height: 1.6;
+  1325→  margin: 0.75rem 0 0;
+  1326→  flex: 1;
+  1327→}
+  1328→
+  1329→.landing__plan-flip__hint {
+  1330→  display: flex;
+  1331→  align-items: center;
+  1332→  gap: 0.35rem;
+  1333→  font-size: 0.68rem;
+  1334→  color: var(--text-muted);
+  1335→  opacity: 0.5;
+  1336→  margin: 1rem 0 0.75rem;
+  1337→  transition: opacity 0.25s;
+  1338→  justify-content: center;
+  1339→}
+  1340→
+  1341→.landing__plan-flip__hint-icon {
+  1342→  display: inline-block;
+  1343→  animation: spin-hint 3s linear infinite;
+  1344→  transform-origin: center;
+  1345→}
+  1346→
+  1347→@keyframes spin-hint {
+  1348→  0%   { transform: rotate(0deg);   }
+  1349→  40%  { transform: rotate(180deg); }
+  1350→  100% { transform: rotate(360deg); }
+  1351→}
+  1352→
+  1353→@media (hover: hover) {
+  1354→  .landing__plan-flip:hover .landing__plan-flip__hint { opacity: 0; }
+  1355→}
+  1356→
+  1357→/* ── Back ── */
+  1358→.landing__plan-flip__back {
+  1359→  transform: rotateY(180deg);
+  1360→  background: var(--bg-surface);
+  1361→  border: 1px solid rgba(99,102,241,0.3);
+  1362→  padding: 1.25rem 1.4rem 1.25rem;
+  1363→  display: flex;
+  1364→  flex-direction: column;
+  1365→  gap: 0;
+  1366→}
+  1367→
+  1368→.landing__plan-flip--featured .landing__plan-flip__back {
+  1369→  background: linear-gradient(160deg, rgba(99,102,241,0.06), var(--bg-surface));
+  1370→  border-color: rgba(99,102,241,0.45);
+  1371→}
+  1372→
+  1373→.landing__plan-flip__back-title {
+  1374→  font-size: 0.68rem;
+  1375→  font-weight: 800;
+  1376→  text-transform: uppercase;
+  1377→  letter-spacing: 0.1em;
+  1378→  color: var(--color-primary-light);
+  1379→  margin-bottom: 0.6rem;
+  1380→  flex-shrink: 0;
+  1381→}
+  1382→
+  1383→.landing__plan-flip__includes {
+  1384→  font-size: 0.73rem;
+  1385→  color: var(--text-muted);
+  1386→  background: rgba(99,102,241,0.07);
+  1387→  border: 1px solid rgba(99,102,241,0.15);
+  1388→  border-radius: 6px;
+  1389→  padding: 0.35rem 0.65rem;
+  1390→  margin-bottom: 0.65rem;
+  1391→  flex-shrink: 0;
+  1392→}
+  1393→
+  1394→.landing__plan-flip__categories {
+  1395→  flex: 1;
+  1396→  overflow-y: auto;
+  1397→  display: flex;
+  1398→  flex-direction: column;
+  1399→  gap: 0.6rem;
+  1400→  scrollbar-width: thin;
+  1401→  scrollbar-color: rgba(99,102,241,0.25) transparent;
+  1402→}
+  1403→
+  1404→.landing__plan-flip__categories::-webkit-scrollbar { width: 3px; }
+  1405→.landing__plan-flip__categories::-webkit-scrollbar-track { background: transparent; }
+  1406→.landing__plan-flip__categories::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 2px; }
+  1407→
+  1408→.landing__plan-flip__cat-name {
+  1409→  font-size: 0.6rem;
+  1410→  font-weight: 800;
+  1411→  text-transform: uppercase;
+  1412→  letter-spacing: 0.08em;
+  1413→  color: var(--color-primary-light);
+  1414→  margin-bottom: 0.3rem;
+  1415→}
+  1416→
+  1417→.landing__plan-flip__tools {
+  1418→  display: flex;
+  1419→  flex-wrap: wrap;
+  1420→  gap: 0.2rem 0.3rem;
+  1421→}
+  1422→
+  1423→.landing__plan-flip__tool {
+  1424→  font-size: 0.65rem;
+  1425→  color: var(--text-secondary);
+  1426→  background: rgba(99,102,241,0.07);
+  1427→  border: 1px solid rgba(99,102,241,0.13);
+  1428→  border-radius: 4px;
+  1429→  padding: 0.13rem 0.4rem;
+  1430→  line-height: 1.4;
+  1431→}
+  1432→
+  1433→.landing__plan-flip__back-cta {
+  1434→  width: 100%;
+  1435→  justify-content: center;
+  1436→  margin-top: 0.75rem;
+  1437→  flex-shrink: 0;
+  1438→  font-size: 0.85rem;
+  1439→}
+  1440→
+  1441→/* ========== WHAT YOU GET ========== */
+  1442→.landing__wyg .section-title,
+  1443→.landing__wyg .section-subtitle { text-align: center; }
+  1444→
+  1445→.landing__wyg-grid {
+  1446→  display: grid;
+  1447→  grid-template-columns: repeat(5, 1fr);
+  1448→  gap: 1rem;
+  1449→  margin-top: 3rem;
+  1450→}
+  1451→
+  1452→/* ── Flip card container ── */
+  1453→.wyg-flip {
+  1454→  height: 180px;
+  1455→  perspective: 900px;
+  1456→  cursor: pointer;
+  1457→}
+  1458→
+  1459→.wyg-flip__inner {
+  1460→  position: relative;
+  1461→  width: 100%;
+  1462→  height: 100%;
+  1463→  transform-style: preserve-3d;
+  1464→  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  1465→}
+  1466→
+  1467→.wyg-flip.is-flipped .wyg-flip__inner {
+  1468→  transform: rotateY(180deg);
+  1469→}
+  1470→
+  1471→/* ── Shared face styles ── */
+  1472→.wyg-flip__front,
+  1473→.wyg-flip__back {
+  1474→  position: absolute;
+  1475→  inset: 0;
+  1476→  border-radius: 16px;
+  1477→  border: 1px solid var(--border-color);
+  1478→  background: var(--bg-surface);
+  1479→  backface-visibility: hidden;
+  1480→  -webkit-backface-visibility: hidden;
+  1481→  display: flex;
+  1482→  flex-direction: column;
+  1483→  align-items: center;
+  1484→  justify-content: center;
+  1485→  gap: 0.35rem;
+  1486→  padding: 1rem 0.75rem;
+  1487→  text-align: center;
+  1488→  overflow: hidden;
+  1489→}
+  1490→
+  1491→.wyg-flip__front {
+  1492→  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  1493→}
+  1494→
+  1495→.wyg-flip:hover .wyg-flip__front {
+  1496→  border-color: rgba(99,102,241,0.4);
+  1497→  box-shadow: 0 8px 24px rgba(99,102,241,0.1);
+  1498→}
+  1499→
+  1500→.wyg-flip__back {
+  1501→  transform: rotateY(180deg);
+  1502→  background: var(--bg-elevated, #1a1a2e);
+  1503→  align-items: flex-start;
+  1504→  justify-content: flex-start;
+  1505→  overflow-y: auto;
+  1506→  padding: 0.9rem 1rem;
+  1507→  gap: 0;
+  1508→}
+  1509→
+  1510→/* ── Front face elements ── */
+  1511→.wyg-flip__emoji {
+  1512→  font-size: 1.8rem;
+  1513→  line-height: 1;
+  1514→}
+  1515→
+  1516→.wyg-flip__name {
+  1517→  font-size: 0.78rem;
+  1518→  font-weight: 700;
+  1519→  color: var(--text-primary);
+  1520→  line-height: 1.2;
+  1521→}
+  1522→
+  1523→.wyg-flip__badge {
+  1524→  font-size: 0.6rem;
+  1525→  font-weight: 700;
+  1526→  padding: 0.15rem 0.55rem;
+  1527→  border-radius: 100px;
+  1528→  letter-spacing: 0.04em;
+  1529→  text-transform: uppercase;
+  1530→}
+  1531→
+  1532→.wyg-flip__badge--grow     { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  1533→.wyg-flip__badge--scale    { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+  1534→.wyg-flip__badge--evolution{ background: rgba(139,92,246,0.15); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); }
+  1535→.wyg-flip__badge--addon    { background: var(--gradient-primary); color: white; border: none; }
+  1536→
+  1537→.wyg-flip__count {
+  1538→  font-size: 0.65rem;
+  1539→  color: var(--text-muted);
+  1540→}
+  1541→
+  1542→.wyg-flip__hint {
+  1543→  font-size: 0.7rem;
+  1544→  color: var(--text-secondary);
+  1545→  opacity: 0.9;
+  1546→  margin-top: 0.2rem;
+  1547→  font-weight: 500;
+  1548→  letter-spacing: 0.01em;
+  1549→}
+  1550→
+  1551→/* ── Back face elements ── */
+  1552→.wyg-flip__back-header {
+  1553→  font-size: 0.75rem;
+  1554→  font-weight: 700;
+  1555→  color: var(--text-primary);
+  1556→  margin-bottom: 0.5rem;
+  1557→  white-space: nowrap;
+  1558→}
+  1559→
+  1560→.wyg-flip__back-tools {
+  1561→  display: flex;
+  1562→  flex-direction: column;
+  1563→  gap: 0.18rem;
+  1564→  width: 100%;
+  1565→}
+  1566→
+  1567→.wyg-flip__back-tool {
+  1568→  font-size: 0.67rem;
+  1569→  color: var(--text-secondary);
+  1570→  line-height: 1.4;
+  1571→}
+  1572→
+  1573→.wyg-flip__back-tool--note {
+  1574→  margin-top: 0.4rem;
+  1575→  color: #c084fc;
+  1576→  font-style: italic;
+  1577→}
+  1578→
+  1579→/* ── Plan border accents ── */
+  1580→.wyg-flip--grow     .wyg-flip__front { border-color: rgba(16,185,129,0.2); }
+  1581→.wyg-flip--scale    .wyg-flip__front { border-color: rgba(99,102,241,0.2); }
+  1582→.wyg-flip--evolution .wyg-flip__front { border-color: rgba(139,92,246,0.2); }
+  1583→.wyg-flip--addon    .wyg-flip__front { border-color: rgba(99,102,241,0.25); background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(139,92,246,0.03)); }
+  1584→
+  1585→/* ========== WHY NOT CHATGPT ========== */
+  1586→.landing__whychatgpt .section-title,
+  1587→.landing__whychatgpt .section-subtitle { text-align: center; }
+  1588→
+  1589→.landing__whychatgpt-table {
+  1590→  display: grid;
+  1591→  grid-template-columns: 1fr 1fr;
+  1592→  gap: 0;
+  1593→  max-width: 760px;
+  1594→  margin: 3rem auto 0;
+  1595→  border: 1px solid var(--border-color);
+  1596→  border-radius: 20px;
+  1597→  overflow: hidden;
+  1598→}
+  1599→
+  1600→.landing__whychatgpt-col {
+  1601→  padding: 0;
+  1602→}
+  1603→
+  1604→.landing__whychatgpt-col--generic {
+  1605→  background: var(--bg-surface);
+  1606→  border-right: 1px solid var(--border-color);
+  1607→}
+  1608→
+  1609→.landing__whychatgpt-col--gormaran {
+  1610→  background: linear-gradient(160deg, rgba(99,102,241,0.06), rgba(139,92,246,0.03));
+  1611→}
+  1612→
+  1613→.landing__whychatgpt-col-header {
+  1614→  padding: 1rem 1.5rem 0.75rem;
+  1615→  border-bottom: 1px solid var(--border-color);
+  1616→}
+  1617→
+  1618→.landing__whychatgpt-col-label {
+  1619→  font-size: 0.78rem;
+  1620→  font-weight: 800;
+  1621→  text-transform: uppercase;
+  1622→  letter-spacing: 0.08em;
+  1623→  color: var(--text-muted);
+  1624→}
+  1625→
+  1626→.landing__whychatgpt-col--gormaran .landing__whychatgpt-col-label {
+  1627→  color: var(--color-primary-light);
+  1628→}
+  1629→
+  1630→.landing__whychatgpt-row {
+  1631→  display: flex;
+  1632→  align-items: flex-start;
+  1633→  gap: 0.65rem;
+  1634→  padding: 0.85rem 1.5rem;
+  1635→  font-size: 0.875rem;
+  1636→  color: var(--text-secondary);
+  1637→  border-bottom: 1px solid var(--border-color);
+  1638→  line-height: 1.45;
+  1639→}
+  1640→
+  1641→.landing__whychatgpt-row:last-child { border-bottom: none; }
+  1642→
+  1643→.landing__whychatgpt-col--generic .landing__whychatgpt-row {
+  1644→  color: var(--text-muted);
+  1645→}
+  1646→
+  1647→.landing__whychatgpt-icon {
+  1648→  flex-shrink: 0;
+  1649→  font-size: 0.85rem;
+  1650→  font-weight: 900;
+  1651→  color: var(--text-muted);
+  1652→  margin-top: 0.05rem;
+  1653→}
+  1654→
+  1655→.landing__whychatgpt-icon--yes {
+  1656→  color: #10b981;
+  1657→}
+  1658→
+  1659→/* ========== WORKFLOW DEMO ========== */
+  1660→.wf-demo {
+  1661→  margin-top: 3rem;
+  1662→  border: 1px solid var(--border-color);
+  1663→  border-radius: 20px;
+  1664→  overflow: hidden;
+  1665→  background: var(--bg-surface);
+  1666→  box-shadow: var(--shadow-lg);
+  1667→}
+  1668→
+  1669→.wf-demo__chrome {
+  1670→  display: flex;
+  1671→  align-items: center;
+  1672→  gap: 1rem;
+  1673→  padding: 0.75rem 1.25rem;
+  1674→  background: var(--bg-secondary);
+  1675→  border-bottom: 1px solid var(--border-color);
+  1676→  flex-wrap: wrap;
+  1677→}
+  1678→
+  1679→.wf-demo__dots {
+  1680→  display: flex;
+  1681→  gap: 6px;
+  1682→  flex-shrink: 0;
+  1683→}
+  1684→.wf-demo__dots span {
+  1685→  width: 11px;
+  1686→  height: 11px;
+  1687→  border-radius: 50%;
+  1688→  background: var(--border-color);
+  1689→}
+  1690→.wf-demo__dots span:nth-child(1) { background: #ff5f57; }
+  1691→.wf-demo__dots span:nth-child(2) { background: #ffbd2e; }
+  1692→.wf-demo__dots span:nth-child(3) { background: #28ca41; }
+  1693→
+  1694→.wf-demo__chrome-title {
+  1695→  font-size: 0.78rem;
+  1696→  font-weight: 600;
+  1697→  color: var(--text-secondary);
+  1698→  flex: 1;
+  1699→  min-width: 120px;
+  1700→}
+  1701→
+  1702→.wf-demo__phase-pills {
+  1703→  display: flex;
+  1704→  gap: 0.4rem;
+  1705→  flex-wrap: wrap;
+  1706→}
+  1707→
+  1708→.wf-demo__pill {
+  1709→  display: flex;
+  1710→  align-items: center;
+  1711→  gap: 0.35rem;
+  1712→  padding: 0.3rem 0.75rem;
+  1713→  border-radius: 100px;
+  1714→  border: 1px solid var(--border-color);
+  1715→  background: transparent;
+  1716→  font-size: 0.72rem;
+  1717→  font-weight: 600;
+  1718→  color: var(--text-secondary);
+  1719→  cursor: pointer;
+  1720→  transition: all 0.2s;
+  1721→}
+  1722→.wf-demo__pill:hover {
+  1723→  border-color: var(--accent-primary);
+  1724→  color: var(--accent-primary);
+  1725→}
+  1726→.wf-demo__pill.active {
+  1727→  background: var(--accent-primary);
+  1728→  border-color: var(--accent-primary);
+  1729→  color: #fff;
+  1730→}
+  1731→
+  1732→.wf-demo__pill-num {
+  1733→  width: 16px;
+  1734→  height: 16px;
+  1735→  border-radius: 50%;
+  1736→  background: rgba(255,255,255,0.25);
+  1737→  display: flex;
+  1738→  align-items: center;
+  1739→  justify-content: center;
+  1740→  font-size: 0.65rem;
+  1741→  font-weight: 700;
+  1742→  flex-shrink: 0;
+  1743→}
+  1744→.wf-demo__pill:not(.active) .wf-demo__pill-num {
+  1745→  background: var(--border-color);
+  1746→  color: var(--text-secondary);
+  1747→}
+  1748→
+  1749→/* Body layout */
+  1750→.wf-demo__body {
+  1751→  display: grid;
+  1752→  grid-template-columns: 200px 1fr;
+  1753→  min-height: 300px;
+  1754→}
+  1755→
+  1756→/* Sidebar */
+  1757→.wf-demo__sidebar {
+  1758→  border-right: 1px solid var(--border-color);
+  1759→  padding: 1rem 0.75rem;
+  1760→  display: flex;
+  1761→  flex-direction: column;
+  1762→  gap: 0.25rem;
+  1763→  background: var(--bg-secondary);
+  1764→}
+  1765→
+  1766→.wf-demo__sidebar-label {
+  1767→  font-size: 0.62rem;
+  1768→  font-weight: 700;
+  1769→  text-transform: uppercase;
+  1770→  letter-spacing: 0.08em;
+  1771→  color: var(--text-muted);
+  1772→  padding: 0 0.5rem 0.5rem;
+  1773→}
+  1774→
+  1775→.wf-demo__tool {
+  1776→  display: flex;
+  1777→  flex-direction: column;
+  1778→  gap: 0.1rem;
+  1779→  padding: 0.45rem 0.6rem;
+  1780→  border-radius: 8px;
+  1781→  cursor: pointer;
+  1782→  transition: background 0.2s, border-color 0.2s;
+  1783→  border: 1px solid transparent;
+  1784→}
+  1785→.wf-demo__tool.highlight {
+  1786→  border-color: rgba(99,102,241,0.35);
+  1787→  background: rgba(99,102,241,0.08);
+  1788→}
+  1789→.wf-demo__tool.selected {
+  1790→  background: rgba(99,102,241,0.12);
+  1791→  border-color: rgba(99,102,241,0.4);
+  1792→}
+  1793→
+  1794→.wf-demo__tool-cat {
+  1795→  font-size: 0.6rem;
+  1796→  color: var(--text-muted);
+  1797→  font-weight: 600;
+  1798→}
+  1799→.wf-demo__tool-name {
+  1800→  font-size: 0.75rem;
+  1801→  font-weight: 600;
+  1802→  color: var(--text-primary);
+  1803→}
+  1804→.wf-demo__tool.highlight .wf-demo__tool-name,
+  1805→.wf-demo__tool.selected .wf-demo__tool-name {
+  1806→  color: var(--color-primary-light);
+  1807→}
+  1808→
+  1809→/* Main panel */
+  1810→.wf-demo__main {
+  1811→  padding: 1.5rem;
+  1812→  position: relative;
+  1813→  overflow: hidden;
+  1814→}
+  1815→
+  1816→.wf-demo__panel {
+  1817→  height: 100%;
+  1818→}
+  1819→
+  1820→/* Phase 0 – empty state */
+  1821→.wf-demo__empty {
+  1822→  display: flex;
+  1823→  flex-direction: column;
+  1824→  align-items: center;
+  1825→  justify-content: center;
+  1826→  height: 100%;
+  1827→  gap: 0.5rem;
+  1828→  padding: 2rem;
+  1829→  text-align: center;
+  1830→}
+  1831→.wf-demo__empty-icon { font-size: 2.5rem; }
+  1832→.wf-demo__empty-title {
+  1833→  font-size: 0.9rem;
+  1834→  color: var(--text-secondary);
+  1835→  font-weight: 500;
+  1836→}
+  1837→.wf-demo__arrow {
+  1838→  font-size: 1.4rem;
+  1839→  color: var(--accent-primary);
+  1840→  font-weight: 700;
+  1841→}
+  1842→
+  1843→/* Phase 1 – form */
+  1844→.wf-demo__tool-header {
+  1845→  font-size: 0.85rem;
+  1846→  font-weight: 700;
+  1847→  color: var(--text-primary);
+  1848→  margin-bottom: 1rem;
+  1849→  padding-bottom: 0.6rem;
+  1850→  border-bottom: 1px solid var(--border-color);
+  1851→}
+  1852→
+  1853→.wf-demo__form {
+  1854→  display: flex;
+  1855→  flex-direction: column;
+  1856→  gap: 0.75rem;
+  1857→}
+  1858→
+  1859→.wf-demo__field {
+  1860→  display: flex;
+  1861→  flex-direction: column;
+  1862→  gap: 0.25rem;
+  1863→}
+  1864→
+  1865→.wf-demo__field-label {
+  1866→  font-size: 0.65rem;
+  1867→  font-weight: 700;
+  1868→  text-transform: uppercase;
+  1869→  letter-spacing: 0.07em;
+  1870→  color: var(--text-muted);
+  1871→}
+  1872→
+  1873→.wf-demo__field-value {
+  1874→  background: var(--bg-secondary);
+  1875→  border: 1px solid var(--border-color);
+  1876→  border-radius: 8px;
+  1877→  padding: 0.45rem 0.65rem;
+  1878→  font-size: 0.8rem;
+  1879→  color: var(--text-primary);
+  1880→  overflow: hidden;
+  1881→  white-space: nowrap;
+  1882→  display: flex;
+  1883→  align-items: center;
+  1884→  gap: 2px;
+  1885→}
+  1886→
+  1887→.wf-demo__generate-btn {
+  1888→  display: flex;
+  1889→  align-items: center;
+  1890→  gap: 0.4rem;
+  1891→  padding: 0.55rem 1.25rem;
+  1892→  background: var(--accent-primary);
+  1893→  color: #fff;
+  1894→  border: none;
+  1895→  border-radius: 8px;
+  1896→  font-size: 0.8rem;
+  1897→  font-weight: 700;
+  1898→  cursor: pointer;
+  1899→  align-self: flex-start;
+  1900→  margin-top: 0.25rem;
+  1901→}
+  1902→
+  1903→/* Phase 2 – output */
+  1904→.wf-demo__output-header {
+  1905→  display: flex;
+  1906→  align-items: center;
+  1907→  justify-content: space-between;
+  1908→  margin-bottom: 1rem;
+  1909→}
+  1910→
+  1911→.wf-demo__output-badge {
+  1912→  font-size: 0.72rem;
+  1913→  font-weight: 700;
+  1914→  color: var(--color-primary-light);
+  1915→  background: rgba(99,102,241,0.12);
+  1916→  padding: 0.2rem 0.6rem;
+  1917→  border-radius: 100px;
+  1918→}
+  1919→
+  1920→.wf-demo__word-count {
+  1921→  font-size: 0.68rem;
+  1922→  color: var(--text-muted);
+  1923→}
+  1924→
+  1925→.wf-demo__output-lines {
+  1926→  display: flex;
+  1927→  flex-direction: column;
+  1928→  gap: 0.5rem;
+  1929→}
+  1930→
+  1931→.wf-demo__output-line {
+  1932→  height: 8px;
+  1933→  background: var(--border-color);
+  1934→  border-radius: 4px;
+  1935→  transform-origin: left center;
+  1936→}
+  1937→.wf-demo__output-line.heading {
+  1938→  height: 12px;
+  1939→  background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  1940→  opacity: 0.7;
+  1941→  margin-bottom: 0.25rem;
+  1942→}
+  1943→
+  1944→.wf-demo__copy-row {
+  1945→  margin-top: 1.25rem;
+  1946→  display: flex;
+  1947→  justify-content: flex-end;
+  1948→}
+  1949→
+  1950→.wf-demo__copy-btn {
+  1951→  padding: 0.4rem 1rem;
+  1952→  border: 1px solid var(--border-color);
+  1953→  border-radius: 8px;
+  1954→  background: var(--bg-secondary);
+  1955→  color: var(--text-secondary);
+  1956→  font-size: 0.78rem;
+  1957→  font-weight: 600;
+  1958→  cursor: pointer;
+  1959→  transition: border-color 0.2s, color 0.2s;
+  1960→}
+  1961→.wf-demo__copy-btn:hover {
+  1962→  border-color: var(--accent-primary);
+  1963→  color: var(--accent-primary);
+  1964→}
+  1965→
+  1966→@media (max-width: 640px) {
+  1967→  .wf-demo__body { grid-template-columns: 1fr; }
+  1968→  .wf-demo__sidebar { display: none; }
+  1969→  .wf-demo__phase-pills { gap: 0.3rem; }
+  1970→  .wf-demo__pill { font-size: 0.65rem; padding: 0.25rem 0.5rem; }
+  1971→}
+  1972→
+  1973→/* ========== PLAN BENEFITS ========== */
+  1974→.landing__plan-benefits {
+  1975→  list-style: none;
+  1976→  padding: 0;
+  1977→  margin: 0 0 1rem;
+  1978→  display: flex;
+  1979→  flex-direction: column;
+  1980→  gap: 0.45rem;
+  1981→  text-align: left;
+  1982→  width: 100%;
+  1983→}
+  1984→
+  1985→.landing__plan-benefit {
+  1986→  display: flex;
+  1987→  align-items: flex-start;
+  1988→  gap: 0.5rem;
+  1989→  font-size: 0.82rem;
+  1990→  color: var(--text-secondary);
+  1991→  line-height: 1.4;
+  1992→}
+  1993→
+  1994→.landing__plan-benefit-check {
+  1995→  color: var(--accent-green, #22c55e);
+  1996→  font-weight: 700;
+  1997→  flex-shrink: 0;
+  1998→  margin-top: 0.05rem;
+  1999→}
+  2000→
+  2001→/* ========== SUPPORT SECTION ========== */
+  2002→.landing__support {
+  2003→  background: var(--bg-secondary);
+  2004→}
+  2005→
+  2006→.landing__support-grid {
+  2007→  display: grid;
+  2008→  grid-template-columns: repeat(3, 1fr);
+  2009→  gap: 1.5rem;
+  2010→  margin-top: 2.5rem;
+  2011→}
+  2012→
+  2013→.landing__support-card {
+  2014→  background: var(--card-bg);
+  2015→  border: 1px solid var(--border-color);
+  2016→  border-radius: 16px;
+  2017→  padding: 2rem 1.5rem;
+  2018→  display: flex;
+  2019→  flex-direction: column;
+  2020→  gap: 0.75rem;
+  2021→  transition: border-color 0.2s, transform 0.2s;
+  2022→}
+  2023→
+  2024→.landing__support-card:hover {
+  2025→  border-color: var(--accent-primary);
+  2026→  transform: translateY(-3px);
+  2027→}
+  2028→
+  2029→.landing__support-icon {
+  2030→  font-size: 2rem;
+  2031→  line-height: 1;
+  2032→}
+  2033→
+  2034→.landing__support-title {
+  2035→  font-size: 1.05rem;
+  2036→  font-weight: 700;
+  2037→  color: var(--text-primary);
+  2038→  margin: 0;
+  2039→}
+  2040→
+  2041→.landing__support-desc {
+  2042→  font-size: 0.9rem;
+  2043→  color: var(--text-secondary);
+  2044→  line-height: 1.6;
+  2045→  margin: 0;
+  2046→}
+  2047→
+  2048→/* ========== RESPONSIVE ========== */
+  2049→@media (max-width: 1200px) {
+  2050→  .landing__categories-grid { grid-template-columns: repeat(3, 1fr); }
+  2051→}
+  2052→
+  2053→/* ========== SMART DASHBOARD ========== */
+  2054→.landing__smartdash { background: var(--bg-primary); }
+  2055→.landing__smartdash .section-title { text-align: center; }
+  2056→
+  2057→.landing__smartdash-subtitle {
+  2058→  text-align: center;
+  2059→  color: var(--text-secondary);
+  2060→  font-size: 1.05rem;
+  2061→  margin: 0.5rem auto 2rem;
+  2062→  max-width: 540px;
+  2063→}
+  2064→
+  2065→/* Gradient border frame */
+  2066→.landing__smartdash-frame {
+  2067→  border-radius: 20px;
+  2068→  padding: 2px;
+  2069→  background: linear-gradient(135deg, rgba(124,58,237,0.5) 0%, rgba(168,85,247,0.3) 40%, rgba(59,130,246,0.35) 70%, rgba(124,58,237,0.5) 100%);
+  2070→  box-shadow: 0 0 40px rgba(124,58,237,0.12), 0 0 80px rgba(124,58,237,0.06);
+  2071→}
+  2072→.landing__smartdash-frame-inner {
+  2073→  border-radius: 18px;
+  2074→  background: var(--bg-secondary);
+  2075→  overflow: hidden;
+  2076→}
+  2077→
+  2078→/* Demo notice banner */
+  2079→.landing__smartdash-demo-banner {
+  2080→  display: flex;
+  2081→  align-items: center;
+  2082→  flex-wrap: wrap;
+  2083→  gap: 0.75rem 1.5rem;
+  2084→  padding: 0.9rem 1.4rem;
+  2085→  background: rgba(124,58,237,0.08);
+  2086→  border-bottom: 1px solid rgba(124,58,237,0.18);
+  2087→}
+  2088→.landing__smartdash-demo-badge {
+  2089→  font-size: 0.72rem;
+  2090→  font-weight: 700;
+  2091→  letter-spacing: 0.06em;
+  2092→  text-transform: uppercase;
+  2093→  color: #a78bfa;
+  2094→  background: rgba(124,58,237,0.18);
+  2095→  padding: 0.25rem 0.7rem;
+  2096→  border-radius: 20px;
+  2097→  white-space: nowrap;
+  2098→  flex-shrink: 0;
+  2099→}
+  2100→.landing__smartdash-demo-notice {
+  2101→  font-size: 0.83rem;
+  2102→  color: var(--text-secondary);
+  2103→  flex: 1;
+  2104→  min-width: 180px;
+  2105→}
+  2106→.landing__smartdash-demo-sources {
+  2107→  display: flex;
+  2108→  gap: 0.5rem;
+  2109→  flex-wrap: wrap;
+  2110→}
+  2111→.landing__smartdash-source-btn {
+  2112→  font-size: 0.78rem;
+  2113→  font-weight: 600;
+  2114→  padding: 0.3rem 0.85rem;
+  2115→  border-radius: 6px;
+  2116→  text-decoration: none;
+  2117→  border: 1px solid color-mix(in srgb, var(--src-color) 40%, transparent);
+  2118→  color: var(--src-color);
+  2119→  background: color-mix(in srgb, var(--src-color) 8%, transparent);
+  2120→  transition: background 0.2s;
+  2121→  white-space: nowrap;
+  2122→}
+  2123→.landing__smartdash-source-btn:hover:not(:disabled) {
+  2124→  background: color-mix(in srgb, var(--src-color) 15%, transparent);
+  2125→}
+  2126→.landing__smartdash-source-btn:disabled { opacity: 0.6; cursor: default; }
+  2127→
+  2128→/* Provider banner v2 (Real Time Data page) */
+  2129→.rtd__banner-v2 {
+  2130→  flex-direction: column !important;
+  2131→  gap: 1rem !important;
+  2132→  align-items: stretch !important;
+  2133→}
+  2134→.rtd__banner-top {
+  2135→  display: flex;
+  2136→  align-items: center;
+  2137→  justify-content: space-between;
+  2138→  gap: 0.75rem;
+  2139→  flex-wrap: wrap;
+  2140→}
+  2141→.rtd__banner-status {
+  2142→  display: flex;
+  2143→  align-items: center;
+  2144→  gap: 0.75rem;
+  2145→  flex-wrap: wrap;
+  2146→}
+  2147→.rtd__provider-cards {
+  2148→  display: grid;
+  2149→  grid-template-columns: repeat(3, 1fr);
+  2150→  gap: 0.75rem;
+  2151→}
+  2152→@media (max-width: 640px) {
+  2153→  .rtd__provider-cards { grid-template-columns: 1fr; }
+  2154→}
+  2155→.rtd__provider-card {
+  2156→  display: flex;
+  2157→  flex-direction: column;
+  2158→  gap: 0.35rem;
+  2159→  padding: 0.75rem 1rem;
+  2160→  border-radius: 10px;
+  2161→  border: 1px solid color-mix(in srgb, var(--src-color) 35%, transparent);
+  2162→  background: color-mix(in srgb, var(--src-color) 7%, transparent);
+  2163→}
+  2164→.rtd__provider-card-header {
+  2165→  display: flex;
+  2166→  align-items: center;
+  2167→  gap: 0.4rem;
+  2168→}
+  2169→.rtd__provider-card-icon { font-size: 1.1rem; }
+  2170→.rtd__provider-card-name {
+  2171→  font-size: 0.82rem;
+  2172→  font-weight: 700;
+  2173→  letter-spacing: 0.01em;
+  2174→}
+  2175→.rtd__provider-card-metrics {
+  2176→  font-size: 0.75rem;
+  2177→  color: rgba(255,255,255,0.5);
+  2178→  margin: 0 0 0.25rem;
+  2179→  line-height: 1.4;
+  2180→}
+  2181→.rtd__provider-action-btn {
+  2182→  font-size: 0.75rem;
+  2183→  font-weight: 600;
+  2184→  padding: 0.3rem 0.7rem;
+  2185→  border-radius: 6px;
+  2186→  border: 1px solid color-mix(in srgb, var(--src-color, #7c3aed) 60%, transparent);
+  2187→  background: color-mix(in srgb, var(--src-color, #7c3aed) 15%, transparent);
+  2188→  color: color-mix(in srgb, var(--src-color, #a78bfa) 90%, #fff);
+  2189→  cursor: pointer;
+  2190→  text-decoration: none;
+  2191→  display: inline-block;
+  2192→  transition: opacity 0.2s;
+  2193→  align-self: flex-start;
+  2194→}
+  2195→.rtd__provider-action-btn:hover { opacity: 0.8; }
+  2196→.rtd__provider-action-btn:disabled { opacity: 0.5; cursor: default; }
+  2197→.rtd__provider-action-btn--connected {
+  2198→  border-color: rgba(74,222,128,0.4);
+  2199→  background: rgba(74,222,128,0.1);
+  2200→  color: #4ade80;
+  2201→}
+  2202→
+  2203→/* Provider chips (Real Time Data page) */
+  2204→.rtd__banner-left {
+  2205→  display: flex;
+  2206→  align-items: center;
+  2207→  gap: 0.75rem;
+  2208→  flex-wrap: wrap;
+  2209→  flex: 1;
+  2210→}
+  2211→.rtd__provider-chip {
+  2212→  display: flex;
+  2213→  align-items: center;
+  2214→  gap: 0.4rem;
+  2215→  font-size: 0.78rem;
+  2216→  font-weight: 600;
+  2217→  padding: 0.3rem 0.5rem 0.3rem 0.85rem;
+  2218→  border-radius: 6px;
+  2219→  border: 1px solid color-mix(in srgb, var(--src-color) 50%, transparent);
+  2220→  color: var(--src-color);
+  2221→  background: color-mix(in srgb, var(--src-color) 10%, transparent);
+  2222→}
+  2223→.rtd__provider-dot {
+  2224→  width: 6px;
+  2225→  height: 6px;
+  2226→  border-radius: 50%;
+  2227→  background: #4ade80;
+  2228→  flex-shrink: 0;
+  2229→}
+  2230→.rtd__provider-disconnect {
+  2231→  background: none;
+  2232→  border: none;
+  2233→  color: rgba(255,255,255,0.4);
+  2234→  cursor: pointer;
+  2235→  font-size: 1rem;
+  2236→  line-height: 1;
+  2237→  padding: 0 0.1rem;
+  2238→  transition: color 0.15s;
+  2239→}
+  2240→.rtd__provider-disconnect:hover { color: #ef4444; }
+  2241→.rtd__provider-connect { cursor: pointer; }
+  2242→.rtd__provider-connect:disabled { opacity: 0.6; cursor: default; }
+  2243→
+  2244→/* Guest sign-in prompt in banner */
+  2245→.rtd__guest-cta {
+  2246→  display: flex;
+  2247→  align-items: center;
+  2248→  gap: 0.75rem;
+  2249→  flex-wrap: wrap;
+  2250→}
+  2251→.rtd__guest-text {
+  2252→  font-size: 0.82rem;
+  2253→  color: rgba(255,255,255,0.5);
+  2254→  white-space: nowrap;
+  2255→}
+  2256→.rtd__guest-btn {
+  2257→  font-size: 0.82rem;
+  2258→  font-weight: 600;
+  2259→  padding: 0.4rem 1rem;
+  2260→  border-radius: 7px;
+  2261→  background: #7c3aed;
+  2262→  color: #fff;
+  2263→  text-decoration: none;
+  2264→  white-space: nowrap;
+  2265→  transition: opacity 0.2s;
+  2266→}
+  2267→.rtd__guest-btn:hover { opacity: 0.85; }
+  2268→
+  2269→.landing__smartdash-grid {
+  2270→  display: grid;
+  2271→  grid-template-columns: 1fr 360px;
+  2272→  gap: 0;
+  2273→  align-items: start;
+  2274→}
+  2275→
+  2276→/* ── Left panel ── */
+  2277→.landing__smartdash-left {
+  2278→  padding: 1.5rem;
+  2279→  border-right: 1px solid rgba(255,255,255,0.06);
+  2280→}
+  2281→
+  2282→/* ── Metrics ── */
+  2283→.landing__smartdash-metrics {
+  2284→  display: grid;
+  2285→  grid-template-columns: repeat(2, 1fr);
+  2286→  gap: 0.85rem;
+  2287→  margin-bottom: 1rem;
+  2288→}
+  2289→
+  2290→.landing__smartdash-metric {
+  2291→  background: rgba(255,255,255,0.04);
+  2292→  border: 1px solid rgba(255,255,255,0.08);
+  2293→  border-radius: 10px;
+  2294→  padding: 1rem 1.1rem;
+  2295→}
+  2296→.landing__smartdash-metric-top {
+  2297→  display: flex;
+  2298→  justify-content: space-between;
+  2299→  align-items: center;
+  2300→  margin-bottom: 0.45rem;
+  2301→}
+  2302→.landing__smartdash-metric-label {
+  2303→  font-size: 0.75rem;
+  2304→  font-weight: 500;
+  2305→  color: rgba(255,255,255,0.45);
+  2306→  text-transform: uppercase;
+  2307→  letter-spacing: 0.04em;
+  2308→}
+  2309→.landing__smartdash-metric-icon { font-size: 0.9rem; opacity: 0.5; }
+  2310→.landing__smartdash-metric-value {
+  2311→  font-size: 1.55rem;
+  2312→  font-weight: 700;
+  2313→  color: #fff;
+  2314→  line-height: 1.1;
+  2315→  font-variant-numeric: tabular-nums;
+  2316→}
+  2317→.landing__smartdash-metric-change {
+  2318→  font-size: 0.73rem;
+  2319→  font-weight: 600;
+  2320→  color: #4ade80;
+  2321→  margin-top: 0.3rem;
+  2322→}
+  2323→
+  2324→/* ── Chart ── */
+  2325→.landing__smartdash-chart {
+  2326→  background: rgba(255,255,255,0.03);
+  2327→  border: 1px solid rgba(255,255,255,0.07);
+  2328→  border-radius: 10px;
+  2329→  padding: 1.1rem 1.2rem;
+  2330→}
+  2331→.landing__smartdash-chart-header {
+  2332→  font-size: 0.82rem;
+  2333→  font-weight: 600;
+  2334→  color: rgba(255,255,255,0.7);
+  2335→  margin-bottom: 1rem;
+  2336→}
+  2337→.landing__smartdash-chart-bars {
+  2338→  display: flex;
+  2339→  align-items: flex-end;
+  2340→  gap: 7px;
+  2341→  height: 110px;
+  2342→}
+  2343→.landing__smartdash-bar {
+  2344→  flex: 1;
+  2345→  background: linear-gradient(180deg, #7c3aed 0%, rgba(124,58,237,0.25) 100%);
+  2346→  border-radius: 3px 3px 0 0;
+  2347→  transform-origin: bottom;
+  2348→  min-height: 3px;
+  2349→}
+  2350→
+  2351→/* ── Right panel ── */
+  2352→.landing__smartdash-right {
+  2353→  padding: 1.5rem;
+  2354→  display: flex;
+  2355→  flex-direction: column;
+  2356→  gap: 1rem;
+  2357→}
+  2358→
+  2359→/* ── AI Suggestions ── */
+  2360→.landing__smartdash-ai {
+  2361→  display: flex;
+  2362→  flex-direction: column;
+  2363→  gap: 0;
+  2364→}
+  2365→.landing__smartdash-ai-header {
+  2366→  display: flex;
+  2367→  gap: 0.6rem;
+  2368→  align-items: flex-start;
+  2369→  margin-bottom: 1rem;
+  2370→}
+  2371→.landing__smartdash-ai-icon { font-size: 1.2rem; }
+  2372→.landing__smartdash-ai-header strong {
+  2373→  display: block;
+  2374→  color: #a78bfa;
+  2375→  font-size: 0.95rem;
+  2376→  font-weight: 700;
+  2377→}
+  2378→.landing__smartdash-ai-header p {
+  2379→  font-size: 0.75rem;
+  2380→  color: rgba(255,255,255,0.45);
+  2381→  margin: 0.15rem 0 0;
+  2382→  line-height: 1.4;
+  2383→}
+  2384→
+  2385→.landing__smartdash-sug {
+  2386→  background: rgba(255,255,255,0.04);
+  2387→  border: 1px solid rgba(255,255,255,0.08);
+  2388→  border-radius: 9px;
+  2389→  padding: 0.85rem 1rem;
+  2390→  margin-bottom: 0.6rem;
+  2391→  position: relative;
+  2392→}
+  2393→.landing__smartdash-sug--locked { overflow: hidden; }
+  2394→.landing__smartdash-sug-overlay {
+  2395→  position: absolute;
+  2396→  inset: 0;
+  2397→  background: rgba(10,10,20,0.7);
+  2398→  backdrop-filter: blur(5px);
+  2399→  border-radius: 9px;
+  2400→  display: flex;
+  2401→  flex-direction: column;
+  2402→  align-items: center;
+  2403→  justify-content: center;
+  2404→  gap: 0.35rem;
+  2405→  font-size: 1.2rem;
+  2406→  z-index: 2;
+  2407→}
+  2408→.landing__smartdash-sug-overlay a {
+  2409→  font-size: 0.78rem;
+  2410→  color: #a78bfa;
+  2411→  text-decoration: underline;
+  2412→  font-weight: 600;
+  2413→}
+  2414→.landing__smartdash-sug-top {
+  2415→  display: flex;
+  2416→  justify-content: space-between;
+  2417→  align-items: center;
+  2418→  gap: 0.4rem;
+  2419→  margin-bottom: 0.35rem;
+  2420→}
+  2421→.landing__smartdash-sug-title {
+  2422→  font-size: 0.82rem;
+  2423→  font-weight: 600;
+  2424→  color: #fff;
+  2425→}
+  2426→.landing__smartdash-priority {
+  2427→  font-size: 0.67rem;
+  2428→  font-weight: 700;
+  2429→  padding: 0.15rem 0.5rem;
+  2430→  border-radius: 20px;
+  2431→  white-space: nowrap;
+  2432→}
+  2433→.landing__smartdash-priority--high   { background: rgba(239,68,68,0.18); color: #f87171; }
+  2434→.landing__smartdash-priority--medium { background: rgba(234,179,8,0.18);  color: #fbbf24; }
+  2435→.landing__smartdash-sug-desc {
+  2436→  font-size: 0.75rem;
+  2437→  color: rgba(255,255,255,0.5);
+  2438→  margin: 0 0 0.65rem;
+  2439→  line-height: 1.4;
+  2440→}
+  2441→.landing__smartdash-sug-btn {
+  2442→  width: 100%;
+  2443→  padding: 0.4rem;
+  2444→  background: transparent;
+  2445→  border: 1px solid rgba(255,255,255,0.1);
+  2446→  border-radius: 7px;
+  2447→  font-size: 0.78rem;
+  2448→  color: rgba(255,255,255,0.5);
+  2449→  cursor: pointer;
+  2450→  transition: border-color 0.2s, color 0.2s;
+  2451→}
+  2452→.landing__smartdash-sug-btn:hover:not(:disabled) {
+  2453→  border-color: #7c3aed;
+  2454→  color: #a78bfa;
+  2455→}
+  2456→.landing__smartdash-sug-btn:disabled { opacity: 0.35; cursor: default; }
+  2457→
+  2458→/* ── Quick Actions ── */
+  2459→.landing__smartdash-qa {
+  2460→  border-top: 1px solid rgba(255,255,255,0.06);
+  2461→  padding-top: 1rem;
+  2462→}
+  2463→.landing__smartdash-qa-title {
+  2464→  display: block;
+  2465→  font-size: 0.85rem;
+  2466→  font-weight: 700;
+  2467→  color: rgba(255,255,255,0.8);
+  2468→  margin-bottom: 0.75rem;
+  2469→}
+  2470→.landing__smartdash-qa-btn {
+  2471→  display: flex;
+  2472→  align-items: center;
+  2473→  justify-content: center;
+  2474→  gap: 0.5rem;
+  2475→  width: 100%;
+  2476→  padding: 0.6rem;
+  2477→  border-radius: 8px;
+  2478→  font-size: 0.82rem;
+  2479→  font-weight: 500;
+  2480→  margin-bottom: 0.5rem;
+  2481→  text-decoration: none;
+  2482→  transition: opacity 0.2s, background 0.2s;
+  2483→  border: 1px solid rgba(255,255,255,0.1);
+  2484→  color: rgba(255,255,255,0.7);
+  2485→  background: transparent;
+  2486→}
+  2487→.landing__smartdash-qa-btn.primary {
+  2488→  background: #7c3aed;
+  2489→  border-color: #7c3aed;
+  2490→  color: #fff;
+  2491→}
+  2492→.landing__smartdash-qa-btn.locked { opacity: 0.5; }
+  2493→.landing__smartdash-qa-btn:hover:not(.locked) { opacity: 0.8; }
+  2494→.landing__smartdash-qa-badge {
+  2495→  font-size: 0.65rem;
+  2496→  background: rgba(124,58,237,0.25);
+  2497→  color: #a78bfa;
+  2498→  padding: 0.12rem 0.4rem;
+  2499→  border-radius: 20px;
+  2500→  margin-left: auto;
+  2501→}
+  2502→
+  2503→@media (max-width: 1024px) {
+  2504→  .landing__hero .container { grid-template-columns: 1fr; gap: 3rem; }
+  2505→  .landing__hero-preview { display: block; }
+  2506→  .landing__plans-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+  2507→  .landing__ig-compact-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  2508→  /* How It Works – 2 cols on tablet */
+  2509→  .landing__how-steps { grid-template-columns: repeat(2, 1fr); }
+  2510→  /* What You Get – 3 cols on tablet */
+  2511→  .landing__wyg-grid { grid-template-columns: repeat(3, 1fr); }
+  2512→  /* Support – 1 col on tablet */
+  2513→  .landing__support-grid { grid-template-columns: 1fr; max-width: 480px; margin-left: auto; margin-right: auto; }
+  2514→}
+  2515→
+  2516→@media (max-width: 640px) {
+  2517→  .landing__hero { padding: 4.5rem 0 2.5rem; min-height: unset; }
+  2518→  .landing__cta-card { padding: 3rem 1.5rem; }
+  2519→  .landing__cta-full-card { padding: 3.5rem 1.5rem; }
+  2520→  .landing__hero-actions { flex-direction: column; }
+  2521→  .landing__hero-actions .btn { width: 100%; justify-content: center; }
+  2522→  /* Stats: 2×2 grid on mobile */
+  2523→  .landing__stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+  2524→  .landing__plans-grid { grid-template-columns: 1fr; max-width: 100%; }
+  2525→  /* How It Works – 1 col on mobile */
+  2526→  .landing__how-steps { grid-template-columns: 1fr; max-width: 480px; margin-left: auto; margin-right: auto; }
+  2527→  /* What You Get – 2 cols on mobile, taller flip cards */
+  2528→  .landing__wyg-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  2529→  .wyg-flip { height: auto; perspective: none; }
+  2530→  .wyg-flip__inner { transform-style: flat; height: auto; position: relative; }
+  2531→  .wyg-flip__front,
+  2532→  .wyg-flip__back { position: relative; inset: auto; backface-visibility: visible; -webkit-backface-visibility: visible; border-radius: 12px; }
+  2533→  .wyg-flip__back { transform: none; display: none; align-items: flex-start; justify-content: flex-start; }
+  2534→  .wyg-flip.is-flipped .wyg-flip__inner { transform: none; }
+  2535→  .wyg-flip.is-flipped .wyg-flip__front { display: none; }
+  2536→  .wyg-flip.is-flipped .wyg-flip__back { display: flex; }
+  2537→  /* Why ChatGPT – stack on mobile */
+  2538→  .landing__whychatgpt-table { grid-template-columns: 1fr; }
+  2539→  .landing__whychatgpt-col--generic { border-right: none; border-bottom: 1px solid var(--border-color); }
+  2540→  .landing__whychatgpt-row { padding: 0.75rem 1.25rem; font-size: 0.9rem; }
+  2541→  .landing__ig-compact-preview { flex-direction: column; gap: 1.25rem; }
+  2542→  .landing__plan-flip { height: auto; perspective: none; }
+  2543→  .landing__plan-flip__inner { transform-style: flat; height: auto; position: relative; }
+  2544→  .landing__plan-flip__front,
+  2545→  .landing__plan-flip__back { position: relative; inset: auto; backface-visibility: visible; -webkit-backface-visibility: visible; }
+  2546→  .landing__plan-flip__back { display: none; transform: none; }
+  2547→  .landing__plan-flip.is-flipped .landing__plan-flip__front { display: none; }
+  2548→  .landing__plan-flip.is-flipped .landing__plan-flip__inner { transform: none; }
+  2549→  .landing__plan-flip.is-flipped .landing__plan-flip__back { display: flex; }
+  2550→  .landing__plan-flip__hint-icon { animation: none; }
+  2551→
+  2552→  /* ── Smart Dashboard ── */
+  2553→  .landing__smartdash-grid { grid-template-columns: 1fr; }
+  2554→  .landing__smartdash-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  2555→  .landing__smartdash-metrics { grid-template-columns: repeat(2, 1fr); }
+  2556→  .landing__smartdash-chart-bars { height: 90px; }
+  2557→  .landing__smartdash-demo-banner { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+  2558→
+  2559→  /* ── Mobile GPU performance ── */
+  2560→  .landing__orb {
+  2561→    filter: blur(20px) !important;
+  2562→    animation: none !important;
+  2563→    opacity: 0.08;
+  2564→  }
+  2565→  .landing__grid-pattern { display: none; }
+  2566→  .landing__preview-line { animation: none; opacity: 0.6; }
+  2567→  .preview-dot { animation: none; opacity: 0.5; }
+  2568→  .preview-generating-text { animation: none; opacity: 0.5; }
+  2569→  .landing__cursor { animation: none; opacity: 1; }
+  2570→}
+  2571→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

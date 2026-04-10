@@ -1,0 +1,520 @@
+#!/usr/bin/env python3
+"""
+Instagram carousel — Día 1
+Gormaran vs ChatGPT: por qué los frameworks ganan a los prompts genéricos
+7 slides 1080x1080px — estilo editorial crema/rojo coral
+"""
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch, Rectangle
+from matplotlib import font_manager
+import os
+
+FONT_DIR = "/Users/gabiorma/.claude/plugins/cache/anthropic-agent-skills/example-skills/7029232b9212/skills/canvas-design/canvas-fonts"
+
+def reg(name):
+    p = os.path.join(FONT_DIR, name)
+    font_manager.fontManager.addfont(p)
+    return font_manager.FontProperties(fname=p).get_name()
+
+DISPLAY   = reg("Gloock-Regular.ttf")
+ITALIC    = reg("InstrumentSerif-Italic.ttf")
+SERIF     = reg("InstrumentSerif-Regular.ttf")
+CAPS      = reg("BricolageGrotesque-Bold.ttf")
+BODY      = reg("InstrumentSans-Regular.ttf")
+BODY_BOLD = reg("InstrumentSans-Bold.ttf")
+NUM       = reg("CrimsonPro-Italic.ttf")
+MONO      = reg("JetBrainsMono-Regular.ttf")
+
+CREAM  = "#F7F1E6"
+RED    = "#E0513A"
+RED_LT = "#FAEAE7"
+BLACK  = "#1A1918"
+GRAY   = "#7A7570"
+LGRAY  = "#D8D2CA"
+WHITE  = "#FFFFFF"
+OFFBLACK = "#2C2925"
+
+OUT_DIR = "/Users/gabiorma/video-editor/Meta-Ads/carousel-dia01"
+os.makedirs(OUT_DIR, exist_ok=True)
+
+DPI = 150
+SZ  = 7.2
+
+def new_slide():
+    fig = plt.figure(figsize=(SZ, SZ), dpi=DPI, facecolor=CREAM)
+    ax  = fig.add_axes([0, 0, 1, 1])
+    ax.set_facecolor(CREAM)
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+    ax.axis('off')
+    return fig, ax
+
+def save(fig, n):
+    path = f"{OUT_DIR}/slide_{n:02d}.png"
+    fig.savefig(path, dpi=DPI, bbox_inches='tight', facecolor=CREAM, pad_inches=0)
+    plt.close(fig)
+    print(f"  -> {path}")
+
+def footer_line(ax):
+    ax.axhline(0.068, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+    ax.text(0.5, 0.040, "@gormaran_ai_marketing",
+            fontfamily=BODY, fontsize=9, color=GRAY,
+            ha='center', va='center', zorder=10)
+
+def arrow_btn(ax, x=0.88, y=0.092):
+    ax.add_patch(FancyBboxPatch((x-0.055, y-0.038), 0.11, 0.076,
+                                boxstyle='round,pad=0.018',
+                                facecolor=WHITE, edgecolor=RED,
+                                linewidth=1.2, zorder=8))
+    ax.annotate('', xy=(x+0.018, y), xytext=(x-0.018, y),
+                arrowprops=dict(arrowstyle='->', color=RED, lw=1.5),
+                zorder=10)
+
+def slide_number(ax, current, total=7):
+    ax.text(0.07, 0.040, f"{current}/{total}",
+            fontfamily=BODY, fontsize=9, color=LGRAY,
+            ha='left', va='center', zorder=10)
+
+def top_label(ax, text):
+    ax.text(0.07, 0.943, text,
+            fontfamily=CAPS, fontsize=11, color=RED,
+            ha='left', va='top', zorder=10)
+
+def divider(ax, y, xmin=0.07, xmax=0.93):
+    ax.axhline(y, xmin=xmin, xmax=xmax, color=LGRAY, lw=0.8, zorder=5)
+
+def bullet_row(ax, icon_color, text, bold_part, y, x=0.07):
+    ax.add_patch(Rectangle((x, y - 0.010), 0.018, 0.018,
+                            facecolor=icon_color, edgecolor='none', zorder=7))
+    ax.text(x + 0.035, y + 0.001, bold_part,
+            fontfamily=BODY_BOLD, fontsize=11, color=BLACK,
+            ha='left', va='center', zorder=10)
+    if text:
+        ax.text(x + 0.035, y - 0.028, text,
+                fontfamily=BODY, fontsize=9.5, color=GRAY,
+                ha='left', va='center', zorder=10)
+
+def vs_pill(ax, label_a, label_b, x=0.5, y=0.88, w=0.78):
+    half = w / 2
+    h = 0.054
+    # A side — red
+    ax.add_patch(FancyBboxPatch((x - half, y - h/2), half, h,
+                                boxstyle='round,pad=0',
+                                facecolor=RED, edgecolor='none', zorder=6))
+    ax.text(x - half/2, y, label_a,
+            fontfamily=BODY_BOLD, fontsize=10, color=WHITE,
+            ha='center', va='center', zorder=8)
+    # B side — black
+    ax.add_patch(FancyBboxPatch((x, y - h/2), half, h,
+                                boxstyle='round,pad=0',
+                                facecolor=OFFBLACK, edgecolor='none', zorder=6))
+    ax.text(x + half/2, y, label_b,
+            fontfamily=BODY_BOLD, fontsize=10, color=WHITE,
+            ha='center', va='center', zorder=8)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 1 — COVER / HOOK
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+top_label(ax, "ESTO ES LO QUE NADIE TE DICE")
+
+ax.text(0.07, 0.875,
+        "Le das el mismo\nprompt a ChatGPT\ntodos los días.",
+        fontfamily=DISPLAY, fontsize=38, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.15)
+
+divider(ax, 0.600)
+
+ax.text(0.07, 0.570,
+        "Y todos los días recibes\nalgo diferente.",
+        fontfamily=SERIF, fontsize=19, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.4)
+
+# Red punch line
+ax.add_patch(Rectangle((0.07, 0.415), 0.86, 0.002,
+                        facecolor='none', edgecolor='none', zorder=1))
+ax.text(0.07, 0.450,
+        "Eso no es una herramienta.",
+        fontfamily=BODY_BOLD, fontsize=14, color=GRAY,
+        ha='left', va='top', zorder=10)
+ax.text(0.07, 0.395,
+        "Es una lotería.",
+        fontfamily=ITALIC, fontsize=32, color=RED,
+        ha='left', va='top', zorder=10)
+
+divider(ax, 0.310)
+
+ax.text(0.07, 0.280, "La diferencia entre ChatGPT y Gormaran",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+ax.text(0.07, 0.235, "sigue leyendo \u2192",
+        fontfamily=BODY_BOLD, fontsize=11, color=RED,
+        ha='left', va='top', zorder=10)
+
+ax.axhline(0.195, xmin=0.07, xmax=0.77, color=LGRAY, lw=0.8, zorder=5)
+arrow_btn(ax, x=0.88, y=0.195)
+
+slide_number(ax, 1)
+footer_line(ax)
+save(fig, 1)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 2 — El problema real con ChatGPT
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+top_label(ax, "EL PROBLEMA")
+
+ax.text(0.07, 0.875,
+        "ChatGPT es\nbrillante.",
+        fontfamily=DISPLAY, fontsize=44, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.1)
+
+ax.text(0.07, 0.720,
+        "Para conversar. Para explorar.\nPara brainstorming libre.",
+        fontfamily=SERIF, fontsize=15, color=GRAY,
+        ha='left', va='top', zorder=10, linespacing=1.5)
+
+divider(ax, 0.645)
+
+ax.text(0.07, 0.615, "Pero tiene un problema estructural:",
+        fontfamily=BODY, fontsize=12, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+problems = [
+    ("No recuerda tu marca",      "Cada sesion empieza de cero"),
+    ("No conoce tu producto",     "Tu tienes que explicarle todo"),
+    ("No sabe a quien le vendes", "El output es siempre generico"),
+    ("No tiene estructura fija",  "El prompt determina el resultado"),
+]
+for i, (title, sub) in enumerate(problems):
+    y0 = 0.560 - i * 0.108
+    ax.add_patch(Rectangle((0.07, y0 + 0.005), 0.018, 0.018,
+                            facecolor=RED, edgecolor='none', zorder=7))
+    ax.text(0.115, y0 + 0.013, title,
+            fontfamily=BODY_BOLD, fontsize=11.5, color=BLACK,
+            ha='left', va='center', zorder=10)
+    ax.text(0.115, y0 - 0.020, sub,
+            fontfamily=BODY, fontsize=9.5, color=GRAY,
+            ha='left', va='center', zorder=10)
+
+# Bottom note
+ax.add_patch(FancyBboxPatch((0.07, 0.120), 0.86, 0.068,
+                            boxstyle='round,pad=0.012',
+                            facecolor=RED_LT, edgecolor=RED,
+                            linewidth=0.7, zorder=6))
+ax.text(0.50, 0.157, "No es tu culpa. Es la herramienta equivocada.",
+        fontfamily=ITALIC, fontsize=12.5, color=BLACK,
+        ha='center', va='center', zorder=8)
+
+slide_number(ax, 2)
+arrow_btn(ax)
+footer_line(ax)
+save(fig, 2)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 3 — Lo que acaba pasando
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+top_label(ax, "EL CICLO QUE SE REPITE")
+
+ax.text(0.07, 0.875,
+        "Asi termina\nla mayoria.",
+        fontfamily=DISPLAY, fontsize=44, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.1)
+
+divider(ax, 0.782)
+
+steps = [
+    ("1", "Escribes el prompt de siempre"),
+    ("2", "Obtienes algo demasiado generico"),
+    ("3", "Lo reescribes a mano"),
+    ("4", "Tardas mas que sin IA"),
+    ("5", "Te preguntas para que sirve esto"),
+]
+for i, (num, text) in enumerate(steps):
+    y0 = 0.750 - i * 0.110
+    # Number
+    ax.text(0.07, y0, num,
+            fontfamily=NUM, fontsize=38, color=RED,
+            ha='left', va='top', zorder=10)
+    # Line
+    ax.text(0.155, y0 - 0.008, text,
+            fontfamily=SERIF, fontsize=14.5, color=BLACK,
+            ha='left', va='top', zorder=10)
+    if i < 4:
+        divider(ax, y0 - 0.068, xmin=0.07, xmax=0.93)
+
+# Closing punch
+ax.add_patch(Rectangle((0.07, 0.118), 0.86, 0.002,
+                        facecolor=LGRAY, edgecolor='none', zorder=4))
+
+ax.text(0.07, 0.165, "Resultado: abandonas la herramienta.",
+        fontfamily=BODY_BOLD, fontsize=12, color=BLACK,
+        ha='left', va='top', zorder=10)
+ax.text(0.07, 0.130, "Pero el problema no eras tu.",
+        fontfamily=ITALIC, fontsize=13, color=RED,
+        ha='left', va='top', zorder=10)
+
+slide_number(ax, 3)
+arrow_btn(ax)
+footer_line(ax)
+save(fig, 3)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 4 — Gormaran funciona al revés
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+top_label(ax, "LA DIFERENCIA")
+
+ax.text(0.07, 0.875,
+        "Gormaran\nfunciona\nal reves.",
+        fontfamily=DISPLAY, fontsize=44, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.1)
+
+divider(ax, 0.718)
+
+ax.text(0.07, 0.688,
+        "No te da un chat.\nTe da un framework especializado\npara cada tarea concreta.",
+        fontfamily=SERIF, fontsize=14.5, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.5)
+
+divider(ax, 0.568)
+
+tasks = [
+    ("Brief de campana",     "Output en 2 min — listo para aprobar"),
+    ("Propuesta de cliente", "Lista para enviar — con estructura probada"),
+    ("Plan de contenidos",   "30 dias resueltos — organizados por canal"),
+    ("Analisis competencia", "Con datos reales — no inventado"),
+]
+for i, (task, result) in enumerate(tasks):
+    y0 = 0.535 - i * 0.095
+    # Left: task name
+    ax.text(0.07, y0, task,
+            fontfamily=BODY_BOLD, fontsize=11, color=BLACK,
+            ha='left', va='top', zorder=10)
+    # Right: result
+    ax.text(0.93, y0, result,
+            fontfamily=BODY, fontsize=9.5, color=RED,
+            ha='right', va='top', zorder=10)
+    if i < 3:
+        divider(ax, y0 - 0.052, xmin=0.07, xmax=0.93)
+
+# Bottom statement
+ax.add_patch(FancyBboxPatch((0.07, 0.118), 0.86, 0.068,
+                            boxstyle='round,pad=0.012',
+                            facecolor=OFFBLACK, edgecolor='none',
+                            zorder=6))
+ax.text(0.50, 0.155,
+        "No inventas el prompt. El framework ya lo tiene.",
+        fontfamily=BODY_BOLD, fontsize=12, color=WHITE,
+        ha='center', va='center', zorder=8)
+
+slide_number(ax, 4)
+arrow_btn(ax)
+footer_line(ax)
+save(fig, 4)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 5 — Comparativa directa
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+top_label(ax, "COMPARATIVA DIRECTA")
+
+# VS header — two columns
+col_w = 0.40
+gap   = 0.06
+lx = 0.07
+rx = 0.07 + col_w + gap
+
+# Column headers
+ax.add_patch(FancyBboxPatch((lx, 0.840), col_w, 0.056,
+                            boxstyle='round,pad=0.010',
+                            facecolor=LGRAY, edgecolor='none', zorder=6))
+ax.text(lx + col_w/2, 0.869, "ChatGPT",
+        fontfamily=CAPS, fontsize=13, color=GRAY,
+        ha='center', va='center', zorder=8)
+
+ax.add_patch(FancyBboxPatch((rx, 0.840), col_w, 0.056,
+                            boxstyle='round,pad=0.010',
+                            facecolor=RED, edgecolor='none', zorder=6))
+ax.text(rx + col_w/2, 0.869, "Gormaran",
+        fontfamily=CAPS, fontsize=13, color=WHITE,
+        ha='center', va='center', zorder=8)
+
+# VS divider
+ax.text(0.5, 0.869, "vs",
+        fontfamily=ITALIC, fontsize=14, color=GRAY,
+        ha='center', va='center', zorder=10)
+
+divider(ax, 0.828)
+
+rows = [
+    ("Tu escribes el prompt",           "Framework especializado cargado"),
+    ("Output generico",                 "Output listo para publicar"),
+    ("Reescritura manual siempre",      "Cero reescritura"),
+    ("Empieza de cero cada sesion",     "Tu contexto siempre guardado"),
+    ("No conoce tu negocio",            "Sabe de tu industria y cliente"),
+]
+for i, (left, right) in enumerate(rows):
+    y0 = 0.788 - i * 0.112
+    # Left cell
+    ax.text(lx + col_w/2, y0, left,
+            fontfamily=BODY, fontsize=9.5, color=GRAY,
+            ha='center', va='center', zorder=8, wrap=True,
+            multialignment='center')
+    # Right cell
+    ax.text(rx + col_w/2, y0, right,
+            fontfamily=BODY_BOLD, fontsize=9.5, color=BLACK,
+            ha='center', va='center', zorder=8, wrap=True,
+            multialignment='center')
+    if i < 4:
+        divider(ax, y0 - 0.052, xmin=lx/1, xmax=0.93)
+
+# Vertical divider
+ax.axvline(0.5, ymin=0.130, ymax=0.830, color=LGRAY, lw=0.8, zorder=5)
+
+# Bottom CTA line
+ax.add_patch(FancyBboxPatch((0.07, 0.118), 0.86, 0.002,
+                            boxstyle='round,pad=0',
+                            facecolor='none', edgecolor='none', zorder=1))
+ax.text(0.5, 0.135, "La diferencia no es el modelo. Es el contexto.",
+        fontfamily=ITALIC, fontsize=11.5, color=RED,
+        ha='center', va='center', zorder=10)
+
+slide_number(ax, 5)
+arrow_btn(ax)
+footer_line(ax)
+save(fig, 5)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 6 — Prueba social: clientes reales
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+top_label(ax, "YA LO USAN")
+
+ax.text(0.07, 0.875,
+        "Empresas reales.\nResultados reales.",
+        fontfamily=DISPLAY, fontsize=40, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.15)
+
+divider(ax, 0.768)
+
+clients = [
+    ("La Rioja Alta",        "Planes de contenido premium sin agencia"),
+    ("Grupo Agromotor",      "Propuestas comerciales: 2h → 18 min"),
+    ("Gran Hotel Lakua",     "Copy de campana el mismo dia del brief"),
+    ("BuenGolpe",            "Estrategia de redes desde cero"),
+    ("Just Drive",           "Plan de contenido para app de movilidad"),
+]
+for i, (name, result) in enumerate(clients):
+    y0 = 0.735 - i * 0.112
+    # Name — bold left
+    ax.text(0.07, y0, name,
+            fontfamily=BODY_BOLD, fontsize=12, color=BLACK,
+            ha='left', va='top', zorder=10)
+    # Result — right
+    ax.text(0.93, y0 + 0.004, result,
+            fontfamily=BODY, fontsize=9.5, color=GRAY,
+            ha='right', va='top', zorder=10)
+    if i < 4:
+        divider(ax, y0 - 0.060, xmin=0.07, xmax=0.93)
+
+# Closing line
+divider(ax, 0.175)
+ax.text(0.07, 0.150,
+        "Ninguno contrató mas personal.",
+        fontfamily=BODY_BOLD, fontsize=12, color=BLACK,
+        ha='left', va='top', zorder=10)
+ax.text(0.07, 0.112,
+        "Solo cambiaron la herramienta.",
+        fontfamily=ITALIC, fontsize=14, color=RED,
+        ha='left', va='top', zorder=10)
+
+slide_number(ax, 6)
+arrow_btn(ax)
+footer_line(ax)
+save(fig, 6)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 7 — CTA
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+# Big background accent
+ax.add_patch(Rectangle((0, 0.55), 1.0, 0.45,
+                        facecolor=OFFBLACK, edgecolor='none', zorder=3))
+
+# Top half — dark
+ax.text(0.5, 0.925,
+        "14 dias gratis.",
+        fontfamily=DISPLAY, fontsize=46, color=WHITE,
+        ha='center', va='top', zorder=10)
+
+ax.text(0.5, 0.830,
+        "Sin tarjeta. Sin compromiso.",
+        fontfamily=BODY, fontsize=14, color=LGRAY,
+        ha='center', va='top', zorder=10)
+
+ax.axhline(0.760, xmin=0.07, xmax=0.93, color=GRAY, lw=0.5, alpha=0.5, zorder=5)
+
+ax.text(0.5, 0.730,
+        "30+ herramientas de IA\npara marketing, contenido y negocio.",
+        fontfamily=SERIF, fontsize=14, color=LGRAY,
+        ha='center', va='top', zorder=10, linespacing=1.45)
+
+# Pill CTA
+ax.add_patch(FancyBboxPatch((0.18, 0.600), 0.64, 0.070,
+                            boxstyle='round,pad=0.020',
+                            facecolor=RED, edgecolor='none',
+                            zorder=8))
+ax.text(0.5, 0.637,
+        "gormaran.io \u2192 empieza gratis",
+        fontfamily=BODY_BOLD, fontsize=13, color=WHITE,
+        ha='center', va='center', zorder=10)
+
+# Bottom half — cream
+ax.axhline(0.550, xmin=0, xmax=1, color=LGRAY, lw=0.5, alpha=0.5, zorder=5)
+
+ax.text(0.5, 0.510,
+        "Si en 14 dias no produces mas\nen menos tiempo, no pagas nada.",
+        fontfamily=SERIF, fontsize=14.5, color=BLACK,
+        ha='center', va='top', zorder=10, linespacing=1.4)
+
+ax.axhline(0.380, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.5, zorder=5)
+
+actions = [
+    "Guarda este post",
+    "Comenta si tienes dudas",
+    "Etiqueta a alguien que lo necesite",
+]
+for i, act in enumerate(actions):
+    x_center = 0.18 + i * 0.31
+    ax.text(x_center + 0.04, 0.350, act,
+            fontfamily=BODY, fontsize=8.5, color=GRAY,
+            ha='center', va='top', zorder=10, multialignment='center')
+
+# Dot separators
+for x in [0.38, 0.62]:
+    ax.plot(x, 0.330, 'o', color=LGRAY, markersize=3, zorder=6)
+
+# Final handle
+divider(ax, 0.195)
+ax.text(0.5, 0.168,
+        "gormaran.io  \u00b7  @gormaran_ai_marketing",
+        fontfamily=BODY_BOLD, fontsize=11, color=RED,
+        ha='center', va='center', zorder=10)
+
+slide_number(ax, 7)
+footer_line(ax)
+save(fig, 7)
+
+print(f"\nCarrusel Dia 1 listo -> {OUT_DIR}")

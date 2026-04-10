@@ -1,0 +1,595 @@
+{
+  "name": "WhatsApp AI Chatbot - GORMARAN",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "WhatsApp Trigger",
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [240, 460],
+      "parameters": {
+        "updates": ["messages"],
+        "options": {}
+      },
+      "webhookId": "whatsapp-gormaran-trigger"
+    },
+    {
+      "id": "2",
+      "name": "Switch - Message Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [520, 460],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.entry[0].changes[0].value.messages[0].type }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.entry[0].changes[0].value.messages[0].type }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.entry[0].changes[0].value.messages[0].type }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.entry[0].changes[0].value.messages[0].type }}",
+                    "rightValue": "document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "File"
+            }
+          ]
+        },
+        "fallbackOutput": "none"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Edit Fields - Map Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [800, 460],
+      "parameters": {
+        "mode": "manual",
+        "fields": {
+          "values": [
+            {
+              "name": "phoneNumber",
+              "type": "stringValue",
+              "value": "={{ $json.entry[0].changes[0].value.messages[0].from }}"
+            },
+            {
+              "name": "messageType",
+              "type": "stringValue",
+              "value": "={{ $json.entry[0].changes[0].value.messages[0].type }}"
+            },
+            {
+              "name": "messageText",
+              "type": "stringValue",
+              "value": "={{ $json.entry[0].changes[0].value.messages[0].text?.body ?? $json.entry[0].changes[0].value.messages[0].caption ?? '' }}"
+            },
+            {
+              "name": "messageId",
+              "type": "stringValue",
+              "value": "={{ $json.entry[0].changes[0].value.messages[0].id }}"
+            },
+            {
+              "name": "timestamp",
+              "type": "stringValue",
+              "value": "={{ $now.toISO() }}"
+            },
+            {
+              "name": "contactName",
+              "type": "stringValue",
+              "value": "={{ $json.entry[0].changes[0].value.contacts?.[0]?.profile?.name ?? 'Unknown' }}"
+            },
+            {
+              "name": "sessionId",
+              "type": "stringValue",
+              "value": "={{ $json.entry[0].changes[0].value.messages[0].from }}"
+            },
+            {
+              "name": "mediaId",
+              "type": "stringValue",
+              "value": "={{ $json.entry[0].changes[0].value.messages[0][$json.entry[0].changes[0].value.messages[0].type]?.id ?? '' }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4",
+      "name": "Chat Log - Entry",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1080, 460],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "ChatLogs",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $json.timestamp }}",
+            "sessionId": "={{ $json.sessionId }}",
+            "phoneNumber": "={{ $json.phoneNumber }}",
+            "contactName": "={{ $json.contactName }}",
+            "messageType": "={{ $json.messageType }}",
+            "userMessage": "={{ $json.messageText }}",
+            "direction": "incoming"
+          },
+          "matchingColumns": ["sessionId"],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "5",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1,
+      "position": [1360, 460],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Edit Fields - Map Message').item.json.messageText }}",
+        "options": {
+          "systemMessage": "Eres un asistente de atención al cliente profesional de GORMARAN, empresa especializada en paisajismo y diseño de espacios exteriores. Tu objetivo es proporcionar respuestas rápidas, útiles y precisas.\n\nTienes acceso a:\n- Archivos con información de la empresa (servicios, precios, FAQs, equipo, proyectos)\n- Búsqueda web para información actualizada\n- Memoria de conversación para mantener el contexto\n\nNormas:\n- Responde siempre en el mismo idioma que el cliente (español o inglés)\n- Sé amable, profesional y conciso\n- Responde en menos de 3 segundos\n- Si no sabes algo, busca en la web o consulta los archivos de empresa\n- Para urgencias, indica que llamen directamente\n- No compartas información confidencial\n\nCliente:\n- Teléfono: {{ $('Edit Fields - Map Message').item.json.phoneNumber }}\n- Nombre: {{ $('Edit Fields - Map Message').item.json.contactName }}\n- Tipo de mensaje: {{ $('Edit Fields - Map Message').item.json.messageType }}"
+        }
+      }
+    },
+    {
+      "id": "6",
+      "name": "Claude Sonnet 4.5",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1,
+      "position": [1140, 700],
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {
+          "maxTokens": 1024,
+          "temperature": 0.3
+        }
+      }
+    },
+    {
+      "id": "7",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1,
+      "position": [1360, 700],
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Edit Fields - Map Message').item.json.sessionId }}",
+        "contextWindowLength": 10
+      }
+    },
+    {
+      "id": "8",
+      "name": "SerpAPI - Web Search",
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [1580, 700],
+      "parameters": {}
+    },
+    {
+      "id": "9",
+      "name": "Excel - Servicios y Productos",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1,
+      "position": [1800, 580],
+      "parameters": {
+        "name": "consultar_servicios_productos",
+        "description": "Consulta el catálogo de servicios y productos de GORMARAN. Usa esta herramienta cuando el cliente pregunte sobre qué servicios ofrece la empresa, tipos de proyectos, o productos disponibles.",
+        "workflowId": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "fields": {
+          "values": []
+        }
+      }
+    },
+    {
+      "id": "10",
+      "name": "Excel - Precios y Paquetes",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1,
+      "position": [1800, 700],
+      "parameters": {
+        "name": "consultar_precios_paquetes",
+        "description": "Consulta tarifas, precios y paquetes de servicios de GORMARAN. Usa cuando el cliente pregunte por presupuestos, costes o paquetes disponibles.",
+        "workflowId": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "fields": {
+          "values": []
+        }
+      }
+    },
+    {
+      "id": "11",
+      "name": "Excel - FAQs y Políticas",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1,
+      "position": [1800, 820],
+      "parameters": {
+        "name": "consultar_faqs_politicas",
+        "description": "Consulta preguntas frecuentes y políticas de la empresa GORMARAN. Usa para responder dudas comunes sobre garantías, plazos, condiciones de servicio.",
+        "workflowId": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "fields": {
+          "values": []
+        }
+      }
+    },
+    {
+      "id": "12",
+      "name": "Excel - Equipo y Contacto",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1,
+      "position": [2020, 620],
+      "parameters": {
+        "name": "consultar_equipo_contacto",
+        "description": "Consulta información sobre el equipo de GORMARAN, datos de contacto, horarios de atención y ubicaciones.",
+        "workflowId": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "fields": {
+          "values": []
+        }
+      }
+    },
+    {
+      "id": "13",
+      "name": "Excel - Proyectos y Portfolio",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1,
+      "position": [2020, 760],
+      "parameters": {
+        "name": "consultar_proyectos_portfolio",
+        "description": "Consulta proyectos realizados, casos de éxito y portfolio de GORMARAN. Usa para mostrar ejemplos de trabajos anteriores.",
+        "workflowId": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "fields": {
+          "values": []
+        }
+      }
+    },
+    {
+      "id": "14",
+      "name": "Chat Log - Exit",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1640, 460],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "ChatLogs",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now.toISO() }}",
+            "sessionId": "={{ $('Edit Fields - Map Message').item.json.sessionId }}",
+            "phoneNumber": "={{ $('Edit Fields - Map Message').item.json.phoneNumber }}",
+            "contactName": "={{ $('Edit Fields - Map Message').item.json.contactName }}",
+            "botResponse": "={{ $json.output }}",
+            "direction": "outgoing"
+          },
+          "matchingColumns": ["sessionId"],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "15",
+      "name": "WhatsApp - Send Response",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [1920, 460],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "phoneNumberId": "+34684804986",
+        "recipientPhoneNumber": "={{ $('Edit Fields - Map Message').item.json.phoneNumber }}",
+        "textBody": "={{ $('AI Agent').item.json.output }}",
+        "additionalFields": {}
+      }
+    }
+  ],
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch - Message Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Message Type": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields - Map Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields - Map Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields - Map Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields - Map Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields - Map Message": {
+      "main": [
+        [
+          {
+            "node": "Chat Log - Entry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Log - Entry": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Chat Log - Exit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Log - Exit": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp - Send Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet 4.5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI - Web Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel - Servicios y Productos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel - Precios y Paquetes": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel - FAQs y Políticas": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel - Equipo y Contacto": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel - Proyectos y Portfolio": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": [
+    { "name": "WhatsApp" },
+    { "name": "Chatbot" },
+    { "name": "GORMARAN" }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-16T12:00:00.000Z",
+  "versionId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "eval_id": 1,
+  "eval_name": "upgrade-email-active-free-user",
+  "prompt": "I need an upgrade email for TaskFlow. Free users are capped at 5 projects and 3 team members. Paid plan ($19/mo) gives unlimited projects, unlimited members, and AI prioritization. This user has been active for 30 days and has hit the project limit twice. No discount available.",
+  "assertions": [
+    {
+      "text": "Output contains exactly 3 subject line options (numbered or bulleted)",
+      "method": "programmatic"
+    },
+    {
+      "text": "Email body word count is between 200 and 350 words",
+      "method": "programmatic"
+    },
+    {
+      "text": "Email acknowledges that the user has hit or is near the project limit",
+      "method": "programmatic"
+    },
+    {
+      "text": "Email lists at least 2 specific benefits of the paid plan (e.g. unlimited projects, AI prioritization)",
+      "method": "programmatic"
+    },
+    {
+      "text": "Email body contains exactly one call-to-action (no more than one upgrade link or button)",
+      "method": "llm-graded"
+    },
+    {
+      "text": "Email does not contain spam trigger words: FREE in all caps, '!!!', or the phrase 'click here'",
+      "method": "programmatic"
+    }
+  ]
+}

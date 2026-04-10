@@ -1,0 +1,27 @@
+{
+  "eval_id": 0,
+  "eval_name": "welcome-email-new-signup",
+  "prompt": "Write a welcome email for TaskFlow, a project management SaaS. The user just signed up for a free account. Our tone is friendly and professional. Key differentiator: AI-powered task prioritization.",
+  "assertions": [
+    {
+      "text": "Output contains exactly 3 subject line options (numbered or bulleted)",
+      "method": "programmatic"
+    },
+    {
+      "text": "Email body word count is between 150 and 250 words",
+      "method": "programmatic"
+    },
+    {
+      "text": "Email does not open with 'I hope this email finds you well' or 'My name is' or start with the company name",
+      "method": "programmatic"
+    },
+    {
+      "text": "Output includes a QUICK NOTES section with at least one note about structure, send time, or A/B test",
+      "method": "programmatic"
+    },
+    {
+      "text": "Email body contains exactly one call-to-action link or button (not two or more CTAs)",
+      "method": "llm-graded"
+    }
+  ]
+}

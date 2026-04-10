@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "gormaran-growth-hub",
+  "private_key_id": "f8349405b54a5c00b1d01d6c713f493c8460db6c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDKtc6ywDcOO1dI\n2KhFVl2dr6j4qi6MRV4vpOb5ytl0hj0dAMDzSDbTVKBattagr9zweXzypNJh1Qmm\nvFK9ykEg/MptOchHC6b/aZudAXrCNRSHv/hC8C5541w5Bwp8QvbqbaOxVRgXKbGJ\nmtawGiEDfJ95sjg4tIbWErWj5b7+4aRbPxk2hFZUzo/edQp/VzVLy4JaUUt0hHe0\nYDpnCvlNIamoCpvU/qSZZQAMy/iFeb58HLVunuhh44tc2UHB39KKQak2mjZgVg0b\nU9TTKXXt7wVZMNVuPDCUmhLafQtAIlVj6x/2hk6RQbmOa5OZlirvSiSD8efko/0F\nuJz/RfpfAgMBAAECggEAHEDr7ukwo0itGUetaICpqrVVoVcjBsUSZCShVvapiX6+\nXOECg8YwchMtCIfMcXghnNjqC+3iLuWhIz7Db5WVr1Hcqw2vNwvOOnJPULpokFIS\nqvscUMQmTjHc5Evxb7FrtfATLT/VjEDw8GOHAeOab2B639zxziGHW6Ye8BmxHdg4\nnK81N8bENHaPTkzWeGMVopRihF9fu8KiibAAQ8GXwQ02MGCkkZkJi3q2MY7Wj4DZ\nXXXDgDAaKGU9ofHtihHlUWsdfSWIaKQO0X3LRLmj6fzsGzcanmSo6oWD69hB8q57\nH1aLl22uArB3zAc0oy4VamA376Yq9GUN7Gwy+Ren7QKBgQD7xFhbBTc5WtmYduDL\nh/l4XG4ztOtKZmSewjZS6RVUBEx1RSmNAPil+FRLkYerNtpcR5UPFcUgNYYxx6FC\nboMs+vsgG70JpjGiyuThXdUODhta47UpV5svvR4VsnxJ+8GGK/EDGuql0caxi1vz\ntKZFKmuI1By6NCYTZilwbpMj2wKBgQDOHk/pbCtih5Ab0+wOgPFAD/GWieFesvJe\nFizur/mqwmxFHXNMDrTCJj/zi6zHNYAKaAJjmv0AHMycYHHe5moEoLWW9M34IdaE\n7FKftAaL9CZlE+DD6QX/usm7ylmvoG4ntvE+nY094D4+fm4CniNgvx7ctcHaFlYw\n/bxldowMzQKBgCa4MJp29+JDPZm8FqBWniBLnssm9NSxYKIl3jLsE9KjAps6csRz\ntMnZoiUpEYNcYUK144+5WmK0uJmpSPytgFEHnF14xp7YR2Pw7jhWtPB/bOeSg4cD\nKSOzYxAVLhY2uLGIyn0ew52S4IrnktGtI7EZcAZQEMb2RDDRkmfvKYPnAoGALTkT\nWWiFQFHz+VcO5MO/qsmUvO21h9yFNsVwyFHN2nxb2vIyOM7FNA/GWj4cA30mgaH+\nXDJGLj8jWXADq98sBaXpEZzWkAmEkpdzLV0HTq+buPOajgFTcp9d4ZjtAo6VfJsz\n5QQWWCwaHAYLRwHBS1nDgLNUO/BIqukQ68YNxkUCgYBzLRrYrMPA4pKQ9ECABs8r\ncHx6cBcVYxMwqBc+gTqTKwiAfeUEr5CRfSM8P3/kXPTOo6jlGeWD/9aCM8vtPMp6\n2fExfd5dpwlqUde4CBkzlYOrbBIbIh5xPofvSWtOALXmu4hVqZl0Qjm5PC0Is4Zh\nnnWnk4Lrmq6cwLxwFJsy1A==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@gormaran-growth-hub.iam.gserviceaccount.com",
+  "client_id": "110511137714752324968",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40gormaran-growth-hub.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

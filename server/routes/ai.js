@@ -148,4 +148,69 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
   }
 });
 
+// POST /api/ai/demo  — public demo, no auth, strict rate limit
+const demoLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 6, // 6 per IP/hour — enough for 3 real attempts with some buffer
+  message: { error: 'Demo limit reached. Create a free account to continue.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const DEMO_SYSTEM_PROMPT = `You are a sharp, results-focused AI growth assistant for Gormaran — a platform with 30+ specialized marketing, content and business tools.
+
+RULES:
+- Be concise. Max 5-7 bullet points or 3 short paragraphs. No filler.
+- Give genuinely useful, specific output — this is a product demo.
+- End every response with a single line: "✨ Sign up free to unlock the full tool."
+- Never mention competitors (ChatGPT, Claude, etc.) by name.
+- Respond in the same language the user writes in.`;
+
+router.post('/demo', demoLimiter, async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt || typeof prompt !== 'string' || prompt.trim().length < 3) {
+    return res.status(400).json({ error: 'Prompt is required.' });
+  }
+  if (prompt.length > 500) {
+    return res.status(400).json({ error: 'Prompt too long.' });
+  }
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  try {
+    const stream = client.messages.stream({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 400,
+      system: DEMO_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: prompt.trim() }],
+    });
+
+    stream.on('text', (text) => {
+      res.write(`data: ${JSON.stringify({ text })}\n\n`);
+    });
+
+    stream.on('error', (err) => {
+      res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+      res.end();
+    });
+
+    stream.on('end', () => {
+      res.write('data: [DONE]\n\n');
+      res.end();
+    });
+
+    req.on('close', () => stream.abort());
+  } catch (err) {
+    if (!res.headersSent) {
+      return res.status(500).json({ error: 'Demo failed.' });
+    }
+    res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+    res.end();
+  }
+});
+
 module.exports = router;

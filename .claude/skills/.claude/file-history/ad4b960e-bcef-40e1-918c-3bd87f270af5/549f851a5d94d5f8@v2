@@ -1,0 +1,249 @@
+"""
+knowledge_base.py
+Loads all Excel files and static website content into a single system-prompt string.
+Called once at startup — all data lives in memory for fast retrieval.
+"""
+
+import os
+import pandas as pd
+from typing import Optional
+
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# ---------------------------------------------------------------------------
+# Static website / company knowledge
+# ---------------------------------------------------------------------------
+
+WEBSITE_KNOWLEDGE = """
+## GRUPO LA RIOJA ALTA, S.A. — INFORMACIÓN GENERAL
+
+**Fundación:** 1890 (más de 130 años, seis generaciones familiares)
+**Sede principal:** Avda. de Vizcaya, 8, 26200 Haro (La Rioja), España
+**Teléfono:** +34 941 310 346
+**Email:** info@riojalta.com
+**Web:** https://riojalta.com  |  **Tienda online:** https://tienda.riojalta.com
+**Redes sociales:** Instagram @riojalta  |  Facebook Rioja Alta
+
+**Reconocimientos recientes:**
+- 3.ª marca de vino más admirada del mundo (Drinks International, 2025)
+- Gran Reserva 904 2016: Mejor Vino Tinto del Año — Premios Verema 2025
+
+**Misión:** "Desde 1890 compartimos nuestra pasión por el vino y la búsqueda constante de la excelencia."
+
+---
+
+## LAS CUATRO BODEGAS DEL GRUPO
+
+### 1. LA RIOJA ALTA, S.A. — D.O.Ca. Rioja (Rioja Alta)
+Bodega fundacional en Haro. Especialidad en Rioja de larga crianza.
+Vinos insignia: Gran Reserva 890, Gran Reserva 904, Viña Arana, Viña Ardanza, Viña Alberdi.
+
+### 2. TORRE DE OÑA — D.O.Ca. Rioja (Rioja Alavesa)
+Bodega en la Rioja Alavesa. Vinos de terroir único en viñedos propios.
+Vinos: El Camino, Finca Martelo, Finca San Martín.
+
+### 3. LAGAR DE FORNELOS — D.O. Rías Baixas (Galicia)
+Bodega en Galicia especializada en Albariño y vinos blancos atlánticos.
+Vinos: Lagar de Cervera, Lindeiros, Pazo de Seoane Rosal.
+También produce aguardiente y orujo.
+
+### 4. ÁSTER — D.O. Ribera del Duero (Anguix, Burgos)
+Bodega en la Ribera del Duero. Viñedos propios a 780 m de altitud en Anguix, Burgos.
+Vinos: Áster, Áster El Espino, Finca El Otero.
+Variedad principal: Tinta del País (Tempranillo).
+
+---
+
+## TURISMO ENOLÓGICO
+Las cuatro bodegas ofrecen visitas guiadas y catas. Precio: 30–65 €/persona.
+Duración: ~2 horas. Grupos de hasta 20 personas. Disponibles en varios idiomas.
+Reservas: a través de la web https://riojalta.com o llamando al +34 941 310 346.
+
+---
+
+## INICIATIVAS SOCIALES
+**Viña Ardanza Solidario:** Programa de responsabilidad social. Parte de las ventas
+de Viña Ardanza se destina a causas benéficas.
+
+---
+
+## CLUB DE COSECHEROS
+Programa de suscripción para coleccionistas y amantes del vino. Acceso a vinos
+especiales, preventas y eventos exclusivos. Info: info@riojalta.com
+
+---
+
+## FILOSOFÍA DE ELABORACIÓN
+- Vendimia manual con selección óptica
+- Crianza en barrica de roble francés y americano (según bodega)
+- Técnicas tradicionales con control de calidad moderno
+- Sistema de clasificación: Crianza → Reserva → Gran Reserva
+"""
+
+# ---------------------------------------------------------------------------
+# Excel loaders
+# ---------------------------------------------------------------------------
+
+def _load_products() -> str:
+    path = os.path.join(_BASE_DIR, "Copia de Precios tienda.riojalta PRESTASHOP SHEETS.xlsx")
+    df = pd.read_excel(path, header=None)
+    cols = df.iloc[0].tolist()
+    df = df.iloc[1:].copy()
+    df.columns = cols
+    df = df.dropna(subset=["Nombre"])
+
+    lines = ["## CATÁLOGO DE PRODUCTOS — TIENDA ONLINE (tienda.riojalta.com)\n"]
+    lines.append(f"{'Producto':<65} {'Bodega':<30} {'D.O.':<20} {'Precio c/IVA'}")
+    lines.append("-" * 135)
+
+    for _, row in df.iterrows():
+        nombre = str(row.get("Nombre", "")).strip()
+        bodega = str(row.get("Bodega", "")).strip()
+        do = str(row.get("Denominación de Origen", "")).strip()
+        precio = row.get("Precio (imp. incl.)", "")
+        url = str(row.get("URL", "")).strip()
+        ref = str(row.get("Referencia", "")).strip()
+        yt = str(row.get("Enlace YouTube videocata", "")).strip()
+
+        precio_str = f"€{precio:.2f}" if isinstance(precio, (int, float)) else str(precio)
+        do_str = do if do not in ("nan", "") else "—"
+        bodega_str = bodega if bodega not in ("nan", "") else "—"
+
+        line = f"{nombre:<65} {bodega_str:<30} {do_str:<20} {precio_str}"
+        if url and url != "nan":
+            line += f"  | URL: {url}"
+        if yt and yt != "nan":
+            line += f"  | Videocata: {yt}"
+        lines.append(line)
+
+    return "\n".join(lines)
+
+
+def _load_importers() -> str:
+    path = os.path.join(_BASE_DIR, "Copia de Listado importadores SHEETS.xlsx")
+    df = pd.read_excel(path, header=0)
+    df.columns = ["Nombre", "Cod_pais", "Pais_ciudad", "Ciudad_interno", "Continente"]
+    df = df.dropna(subset=["Nombre"])
+
+    lines = ["## IMPORTADORES INTERNACIONALES\n"]
+    continents = sorted(df["Continente"].dropna().unique())
+
+    for continent in continents:
+        lines.append(f"### {continent}")
+        subset = df[df["Continente"] == continent].sort_values("Pais_ciudad")
+        for _, row in subset.iterrows():
+            nombre = str(row["Nombre"]).strip()
+            pais = str(row["Pais_ciudad"]).strip()
+            cod = str(row["Cod_pais"]).strip()
+            lines.append(f"  - {nombre} ({cod}) — {pais}")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+def _load_distributors() -> str:
+    path = os.path.join(_BASE_DIR, "Copia de distribuidores rasa SHEETS.xlsx")
+    df = pd.read_excel(path, sheet_name="Clientes", header=0)
+    df.columns = ["Provincia", "Distribuidor"]
+    df = df.dropna(subset=["Distribuidor"])
+
+    lines = ["## DISTRIBUIDORES EN ESPAÑA\n"]
+    for _, row in df.sort_values("Provincia").iterrows():
+        provincia = str(row["Provincia"]).strip()
+        dist = str(row["Distribuidor"]).strip()
+        if provincia not in ("nan", "") and dist not in ("nan", ""):
+            lines.append(f"  - {provincia}: {dist}")
+
+    return "\n".join(lines)
+
+
+def _load_executive_team() -> str:
+    path = os.path.join(_BASE_DIR, "Equipo Directivo SHEETS.xlsx")
+    df = pd.read_excel(path, header=0)
+    df.columns = ["Nombre", "Apellidos", "Cargo", "Cargo_form"]
+    df = df.dropna(subset=["Nombre"])
+
+    lines = ["## EQUIPO DIRECTIVO\n"]
+    for _, row in df.iterrows():
+        nombre = str(row["Nombre"]).strip()
+        apellidos = str(row["Apellidos"]).strip()
+        cargo = str(row["Cargo"]).strip()
+        if nombre not in ("nan", "") and cargo not in ("nan", ""):
+            lines.append(f"  - {nombre} {apellidos} — {cargo}")
+
+    return "\n".join(lines)
+
+
+def _load_fincas() -> str:
+    path = os.path.join(_BASE_DIR, "RASA Fincas para Gabriela SHEETS.xlsx")
+    df = pd.read_excel(path, sheet_name="TD", header=0)
+
+    # Deduplicate fincas by bodega+finca
+    seen = set()
+    lines = ["## FINCAS Y VIÑEDOS\n"]
+    lines.append(f"{'Finca':<25} {'Bodega/Subzona':<35} {'Hectáreas':<12} {'Edad media':<12} {'Variedades':<20} {'D.O.'}")
+    lines.append("-" * 120)
+
+    finca_col = df.columns[0]
+    bodega_col = df.columns[2]
+    has_col = df.columns[3]
+    edad_col = df.columns[4]
+    variedad_col = df.columns[5]
+    doc_col = df.columns[7]
+
+    for _, row in df.iterrows():
+        finca = str(row[finca_col]).strip()
+        bodega = str(row[bodega_col]).strip()
+        key = (finca, bodega)
+        if key in seen or finca in ("nan", "", "Por Finca"):
+            continue
+        seen.add(key)
+
+        has_ = str(row[has_col]).strip() if pd.notna(row[has_col]) else "—"
+        edad = str(row[edad_col]).strip() if pd.notna(row[edad_col]) else "—"
+        variedad = str(row[variedad_col]).strip() if pd.notna(row[variedad_col]) else "—"
+        do_ = str(row[doc_col]).strip() if pd.notna(row[doc_col]) else "—"
+
+        for v in ("nan",):
+            has_ = "—" if has_ == v else has_
+            edad = "—" if edad == v else edad
+            variedad = "—" if variedad == v else variedad
+            do_ = "—" if do_ == v else do_
+
+        lines.append(f"{finca:<25} {bodega:<35} {has_:<12} {edad:<12} {variedad:<20} {do_}")
+
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
+def build_system_prompt() -> str:
+    """
+    Assembles the full system prompt used by the chatbot.
+    Called once at startup; result is cached in the Chatbot instance.
+    """
+    sections = [
+        "Eres el asistente virtual oficial de **Grupo La Rioja Alta, S.A.**, "
+        "una de las bodegas más prestigiosas de España, fundada en 1890.\n\n"
+        "**Instrucciones:**\n"
+        "- Responde siempre en el idioma del usuario (español, inglés, etc.).\n"
+        "- Sé cordial, profesional y conciso. Máximo 300 palabras por respuesta salvo que el usuario pida más detalle.\n"
+        "- Para preguntas sobre la empresa, vinos, precios, importadores, distribuidores o el equipo, "
+        "utiliza exclusivamente la información de esta base de conocimiento.\n"
+        "- Para información no disponible en la base de conocimiento (noticias recientes, maridajes, "
+        "información de otros vinos, etc.) usa la herramienta de búsqueda web.\n"
+        "- Nunca inventes precios, personas ni datos de contacto.\n"
+        "- Si no sabes algo, dilo con honestidad y ofrece contactar a info@riojalta.com o +34 941 310 346.\n\n"
+        "---\n\n"
+        "# BASE DE CONOCIMIENTO",
+
+        WEBSITE_KNOWLEDGE,
+        _load_products(),
+        _load_importers(),
+        _load_distributors(),
+        _load_executive_team(),
+        _load_fincas(),
+    ]
+    return "\n\n".join(sections)

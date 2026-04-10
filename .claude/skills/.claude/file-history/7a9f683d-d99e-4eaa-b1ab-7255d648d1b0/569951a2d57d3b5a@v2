@@ -1,0 +1,879 @@
+"use strict";
+const pptxgen = require("pptxgenjs");
+
+// ─── PALETTE ────────────────────────────────────────────────────────────────
+const C = {
+  darkBg:   "0F172A",
+  navyMid:  "1E3A5F",
+  accent:   "0EA5E9",   // sky blue
+  accentLt: "BAE6FD",   // light sky
+  white:    "FFFFFF",
+  lightBg:  "F0F7FF",
+  cardBg:   "FFFFFF",
+  textDark: "1E293B",
+  textMid:  "334155",
+  textMuted:"64748B",
+  red:      "EF4444",
+  yellow:   "F59E0B",
+  green:    "10B981",
+  border:   "E2E8F0",
+};
+
+// Shadow factory – must return fresh object each call
+const makeShadow = () => ({
+  type: "outer", color: "000000", blur: 8, offset: 2, angle: 135, opacity: 0.10
+});
+
+// ─── PRESENTATION ────────────────────────────────────────────────────────────
+let pres = new pptxgen();
+pres.layout = "LAYOUT_16x9";  // 10" × 5.625"
+pres.author = "SEO Team";
+pres.title  = "SEO Audit Report";
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SLIDE 1 – TITLE
+// ═══════════════════════════════════════════════════════════════════════════
+{
+  let s = pres.addSlide();
+  s.background = { color: C.darkBg };
+
+  // Left accent bar
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 0.18, h: 5.625, fill: { color: C.accent }, line: { color: C.accent }
+  });
+
+  // Decorative circle (top-right)
+  s.addShape(pres.shapes.OVAL, {
+    x: 7.8, y: -1.5, w: 4.5, h: 4.5,
+    fill: { color: C.navyMid, transparency: 40 }, line: { color: C.navyMid, transparency: 40 }
+  });
+  s.addShape(pres.shapes.OVAL, {
+    x: 8.5, y: -0.8, w: 3, h: 3,
+    fill: { color: C.accent, transparency: 80 }, line: { color: C.accent, transparency: 80 }
+  });
+
+  // Tag line
+  s.addText("WEBSITE PERFORMANCE ANALYSIS", {
+    x: 0.45, y: 1.2, w: 7, h: 0.35,
+    fontSize: 9, fontFace: "Trebuchet MS", color: C.accent,
+    charSpacing: 4, bold: true, margin: 0
+  });
+
+  // Main title
+  s.addText("SEO Audit Report", {
+    x: 0.45, y: 1.65, w: 7.5, h: 1.4,
+    fontSize: 48, fontFace: "Trebuchet MS", color: C.white, bold: true, margin: 0
+  });
+
+  // Subtitle
+  s.addText("Comprehensive analysis of technical health, on-page performance,\nkeyword rankings, and growth opportunities.", {
+    x: 0.45, y: 3.15, w: 7, h: 0.9,
+    fontSize: 13, fontFace: "Calibri", color: C.accentLt, margin: 0
+  });
+
+  // Date + version
+  s.addText("Q2 2026  |  Prepared by SEO Team  |  Confidential", {
+    x: 0.45, y: 4.8, w: 9, h: 0.4,
+    fontSize: 9, fontFace: "Calibri", color: C.textMuted, margin: 0
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SLIDE 2 – EXECUTIVE SUMMARY (4 KPI cards)
+// ═══════════════════════════════════════════════════════════════════════════
+{
+  let s = pres.addSlide();
+  s.background = { color: C.lightBg };
+
+  // Header bar
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.72, fill: { color: C.darkBg }, line: { color: C.darkBg }
+  });
+  s.addText("EXECUTIVE SUMMARY", {
+    x: 0.4, y: 0, w: 9, h: 0.72,
+    fontSize: 14, fontFace: "Trebuchet MS", color: C.white, bold: true, valign: "middle", margin: 0
+  });
+
+  // Intro text
+  s.addText("This audit covers four core SEO dimensions. Scores reflect current performance benchmarked against industry standards.", {
+    x: 0.4, y: 0.85, w: 9.2, h: 0.45,
+    fontSize: 11, fontFace: "Calibri", color: C.textMid, margin: 0
+  });
+
+  // KPI cards data
+  const kpis = [
+    { label: "Overall SEO Score",  value: "62",  unit: "/100", color: C.yellow, note: "Needs Improvement" },
+    { label: "Organic Traffic",    value: "+18", unit: "%",    color: C.green,  note: "YoY Growth" },
+    { label: "Critical Issues",    value: "23",  unit: "",     color: C.red,    note: "High Priority Fixes" },
+    { label: "Indexable Pages",    value: "84",  unit: "%",    color: C.accent, note: "Of Total URLs" },
+  ];
+
+  kpis.forEach((k, i) => {
+    const x = 0.3 + i * 2.38;
+    const y = 1.45;
+    const w = 2.1;
+    const h = 2.6;
+
+    // Card background
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y, w, h,
+      fill: { color: C.cardBg }, line: { color: C.border, pt: 1 },
+      shadow: makeShadow()
+    });
+    // Top accent bar
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y, w, h: 0.08, fill: { color: k.color }, line: { color: k.color }
+    });
+    // Label
+    s.addText(k.label, {
+      x: x + 0.12, y: y + 0.18, w: w - 0.24, h: 0.5,
+      fontSize: 10, fontFace: "Calibri", color: C.textMuted, bold: true, margin: 0
+    });
+    // Big number
+    s.addText(k.value + k.unit, {
+      x: x + 0.08, y: y + 0.65, w: w - 0.16, h: 1.1,
+      fontSize: 46, fontFace: "Trebuchet MS", color: k.color, bold: true, align: "center", margin: 0
+    });
+    // Note
+    s.addShape(pres.shapes.RECTANGLE, {
+      x: x + 0.15, y: y + 1.85, w: w - 0.30, h: 0.35,
+      fill: { color: k.color, transparency: 85 }, line: { color: k.color, transparency: 85 }
+    });
+    s.addText(k.note, {
+      x: x + 0.15, y: y + 1.85, w: w - 0.30, h: 0.35,
+      fontSize: 9, fontFace: "Calibri", color: k.color, bold: true, align: "center", valign: "middle", margin: 0
+    });
+  });
+
+  // Summary bullets
+  s.addText([
+    { text: "Top priority: fix 23 critical technical errors blocking crawl & indexation", options: { bullet: true, breakLine: true, color: C.textDark } },
+    { text: "Keyword rankings improving — 18% more organic sessions YoY despite indexation gaps", options: { bullet: true, breakLine: true, color: C.textDark } },
+    { text: "84% of pages are indexable; 16% blocked by noindex, robots.txt, or redirects", options: { bullet: true, color: C.textDark } },
+  ], {
+    x: 0.4, y: 4.15, w: 9.2, h: 1.1,
+    fontSize: 10.5, fontFace: "Calibri", color: C.textDark, margin: 0
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SLIDE 3 – TECHNICAL SEO HEALTH (grid of checks)
+// ═══════════════════════════════════════════════════════════════════════════
+{
+  let s = pres.addSlide();
+  s.background = { color: C.lightBg };
+
+  // Header
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.72, fill: { color: C.darkBg }, line: { color: C.darkBg }
+  });
+  s.addText("TECHNICAL SEO HEALTH", {
+    x: 0.4, y: 0, w: 9, h: 0.72,
+    fontSize: 14, fontFace: "Trebuchet MS", color: C.white, bold: true, valign: "middle", margin: 0
+  });
+  s.addText("Crawl & Indexation  |  Site Architecture  |  Speed & Security", {
+    x: 6, y: 0, w: 3.8, h: 0.72,
+    fontSize: 9, fontFace: "Calibri", color: C.accentLt, valign: "middle", align: "right", margin: 0
+  });
+
+  const checks = [
+    { label: "HTTPS / SSL",             status: "PASS",  detail: "Valid certificate, no mixed-content" },
+    { label: "XML Sitemap",             status: "WARN",  detail: "Sitemap found but contains 41 blocked URLs" },
+    { label: "Robots.txt",              status: "WARN",  detail: "Blocking 3 crawlable revenue sections" },
+    { label: "Crawl Depth",             status: "PASS",  detail: "90% of pages reachable in ≤ 3 clicks" },
+    { label: "Canonical Tags",          status: "FAIL",  detail: "Missing on 218 product pages" },
+    { label: "Structured Data",         status: "WARN",  detail: "Schema errors on 57 pages (Product, FAQPage)" },
+    { label: "Mobile-Friendly",         status: "PASS",  detail: "All pages pass Mobile-Friendly Test" },
+    { label: "Core Web Vitals (field)", status: "FAIL",  detail: "LCP & INP fail on mobile (Google data)" },
+    { label: "Hreflang Tags",           status: "WARN",  detail: "Missing return tags on 12 locale pairs" },
+    { label: "Redirect Chains",         status: "FAIL",  detail: "34 chains of 3+ hops found" },
+    { label: "Internal Linking",        status: "PASS",  detail: "Healthy link distribution across key pages" },
+    { label: "Broken Links (4xx)",      status: "FAIL",  detail: "89 broken internal links detected" },
+  ];
+
+  const statusColor = { PASS: C.green, WARN: C.yellow, FAIL: C.red };
+  const cols = 2, rows = 6;
+  const cardW = 4.5, cardH = 0.62, gapX = 0.45, startX = 0.27, startY = 0.9;
+
+  checks.forEach((c, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = startX + col * (cardW + gapX);
+    const y = startY + row * (cardH + 0.06);
+    const sc = statusColor[c.status];
+
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y, w: cardW, h: cardH,
+      fill: { color: C.cardBg }, line: { color: C.border, pt: 1 }
+    });
+    // Left status stripe
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y, w: 0.07, h: cardH, fill: { color: sc }, line: { color: sc }
+    });
+    // Status badge bg
+    s.addShape(pres.shapes.RECTANGLE, {
+      x: x + cardW - 0.8, y: y + 0.13, w: 0.68, h: 0.28,
+      fill: { color: sc, transparency: 85 }, line: { color: sc, transparency: 50 }
+    });
+    s.addText(c.status, {
+      x: x + cardW - 0.8, y: y + 0.13, w: 0.68, h: 0.28,
+      fontSize: 7.5, fontFace: "Trebuchet MS", color: sc, bold: true, align: "center", valign: "middle", margin: 0
+    });
+    // Label
+    s.addText(c.label, {
+      x: x + 0.15, y: y + 0.06, w: cardW - 1.05, h: 0.28,
+      fontSize: 10, fontFace: "Trebuchet MS", color: C.textDark, bold: true, margin: 0
+    });
+    // Detail
+    s.addText(c.detail, {
+      x: x + 0.15, y: y + 0.32, w: cardW - 1.05, h: 0.24,
+      fontSize: 8.5, fontFace: "Calibri", color: C.textMuted, margin: 0
+    });
+  });
+
+  // Legend
+  ["PASS", "WARN", "FAIL"].forEach((st, i) => {
+    const lx = 0.35 + i * 1.2;
+    s.addShape(pres.shapes.RECTANGLE, {
+      x: lx, y: 5.3, w: 0.16, h: 0.16,
+      fill: { color: statusColor[st] }, line: { color: statusColor[st] }
+    });
+    s.addText(st, {
+      x: lx + 0.22, y: 5.27, w: 0.8, h: 0.22,
+      fontSize: 8.5, fontFace: "Calibri", color: C.textMuted, bold: true, margin: 0
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SLIDE 4 – CORE WEB VITALS (bar chart)
+// ═══════════════════════════════════════════════════════════════════════════
+{
+  let s = pres.addSlide();
+  s.background = { color: C.lightBg };
+
+  // Header
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.72, fill: { color: C.darkBg }, line: { color: C.darkBg }
+  });
+  s.addText("CORE WEB VITALS — FIELD DATA", {
+    x: 0.4, y: 0, w: 9, h: 0.72,
+    fontSize: 14, fontFace: "Trebuchet MS", color: C.white, bold: true, valign: "middle", margin: 0
+  });
+
+  // Score cards row (left)
+  const vitals = [
+    { name: "LCP",  label: "Largest Contentful Paint", val: "4.2s",  threshold: "≤ 2.5s", status: "FAIL",  score: 42, color: C.red    },
+    { name: "INP",  label: "Interaction to Next Paint",  val: "310ms", threshold: "≤ 200ms", status: "FAIL",  score: 38, color: C.red    },
+    { name: "CLS",  label: "Cumulative Layout Shift",   val: "0.06", threshold: "≤ 0.1",  status: "PASS",  score: 88, color: C.green  },
+    { name: "TTFB", label: "Time to First Byte",        val: "680ms", threshold: "≤ 800ms", status: "PASS",  score: 76, color: C.accent },
+  ];
+
+  vitals.forEach((v, i) => {
+    const x = 0.28 + i * 2.38;
+    const y = 0.88;
+
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y, w: 2.1, h: 1.6,
+      fill: { color: C.cardBg }, line: { color: C.border, pt: 1 },
+      shadow: makeShadow()
+    });
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y, w: 2.1, h: 0.07, fill: { color: v.color }, line: { color: v.color }
+    });
+    s.addText(v.name, {
+      x: x + 0.1, y: y + 0.12, w: 1.3, h: 0.35,
+      fontSize: 16, fontFace: "Trebuchet MS", color: C.textDark, bold: true, margin: 0
+    });
+    // Status badge
+    s.addShape(pres.shapes.RECTANGLE, {
+      x: x + 1.35, y: y + 0.18, w: 0.6, h: 0.24,
+      fill: { color: v.color, transparency: 85 }, line: { color: v.color, transparency: 50 }
+    });
+    s.addText(v.status, {
+      x: x + 1.35, y: y + 0.18, w: 0.6, h: 0.24,
+      fontSize: 7, fontFace: "Trebuchet MS", color: v.color, bold: true, align: "center", valign: "middle", margin: 0
+    });
+    s.addText(v.val, {
+      x: x + 0.1, y: y + 0.5, w: 1.9, h: 0.55,
+      fontSize: 26, fontFace: "Trebuchet MS", color: v.color, bold: true, margin: 0
+    });
+    s.addText(v.label, {
+      x: x + 0.1, y: y + 1.08, w: 1.9, h: 0.28,
+      fontSize: 7.5, fontFace: "Calibri", color: C.textMuted, margin: 0
+    });
+    s.addText("Good: " + v.threshold, {
+      x: x + 0.1, y: y + 1.33, w: 1.9, h: 0.22,
+      fontSize: 7.5, fontFace: "Calibri", color: C.textMuted, italic: true, margin: 0
+    });
+  });
+
+  // Bar chart
+  s.addChart(pres.charts.BAR, [
+    {
+      name: "Score (0–100)",
+      labels: ["LCP", "INP", "CLS", "TTFB"],
+      values: [42, 38, 88, 76]
+    }
+  ], {
+    x: 0.3, y: 2.65, w: 6.2, h: 2.7,
+    barDir: "col",
+    chartColors: [C.red, C.red, C.green, C.accent],
+    chartArea: { fill: { color: C.cardBg }, roundedCorners: false },
+    catAxisLabelColor: C.textMid,
+    valAxisLabelColor: C.textMuted,
+    catAxisLabelFontFace: "Calibri",
+    valAxisLabelFontFace: "Calibri",
+    catAxisLabelFontSize: 11,
+    valAxisLabelFontSize: 9,
+    valGridLine: { color: C.border, size: 0.5 },
+    catGridLine: { style: "none" },
+    showValue: true,
+    dataLabelFontSize: 10,
+    dataLabelColor: C.white,
+    dataLabelFontBold: true,
+    showLegend: false,
+    valAxisMaxVal: 100,
+  });
+
+  // Recommendations panel (right)
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 6.7, y: 2.65, w: 3.1, h: 2.7,
+    fill: { color: C.cardBg }, line: { color: C.border, pt: 1 },
+    shadow: makeShadow()
+  });
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 6.7, y: 2.65, w: 3.1, h: 0.07, fill: { color: C.accent }, line: { color: C.accent }
+  });
+  s.addText("Quick Wins", {
+    x: 6.85, y: 2.75, w: 2.8, h: 0.38,
+    fontSize: 11, fontFace: "Trebuchet MS", color: C.textDark, bold: true, margin: 0
+  });
+  s.addText([
+    { text: "Optimize hero images — switch to WebP & add explicit width/height to fix LCP", options: { bullet: true, breakLine: true, color: C.textDark } },
+    { text: "Defer non-critical JS to reduce INP on mobile interactions", options: { bullet: true, breakLine: true, color: C.textDark } },
+    { text: "Add size attributes to all <img> tags to maintain low CLS", options: { bullet: true, breakLine: true, color: C.textDark } },
+    { text: "Upgrade server caching policy to maintain TTFB advantage", options: { bullet: true, color: C.textDark } },
+  ], {
+    x: 6.85, y: 3.18, w: 2.8, h: 2.05,
+    fontSize: 9, fontFace: "Calibri", color: C.textDark, margin: 0, paraSpaceAfter: 6
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SLIDE 5 – ON-PAGE SEO (two-column)
+// ═══════════════════════════════════════════════════════════════════════════
+{
+  let s = pres.addSlide();
+  s.background = { color: C.lightBg };
+
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.72, fill: { color: C.darkBg }, line: { color: C.darkBg }
+  });
+  s.addText("ON-PAGE SEO ANALYSIS", {
+    x: 0.4, y: 0, w: 9, h: 0.72,
+    fontSize: 14, fontFace: "Trebuchet MS", color: C.white, bold: true, valign: "middle", margin: 0
+  });
+
+  // Column headers
+  const cols2 = [
+    { x: 0.28, label: "Issues Found", color: C.red,   bg: "FFF1F2" },
+    { x: 5.18, label: "Opportunities", color: C.green, bg: "F0FDF4" },
+  ];
+
+  cols2.forEach(col => {
+    s.addShape(pres.shapes.RECTANGLE, {
+      x: col.x, y: 0.82, w: 4.6, h: 4.6,
+      fill: { color: col.bg }, line: { color: C.border, pt: 1 },
+      shadow: makeShadow()
+    });
+    s.addShape(pres.shapes.RECTANGLE, {
+      x: col.x, y: 0.82, w: 4.6, h: 0.42,
+      fill: { color: col.color }, line: { color: col.color }
+    });
+    s.addText(col.label, {
+      x: col.x + 0.18, y: 0.82, w: 4.2, h: 0.42,
+      fontSize: 11, fontFace: "Trebuchet MS", color: C.white, bold: true, valign: "middle", margin: 0
+    });
+  });
+
+  // Issues
+  const issues = [
+    { icon: "!", title: "Missing Meta Descriptions",    detail: "312 pages have no meta description — CTR impact." },
+    { icon: "!", title: "Duplicate Title Tags",         detail: "67 pages share identical <title> elements." },
+    { icon: "!", title: "Title Tag Too Long / Short",   detail: "88 pages outside 50–60 char optimal range." },
+    { icon: "!", title: "Thin Content (< 300 words)",   detail: "144 pages risk low quality signals from Google." },
+    { icon: "!", title: "Missing H1 Tags",              detail: "29 pages have no H1; 14 have more than one." },
+    { icon: "!", title: "Keyword Cannibalisation",      detail: "8 keyword clusters compete on 3+ pages each." },
+  ];
+
+  issues.forEach((item, i) => {
+    const y = 1.38 + i * 0.62;
+    s.addShape(pres.shapes.OVAL, {
+      x: 0.38, y: y + 0.05, w: 0.28, h: 0.28,
+      fill: { color: C.red, transparency: 85 }, line: { color: C.red }
+    });
+    s.addText(item.icon, {
+      x: 0.38, y: y + 0.05, w: 0.28, h: 0.28,
+      fontSize: 9, fontFace: "Trebuchet MS", color: C.red, bold: true, align: "center", valign: "middle", margin: 0
+    });
+    s.addText(item.title, {
+      x: 0.72, y: y, w: 3.95, h: 0.28,
+      fontSize: 9.5, fontFace: "Trebuchet MS", color: C.textDark, bold: true, margin: 0
+    });
+    s.addText(item.detail, {
+      x: 0.72, y: y + 0.28, w: 3.95, h: 0.28,
+      fontSize: 8.5, fontFace: "Calibri", color: C.textMuted, margin: 0
+    });
+  });
+
+  // Opportunities
+  const opps = [
+    { title: "FAQ Schema markup",       detail: "Add FAQPage schema to 45 support articles for rich results." },
+    { title: "Long-tail content gaps",  detail: "Create 12 informational pages targeting low-competition terms." },
+    { title: "Internal link clusters",  detail: "Link pillar pages from 30+ topically related posts." },
+    { title: "Image alt text",          detail: "460 images missing alt — add keyword-relevant descriptions." },
+    { title: "E-E-A-T signals",         detail: "Add author bios and citations to all editorial content." },
+    { title: "Featured snippet targets",detail: "Reformat 8 how-to articles as numbered lists for position 0." },
+  ];
+
+  opps.forEach((item, i) => {
+    const y = 1.38 + i * 0.62;
+    s.addShape(pres.shapes.OVAL, {
+      x: 5.28, y: y + 0.05, w: 0.28, h: 0.28,
+      fill: { color: C.green, transparency: 85 }, line: { color: C.green }
+    });
+    s.addText("→", {
+      x: 5.28, y: y + 0.05, w: 0.28, h: 0.28,
+      fontSize: 9, fontFace: "Trebuchet MS", color: C.green, bold: true, align: "center", valign: "middle", margin: 0
+    });
+    s.addText(item.title, {
+      x: 5.62, y: y, w: 3.95, h: 0.28,
+      fontSize: 9.5, fontFace: "Trebuchet MS", color: C.textDark, bold: true, margin: 0
+    });
+    s.addText(item.detail, {
+      x: 5.62, y: y + 0.28, w: 3.95, h: 0.28,
+      fontSize: 8.5, fontFace: "Calibri", color: C.textMuted, margin: 0
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SLIDE 6 – KEYWORD PERFORMANCE (horizontal bar chart)
+// ═══════════════════════════════════════════════════════════════════════════
+{
+  let s = pres.addSlide();
+  s.background = { color: C.lightBg };
+
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.72, fill: { color: C.darkBg }, line: { color: C.darkBg }
+  });
+  s.addText("KEYWORD PERFORMANCE", {
+    x: 0.4, y: 0, w: 9, h: 0.72,
+    fontSize: 14, fontFace: "Trebuchet MS", color: C.white, bold: true, valign: "middle", margin: 0
+  });
+
+  // Chart: ranking distribution
+  s.addChart(pres.charts.BAR, [
+    {
+      name: "Keywords",
+      labels: ["Pos 1–3 (Top)", "Pos 4–10", "Pos 11–20", "Pos 21–50", "Pos 51–100"],
+      values: [38, 112, 184, 295, 421]
+    }
+  ], {
+    x: 0.3, y: 0.88, w: 5.5, h: 4.4,
+    barDir: "bar",
+    chartColors: [C.green, C.accent, C.yellow, "FB923C", C.red],
+    chartArea: { fill: { color: C.cardBg }, roundedCorners: false },
+    catAxisLabelColor: C.textMid,
+    valAxisLabelColor: C.textMuted,
+    catAxisLabelFontFace: "Calibri",
+    catAxisLabelFontSize: 10,
+    valAxisLabelFontSize: 9,
+    valGridLine: { color: C.border, size: 0.5 },
+    catGridLine: { style: "none" },
+    showValue: true,
+    dataLabelFontSize: 10,
+    dataLabelColor: C.white,
+    dataLabelFontBold: true,
+    dataLabelPosition: "outEnd",
+    showLegend: false,
+  });
+
+  // Right panel: top movers
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 6.0, y: 0.88, w: 3.7, h: 2.05,
+    fill: { color: C.cardBg }, line: { color: C.border, pt: 1 },
+    shadow: makeShadow()
+  });
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 6.0, y: 0.88, w: 3.7, h: 0.07, fill: { color: C.green }, line: { color: C.green }
+  });
+  s.addText("Top Movers (MoM)", {
+    x: 6.15, y: 0.96, w: 3.4, h: 0.38,
+    fontSize: 11, fontFace: "Trebuchet MS", color: C.textDark, bold: true, margin: 0
+  });
+
+  const movers = [
+    { kw: "best wine gifts online",     pos: "4", delta: "+9" },
+    { kw: "rioja reserva buy",          pos: "2", delta: "+5" },
+    { kw: "spanish red wine subscription", pos: "7", delta: "+12"},
+    { kw: "albariño food pairing",      pos: "3", delta: "+8"  },
+  ];
+  movers.forEach((m, i) => {
+    const y = 1.42 + i * 0.35;
+    s.addText(m.kw, {
+      x: 6.15, y, w: 2.4, h: 0.3,
+      fontSize: 9, fontFace: "Calibri", color: C.textDark, margin: 0
+    });
+    s.addText("#" + m.pos, {
+      x: 8.55, y, w: 0.5, h: 0.3,
+      fontSize: 9, fontFace: "Trebuchet MS", color: C.accent, bold: true, align: "center", margin: 0
+    });
+    s.addText(m.delta, {
+      x: 9.05, y, w: 0.5, h: 0.3,
+      fontSize: 9, fontFace: "Trebuchet MS", color: C.green, bold: true, align: "center", margin: 0
+    });
+  });
+
+  // Losers panel
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 6.0, y: 3.1, w: 3.7, h: 2.2,
+    fill: { color: C.cardBg }, line: { color: C.border, pt: 1 },
+    shadow: makeShadow()
+  });
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 6.0, y: 3.1, w: 3.7, h: 0.07, fill: { color: C.red }, line: { color: C.red }
+  });
+  s.addText("Biggest Drops (MoM)", {
+    x: 6.15, y: 3.18, w: 3.4, h: 0.38,
+    fontSize: 11, fontFace: "Trebuchet MS", color: C.textDark, bold: true, margin: 0
+  });
+
+  const losers = [
+    { kw: "buy rioja wine online",    pos: "14", delta: "-7"  },
+    { kw: "wine tours spain 2026",    pos: "22", delta: "-11" },
+    { kw: "reserva vs gran reserva",  pos: "18", delta: "-5"  },
+    { kw: "haro wine region guide",   pos: "31", delta: "-9"  },
+  ];
+  losers.forEach((m, i) => {
+    const y = 3.64 + i * 0.38;
+    s.addText(m.kw, {
+      x: 6.15, y, w: 2.4, h: 0.3,
+      fontSize: 9, fontFace: "Calibri", color: C.textDark, margin: 0
+    });
+    s.addText("#" + m.pos, {
+      x: 8.55, y, w: 0.5, h: 0.3,
+      fontSize: 9, fontFace: "Trebuchet MS", color: C.textMid, bold: true, align: "center", margin: 0
+    });
+    s.addText(m.delta, {
+      x: 9.05, y, w: 0.5, h: 0.3,
+      fontSize: 9, fontFace: "Trebuchet MS", color: C.red, bold: true, align: "center", margin: 0
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SLIDE 7 – BACKLINK PROFILE
+// ═══════════════════════════════════════════════════════════════════════════
+{
+  let s = pres.addSlide();
+  s.background = { color: C.lightBg };
+
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.72, fill: { color: C.darkBg }, line: { color: C.darkBg }
+  });
+  s.addText("BACKLINK PROFILE", {
+    x: 0.4, y: 0, w: 9, h: 0.72,
+    fontSize: 14, fontFace: "Trebuchet MS", color: C.white, bold: true, valign: "middle", margin: 0
+  });
+
+  // Stat cards (top row)
+  const stats = [
+    { label: "Domain Rating",   value: "54",    sub: "Ahrefs DR" },
+    { label: "Referring Domains", value: "1,840", sub: "Live root domains" },
+    { label: "Total Backlinks",  value: "28.4K", sub: "All links (incl. nofollow)" },
+    { label: "Toxic Links",     value: "3.2%",  sub: "Flagged for disavow" },
+  ];
+
+  stats.forEach((st, i) => {
+    const x = 0.28 + i * 2.38;
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y: 0.88, w: 2.1, h: 1.25,
+      fill: { color: C.cardBg }, line: { color: C.border, pt: 1 },
+      shadow: makeShadow()
+    });
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y: 0.88, w: 2.1, h: 0.07, fill: { color: C.accent }, line: { color: C.accent }
+    });
+    s.addText(st.value, {
+      x: x + 0.1, y: 0.97, w: 1.9, h: 0.62,
+      fontSize: 32, fontFace: "Trebuchet MS", color: C.accent, bold: true, align: "center", margin: 0
+    });
+    s.addText(st.label, {
+      x: x + 0.1, y: 1.6, w: 1.9, h: 0.28,
+      fontSize: 9, fontFace: "Trebuchet MS", color: C.textDark, bold: true, align: "center", margin: 0
+    });
+    s.addText(st.sub, {
+      x: x + 0.1, y: 1.87, w: 1.9, h: 0.22,
+      fontSize: 8, fontFace: "Calibri", color: C.textMuted, align: "center", margin: 0
+    });
+  });
+
+  // Pie chart – link type distribution
+  s.addChart(pres.charts.PIE, [
+    {
+      name: "Link Types",
+      labels: ["Dofollow", "Nofollow", "Sponsored", "UGC"],
+      values: [62, 28, 6, 4]
+    }
+  ], {
+    x: 0.3, y: 2.32, w: 4.0, h: 2.95,
+    chartColors: [C.accent, C.accentLt, C.yellow, C.textMuted],
+    chartArea: { fill: { color: C.cardBg }, roundedCorners: false },
+    showPercent: true,
+    dataLabelFontSize: 10,
+    dataLabelColor: C.textDark,
+    legendPos: "b",
+    legendFontFace: "Calibri",
+    legendFontSize: 9,
+    legendColor: C.textMid,
+  });
+
+  // Insights panel
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 4.6, y: 2.32, w: 5.1, h: 2.95,
+    fill: { color: C.cardBg }, line: { color: C.border, pt: 1 },
+    shadow: makeShadow()
+  });
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 4.6, y: 2.32, w: 5.1, h: 0.07, fill: { color: C.accent }, line: { color: C.accent }
+  });
+  s.addText("Link Building Insights", {
+    x: 4.75, y: 2.4, w: 4.8, h: 0.42,
+    fontSize: 11, fontFace: "Trebuchet MS", color: C.textDark, bold: true, margin: 0
+  });
+  s.addText([
+    { text: "Link velocity is healthy at +42 new referring domains per month", options: { bullet: true, breakLine: true } },
+    { text: "Top anchor text: branded (38%), naked URL (22%), generic (18%) — no over-optimisation risk", options: { bullet: true, breakLine: true } },
+    { text: "3.2% toxic link rate — create disavow file for 59 spammy domains", options: { bullet: true, breakLine: true } },
+    { text: "Competitor A has 2.3× more referring domains in the 'wine gifts' niche — gap opportunity", options: { bullet: true, breakLine: true } },
+    { text: "Priority link targets: food magazines, wine press, sommelier associations in UK & US markets", options: { bullet: true } },
+  ], {
+    x: 4.75, y: 2.9, w: 4.8, h: 2.2,
+    fontSize: 9.5, fontFace: "Calibri", color: C.textDark, margin: 0, paraSpaceAfter: 5
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SLIDE 8 – PRIORITY ACTION PLAN (3 columns)
+// ═══════════════════════════════════════════════════════════════════════════
+{
+  let s = pres.addSlide();
+  s.background = { color: C.lightBg };
+
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.72, fill: { color: C.darkBg }, line: { color: C.darkBg }
+  });
+  s.addText("PRIORITY ACTION PLAN", {
+    x: 0.4, y: 0, w: 9, h: 0.72,
+    fontSize: 14, fontFace: "Trebuchet MS", color: C.white, bold: true, valign: "middle", margin: 0
+  });
+
+  const cols3 = [
+    {
+      label: "HIGH PRIORITY",
+      sub: "Fix within 30 days",
+      color: C.red,
+      bg: "FFF1F2",
+      items: [
+        "Fix 89 broken internal links",
+        "Add canonical tags to 218 product pages",
+        "Fix robots.txt to allow 3 revenue sections",
+        "Resolve 34 redirect chains (3+ hops)",
+        "Remove 41 blocked URLs from sitemap",
+      ]
+    },
+    {
+      label: "MEDIUM PRIORITY",
+      sub: "Address in 30–60 days",
+      color: C.yellow,
+      bg: "FFFBEB",
+      items: [
+        "Write meta descriptions for 312 pages",
+        "Deduplicate 67 identical title tags",
+        "Fix hreflang return tags (12 pairs)",
+        "Add alt text to 460 images",
+        "Resolve structured data errors (57 pages)",
+      ]
+    },
+    {
+      label: "LOW PRIORITY",
+      sub: "Plan for 60–90 days",
+      color: C.accent,
+      bg: "F0F9FF",
+      items: [
+        "Create 12 long-tail content articles",
+        "Add author bios and E-E-A-T signals",
+        "Build internal link clusters for pillars",
+        "Optimise 8 articles for featured snippets",
+        "Reformat 30 thin pages (< 300 words)",
+      ]
+    }
+  ];
+
+  cols3.forEach((col, ci) => {
+    const x = 0.22 + ci * 3.27;
+    // Card
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y: 0.82, w: 3.0, h: 4.6,
+      fill: { color: col.bg }, line: { color: C.border, pt: 1 },
+      shadow: makeShadow()
+    });
+    // Header
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y: 0.82, w: 3.0, h: 0.68,
+      fill: { color: col.color }, line: { color: col.color }
+    });
+    s.addText(col.label, {
+      x: x + 0.12, y: 0.84, w: 2.76, h: 0.38,
+      fontSize: 10.5, fontFace: "Trebuchet MS", color: C.white, bold: true, margin: 0
+    });
+    s.addText(col.sub, {
+      x: x + 0.12, y: 1.2, w: 2.76, h: 0.26,
+      fontSize: 8.5, fontFace: "Calibri", color: C.white, italic: true, margin: 0
+    });
+
+    // Items
+    col.items.forEach((item, ii) => {
+      const iy = 1.65 + ii * 0.72;
+      // Number circle
+      s.addShape(pres.shapes.OVAL, {
+        x: x + 0.12, y: iy, w: 0.32, h: 0.32,
+        fill: { color: col.color }, line: { color: col.color }
+      });
+      s.addText(String(ii + 1), {
+        x: x + 0.12, y: iy, w: 0.32, h: 0.32,
+        fontSize: 9, fontFace: "Trebuchet MS", color: C.white, bold: true, align: "center", valign: "middle", margin: 0
+      });
+      s.addText(item, {
+        x: x + 0.52, y: iy, w: 2.36, h: 0.48,
+        fontSize: 9.5, fontFace: "Calibri", color: C.textDark, margin: 0
+      });
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SLIDE 9 – NEXT STEPS & ROADMAP (dark slide)
+// ═══════════════════════════════════════════════════════════════════════════
+{
+  let s = pres.addSlide();
+  s.background = { color: C.darkBg };
+
+  // Decorative circles
+  s.addShape(pres.shapes.OVAL, {
+    x: 7.5, y: 3.0, w: 5, h: 5,
+    fill: { color: C.navyMid, transparency: 60 }, line: { color: C.navyMid, transparency: 60 }
+  });
+  s.addShape(pres.shapes.OVAL, {
+    x: -1.0, y: -1.5, w: 4, h: 4,
+    fill: { color: C.accent, transparency: 85 }, line: { color: C.accent, transparency: 85 }
+  });
+
+  s.addText("RECOMMENDED ROADMAP", {
+    x: 0.45, y: 0.3, w: 9, h: 0.38,
+    fontSize: 9, fontFace: "Trebuchet MS", color: C.accent,
+    charSpacing: 4, bold: true, margin: 0
+  });
+  s.addText("Next Steps & Timeline", {
+    x: 0.45, y: 0.72, w: 8, h: 0.9,
+    fontSize: 36, fontFace: "Trebuchet MS", color: C.white, bold: true, margin: 0
+  });
+
+  // Timeline phases
+  const phases = [
+    {
+      month: "Month 1",
+      title: "Foundation",
+      color: C.red,
+      tasks: ["Fix broken links & redirect chains", "Fix robots.txt & sitemap", "Add canonical tags to product pages"]
+    },
+    {
+      month: "Month 2",
+      title: "On-Page Sprint",
+      color: C.yellow,
+      tasks: ["Meta descriptions for 312 pages", "Title tag deduplication", "Image alt text & hreflang fixes"]
+    },
+    {
+      month: "Month 3",
+      title: "Content & CWV",
+      color: C.green,
+      tasks: ["Publish 12 long-tail articles", "Image/JS optimisation for LCP & INP", "Internal link clusters"]
+    },
+    {
+      month: "Month 4+",
+      title: "Growth",
+      color: C.accent,
+      tasks: ["Link building campaign", "Featured snippet optimisation", "E-E-A-T & authority signals"]
+    }
+  ];
+
+  // Horizontal line
+  s.addShape(pres.shapes.LINE, {
+    x: 0.45, y: 2.35, w: 9.1, h: 0,
+    line: { color: C.navyMid, width: 2 }
+  });
+
+  phases.forEach((ph, i) => {
+    const x = 0.45 + i * 2.3;
+
+    // Dot on timeline
+    s.addShape(pres.shapes.OVAL, {
+      x: x + 0.7, y: 2.12, w: 0.46, h: 0.46,
+      fill: { color: ph.color }, line: { color: ph.color }
+    });
+    // Connector line
+    s.addShape(pres.shapes.LINE, {
+      x: x + 0.93, y: 2.58, w: 0, h: 0.4,
+      line: { color: ph.color, width: 1.5 }
+    });
+
+    // Phase card
+    s.addShape(pres.shapes.RECTANGLE, {
+      x: x, y: 2.98, w: 2.1, h: 2.35,
+      fill: { color: C.navyMid }, line: { color: ph.color, pt: 1 }
+    });
+    s.addShape(pres.shapes.RECTANGLE, {
+      x, y: 2.98, w: 2.1, h: 0.07, fill: { color: ph.color }, line: { color: ph.color }
+    });
+    s.addText(ph.month, {
+      x: x + 0.12, y: 3.07, w: 1.86, h: 0.28,
+      fontSize: 8.5, fontFace: "Calibri", color: ph.color, bold: true, margin: 0
+    });
+    s.addText(ph.title, {
+      x: x + 0.12, y: 3.33, w: 1.86, h: 0.35,
+      fontSize: 11, fontFace: "Trebuchet MS", color: C.white, bold: true, margin: 0
+    });
+    ph.tasks.forEach((t, ti) => {
+      s.addText("— " + t, {
+        x: x + 0.12, y: 3.73 + ti * 0.5, w: 1.86, h: 0.45,
+        fontSize: 8, fontFace: "Calibri", color: C.accentLt, margin: 0
+      });
+    });
+
+    // Month label above line
+    s.addText(ph.month, {
+      x: x, y: 1.7, w: 2.1, h: 0.35,
+      fontSize: 9, fontFace: "Trebuchet MS", color: ph.color, bold: true, align: "center", margin: 0
+    });
+  });
+}
+
+// ─── WRITE FILE ──────────────────────────────────────────────────────────────
+pres.writeFile({ fileName: "SEO_Audit_Report.pptx" }).then(() => {
+  console.log("✓ SEO_Audit_Report.pptx saved");
+}).catch(err => {
+  console.error("Error:", err);
+  process.exit(1);
+});

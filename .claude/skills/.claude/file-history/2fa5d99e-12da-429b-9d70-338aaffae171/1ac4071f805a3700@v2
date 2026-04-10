@@ -1,0 +1,514 @@
+#!/usr/bin/env python3
+"""
+Instagram carousel: gormaran.io — 100% hecho por IA, 100% automatizado
+Estilo editorial — fondo crema, rojo coral, serif/sans mixto
+7 slides 1080x1080px
+"""
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch, Rectangle
+from matplotlib import font_manager
+import os
+
+FONT_DIR = "/Users/gabiorma/.claude/plugins/cache/anthropic-agent-skills/example-skills/7029232b9212/skills/canvas-design/canvas-fonts"
+
+def reg(name):
+    p = os.path.join(FONT_DIR, name)
+    font_manager.fontManager.addfont(p)
+    return font_manager.FontProperties(fname=p).get_name()
+
+DISPLAY   = reg("Gloock-Regular.ttf")
+ITALIC    = reg("InstrumentSerif-Italic.ttf")
+SERIF     = reg("InstrumentSerif-Regular.ttf")
+CAPS      = reg("BricolageGrotesque-Bold.ttf")
+BODY      = reg("InstrumentSans-Regular.ttf")
+BODY_BOLD = reg("InstrumentSans-Bold.ttf")
+NUM       = reg("CrimsonPro-Italic.ttf")
+MONO      = reg("JetBrainsMono-Regular.ttf")
+
+CREAM  = "#F7F1E6"
+RED    = "#E0513A"
+RED_LT = "#FAEAE7"
+BLACK  = "#1A1918"
+GRAY   = "#7A7570"
+LGRAY  = "#D8D2CA"
+WHITE  = "#FFFFFF"
+
+OUT_DIR = "/Users/gabiorma/video-editor/Meta-Ads/carousel3"
+os.makedirs(OUT_DIR, exist_ok=True)
+
+DPI = 150
+SZ  = 7.2
+
+def new_slide():
+    fig = plt.figure(figsize=(SZ, SZ), dpi=DPI, facecolor=CREAM)
+    ax  = fig.add_axes([0, 0, 1, 1])
+    ax.set_facecolor(CREAM)
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+    ax.axis('off')
+    return fig, ax
+
+def save(fig, n):
+    path = f"{OUT_DIR}/slide_{n:02d}.png"
+    fig.savefig(path, dpi=DPI, bbox_inches='tight', facecolor=CREAM, pad_inches=0)
+    plt.close(fig)
+    print(f"  -> {path}")
+
+def footer_line(ax):
+    ax.axhline(0.07, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+    ax.text(0.5, 0.043, "@gormaran_ai_marketing",
+            fontfamily=BODY, fontsize=9, color=GRAY,
+            ha='center', va='center', zorder=10)
+
+def arrow_btn(ax, x=0.88, y=0.092):
+    ax.add_patch(FancyBboxPatch((x-0.055, y-0.038), 0.11, 0.076,
+                                boxstyle='round,pad=0.018',
+                                facecolor=WHITE, edgecolor=RED,
+                                linewidth=1.2, zorder=8))
+    ax.annotate('', xy=(x+0.018, y), xytext=(x-0.018, y),
+                arrowprops=dict(arrowstyle='->', color=RED, lw=1.5),
+                zorder=10)
+
+def step_badge(ax, num, label, x=0.07, y=0.92):
+    ax.text(x, y, num,
+            fontfamily=NUM, fontsize=60, color=RED,
+            ha='left', va='top', zorder=10)
+    ax.text(x + 0.14, y - 0.01, label,
+            fontfamily=CAPS, fontsize=20, color=BLACK,
+            ha='left', va='top', zorder=10)
+
+def red_pill(ax, text, x, y, w=0.26):
+    h = 0.058
+    ax.add_patch(FancyBboxPatch((x - w/2, y - h/2), w, h,
+                                boxstyle='round,pad=0.022',
+                                facecolor=WHITE, edgecolor=RED,
+                                linewidth=1.3, zorder=8))
+    ax.text(x, y, text, fontfamily=BODY_BOLD, fontsize=10,
+            color=RED, ha='center', va='center', zorder=10)
+
+def tech_tag(ax, text, x, y, w=0.22, filled=False):
+    """Compact tech badge — outlined or filled"""
+    h = 0.050
+    fc = RED if filled else WHITE
+    tc = WHITE if filled else RED
+    ax.add_patch(FancyBboxPatch((x - w/2, y - h/2), w, h,
+                                boxstyle='round,pad=0.016',
+                                facecolor=fc, edgecolor=RED,
+                                linewidth=1.1, zorder=8))
+    ax.text(x, y, text, fontfamily=BODY_BOLD, fontsize=9,
+            color=tc, ha='center', va='center', zorder=10)
+
+def saving_box(ax, label, amount, x=0.07, y=0.24):
+    """Ahorro highlight box"""
+    ax.add_patch(FancyBboxPatch((x, y - 0.005), 0.86, 0.090,
+                                boxstyle='round,pad=0.012',
+                                facecolor=RED_LT, edgecolor=RED,
+                                linewidth=0.8, zorder=6))
+    ax.text(x + 0.03, y + 0.045, label,
+            fontfamily=BODY, fontsize=10, color=GRAY,
+            ha='left', va='center', zorder=8)
+    ax.text(x + 0.03, y + 0.015, amount,
+            fontfamily=BODY_BOLD, fontsize=12, color=RED,
+            ha='left', va='center', zorder=8)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 1 — Cover
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+# Top label
+ax.text(0.5, 0.915, "CASO REAL",
+        fontfamily=CAPS, fontsize=14, color=RED,
+        ha='center', va='top', zorder=10)
+
+# Main headline
+ax.text(0.5, 0.845, "gormaran.io",
+        fontfamily=DISPLAY, fontsize=54, color=BLACK,
+        ha='center', va='top', zorder=10)
+
+ax.axhline(0.740, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.9, zorder=5)
+
+ax.text(0.5, 0.710, "100%",
+        fontfamily=NUM, fontsize=82, color=RED,
+        ha='center', va='top', zorder=10)
+
+ax.text(0.5, 0.595, "hecho por IA",
+        fontfamily=ITALIC, fontsize=38, color=BLACK,
+        ha='center', va='top', zorder=10)
+
+ax.text(0.5, 0.505, "y 100% automatizado",
+        fontfamily=CAPS, fontsize=20, color=GRAY,
+        ha='center', va='top', zorder=10)
+
+ax.axhline(0.440, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.6, zorder=5)
+
+ax.text(0.5, 0.400, "Stack completo · 2 semanas · 50.000€ ahorrados",
+        fontfamily=BODY, fontsize=10.5, color=GRAY,
+        ha='center', va='top', zorder=10)
+
+ax.text(0.5, 0.330, "Como lo hice",
+        fontfamily=BODY_BOLD, fontsize=12, color=BLACK,
+        ha='center', va='top', zorder=10)
+
+# swipe hint
+ax.text(0.5, 0.270, "sigue leyendo \u2193",
+        fontfamily=BODY, fontsize=10, color=RED,
+        ha='center', va='top', zorder=10)
+
+ax.axhline(0.225, xmin=0.07, xmax=0.77, color=LGRAY, lw=0.9, zorder=5)
+arrow_btn(ax, x=0.88, y=0.225)
+
+footer_line(ax)
+save(fig, 1)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 2 — Paso 1: Claude Code + VS Code
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+step_badge(ax, "1", "FRONTEND\n& BACKEND", x=0.07, y=0.92)
+ax.axhline(0.775, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.740,
+        "Construyo toda la interfaz y la logica\n"
+        "del software con Claude Code + VS Code.\n"
+        "Sin contratar a ningun Full-Stack Developer.",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.6)
+
+# Tech tags row
+for i, (label, filled) in enumerate([
+    ("Claude Code", True), ("VS Code", False), ("Anthropic", False)
+]):
+    x = 0.19 + i * 0.30
+    tech_tag(ax, label, x=x, y=0.555, w=0.24, filled=filled)
+
+ax.text(0.07, 0.490,
+        "Claude Code genera el codigo, lo revisa\n"
+        "y lo corrige. Yo solo dirijo y tomo decisiones.",
+        fontfamily=BODY, fontsize=11.5, color=GRAY,
+        ha='left', va='top', zorder=10, linespacing=1.55)
+
+# Result cards
+rows = [
+    ("Frontend completo",  "Interfaz, rutas, componentes"),
+    ("Backend completo",   "APIs, logica de negocio, base de datos"),
+    ("Velocidad x10",      "2 semanas vs 6 meses con un dev"),
+]
+for i, (title, desc) in enumerate(rows):
+    y0 = 0.390 - i * 0.080
+    ax.add_patch(Rectangle((0.07, y0 - 0.010), 0.020, 0.020,
+                            facecolor=RED, edgecolor='none', zorder=7))
+    ax.text(0.105, y0 + 0.001, title,
+            fontfamily=BODY_BOLD, fontsize=11, color=BLACK,
+            ha='left', va='center', zorder=10)
+    ax.text(0.105, y0 - 0.028, desc,
+            fontfamily=BODY, fontsize=9.5, color=GRAY,
+            ha='left', va='center', zorder=10)
+
+saving_box(ax, "AHORRO ESTIMADO", "~30.000\u20ac (salario Full-Stack 1 ano)", x=0.07, y=0.130)
+
+arrow_btn(ax, x=0.88, y=0.092)
+footer_line(ax)
+save(fig, 2)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 3 — Paso 2: Firebase
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+step_badge(ax, "2", "REGISTRO\n& LOGIN", x=0.07, y=0.92)
+ax.axhline(0.775, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.740,
+        "Uso Firebase, de Google, para gestionar\n"
+        "todo el sistema de registro e inicio de sesion.\n"
+        "Da acceso a las 30+ herramientas de marketing.",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.6)
+
+for i, (label, filled) in enumerate([
+    ("Firebase", True), ("Google", False), ("Auth", False)
+]):
+    x = 0.19 + i * 0.30
+    tech_tag(ax, label, x=x, y=0.555, w=0.24, filled=filled)
+
+ax.text(0.07, 0.490,
+        "Autenticacion, gestion de sesiones y control\n"
+        "de acceso por plan — todo sin escribir una\n"
+        "sola linea de auth propia.",
+        fontfamily=BODY, fontsize=11.5, color=GRAY,
+        ha='left', va='top', zorder=10, linespacing=1.55)
+
+rows = [
+    ("30+ herramientas",   "Ads, email, contenido, propuestas, SEO..."),
+    ("Auth segura",        "Google Firebase — millones de usuarios la usan"),
+    ("Cero mantenimiento", "Google lo mantiene. Yo no toco nada."),
+]
+for i, (title, desc) in enumerate(rows):
+    y0 = 0.370 - i * 0.080
+    ax.add_patch(Rectangle((0.07, y0 - 0.010), 0.020, 0.020,
+                            facecolor=RED, edgecolor='none', zorder=7))
+    ax.text(0.105, y0 + 0.001, title,
+            fontfamily=BODY_BOLD, fontsize=11, color=BLACK,
+            ha='left', va='center', zorder=10)
+    ax.text(0.105, y0 - 0.028, desc,
+            fontfamily=BODY, fontsize=9.5, color=GRAY,
+            ha='left', va='center', zorder=10)
+
+saving_box(ax, "AHORRO ESTIMADO", "~5.000\u20ac (desarrollo auth a medida)", x=0.07, y=0.130)
+
+arrow_btn(ax, x=0.88, y=0.092)
+footer_line(ax)
+save(fig, 3)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 4 — Paso 3: n8n + HubSpot
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+step_badge(ax, "3", "CRM &\nAUTOMATIZACION", x=0.07, y=0.92)
+ax.axhline(0.775, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.740,
+        "Cuando alguien se registra, n8n captura\n"
+        "el evento y lo envia automaticamente\n"
+        "al CRM de HubSpot.",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.6)
+
+for i, (label, filled) in enumerate([
+    ("n8n", True), ("HubSpot", False), ("Webhooks", False)
+]):
+    x = 0.19 + i * 0.30
+    tech_tag(ax, label, x=x, y=0.555, w=0.24, filled=filled)
+
+ax.text(0.07, 0.490,
+        "Desde HubSpot salen automaticamente:\n"
+        "email de bienvenida, gestion de planes,\n"
+        "seguimiento y comunicaciones.",
+        fontfamily=BODY, fontsize=11.5, color=GRAY,
+        ha='left', va='top', zorder=10, linespacing=1.55)
+
+rows = [
+    ("Email de bienvenida",  "Enviado al instante tras el registro"),
+    ("Gestion de planes",    "Free, Grow, Scale, Evolution — automatico"),
+    ("0 trabajo manual",     "Sin tocar HubSpot. n8n lo hace todo."),
+]
+for i, (title, desc) in enumerate(rows):
+    y0 = 0.370 - i * 0.080
+    ax.add_patch(Rectangle((0.07, y0 - 0.010), 0.020, 0.020,
+                            facecolor=RED, edgecolor='none', zorder=7))
+    ax.text(0.105, y0 + 0.001, title,
+            fontfamily=BODY_BOLD, fontsize=11, color=BLACK,
+            ha='left', va='center', zorder=10)
+    ax.text(0.105, y0 - 0.028, desc,
+            fontfamily=BODY, fontsize=9.5, color=GRAY,
+            ha='left', va='center', zorder=10)
+
+saving_box(ax, "AHORRO ESTIMADO", "~10.000\u20ac (CRM + integraciones a medida)", x=0.07, y=0.130)
+
+arrow_btn(ax, x=0.88, y=0.092)
+footer_line(ax)
+save(fig, 4)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 5 — Paso 4: Stripe
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+step_badge(ax, "4", "PAGOS &\nSUSCRIPCIONES", x=0.07, y=0.92)
+ax.axhline(0.775, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.07, 0.740,
+        "Todos los pagos de suscripcion pasan\n"
+        "por Stripe. Cobros recurrentes, gestion\n"
+        "de planes y facturacion automatica.",
+        fontfamily=SERIF, fontsize=13, color=BLACK,
+        ha='left', va='top', zorder=10, linespacing=1.6)
+
+for i, (label, filled) in enumerate([
+    ("Stripe", True), ("Recurrente", False), ("Webhooks", False)
+]):
+    x = 0.19 + i * 0.30
+    tech_tag(ax, label, x=x, y=0.555, w=0.24, filled=filled)
+
+# Pricing tiers
+ax.text(0.07, 0.490, "Planes disponibles:",
+        fontfamily=BODY, fontsize=11, color=GRAY,
+        ha='left', va='top', zorder=10)
+
+plans = [
+    ("Grow",      "\u20ac19/mes"),
+    ("Scale",     "\u20ac49/mes"),
+    ("Evolution", "\u20ac99/mes"),
+]
+for i, (plan, price) in enumerate(plans):
+    xc = 0.20 + i * 0.285
+    filled = (i == 0)
+    ax.add_patch(FancyBboxPatch((xc - 0.115, 0.365), 0.23, 0.090,
+                                boxstyle='round,pad=0.014',
+                                facecolor=RED if filled else WHITE,
+                                edgecolor=RED, linewidth=1.1, zorder=6))
+    tc = WHITE if filled else BLACK
+    ax.text(xc, 0.420, plan,
+            fontfamily=BODY_BOLD, fontsize=10, color=tc,
+            ha='center', va='center', zorder=8)
+    ax.text(xc, 0.385, price,
+            fontfamily=NUM, fontsize=14, color=tc if filled else RED,
+            ha='center', va='center', zorder=8)
+
+rows = [
+    ("Facturacion automatica",  "Sin enviar facturas manualmente"),
+    ("Cambio de plan al vuelo",  "Upgrade / downgrade con un clic"),
+    ("Integracion con n8n",     "Cada pago actualiza HubSpot solo"),
+]
+for i, (title, desc) in enumerate(rows):
+    y0 = 0.330 - i * 0.078
+    ax.add_patch(Rectangle((0.07, y0 - 0.010), 0.020, 0.020,
+                            facecolor=RED, edgecolor='none', zorder=7))
+    ax.text(0.105, y0 + 0.001, title,
+            fontfamily=BODY_BOLD, fontsize=11, color=BLACK,
+            ha='left', va='center', zorder=10)
+    ax.text(0.105, y0 - 0.028, desc,
+            fontfamily=BODY, fontsize=9.5, color=GRAY,
+            ha='left', va='center', zorder=10)
+
+saving_box(ax, "AHORRO ESTIMADO", "~5.000\u20ac (pasarela de pago a medida)", x=0.07, y=0.130)
+
+arrow_btn(ax, x=0.88, y=0.092)
+footer_line(ax)
+save(fig, 5)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 6 — Los numeros
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+ax.text(0.5, 0.935, "LOS NUMEROS",
+        fontfamily=CAPS, fontsize=16, color=RED,
+        ha='center', va='top', zorder=10)
+
+ax.axhline(0.885, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+# Big stats — two columns
+stats = [
+    ("2", "semanas\nde desarrollo"),
+    ("50K\u20ac", "ahorrados\nen total"),
+]
+for i, (num, label) in enumerate(stats):
+    xc = 0.27 + i * 0.46
+    ax.text(xc, 0.840, num,
+            fontfamily=NUM, fontsize=72, color=RED,
+            ha='center', va='top', zorder=10)
+    ax.text(xc, 0.720, label,
+            fontfamily=BODY, fontsize=12, color=GRAY,
+            ha='center', va='top', zorder=10, linespacing=1.4)
+
+ax.axvline(0.5, ymin=0.58, ymax=0.89, color=LGRAY, lw=0.8, zorder=5)
+
+ax.axhline(0.580, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.5, 0.545, "El stack completo",
+        fontfamily=CAPS, fontsize=13, color=BLACK,
+        ha='center', va='top', zorder=10)
+
+# Stack grid
+tools = [
+    ("Claude Code", "Codigo"),
+    ("Firebase",    "Auth"),
+    ("n8n",         "Automatizacion"),
+    ("HubSpot",     "CRM"),
+    ("Stripe",      "Pagos"),
+    ("VS Code",     "IDE"),
+]
+for i, (tool, role) in enumerate(tools):
+    col = i % 3
+    row = i // 3
+    xc = 0.20 + col * 0.30
+    yc = 0.460 - row * 0.110
+    ax.add_patch(FancyBboxPatch((xc - 0.125, yc - 0.040), 0.25, 0.082,
+                                boxstyle='round,pad=0.012',
+                                facecolor=WHITE, edgecolor=LGRAY,
+                                linewidth=0.9, zorder=6))
+    ax.text(xc, yc + 0.018, tool,
+            fontfamily=BODY_BOLD, fontsize=9.5, color=BLACK,
+            ha='center', va='center', zorder=8)
+    ax.text(xc, yc - 0.012, role,
+            fontfamily=BODY, fontsize=8.5, color=RED,
+            ha='center', va='center', zorder=8)
+
+ax.text(0.5, 0.235,
+        "Sin inversores. Sin empleados. Solo IA.",
+        fontfamily=ITALIC, fontsize=15, color=BLACK,
+        ha='center', va='top', zorder=10)
+
+arrow_btn(ax, x=0.88, y=0.092)
+footer_line(ax)
+save(fig, 6)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 7 — CTA
+# ─────────────────────────────────────────────────────────────────────────────
+fig, ax = new_slide()
+
+ax.text(0.5, 0.935, "EL PODER DE LA IA",
+        fontfamily=CAPS, fontsize=15, color=RED,
+        ha='center', va='top', zorder=10)
+
+ax.text(0.5, 0.870,
+        "esta al alcance\nde todos",
+        fontfamily=DISPLAY, fontsize=42, color=BLACK,
+        ha='center', va='top', zorder=10, linespacing=1.2)
+
+ax.axhline(0.730, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+
+ax.text(0.5, 0.695,
+        "Solo hay que saber usarlo de manera inteligente.",
+        fontfamily=SERIF, fontsize=13.5, color=GRAY,
+        ha='center', va='top', zorder=10)
+
+ax.axhline(0.630, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.5, alpha=0.6, zorder=5)
+
+# Prueba box
+ax.add_patch(FancyBboxPatch((0.07, 0.520), 0.86, 0.095,
+                            boxstyle='round,pad=0.014',
+                            facecolor=RED, edgecolor='none',
+                            zorder=6))
+ax.text(0.5, 0.570, "Prueba gormaran.io gratis — 14 dias sin tarjeta",
+        fontfamily=BODY_BOLD, fontsize=11.5, color=WHITE,
+        ha='center', va='center', zorder=8)
+
+ax.text(0.5, 0.468,
+        "30+ herramientas de IA para marketing,\n"
+        "contenido y desarrollo de negocio.",
+        fontfamily=BODY, fontsize=12, color=BLACK,
+        ha='center', va='top', zorder=10, linespacing=1.5)
+
+ax.axhline(0.360, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.5, alpha=0.6, zorder=5)
+
+actions = [
+    "Guarda este carrusel para cuando lo necesites",
+    "Comenta si tienes dudas — respondo todo",
+    "Etiqueta a alguien que necesite esto",
+]
+for i, txt in enumerate(actions):
+    yy = 0.320 - i * 0.068
+    ax.add_patch(Rectangle((0.07, yy - 0.008), 0.018, 0.018,
+                            facecolor=RED, edgecolor='none', zorder=7))
+    ax.text(0.105, yy + 0.001, txt,
+            fontfamily=SERIF, fontsize=12, color=BLACK,
+            ha='left', va='center', zorder=10)
+
+ax.axhline(0.140, xmin=0.07, xmax=0.93, color=LGRAY, lw=0.8, zorder=5)
+ax.text(0.5, 0.113,
+        "gormaran.io  \u00b7  @gormaran_ai_marketing",
+        fontfamily=BODY_BOLD, fontsize=10.5, color=RED,
+        ha='center', va='center', zorder=10)
+
+footer_line(ax)
+save(fig, 7)
+
+print("\nCarrusel listo ->", OUT_DIR)

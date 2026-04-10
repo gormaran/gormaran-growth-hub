@@ -1,0 +1,91 @@
+# render.yaml — Gormaran AI Growth Hub
+# Infrastructure-as-code for Render.com deployment
+# Docs: https://render.com/docs/infrastructure-as-code
+
+services:
+  # ─── Express API Server ─────────────────────────────────────────────────────
+  - type: web
+    name: gormaran-growth-hub-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    plan: starter              # upgrade to standard for zero-downtime deploys
+    region: frankfurt          # closest to gormaran.io audience (EU)
+    autoDeploy: true
+
+    # Health check — Render will restart the service if this fails
+    healthCheckPath: /health
+
+    # Environment variables — set values in Render dashboard (never commit secrets)
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      # Secrets — set in Render dashboard:
+      # ANTHROPIC_API_KEY
+      # STRIPE_SECRET_KEY
+      # STRIPE_WEBHOOK_SECRET
+      # STRIPE_GROW_PRICE_ID
+      # STRIPE_SCALE_PRICE_ID
+      # STRIPE_EVOLUTION_PRICE_ID
+      # ADMIN_UIDS
+      # FIREBASE_PROJECT_ID
+      # FIREBASE_PRIVATE_KEY
+      # FIREBASE_CLIENT_EMAIL
+      # FIREBASE_SERVICE_ACCOUNT
+      # FRONTEND_URL
+      # GOOGLE_OAUTH_CLIENT_ID / CLIENT_SECRET / REDIRECT_URI
+      # META_APP_ID / META_APP_SECRET / META_REDIRECT_URI
+      # LINKEDIN_CLIENT_ID / CLIENT_SECRET / REDIRECT_URI
+
+  # ─── React Frontend (Static Site) ───────────────────────────────────────────
+  - type: web
+    name: gormaran-growth-hub-frontend
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    pullRequestPreviewsEnabled: false
+
+    # Security headers for the static frontend — apply CSP here, not in the API
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: "camera=(), microphone=(), geolocation=()"
+      - path: /*
+        name: Strict-Transport-Security
+        value: "max-age=31536000; includeSubDomains; preload"
+      - path: /*
+        name: Content-Security-Policy
+        value: >-
+          default-src 'self';
+          script-src 'self' 'unsafe-inline' https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com;
+          style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+          font-src 'self' https://fonts.gstatic.com;
+          img-src 'self' data: https: blob:;
+          connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://gormaran-growth-hub-2.onrender.com https://api.stripe.com https://www.google-analytics.com;
+          frame-src https://js.stripe.com https://hooks.stripe.com;
+          object-src 'none';
+          base-uri 'self';
+          form-action 'self';
+
+    # Redirect all routes to index.html (SPA fallback — same as public/_redirects)
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://gormaran-growth-hub-2.onrender.com
+      # Set remaining REACT_APP_* vars in Render dashboard

@@ -1,0 +1,23 @@
+{
+  "enabledPlugins": {
+    "example-skills@anthropic-agent-skills": true,
+    "claude-api@anthropic-agent-skills": true,
+    "document-skills@anthropic-agent-skills": true,
+    "Notion@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/anthropics/skills.git"
+      }
+    },
+    "claude-plugins-official": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/anthropics/claude-plugins-official.git"
+      }
+    }
+  }
+}

@@ -1,0 +1,262 @@
+#!/usr/bin/env python3
+"""
+Interval Arrest — refined canvas render
+Design philosophy: systematic registers, forensic palette, frozen precision.
+"""
+
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from matplotlib.patches import Rectangle
+from matplotlib import font_manager
+import os
+
+# ── Font setup ────────────────────────────────────────────────────────────────
+FONT_DIR = "/Users/gabiorma/.claude/plugins/cache/anthropic-agent-skills/example-skills/7029232b9212/skills/canvas-design/canvas-fonts"
+
+def reg(name):
+    p = os.path.join(FONT_DIR, name)
+    font_manager.fontManager.addfont(p)
+    return font_manager.FontProperties(fname=p).get_name()
+
+mono_reg   = reg("JetBrainsMono-Regular.ttf")
+sans_thin  = reg("Jura-Light.ttf")
+sans_mid   = reg("Jura-Medium.ttf")
+serif_reg  = reg("InstrumentSerif-Italic.ttf")
+
+# ── Palette ───────────────────────────────────────────────────────────────────
+BG        = "#07070D"
+GRID_VOID = "#111120"
+AMBER     = "#C0994A"
+AMBER_MID = "#8A6728"
+AMBER_LO  = "#3E2E10"
+CREAM     = "#EEE8D4"
+CREAM_DIM = "#A09880"
+BLUE_ACC  = "#4472F0"
+BLUE_FAINT= "#16215A"
+
+# ── Canvas ────────────────────────────────────────────────────────────────────
+W_IN, H_IN = 14, 20
+DPI = 160
+
+fig = plt.figure(figsize=(W_IN, H_IN), dpi=DPI, facecolor=BG)
+ax  = fig.add_axes([0, 0, 1, 1])
+ax.set_facecolor(BG)
+ax.set_xlim(0, 1)
+ax.set_ylim(0, 1)
+ax.axis('off')
+
+rng = np.random.default_rng(7)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 1. SCAN-LINE GROUND
+# ─────────────────────────────────────────────────────────────────────────────
+N_SCAN = 220
+for i in range(N_SCAN):
+    y = i / N_SCAN
+    ax.axhline(y, color=AMBER_LO, lw=0.3, alpha=rng.uniform(0.015, 0.04), zorder=1)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 2. CELL GRID — precise layout with clear margins for typography
+# ─────────────────────────────────────────────────────────────────────────────
+COLS, ROWS = 46, 68
+# Leave clean zones: top 9% for title, bottom 6% for footer
+MX, MY_BOT, MY_TOP = 0.07, 0.065, 0.11
+GRID_Y0 = MY_BOT
+GRID_Y1 = 1 - MY_TOP
+GRID_X0 = MX
+GRID_X1 = 1 - MX
+
+cell_w = (GRID_X1 - GRID_X0) / COLS
+cell_h = (GRID_Y1 - GRID_Y0) / ROWS
+gap = 0.0020
+
+# Envelope: creates a flowing hourglass of light — brightest at horizon,
+# two lobes above and below that taper into darkness at edges.
+HORIZON_Y = 0.465     # the playhead — fractionally below geometric centre
+
+def envelope(col, row):
+    nx = (col - (COLS-1)/2) / ((COLS-1)/2)
+    ny_full = (row - (ROWS-1)/2) / ((ROWS-1)/2)
+    horizon_row = (HORIZON_Y - GRID_Y0) / cell_h
+    ny_h = (row - horizon_row) / ((ROWS-1)/2)
+
+    # narrow beam — tapers toward edges so it's not a flat white bar
+    beam_h   = np.exp(-(ny_h**2) / 0.0018)
+    beam_x   = np.exp(-(nx**2) / 0.8)          # brighter at centre, dims at edges
+    beam     = beam_h * (0.65 + 0.55 * beam_x)
+
+    # upper lobe — teardrop shape
+    u_lobe = np.exp(-((ny_h - 0.35)**2) / 0.090) * np.exp(-(nx**2)/0.30) * 0.78
+    # lower lobe — slightly smaller
+    l_lobe = np.exp(-((ny_h + 0.40)**2) / 0.085) * np.exp(-(nx**2)/0.30) * 0.68
+    # radial vignette to kill the very corners
+    vign   = np.exp(-(nx**2 * 1.5 + ny_full**2 * 0.65)) * 0.28
+    # subtle row banding — gives texture at close range
+    band   = 0.035 * np.sin(row * 0.60)
+
+    return float(np.clip(beam + u_lobe + l_lobe + vign + band, 0, 1))
+
+for row in range(ROWS):
+    for col in range(COLS):
+        e = envelope(col, row)
+        x0 = GRID_X0 + col * cell_w + gap/2
+        y0 = GRID_Y0 + row * cell_h + gap/2
+        w  = cell_w - gap
+        h  = cell_h - gap
+
+        if e > 0.85:
+            color = CREAM;     alpha = 0.90 + rng.uniform(-0.04, 0.04)
+        elif e > 0.62:
+            color = CREAM;     alpha = 0.30 + e * 0.55 + rng.uniform(-0.04, 0.04)
+        elif e > 0.40:
+            color = AMBER;     alpha = 0.22 + e * 0.55 + rng.uniform(-0.04, 0.04)
+        elif e > 0.20:
+            color = AMBER_MID; alpha = 0.14 + e * 0.45 + rng.uniform(-0.03, 0.03)
+        else:
+            color = GRID_VOID; alpha = 0.70 + rng.uniform(-0.08, 0.08)
+
+        ax.add_patch(Rectangle((x0, y0), w, h,
+                               linewidth=0, facecolor=color,
+                               alpha=float(np.clip(alpha, 0, 1)), zorder=2))
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3. THRESHOLD LINES — the playhead
+# ─────────────────────────────────────────────────────────────────────────────
+# glow stack (outer to inner)
+for lw, al in [(6, 0.04), (3, 0.10), (1.8, 0.30), (0.9, 0.90)]:
+    ax.axhline(HORIZON_Y, color=BLUE_ACC, lw=lw, alpha=al,
+               xmin=GRID_X0, xmax=GRID_X1, zorder=9)
+
+# tick marks along the threshold
+for t in np.linspace(GRID_X0, GRID_X1, 50):
+    is_major = int(round((t - GRID_X0) / (GRID_X1 - GRID_X0) * 49)) % 5 == 0
+    h_tick = 0.012 if is_major else 0.006
+    ax.plot([t, t], [HORIZON_Y, HORIZON_Y + h_tick],
+            color=BLUE_ACC, lw=0.8 if is_major else 0.5,
+            alpha=0.75 if is_major else 0.45, zorder=10)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4. LEFT AXIS — measurement scale
+# ─────────────────────────────────────────────────────────────────────────────
+AX_X = GRID_X0 - 0.022
+for i in range(180):
+    y   = GRID_Y0 + i * (GRID_Y1 - GRID_Y0) / 180
+    is_major = i % 10 == 0
+    tlen  = 0.013 if is_major else (0.007 if i%5==0 else 0.004)
+    alpha = 0.55 if is_major else 0.22
+    ax.plot([AX_X, AX_X + tlen], [y, y], color=AMBER,
+            lw=0.65 if is_major else 0.4, alpha=alpha, zorder=6)
+
+# vertical axis line
+ax.plot([AX_X, AX_X], [GRID_Y0, GRID_Y1],
+        color=AMBER_MID, lw=0.55, alpha=0.40, zorder=6)
+
+# row number labels
+for i in range(0, ROWS, 8):
+    y = GRID_Y0 + (i + 0.5) * cell_h
+    ax.text(AX_X - 0.004, y, f"{i:03d}",
+            fontfamily=mono_reg, fontsize=4.5, color=AMBER, alpha=0.45,
+            ha='right', va='center', zorder=10)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5. TOP COLUMN INDICES
+# ─────────────────────────────────────────────────────────────────────────────
+for j in range(0, COLS, 4):
+    x = GRID_X0 + (j + 0.5) * cell_w
+    ax.text(x, GRID_Y1 + 0.007, f"{j:02d}",
+            fontfamily=mono_reg, fontsize=3.8, color=AMBER, alpha=0.30,
+            ha='center', va='bottom', zorder=10)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 6. THRESHOLD ANNOTATION
+# ─────────────────────────────────────────────────────────────────────────────
+ax.text(GRID_X1 + 0.004, HORIZON_Y + 0.010,
+        f"Δt = 0.000",
+        fontfamily=mono_reg, fontsize=5.2, color=BLUE_ACC,
+        alpha=0.80, va='bottom', ha='left', zorder=11)
+ax.text(GRID_X1 + 0.004, HORIZON_Y - 0.012,
+        f"threshold",
+        fontfamily=mono_reg, fontsize=4.5, color=BLUE_ACC,
+        alpha=0.45, va='top', ha='left', zorder=11)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 7. TITLE ZONE — generous white space above the grid
+# ─────────────────────────────────────────────────────────────────────────────
+title_y  = 1 - MY_TOP * 0.36     # sits well inside upper margin
+sub_y    = 1 - MY_TOP * 0.70
+
+# hairline rule above title
+ax.axhline(1 - MY_TOP * 0.08,
+           xmin=GRID_X0, xmax=GRID_X1,
+           color=AMBER_MID, lw=0.55, alpha=0.38, zorder=8)
+
+ax.text(0.5, title_y,
+        "I N T E R V A L   A R R E S T",
+        fontfamily=sans_thin,
+        fontsize=19,
+        color=CREAM,
+        alpha=0.92,
+        ha='center', va='center', zorder=12)
+
+ax.text(0.5, sub_y,
+        "a study of interrupted continuity",
+        fontfamily=serif_reg,
+        fontsize=7.8,
+        color=AMBER,
+        alpha=0.48,
+        ha='center', va='center', zorder=12)
+
+# hairline rule below title (= top of grid)
+ax.axhline(GRID_Y1,
+           xmin=GRID_X0 - 0.002, xmax=GRID_X1 + 0.002,
+           color=AMBER_MID, lw=0.55, alpha=0.25, zorder=8)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 8. FOOTER
+# ─────────────────────────────────────────────────────────────────────────────
+ax.axhline(GRID_Y0,
+           xmin=GRID_X0 - 0.002, xmax=GRID_X1 + 0.002,
+           color=AMBER_MID, lw=0.55, alpha=0.25, zorder=8)
+
+ax.axhline(GRID_Y0 - 0.02,
+           xmin=GRID_X0, xmax=GRID_X1,
+           color=AMBER_MID, lw=0.4, alpha=0.22, zorder=6)
+
+meta_left  = [
+    "Interval Arrest  ·  fig. I",
+    "Specimen IA-001",
+]
+meta_right = [
+    "Series  00 — 45",
+    "2026.III",
+]
+for i, txt in enumerate(meta_left):
+    ax.text(GRID_X0, GRID_Y0 - 0.012 - i*0.011, txt,
+            fontfamily=mono_reg, fontsize=4.8, color=CREAM_DIM,
+            alpha=0.38, ha='left', va='top', zorder=10)
+for i, txt in enumerate(meta_right):
+    ax.text(GRID_X1, GRID_Y0 - 0.012 - i*0.011, txt,
+            fontfamily=mono_reg, fontsize=4.8, color=CREAM_DIM,
+            alpha=0.38, ha='right', va='top', zorder=10)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 9. VIGNETTE — layered dark borders
+# ─────────────────────────────────────────────────────────────────────────────
+for i in range(14):
+    t     = i / 13
+    inset = t * 0.055
+    alpha = 0.06 * (1 - t) ** 2.0
+    ax.add_patch(Rectangle((inset, inset), 1 - 2*inset, 1 - 2*inset,
+                            linewidth=3.5*(1-t), edgecolor=BLUE_FAINT,
+                            facecolor='none', alpha=alpha, zorder=20))
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Save
+# ─────────────────────────────────────────────────────────────────────────────
+out = "/Users/gabiorma/video-editor/Meta-Ads/interval-arrest.png"
+fig.savefig(out, dpi=DPI, bbox_inches='tight', facecolor=BG, pad_inches=0)
+plt.close(fig)
+print(f"Saved → {out}")

@@ -132,6 +132,204 @@
   text-align: center;
 }
 
+/* ── Hero Prompt Box ─────────────────────────────────────────────── */
+.hero-promptbox {
+  width: 100%;
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 4px 4px 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.hero-promptbox--focused {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.hero-promptbox__input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 4px 6px 4px 12px;
+}
+
+.hero-promptbox__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  resize: none;
+  min-height: 44px;
+  max-height: 120px;
+  padding: 10px 0;
+  font-family: inherit;
+}
+
+.hero-promptbox__input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.hero-promptbox__send {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(99, 102, 241, 0.2);
+  color: rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  margin-bottom: 4px;
+}
+
+.hero-promptbox__send--active {
+  background: #6366f1;
+  color: #fff;
+}
+
+.hero-promptbox__send--active:hover {
+  background: #4f46e5;
+  transform: scale(1.05);
+}
+
+/* Output area */
+.hero-promptbox__output {
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 16px;
+}
+
+.hero-promptbox__output-text {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: pre-wrap;
+  margin: 0 0 8px;
+  text-align: left;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.hero-promptbox__upgrade-cta {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #a5b4fc;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(165, 180, 252, 0.35);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.hero-promptbox__upgrade-cta:hover {
+  color: #c7d2fe;
+  border-color: rgba(199, 210, 254, 0.5);
+}
+
+/* Spinner */
+.hero-promptbox__spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: promptbox-spin 0.7s linear infinite;
+}
+
+@keyframes promptbox-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Limit state */
+.hero-promptbox__send--limit {
+  background: rgba(99, 102, 241, 0.3);
+  color: rgba(165, 180, 252, 0.8);
+  cursor: pointer;
+}
+
+.hero-promptbox__send--limit:hover {
+  background: #6366f1;
+  color: #fff;
+}
+
+/* Footer: chips + counter */
+.hero-promptbox__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px 2px;
+}
+
+.hero-promptbox__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hero-promptbox__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.hero-promptbox__chip:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  background: rgba(99, 102, 241, 0.1);
+  color: #a5b4fc;
+}
+
+.hero-promptbox__chip--active {
+  border-color: rgba(99, 102, 241, 0.6);
+  background: rgba(99, 102, 241, 0.15);
+  color: #c7d2fe;
+}
+
+/* Counter */
+.hero-promptbox__counter {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+}
+
+.hero-promptbox__counter--done {
+  color: #a5b4fc;
+}
+
+@media (max-width: 480px) {
+  .hero-promptbox {
+    border-radius: 14px;
+  }
+  .hero-promptbox__footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .hero-promptbox__chip {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+  }
+}
+
 .landing__hero-actions {
   display: flex;
   gap: 1rem;

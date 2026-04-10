@@ -1,0 +1,17 @@
+[
+  {
+    "content": "Fix Navbar language selector visibility for non-logged-in users",
+    "status": "completed",
+    "activeForm": "Fixing Navbar language selector visibility"
+  },
+  {
+    "content": "Update AIToolInterface FormField to use i18n for labels/placeholders",
+    "status": "completed",
+    "activeForm": "Updating AIToolInterface FormField to use i18n"
+  },
+  {
+    "content": "Add input translation keys to es.json, fr.json, de.json, it.json",
+    "status": "in_progress",
+    "activeForm": "Adding input translation keys to all language files"
+  }
+]

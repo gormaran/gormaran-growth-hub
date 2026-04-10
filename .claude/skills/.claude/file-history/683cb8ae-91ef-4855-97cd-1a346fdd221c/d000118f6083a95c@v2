@@ -1,0 +1,112 @@
+# Product Marketing Context — Gormaran
+
+*Last updated: 2026-03-12*
+
+## Product Overview
+**One-liner:** 30+ herramientas de IA especializadas para marketing, contenido y crecimiento de negocio — sin prompts genéricos.
+**What it does:** Gormaran es un SaaS de IA que reemplaza el uso de ChatGPT genérico para tareas de marketing. En lugar de chatear y adivinar prompts, el usuario accede a herramientas estructuradas por categoría (Google Ads, Meta Ads, email, blog, estrategia...) que generan outputs listos para publicar en 2 minutos.
+**Product category:** AI marketing tools / AI content creation / Marketing automation SaaS
+**Product type:** SaaS
+**Business model:** Suscripción mensual. Plan Grow €19/mes · Scale €49/mes · Evolution €99/mes. Trial 14 días gratis sin tarjeta de crédito. Add-on n8n automatización €10/10 workflows.
+
+## Target Audience
+**Target companies:** Pymes, startups, e-commerce, agencias de marketing pequeñas
+**Decision-makers:** Fundadores, marketers en solitario, directores de marketing en equipos pequeños
+**Primary use case:** Crear contenido y materiales de marketing de calidad profesional sin dedicar horas ni saber hacer prompts
+**Jobs to be done:**
+- Crear anuncios, emails y posts de forma rápida sin bloqueos creativos
+- Ahorrar tiempo en tareas repetitivas de marketing (10+ horas/semana)
+- Obtener outputs listos para publicar, no borradores que hay que reescribir
+**Use cases:**
+- Crear campañas de Google Ads o Meta Ads en minutos
+- Escribir blogs, newsletters y scripts de video
+- Generar propuestas de cliente, informes, casos de estudio
+- Desarrollar estrategia de contenido, análisis competitivo, plan de negocio
+
+## Personas
+| Persona | Cares about | Challenge | Value we promise |
+|---------|-------------|-----------|------------------|
+| Founder/solopreneur | Crecer sin contratar un equipo de marketing | No tiene tiempo ni expertise para crear contenido consistente | 30+ tools especializadas que hacen el trabajo en 2 min |
+| Marketer en equipo pequeño | Producir más con menos recursos | Pierde horas en ChatGPT intentando que le dé algo usable | Frameworks de ejecución listos para publicar, sin prompt engineering |
+| Agencia pequeña | Escalar entregables sin escalar costes | Producir propuestas, informes y creatividades para múltiples clientes | Tools de agencia (propuestas, reportes, casos de estudio) integradas |
+
+## Problems & Pain Points
+**Core problem:** ChatGPT y otras IAs generales dan respuestas genéricas que hay que reescribir completamente. El usuario pierde tiempo en prompts de prueba y error y nunca sabe si el output es "suficientemente bueno".
+**Why alternatives fall short:**
+- ChatGPT/Gemini/Claude: respuestas genéricas, requieren prompts expertos, no están estructuradas para marketing
+- Contratar freelancers/agencias: caro, lento, dependiente de terceros
+- Herramientas de marketing tradicionales (Hootsuite, etc.): no generan contenido, solo lo distribuyen
+**What it costs them:** 10+ horas/semana en crear contenido · costes de agencia o freelance · oportunidades perdidas por no publicar consistentemente
+**Emotional tension:** Sensación de que "debería estar haciendo más marketing" pero nunca hay tiempo ni energía para hacerlo bien
+
+## Competitive Landscape
+**Direct:** Jasper, Copy.ai — mismas funciones pero más caros y en inglés, menos orientados a hispanohablantes
+**Secondary:** ChatGPT Plus — misma IA pero sin estructura, requiere expertise en prompts
+**Indirect:** Contratar agencia o freelancer — más caro (€500-5000/mes), más lento, menos control
+
+## Differentiation
+**Key differentiators:**
+- Herramientas estructuradas por caso de uso (no chat genérico)
+- Outputs listos para publicar sin reescribir
+- Precio accesible (desde €19/mes vs €500+ agencia)
+- 30+ tools en una sola plataforma (no necesitas 5 herramientas diferentes)
+- Orientado a hispanohablantes (mercado mal atendido por Jasper/Copy.ai)
+**How we do it differently:** Frameworks de ejecución especializados por tarea, no un chat donde "tú sabes lo que preguntar"
+**Why that's better:** El usuario obtiene el output correcto desde la primera vez sin saber nada de IA ni prompts
+**Why customers choose us:** Precio, facilidad, rapidez y que funciona para mercado hispanohablante
+
+## Objections
+| Objection | Response |
+|-----------|----------|
+| "Ya uso ChatGPT gratis" | ChatGPT te da respuestas. Gormaran te da outputs listos para publicar. La diferencia está en el tiempo que pasas reescribiendo. |
+| "Es caro para lo que hace" | €19/mes vs 10+ horas/semana de trabajo. Una hora de freelance cuesta más. |
+| "¿No es lo mismo que cualquier IA?" | Las IAs generales requieren que tú sepas hacer los prompts. Gormaran hace eso por ti, especializado por tarea. |
+
+**Anti-persona:** Grandes empresas con equipos de marketing establecidos · usuarios que quieren hacer todo manual · quienes no usan marketing digital
+
+## Switching Dynamics
+**Push:** Frustración con ChatGPT genérico · tiempo perdido reescribiendo · outputs que no suenan profesionales
+**Pull:** Ver que en 2 minutos se genera algo usable · precio de entrada bajo (€19) · trial sin tarjeta
+**Habit:** "Ya sé usar ChatGPT" · rutina establecida de crear contenido manual
+**Anxiety:** "¿Funcionará para mi negocio específico?" · "¿El contenido sonará genérico igualmente?"
+
+## Customer Language
+**How they describe the problem:**
+- "Pierdo horas intentando que ChatGPT me dé algo útil"
+- "No sé hacer prompts"
+- "Necesito crear más contenido pero no tengo tiempo"
+- "El marketing siempre queda para después"
+**How they describe us:**
+- "Herramientas de marketing con IA"
+- "IA para marketers"
+- "Alternativa a ChatGPT para marketing"
+**Words to use:** herramientas, listo para publicar, en 2 minutos, sin prompts, profesional, resultados, ahorra tiempo
+**Words to avoid:** "chatbot", "IA generativa" (demasiado técnico), "prompts" (en copy — es lo que queremos evitar), "automatización" (confunde)
+**Glossary:**
+| Term | Meaning |
+|------|---------|
+| Framework de ejecución | Template estructurado que guía la IA para dar un output específico y usable |
+| AI Growth Hub | Nombre interno de la plataforma completa |
+| Output listo para publicar | Resultado que no necesita reescribirse antes de usarlo |
+
+## Brand Voice
+**Tone:** Directo, práctico, sin jerga técnica. Habla de resultados, no de tecnología.
+**Style:** Conversacional pero profesional. No corporativo. Cercano al founder/marketer independiente.
+**Personality:** Eficiente · accesible · confiable · orientado a resultados
+
+## Proof Points
+**Metrics:** 10+ horas/semana ahorradas · 99% Precision Rate · 10x Faster Workflows · 30+ tools · 2 minutos por output
+**Customers:** 70+ marketers y founders. Logos: Ormaran Paisajismo, La Rioja Alta, Grupo Agromotor, Just Drive
+**Testimonials:** (pendiente de añadir quotes reales)
+**Value themes:**
+| Theme | Proof |
+|-------|-------|
+| Velocidad | "Crea contenido de marketing en 2 minutos" |
+| Calidad profesional | "99% Precision Rate" |
+| Ahorro de tiempo | "10+ horas/semana" |
+| Accesibilidad | "Sin prompts genéricos. Sin curva de aprendizaje." |
+
+## Goals
+**Business goal:** Aumentar registros de prueba gratuita y convertirlos a plan Grow (€19/mes)
+**Conversion action:** Registro en trial 14 días (sin tarjeta de crédito)
+**Current metrics:** 70+ usuarios activos (pendiente de actualizar con datos reales de conversión)

@@ -1,0 +1,53 @@
+# ============================================================
+# SPEED-OPTIMIZED CONFIG — target < 2s response time
+# ============================================================
+
+# --- PROVIDER ---
+# Claude Haiku is the fastest Claude model (~0.5-1s TTFT)
+CHAT_PROVIDER=CLAUDE
+CLAUDE_API_KEY=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
+
+# Haiku 4.5 = fastest. Swap for claude-sonnet-4-20250514 if you need smarter
+CLAUDE_CHAT_MODEL=claude-haiku-4-5-20251001
+
+# --- BOT ---
+BOT_NAME=Monseur Vigier AI
+PROMPT_INFO=Eres un asistente de bodegas Grupo La Rioja Alta, S.A. Responde siempre en español y de forma concisa. Tu función principal es dar informarción de carácter comercial y de atención al cliente.
+PREFERRED_LANGUAGE=spanish
+USE_CONTACT_NAMES=true
+
+# --- SPEED TWEAKS ---
+# Fewer history messages = less tokens = faster API call
+MAX_MSGS_LIMIT=10
+MAX_HOURS_LIMIT=6
+
+# Disable heavy features (each adds 1-3s of latency)
+MEMORIES_ENABLED=false
+IMAGE_CREATION_ENABLED=false
+VOICE_MESSAGES_ENABLED=false
+
+# Shorter replies = fewer tokens to generate
+MAX_CHARACTERS=500
+
+# Cache TTL: 3 days (keep conversations in memory)
+NODE_CACHE_TIME=259200
+
+# --- OPTIONAL: Bot personality ---
+PROMPT_INFO="You are a friendly and concise assistant. Keep answers short."
+
+# --- RAG KNOWLEDGE BASE ---
+# OpenAI key used ONLY for embeddings (text-embedding-3-small)
+# Claude still handles all chat — this is just to index/search your Excel files
+OPENAI_API_KEY=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
+
+# Folder containing your client's .xlsx files (relative or absolute path)
+KNOWLEDGE_BASE_DIR=./data
+
+# --- HTTP SERVER (for n8n integration) ---
+SERVER_PORT=3000
+# Uncomment and set a secret so only n8n can call the endpoint
+# SERVER_API_KEY=pon-aqui-un-secreto-largo
+
+# --- ADMIN ---
+# LOG_LEVEL=info
+ADMIN_NUMBERS=34684804986

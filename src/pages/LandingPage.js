@@ -1,7 +1,9 @@
-import { useRef, useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
+import { streamDemoResponse } from '../utils/api';
 import './LandingPage.css';
 import WhatsAppPopup from '../components/WhatsAppPopup';
 
@@ -32,6 +34,192 @@ function AnimatedSection({ children, className, delay = 0 }) {
   );
 }
 
+
+// ── Hero Prompt Box ───────────────────────────────────────────────
+const HERO_CHIPS = [
+  {
+    icon: '📋',
+    labelKey: 'landing.promptbox.chip1',
+    dLabel: 'Client Proposal',
+    fillKey: 'landing.promptbox.chip1.fill',
+    dFill: 'Write a client proposal for a social media management service',
+    route: '/category/agency',
+  },
+  {
+    icon: '🔍',
+    labelKey: 'landing.promptbox.chip2',
+    dLabel: 'Keyword Research',
+    fillKey: 'landing.promptbox.chip2.fill',
+    dFill: 'Find the best keywords for my SaaS business blog',
+    route: '/category/marketing',
+  },
+  {
+    icon: '📣',
+    labelKey: 'landing.promptbox.chip3',
+    dLabel: 'Ads Campaign',
+    fillKey: 'landing.promptbox.chip3.fill',
+    dFill: 'Create a Facebook & Instagram ad campaign for my product launch',
+    route: '/category/digital',
+  },
+];
+
+const DEMO_LIMIT = 3;
+const DEMO_KEY = 'gormaran_demo_count';
+
+function HeroPromptBox() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const [value, setValue] = useState('');
+  const [activeChip, setActiveChip] = useState(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [output, setOutput] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [usesLeft, setUsesLeft] = useState(() => {
+    const used = parseInt(localStorage.getItem(DEMO_KEY) || '0', 10);
+    return Math.max(0, DEMO_LIMIT - used);
+  });
+  const abortRef = useRef(null);
+  const inputRef = useRef(null);
+  const outputRef = useRef(null);
+
+  const handleChip = (chip, idx) => {
+    setValue(t(chip.fillKey, { defaultValue: chip.dFill }));
+    setActiveChip(idx);
+    setOutput('');
+    inputRef.current?.focus();
+  };
+
+  const handleSubmit = useCallback(() => {
+    if (!value.trim() || isStreaming) return;
+
+    if (currentUser) {
+      navigate(activeChip !== null ? HERO_CHIPS[activeChip].route : '/dashboard');
+      return;
+    }
+
+    const used = parseInt(localStorage.getItem(DEMO_KEY) || '0', 10);
+    if (used >= DEMO_LIMIT) {
+      navigate('/auth?mode=register');
+      return;
+    }
+
+    const newUsed = used + 1;
+    localStorage.setItem(DEMO_KEY, String(newUsed));
+    setUsesLeft(Math.max(0, DEMO_LIMIT - newUsed));
+    setOutput('');
+    setIsStreaming(true);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    streamDemoResponse({
+      prompt: value.trim(),
+      signal: controller.signal,
+      onChunk: (text) => {
+        setOutput((prev) => prev + text);
+        outputRef.current?.scrollTo({ top: outputRef.current.scrollHeight, behavior: 'smooth' });
+      },
+      onDone: () => setIsStreaming(false),
+      onError: () => setIsStreaming(false),
+    });
+  }, [value, isStreaming, currentUser, activeChip, navigate]);
+
+  const handleKey = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  const isLimitReached = !currentUser && usesLeft === 0;
+
+  return (
+    <motion.div
+      className={`hero-promptbox${isFocused ? ' hero-promptbox--focused' : ''}${output ? ' hero-promptbox--has-output' : ''}`}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: 0.12 }}
+    >
+      <AnimatePresence>
+        {output && (
+          <motion.div
+            ref={outputRef}
+            className="hero-promptbox__output"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <p className="hero-promptbox__output-text">{output}</p>
+            {!isStreaming && usesLeft === 0 && (
+              <Link to="/auth?mode=register" className="hero-promptbox__upgrade-cta">
+                {t('landing.promptbox.upgradeCta', { defaultValue: 'Sign up free to unlock all 30+ tools →' })}
+              </Link>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="hero-promptbox__input-row">
+        <textarea
+          ref={inputRef}
+          className="hero-promptbox__input"
+          value={value}
+          onChange={(e) => { setValue(e.target.value); setActiveChip(null); }}
+          onKeyDown={handleKey}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder={
+            isLimitReached
+              ? t('landing.promptbox.limitReached', { defaultValue: 'Sign up free to keep going →' })
+              : t('landing.promptbox.placeholder', { defaultValue: 'What do you want to create today?' })
+          }
+          disabled={isLimitReached}
+          rows={1}
+        />
+        <button
+          className={`hero-promptbox__send${value.trim() && !isLimitReached ? ' hero-promptbox__send--active' : ''}${isLimitReached ? ' hero-promptbox__send--limit' : ''}`}
+          onClick={isLimitReached ? () => navigate('/auth?mode=register') : handleSubmit}
+          aria-label="Send"
+        >
+          {isStreaming ? (
+            <span className="hero-promptbox__spinner" />
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      <div className="hero-promptbox__footer">
+        <div className="hero-promptbox__chips">
+          {HERO_CHIPS.map((chip, i) => (
+            <button
+              key={i}
+              className={`hero-promptbox__chip${activeChip === i ? ' hero-promptbox__chip--active' : ''}`}
+              onClick={() => handleChip(chip, i)}
+              disabled={isLimitReached}
+            >
+              <span>{chip.icon}</span>
+              {t(chip.labelKey, { defaultValue: chip.dLabel })}
+            </button>
+          ))}
+        </div>
+        {!currentUser && (
+          <span className={`hero-promptbox__counter${isLimitReached ? ' hero-promptbox__counter--done' : ''}`}>
+            {isLimitReached
+              ? t('landing.promptbox.limitDone', { defaultValue: '3/3 demos used' })
+              : t('landing.promptbox.remaining', { defaultValue: '{{n}} free left', n: usesLeft }).replace('{{n}}', usesLeft)
+            }
+          </span>
+        )}
+      </div>
+    </motion.div>
+  );
+}
 
 // ── Rotating Hero Text ────────────────────────────────────────────
 function RotatingText() {
@@ -1128,6 +1316,8 @@ export default function LandingPage() {
               <br />
               {t('landing.hero.subtitleLine2', { defaultValue: 'No generic prompts.' })}
             </motion.p>
+
+            <HeroPromptBox />
 
             <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.35, delay: 0.15 }}>
               <Link to="/auth?mode=register" className="btn btn-primary btn-lg landing__cta-btn">
