@@ -333,8 +333,34 @@ function WorkflowDemo() {
   );
 }
 
+// ── Animated output lines (loops) ────────────────────────────────
+const OUTPUT_WIDTHS = [90, 75, 95, 60, 82];
+
+function AnimatedOutputLines() {
+  const [key, setKey] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setKey((k) => k + 1), 2800);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="landing__showcase-output">
+      {OUTPUT_WIDTHS.map((w, i) => (
+        <motion.div
+          key={`${key}-${i}`}
+          className="landing__showcase-line"
+          style={{ width: `${w}%` }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.55, delay: i * 0.1, ease: 'easeOut' }}
+        />
+      ))}
+    </div>
+  );
+}
+
 // ── Hero Showcase Cards ──────────────────────────────────────────
 function HeroShowcase() {
+  const { t } = useTranslation();
   return (
     <div className="landing__hero-showcase">
       <div className="container">
@@ -348,8 +374,8 @@ function HeroShowcase() {
             <div className="landing__showcase-card-header">
               <div className="landing__showcase-card-icon">🗂️</div>
               <div>
-                <div className="landing__showcase-card-title">Tool Library</div>
-                <div className="landing__showcase-card-sub">30+ AI tools, 10 categories</div>
+                <div className="landing__showcase-card-title">{t('landing.showcase.card1.title')}</div>
+                <div className="landing__showcase-card-sub">{t('landing.showcase.card1.sub')}</div>
               </div>
             </div>
             <div className="landing__showcase-tags">
@@ -363,41 +389,30 @@ function HeroShowcase() {
             <div className="landing__showcase-card-header">
               <div className="landing__showcase-card-icon">⚡</div>
               <div>
-                <div className="landing__showcase-card-title">Instant Output</div>
-                <div className="landing__showcase-card-sub">Professional results in seconds</div>
+                <div className="landing__showcase-card-title">{t('landing.showcase.card2.title')}</div>
+                <div className="landing__showcase-card-sub">{t('landing.showcase.card2.sub')}</div>
               </div>
             </div>
-            <div className="landing__showcase-output">
-              {[90, 75, 95, 60, 82].map((w, i) => (
-                <motion.div
-                  key={i}
-                  className="landing__showcase-line"
-                  style={{ width: `${w}%` }}
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.7, delay: 0.7 + i * 0.1, ease: 'easeOut' }}
-                />
-              ))}
-            </div>
-            <span className="landing__showcase-badge">✨ AI Output ready</span>
+            <AnimatedOutputLines />
+            <span className="landing__showcase-badge">{t('landing.showcase.card2.badge')}</span>
           </div>
 
           <div className="landing__showcase-card">
             <div className="landing__showcase-card-header">
-              <div className="landing__showcase-card-icon">📊</div>
+              <div className="landing__showcase-card-icon">⚡</div>
               <div>
-                <div className="landing__showcase-card-title">10x Faster</div>
-                <div className="landing__showcase-card-sub">vs. manual work</div>
+                <div className="landing__showcase-card-title">{t('landing.showcase.card3.title')}</div>
+                <div className="landing__showcase-card-sub">{t('landing.showcase.card3.sub')}</div>
               </div>
             </div>
             <div className="landing__showcase-metrics">
               <div className="landing__showcase-metric">
-                <span className="landing__showcase-metric-val">99%</span>
-                <span className="landing__showcase-metric-label">Precision</span>
+                <span className="landing__showcase-metric-val">{t('landing.showcase.card3.metric1.val')}</span>
+                <span className="landing__showcase-metric-label">{t('landing.showcase.card3.metric1.label')}</span>
               </div>
               <div className="landing__showcase-metric">
-                <span className="landing__showcase-metric-val">14d</span>
-                <span className="landing__showcase-metric-label">Free trial</span>
+                <span className="landing__showcase-metric-val">{t('landing.showcase.card3.metric2.val')}</span>
+                <span className="landing__showcase-metric-label">{t('landing.showcase.card3.metric2.label')}</span>
               </div>
             </div>
           </div>
