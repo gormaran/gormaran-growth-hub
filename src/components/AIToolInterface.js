@@ -7,6 +7,9 @@ import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
 import { collection, addDoc, getDocs, deleteDoc, doc, getDoc, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import './AIToolInterface.css';
 
 // Maps brand profile keys → possible tool input field IDs
 const BRAND_FIELD_MAP = {
@@ -37,9 +40,6 @@ function applyBrandProfile(brandProfile, toolInputs) {
   }
   return { defaults, prefilled };
 }
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import './AIToolInterface.css';
 
 function FormField({ field, value, onChange, toolId, prefilled }) {
   const { t } = useTranslation();
