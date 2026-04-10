@@ -298,15 +298,38 @@ export default function AIToolInterface({ tool, categoryId }) {
   function handleRefImageChange(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const dataUrl = ev.target.result;
-      const [header, b64] = dataUrl.split(',');
-      const mime = header.match(/:(.*?);/)?.[1] || 'image/jpeg';
-      setRefImage({ dataUrl, b64, mime, name: file.name });
-      setInputs(prev => ({ ...prev, _ref_image_b64: b64, _ref_image_mime: mime }));
+
+    const MAX_BYTES = 4.5 * 1024 * 1024; // 4.5 MB safety margin under the 5 MB API limit
+    const MAX_DIMENSION = 1920;
+
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let { width, height } = img;
+      if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+        const ratio = Math.min(MAX_DIMENSION / width, MAX_DIMENSION / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+      // Try quality levels until under MAX_BYTES
+      let quality = 0.85;
+      let dataUrl = canvas.toDataURL('image/jpeg', quality);
+      while (dataUrl.length * 0.75 > MAX_BYTES && quality > 0.3) {
+        quality -= 0.1;
+        dataUrl = canvas.toDataURL('image/jpeg', quality);
+      }
+
+      const [, b64] = dataUrl.split(',');
+      setRefImage({ dataUrl, b64, mime: 'image/jpeg', name: file.name });
+      setInputs(prev => ({ ...prev, _ref_image_b64: b64, _ref_image_mime: 'image/jpeg' }));
     };
-    reader.readAsDataURL(file);
+    img.src = objectUrl;
   }
 
   function handleRemoveRefImage() {
