@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { createPortalSession } from '../utils/api';
 import './SettingsPage.css';
+
+const TONE_OPTIONS = ['Professional', 'Friendly & Casual', 'Bold & Direct', 'Empathetic', 'Authoritative', 'Creative'];
+
+const EMPTY_BRAND = {
+  companyName: '', website: '', industry: '', targetAudience: '',
+  toneOfVoice: '', usp: '', location: '', description: '',
+};
 
 export default function SettingsPage() {
   const { currentUser, logout, refreshUserProfile } = useAuth();
@@ -11,6 +20,35 @@ export default function SettingsPage() {
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [portalError, setPortalError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [brandProfile, setBrandProfile] = useState(EMPTY_BRAND);
+  const [savingBrand, setSavingBrand] = useState(false);
+  const [brandSaved, setBrandSaved] = useState(false);
+  const [loadingBrand, setLoadingBrand] = useState(true);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    getDoc(doc(db, 'users', currentUser.uid, 'settings', 'brandProfile'))
+      .then(snap => { if (snap.exists()) setBrandProfile(prev => ({ ...prev, ...snap.data() })); })
+      .catch(() => {})
+      .finally(() => setLoadingBrand(false));
+  }, [currentUser]);
+
+  async function handleSaveBrandProfile(e) {
+    e.preventDefault();
+    setSavingBrand(true);
+    try {
+      await setDoc(doc(db, 'users', currentUser.uid, 'settings', 'brandProfile'), {
+        ...brandProfile,
+        updatedAt: new Date().toISOString(),
+      });
+      setBrandSaved(true);
+      setTimeout(() => setBrandSaved(false), 3000);
+    } catch (err) {
+      console.error('[BrandProfile] save failed:', err);
+    } finally {
+      setSavingBrand(false);
+    }
+  }
 
   async function handleManageSubscription() {
     if (subscription === 'free') return;
@@ -140,6 +178,83 @@ export default function SettingsPage() {
                 {portalError && <div className="alert alert-error">{portalError}</div>}
               </div>
             </div>
+          </motion.div>
+
+          {/* Brand Profile */}
+          <motion.div
+            className="settings__card"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18 }}
+          >
+            <h2 className="settings__card-title">🏢 Brand Profile</h2>
+            <p className="settings__brand-hint">
+              Fill in your brand details once — they'll auto-fill in every AI tool so you never have to type them again.
+            </p>
+            {loadingBrand ? (
+              <div className="settings__brand-loading">Loading…</div>
+            ) : (
+              <form onSubmit={handleSaveBrandProfile} className="settings__brand-form">
+                <div className="settings__brand-grid">
+                  <div className="form-group">
+                    <label className="form-label">Company / Brand Name</label>
+                    <input className="form-input" value={brandProfile.companyName}
+                      onChange={e => setBrandProfile(p => ({ ...p, companyName: e.target.value }))}
+                      placeholder="e.g. Acme Corp" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Website</label>
+                    <input className="form-input" value={brandProfile.website}
+                      onChange={e => setBrandProfile(p => ({ ...p, website: e.target.value }))}
+                      placeholder="https://yoursite.com" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Industry / Niche</label>
+                    <input className="form-input" value={brandProfile.industry}
+                      onChange={e => setBrandProfile(p => ({ ...p, industry: e.target.value }))}
+                      placeholder="e.g. SaaS, E-commerce, Consulting" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Location / Market</label>
+                    <input className="form-input" value={brandProfile.location}
+                      onChange={e => setBrandProfile(p => ({ ...p, location: e.target.value }))}
+                      placeholder="e.g. Spain, Latin America, Global" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Target Audience</label>
+                    <input className="form-input" value={brandProfile.targetAudience}
+                      onChange={e => setBrandProfile(p => ({ ...p, targetAudience: e.target.value }))}
+                      placeholder="e.g. Small business owners, Marketing managers" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Tone of Voice</label>
+                    <select className="form-select" value={brandProfile.toneOfVoice}
+                      onChange={e => setBrandProfile(p => ({ ...p, toneOfVoice: e.target.value }))}>
+                      <option value="">Select tone…</option>
+                      {TONE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group settings__brand-full">
+                    <label className="form-label">Main Differentiator / USP</label>
+                    <input className="form-input" value={brandProfile.usp}
+                      onChange={e => setBrandProfile(p => ({ ...p, usp: e.target.value }))}
+                      placeholder="e.g. The fastest invoicing tool for freelancers in Spain" />
+                  </div>
+                  <div className="form-group settings__brand-full">
+                    <label className="form-label">Brand Description <span style={{color:'var(--text-muted)',fontWeight:400}}>(optional)</span></label>
+                    <textarea className="form-textarea" rows={3} value={brandProfile.description}
+                      onChange={e => setBrandProfile(p => ({ ...p, description: e.target.value }))}
+                      placeholder="Short description of what you do and for whom…" />
+                  </div>
+                </div>
+                <div className="settings__brand-actions">
+                  <button type="submit" className="btn btn-primary" disabled={savingBrand}>
+                    {savingBrand ? '…' : brandSaved ? '✅ Saved!' : '💾 Save Brand Profile'}
+                  </button>
+                  {brandSaved && <span className="settings__brand-saved">Saved — all tools will now auto-fill your brand info.</span>}
+                </div>
+              </form>
+            )}
           </motion.div>
 
           {/* Account actions */}

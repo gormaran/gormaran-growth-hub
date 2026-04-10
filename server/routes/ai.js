@@ -22,7 +22,7 @@ const CATEGORY_PROMPTS = require('./categoryPrompts');
 
 // POST /api/ai/generate  — streaming SSE response
 router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
-  const { categoryId, toolId, inputs } = req.body;
+  const { categoryId, toolId, inputs, conversationHistory } = req.body;
 
   if (!categoryId || !toolId || !inputs) {
     return res.status(400).json({ error: 'Missing required fields: categoryId, toolId, inputs' });
@@ -105,11 +105,19 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
   res.flushHeaders();
 
   try {
+    // Build messages: always start with the original user request, then append conversation history (for refinements)
+    let messages;
+    if (Array.isArray(conversationHistory) && conversationHistory.length > 0) {
+      messages = [{ role: 'user', content: userMessageText }, ...conversationHistory];
+    } else {
+      messages = [{ role: 'user', content: userMessageContent }];
+    }
+
     const stream = client.messages.stream({
       model: tool.model || 'claude-sonnet-4-6',
       max_tokens: tool.maxTokens || 4000,
       system: systemPrompt,
-      messages: [{ role: 'user', content: userMessageContent }],
+      messages,
     });
 
     stream.on('text', (text) => {

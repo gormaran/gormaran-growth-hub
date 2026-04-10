@@ -188,7 +188,48 @@
   font-size: 0.82rem;
 }
 
+/* Brand Profile */
+.settings__brand-hint {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: -0.75rem;
+}
+
+.settings__brand-loading {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.settings__brand-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.settings__brand-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.settings__brand-full {
+  grid-column: 1 / -1;
+}
+
+.settings__brand-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.settings__brand-saved {
+  font-size: 0.82rem;
+  color: var(--color-success, #22c55e);
+}
+
 @media (max-width: 640px) {
   .settings__profile { flex-direction: column; text-align: center; }
   .settings__action-row { flex-direction: column; align-items: flex-start; }
+  .settings__brand-grid { grid-template-columns: 1fr; }
 }

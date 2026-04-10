@@ -657,3 +657,83 @@
   height: auto !important;
   min-width: 160px;
 }
+
+/* ── Prefilled brand badge ── */
+.ai-tool__prefilled-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  background: rgba(99,102,241,0.1);
+  border: 1px solid rgba(99,102,241,0.22);
+  border-radius: 4px;
+  padding: 1px 5px;
+  vertical-align: middle;
+  letter-spacing: 0.02em;
+}
+
+/* ── Refine section ── */
+.ai-tool__refine {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.ai-tool__refine-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.ai-tool__refine-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ai-tool__refine-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-surface-2);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+.ai-tool__refine-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.ai-tool__refine-input {
+  flex: 1;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding: 0.55rem 0.75rem;
+  resize: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.ai-tool__refine-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.ai-tool__refine-input::placeholder { color: var(--text-muted); }
+
+.ai-tool__refine-btn {
+  flex-shrink: 0;
+  align-self: flex-end;
+  white-space: nowrap;
+}

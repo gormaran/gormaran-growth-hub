@@ -12,16 +12,18 @@ async function getAuthHeader() {
 }
 
 // Stream AI response using fetch + ReadableStream
-export async function streamAIResponse({ categoryId, toolId, inputs, onChunk, onDone, onError, signal }) {
+export async function streamAIResponse({ categoryId, toolId, inputs, conversationHistory, onChunk, onDone, onError, signal }) {
   try {
     const authHeaders = await getAuthHeader();
+    const body = { categoryId, toolId, inputs };
+    if (conversationHistory) body.conversationHistory = conversationHistory;
     const response = await fetch(`${API_URL}/api/ai/generate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...authHeaders,
       },
-      body: JSON.stringify({ categoryId, toolId, inputs }),
+      body: JSON.stringify(body),
       signal,
     });
 

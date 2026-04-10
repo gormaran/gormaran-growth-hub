@@ -5,13 +5,43 @@ import { useTranslation } from 'react-i18next';
 import { streamAIResponse, generateLogoImage, generateImage } from '../utils/api';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
-import { collection, addDoc, getDocs, deleteDoc, doc, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, getDoc, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase/config';
+
+// Maps brand profile keys → possible tool input field IDs
+const BRAND_FIELD_MAP = {
+  companyName:    ['company', 'company_name', 'business_name', 'brand_name', 'business', 'startup_name', 'nombre'],
+  website:        ['website', 'url', 'business_url', 'site_url', 'my_website'],
+  industry:       ['industry', 'niche', 'sector', 'market', 'business_type'],
+  targetAudience: ['audience', 'target_audience', 'target_market', 'customer', 'customer_segment', 'target_customer', 'icp'],
+  toneOfVoice:    ['tone', 'tone_of_voice', 'voice', 'writing_tone'],
+  usp:            ['usp', 'differentiator', 'my_differentiator', 'differentiation', 'value_proposition'],
+  location:       ['location', 'country', 'city', 'geography', 'region'],
+  description:    ['description', 'about', 'business_description', 'overview'],
+};
+
+function applyBrandProfile(brandProfile, toolInputs) {
+  const defaults = {};
+  const prefilled = new Set();
+  if (!brandProfile || !toolInputs) return { defaults, prefilled };
+  for (const [profileKey, fieldIds] of Object.entries(BRAND_FIELD_MAP)) {
+    const val = brandProfile[profileKey];
+    if (!val) continue;
+    for (const fieldId of fieldIds) {
+      if (toolInputs.find(f => f.id === fieldId)) {
+        defaults[fieldId] = val;
+        prefilled.add(fieldId);
+        break;
+      }
+    }
+  }
+  return { defaults, prefilled };
+}
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './AIToolInterface.css';
 
-function FormField({ field, value, onChange, toolId }) {
+function FormField({ field, value, onChange, toolId, prefilled }) {
   const { t } = useTranslation();
   const label = t(`input.${toolId}.${field.id}.label`, { defaultValue: field.label });
   const placeholder = t(`input.${toolId}.${field.id}.placeholder`, { defaultValue: field.placeholder || '' });
@@ -24,13 +54,18 @@ function FormField({ field, value, onChange, toolId }) {
     required: field.required,
   };
 
+  const labelEl = (
+    <label className="form-label" htmlFor={field.id}>
+      {label}
+      {field.required && <span className="required-mark"> *</span>}
+      {prefilled && <span className="ai-tool__prefilled-badge">🏢 Brand</span>}
+    </label>
+  );
+
   if (field.type === 'textarea') {
     return (
       <div className="form-group">
-        <label className="form-label" htmlFor={field.id}>
-          {label}
-          {field.required && <span className="required-mark"> *</span>}
-        </label>
+        {labelEl}
         <textarea className="form-textarea" rows={4} {...commonProps} />
       </div>
     );
@@ -39,10 +74,7 @@ function FormField({ field, value, onChange, toolId }) {
   if (field.type === 'select') {
     return (
       <div className="form-group">
-        <label className="form-label" htmlFor={field.id}>
-          {label}
-          {field.required && <span className="required-mark"> *</span>}
-        </label>
+        {labelEl}
         <select className="form-select" {...commonProps}>
           <option value="">{t('ui.selectOption', { defaultValue: 'Select an option...' })}</option>
           {field.options.map((opt) => (
@@ -57,10 +89,7 @@ function FormField({ field, value, onChange, toolId }) {
     const selected = value ? value.split(', ').filter(Boolean) : [];
     return (
       <div className="form-group">
-        <label className="form-label">
-          {label}
-          {field.required && <span className="required-mark"> *</span>}
-        </label>
+        {labelEl}
         <div className="form-multiselect">
           {field.options.map((opt) => {
             const checked = selected.includes(opt);
@@ -87,10 +116,7 @@ function FormField({ field, value, onChange, toolId }) {
 
   return (
     <div className="form-group">
-      <label className="form-label" htmlFor={field.id}>
-        {label}
-        {field.required && <span className="required-mark"> *</span>}
-      </label>
+      {labelEl}
       <input type="text" className="form-input" {...commonProps} />
     </div>
   );
@@ -98,15 +124,20 @@ function FormField({ field, value, onChange, toolId }) {
 
 export default function AIToolInterface({ tool, categoryId }) {
   const [inputs, setInputs] = useState({});
+  const [prefilledFields, setPrefilledFields] = useState(new Set());
   const [output, setOutput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
   const [wordCount, setWordCount] = useState(0);
+  const [conversationHistory, setConversationHistory] = useState([]); // [{role,content}] after first assistant turn
+  const [refineInput, setRefineInput] = useState('');
+  const [isRefining, setIsRefining] = useState(false);
   const outputRef = useRef(null);
   const outputPanelRef = useRef(null);
   const abortControllerRef = useRef(null);
   const finalOutputRef = useRef('');
+  const brandProfileRef = useRef(null);
   const [history, setHistory] = useState([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [templates, setTemplates] = useState([]);
@@ -125,10 +156,19 @@ export default function AIToolInterface({ tool, categoryId }) {
   const { canUseSpecificTool, trackUsage, subscription } = useSubscription();
   const { t, i18n } = useTranslation();
 
-  // Reset when tool changes
+  // Load brand profile once on mount
   useEffect(() => {
-    const defaults = {};
+    if (!currentUser) return;
+    getDoc(doc(db, 'users', currentUser.uid, 'settings', 'brandProfile'))
+      .then(snap => { if (snap.exists()) brandProfileRef.current = snap.data(); })
+      .catch(() => {});
+  }, [currentUser?.uid]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reset when tool changes — also apply brand profile defaults
+  useEffect(() => {
+    const { defaults, prefilled } = applyBrandProfile(brandProfileRef.current, tool?.inputs);
     setInputs(defaults);
+    setPrefilledFields(prefilled);
     setOutput('');
     setError('');
     setIsStreaming(false);
@@ -136,6 +176,8 @@ export default function AIToolInterface({ tool, categoryId }) {
     setImageError('');
     setOutputMode('image');
     setRefImage(null);
+    setConversationHistory([]);
+    setRefineInput('');
   }, [tool?.id, categoryId]);
 
   // Load history when tool changes
@@ -179,6 +221,9 @@ export default function AIToolInterface({ tool, categoryId }) {
 
   function handleInputChange(fieldId, value) {
     setInputs((prev) => ({ ...prev, [fieldId]: value }));
+    if (prefilledFields.has(fieldId)) {
+      setPrefilledFields(prev => { const next = new Set(prev); next.delete(fieldId); return next; });
+    }
   }
 
   function validateInputs() {
@@ -248,6 +293,7 @@ export default function AIToolInterface({ tool, categoryId }) {
             setIsStreaming(false);
             trackUsage();
             saveToHistory(capturedInputs, finalOutputRef.current);
+            setConversationHistory([{ role: 'assistant', content: finalOutputRef.current }]);
           },
           onError: (msg) => {
             setIsStreaming(false);
@@ -260,6 +306,8 @@ export default function AIToolInterface({ tool, categoryId }) {
 
     setOutput('');
     finalOutputRef.current = '';
+    setConversationHistory([]);
+    setRefineInput('');
     setIsStreaming(true);
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -282,9 +330,48 @@ export default function AIToolInterface({ tool, categoryId }) {
         setIsStreaming(false);
         trackUsage();
         saveToHistory(capturedInputs, finalOutputRef.current);
+        setConversationHistory([{ role: 'assistant', content: finalOutputRef.current }]);
       },
       onError: (msg) => {
         setIsStreaming(false);
+        setError(msg);
+      },
+    });
+  }
+
+  async function handleRefine() {
+    const instruction = refineInput.trim();
+    if (!instruction || isStreaming) return;
+    setRefineInput('');
+    const newHistory = [...conversationHistory, { role: 'user', content: instruction }];
+    setOutput('');
+    finalOutputRef.current = '';
+    setIsRefining(true);
+    setIsStreaming(true);
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    await streamAIResponse({
+      categoryId,
+      toolId: tool.id,
+      inputs: { ...inputs, _language: i18n.language },
+      conversationHistory: newHistory,
+      signal: controller.signal,
+      onChunk: (text) => {
+        setOutput(prev => {
+          const next = prev + text;
+          finalOutputRef.current = next;
+          return next;
+        });
+      },
+      onDone: () => {
+        setIsStreaming(false);
+        setIsRefining(false);
+        trackUsage();
+        setConversationHistory([...newHistory, { role: 'assistant', content: finalOutputRef.current }]);
+      },
+      onError: (msg) => {
+        setIsStreaming(false);
+        setIsRefining(false);
         setError(msg);
       },
     });
@@ -385,9 +472,13 @@ export default function AIToolInterface({ tool, categoryId }) {
   }
 
   function handleClear() {
+    const { defaults, prefilled } = applyBrandProfile(brandProfileRef.current, tool?.inputs);
+    setInputs(defaults);
+    setPrefilledFields(prefilled);
     setOutput('');
     setError('');
-    setInputs({});
+    setConversationHistory([]);
+    setRefineInput('');
     finalOutputRef.current = '';
   }
 
@@ -600,6 +691,7 @@ export default function AIToolInterface({ tool, categoryId }) {
                 value={inputs[field.id]}
                 onChange={handleInputChange}
                 toolId={tool.id}
+                prefilled={prefilledFields.has(field.id)}
               />
             ))}
 
@@ -883,6 +975,44 @@ export default function AIToolInterface({ tool, categoryId }) {
                     </motion.div>
                   )}
                 </AnimatePresence>
+
+                {/* ── Refine section ── */}
+                {output && !isStreaming && (
+                  <motion.div
+                    className="ai-tool__refine"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                  >
+                    <div className="ai-tool__refine-header">
+                      <span className="ai-tool__refine-label">✏️ {t('ui.refine', { defaultValue: 'Refine' })}</span>
+                      {conversationHistory.length > 1 && (
+                        <span className="ai-tool__refine-count">
+                          {Math.floor(conversationHistory.length / 2)} {t('ui.refinements', { defaultValue: 'refinement(s)' })}
+                        </span>
+                      )}
+                    </div>
+                    <div className="ai-tool__refine-row">
+                      <textarea
+                        className="ai-tool__refine-input"
+                        placeholder={t('ui.refinePlaceholder', { defaultValue: "Adjust the output… e.g. 'Make it shorter', 'More formal', 'Add a strong CTA', 'Translate to Spanish'" })}
+                        value={refineInput}
+                        onChange={e => setRefineInput(e.target.value)}
+                        rows={2}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); handleRefine(); }
+                        }}
+                      />
+                      <button
+                        className="btn btn-primary ai-tool__refine-btn"
+                        onClick={handleRefine}
+                        disabled={!refineInput.trim() || isRefining}
+                      >
+                        {isRefining ? '…' : '↻ ' + t('ui.refine', { defaultValue: 'Refine' })}
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
               </>
             )}
           </div>
