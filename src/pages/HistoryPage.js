@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { collection, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,7 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
   const [filterTool, setFilterTool] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
@@ -64,8 +65,28 @@ export default function HistoryPage() {
     return (output || '').replace(/[#*_`>]/g, '').slice(0, 160);
   }
 
+  function handleRerun(entry) {
+    if (!entry.inputs || !entry.categoryId || !entry.toolId) return;
+    sessionStorage.setItem('gormaran_rerun', JSON.stringify({
+      toolId: entry.toolId,
+      inputs: entry.inputs,
+    }));
+    navigate(`/category/${entry.categoryId}`);
+  }
+
   const toolNames = [...new Set(history.map(h => h.toolName).filter(Boolean))].sort();
-  const filtered = filterTool ? history.filter(h => h.toolName === filterTool) : history;
+
+  const filtered = useMemo(() => {
+    let result = filterTool ? history.filter(h => h.toolName === filterTool) : history;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(h =>
+        (h.toolName || '').toLowerCase().includes(q) ||
+        (h.output || '').toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [history, filterTool, searchQuery]);
 
   return (
     <div className="history-page">
@@ -83,6 +104,20 @@ export default function HistoryPage() {
           <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard')}>
             ← {t('history.backToDashboard', { defaultValue: 'Dashboard' })}
           </button>
+        </div>
+
+        {/* Search */}
+        <div className="history-page__search-row">
+          <input
+            type="text"
+            className="form-input history-page__search"
+            placeholder={t('history.search', { defaultValue: 'Search outputs…' })}
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button className="btn btn-ghost btn-sm" onClick={() => setSearchQuery('')}>✕</button>
+          )}
         </div>
 
         {/* Tool filter */}
@@ -146,6 +181,15 @@ export default function HistoryPage() {
                     {previewOutput(entry.output)}{entry.output?.length > 160 ? '…' : ''}
                   </p>
                   <div className="history-entry__footer">
+                    {entry.inputs && entry.categoryId && (
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={e => { e.stopPropagation(); handleRerun(entry); }}
+                        title={t('history.rerunTitle', { defaultValue: 'Re-run with the same inputs' })}
+                      >
+                        ↺ {t('history.rerun', { defaultValue: 'Re-run' })}
+                      </button>
+                    )}
                     <button
                       className="btn btn-ghost btn-sm"
                       onClick={e => { e.stopPropagation(); navigate(`/category/${entry.categoryId}`); }}

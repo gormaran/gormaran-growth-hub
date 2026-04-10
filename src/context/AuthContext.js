@@ -20,6 +20,7 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
+  const [brandProfile, setBrandProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   async function createUserProfile(user, displayName) {
@@ -83,6 +84,20 @@ export function AuthProvider({ children }) {
     return null;
   }
 
+  async function loadBrandProfile(uid) {
+    try {
+      const snap = await getDoc(doc(db, 'users', uid, 'settings', 'brandProfile'));
+      if (snap.exists()) setBrandProfile(snap.data());
+    } catch {}
+  }
+
+  async function saveBrandProfile(data) {
+    if (!currentUser) return;
+    const payload = { ...data, updatedAt: new Date().toISOString() };
+    await setDoc(doc(db, 'users', currentUser.uid, 'settings', 'brandProfile'), payload);
+    setBrandProfile(payload);
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
@@ -95,8 +110,10 @@ export function AuthProvider({ children }) {
           // createUserProfile finished, resulting in a duplicate write with a
           // potentially null displayName.
           await refreshUserProfile(user.uid);
+          await loadBrandProfile(user.uid);
         } else {
           setUserProfile(null);
+          setBrandProfile(null);
         }
       } catch (err) {
         console.error('AuthContext error:', err);
@@ -110,6 +127,7 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     userProfile,
+    brandProfile,
     loading,
     register,
     login,
@@ -117,6 +135,7 @@ export function AuthProvider({ children }) {
     signInWithGoogle,
     resetPassword,
     refreshUserProfile,
+    saveBrandProfile,
   };
 
   return (

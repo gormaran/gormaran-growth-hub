@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { createPortalSession } from '../utils/api';
@@ -15,7 +13,7 @@ const EMPTY_BRAND = {
 };
 
 export default function SettingsPage() {
-  const { currentUser, logout, refreshUserProfile } = useAuth();
+  const { currentUser, logout, refreshUserProfile, brandProfile: savedBrand, saveBrandProfile } = useAuth();
   const { subscription, usageCount, PLANS } = useSubscription();
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [portalError, setPortalError] = useState('');
@@ -23,24 +21,17 @@ export default function SettingsPage() {
   const [brandProfile, setBrandProfile] = useState(EMPTY_BRAND);
   const [savingBrand, setSavingBrand] = useState(false);
   const [brandSaved, setBrandSaved] = useState(false);
-  const [loadingBrand, setLoadingBrand] = useState(true);
 
+  // Sync local form state from AuthContext whenever it changes (e.g. on first load)
   useEffect(() => {
-    if (!currentUser) return;
-    getDoc(doc(db, 'users', currentUser.uid, 'settings', 'brandProfile'))
-      .then(snap => { if (snap.exists()) setBrandProfile(prev => ({ ...prev, ...snap.data() })); })
-      .catch(() => {})
-      .finally(() => setLoadingBrand(false));
-  }, [currentUser]);
+    if (savedBrand) setBrandProfile(prev => ({ ...EMPTY_BRAND, ...savedBrand }));
+  }, [savedBrand]);
 
   async function handleSaveBrandProfile(e) {
     e.preventDefault();
     setSavingBrand(true);
     try {
-      await setDoc(doc(db, 'users', currentUser.uid, 'settings', 'brandProfile'), {
-        ...brandProfile,
-        updatedAt: new Date().toISOString(),
-      });
+      await saveBrandProfile(brandProfile);
       setBrandSaved(true);
       setTimeout(() => setBrandSaved(false), 3000);
     } catch (err) {
@@ -191,7 +182,7 @@ export default function SettingsPage() {
             <p className="settings__brand-hint">
               Fill in your brand details once — they'll auto-fill in every AI tool so you never have to type them again.
             </p>
-            {loadingBrand ? (
+            {!savedBrand && !brandProfile.companyName ? (
               <div className="settings__brand-loading">Loading…</div>
             ) : (
               <form onSubmit={handleSaveBrandProfile} className="settings__brand-form">

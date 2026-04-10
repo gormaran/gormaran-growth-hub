@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { streamAIResponse, generateLogoImage, generateImage } from '../utils/api';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
-import { collection, addDoc, getDocs, deleteDoc, doc, getDoc, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -122,7 +122,7 @@ function FormField({ field, value, onChange, toolId, prefilled }) {
   );
 }
 
-export default function AIToolInterface({ tool, categoryId }) {
+export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerunConsumed }) {
   const [inputs, setInputs] = useState({});
   const [prefilledFields, setPrefilledFields] = useState(new Set());
   const [output, setOutput] = useState('');
@@ -152,23 +152,27 @@ export default function AIToolInterface({ tool, categoryId }) {
   const [refImage, setRefImage] = useState(null); // { dataUrl, b64, mime, name }
   const refImageInputRef = useRef(null);
 
-  const { currentUser } = useAuth();
-  const { canUseSpecificTool, trackUsage, subscription } = useSubscription();
+  const { currentUser, brandProfile } = useAuth();
+  const { canUseSpecificTool, trackUsage, subscription, hasMonthlyUsageLeft, usageCount, FREE_MONTHLY_LIMIT, isInTrial } = useSubscription();
   const { t, i18n } = useTranslation();
 
-  // Load brand profile once on mount
+  // Keep brandProfileRef in sync with context (no Firestore fetch needed here)
   useEffect(() => {
-    if (!currentUser) return;
-    getDoc(doc(db, 'users', currentUser.uid, 'settings', 'brandProfile'))
-      .then(snap => { if (snap.exists()) brandProfileRef.current = snap.data(); })
-      .catch(() => {});
-  }, [currentUser?.uid]); // eslint-disable-line react-hooks/exhaustive-deps
+    brandProfileRef.current = brandProfile;
+  }, [brandProfile]);
 
   // Reset when tool changes — also apply brand profile defaults
   useEffect(() => {
     const { defaults, prefilled } = applyBrandProfile(brandProfileRef.current, tool?.inputs);
-    setInputs(defaults);
-    setPrefilledFields(prefilled);
+    // If a re-run was requested, overlay those inputs on top of brand defaults
+    if (rerunInputs) {
+      setInputs({ ...defaults, ...rerunInputs });
+      setPrefilledFields(new Set());
+      onRerunConsumed?.();
+    } else {
+      setInputs(defaults);
+      setPrefilledFields(prefilled);
+    }
     setOutput('');
     setError('');
     setIsStreaming(false);
@@ -178,7 +182,7 @@ export default function AIToolInterface({ tool, categoryId }) {
     setRefImage(null);
     setConversationHistory([]);
     setRefineInput('');
-  }, [tool?.id, categoryId]);
+  }, [tool?.id, categoryId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load history when tool changes
   useEffect(() => {
@@ -248,6 +252,11 @@ export default function AIToolInterface({ tool, categoryId }) {
 
     if (!canUseSpecificTool(categoryId, tool.id)) {
       setError(t('ui.upgradeRequired', { defaultValue: 'This tool requires an upgrade. Visit the pricing page to see your options.' }));
+      return;
+    }
+
+    if (!hasMonthlyUsageLeft()) {
+      setError(t('ui.monthlyLimitReached', { defaultValue: `You've used all ${FREE_MONTHLY_LIMIT} free generations this month. Upgrade to Grow for unlimited access.` }));
       return;
     }
 
@@ -547,6 +556,17 @@ export default function AIToolInterface({ tool, categoryId }) {
     printWindow.document.close();
   }
 
+  function handleDownloadTxt() {
+    if (!output) return;
+    const blob = new Blob([output], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${tool.id}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   function handleDownloadJson() {
     const json = extractJson(output);
     if (!json) return;
@@ -799,6 +819,25 @@ export default function AIToolInterface({ tool, categoryId }) {
                 `🤖 ${t('ui.aiOutput', { defaultValue: 'AI Output' })}`
               )}
             </h3>
+            {subscription === 'free' && !isInTrial() && (
+              <div className="ai-tool__usage-bar">
+                <span className="ai-tool__usage-label">
+                  {usageCount}/{FREE_MONTHLY_LIMIT} {t('ui.monthlyGenerations', { defaultValue: 'free generations this month' })}
+                </span>
+                <div className="ai-tool__usage-track">
+                  <div
+                    className="ai-tool__usage-fill"
+                    style={{ width: `${Math.min(100, (usageCount / FREE_MONTHLY_LIMIT) * 100)}%` }}
+                  />
+                </div>
+                {usageCount >= FREE_MONTHLY_LIMIT && (
+                  <a href="/pricing" className="ai-tool__usage-upgrade">
+                    ⭐ {t('ui.upgradeForUnlimited', { defaultValue: 'Upgrade for unlimited' })}
+                  </a>
+                )}
+              </div>
+            )}
+
             {output && !tool.imageOnly && !(tool.imageOrPrompt && outputMode === 'image') && (
               <div className="ai-tool__output-controls">
                 <span className="ai-tool__word-count">{wordCount} {t('ui.words', { defaultValue: 'words' })}</span>
@@ -810,12 +849,20 @@ export default function AIToolInterface({ tool, categoryId }) {
                   {copied ? `✅ ${t('ui.copied', { defaultValue: 'Copied!' })}` : `📋 ${t('ui.copy', { defaultValue: 'Copy' })}`}
                 </button>
                 {!isStreaming && (
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={handleDownloadPdf}
-                  >
-                    📄 {t('ui.downloadPdf', { defaultValue: 'PDF' })}
-                  </button>
+                  <>
+                    <button
+                      className="btn btn-secondary btn-sm"
+                      onClick={handleDownloadPdf}
+                    >
+                      📄 {t('ui.downloadPdf', { defaultValue: 'PDF' })}
+                    </button>
+                    <button
+                      className="btn btn-secondary btn-sm"
+                      onClick={handleDownloadTxt}
+                    >
+                      ⬇️ {t('ui.downloadTxt', { defaultValue: 'TXT' })}
+                    </button>
+                  </>
                 )}
                 {!isStreaming && extractJson(output) && (
                   <button

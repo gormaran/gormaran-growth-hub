@@ -737,3 +737,49 @@
   align-self: flex-end;
   white-space: nowrap;
 }
+
+/* Monthly usage bar (free plan) */
+.ai-tool__usage-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-wrap: wrap;
+}
+
+.ai-tool__usage-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.ai-tool__usage-track {
+  flex: 1;
+  min-width: 80px;
+  max-width: 160px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.ai-tool__usage-fill {
+  height: 100%;
+  background: #6366f1;
+  border-radius: 100px;
+  transition: width 0.4s ease;
+}
+
+.ai-tool__usage-upgrade {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #a5b4fc;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ai-tool__usage-upgrade:hover {
+  color: #c7d2fe;
+}

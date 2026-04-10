@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { doc, updateDoc, increment } from 'firebase/firestore';
+import { doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from './AuthContext';
 
@@ -10,6 +10,7 @@ export function useSubscription() {
 }
 
 const TRIAL_DAYS = 14;
+export const FREE_MONTHLY_LIMIT = 10;
 
 export const PLANS = {
   free: {
@@ -60,7 +61,24 @@ export function SubscriptionProvider({ children }) {
     if (userProfile) {
       const raw = userProfile.subscription || 'free';
       setSubscription(PLAN_ALIASES[raw] || raw);
-      setUsageCount(userProfile.usageCount || 0);
+
+      // Monthly reset: if usageResetDate is from a previous month, reset the counter
+      const resetTs = userProfile.usageResetDate;
+      const resetDate = resetTs?.toDate ? resetTs.toDate() : (resetTs ? new Date(resetTs) : null);
+      const now = new Date();
+      const isNewMonth = !resetDate ||
+        resetDate.getMonth() !== now.getMonth() ||
+        resetDate.getFullYear() !== now.getFullYear();
+
+      if (isNewMonth && currentUser) {
+        setUsageCount(0);
+        updateDoc(doc(db, 'users', currentUser.uid), {
+          usageCount: 0,
+          usageResetDate: serverTimestamp(),
+        }).catch(() => {});
+      } else {
+        setUsageCount(userProfile.usageCount || 0);
+      }
       setCheckingSubscription(false);
     } else {
       setCheckingSubscription(false);
@@ -128,6 +146,14 @@ export function SubscriptionProvider({ children }) {
     return true;
   }
 
+  function hasMonthlyUsageLeft() {
+    const plan = getPlan();
+    if (plan.allAccess) return true;
+    if (subscription !== 'free') return true;
+    if (isInTrial()) return true;
+    return usageCount < FREE_MONTHLY_LIMIT;
+  }
+
   async function trackUsage() {
     if (!currentUser) return;
     try {
@@ -152,9 +178,11 @@ export function SubscriptionProvider({ children }) {
     isCategoryLocked,
     isInTrial,
     trialDaysRemaining,
+    hasMonthlyUsageLeft,
     trackUsage,
     getPlanLimits,
     PLANS,
+    FREE_MONTHLY_LIMIT,
     refreshUserProfile,
   };
 

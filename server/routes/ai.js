@@ -50,6 +50,10 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
   let userSubscription = req.user?.subscription || 'free';
   let userCreatedAt = null;
 
+  const FREE_MONTHLY_LIMIT = 10;
+  let usageCount = 0;
+  let usageResetDate = null;
+
   if (!isAdminUid) {
     try {
       const adminSdk = require('firebase-admin');
@@ -60,6 +64,8 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
           const data = userDoc.data();
           userSubscription = data.subscription || 'free';
           userCreatedAt = data.createdAt?.toMillis?.() || null;
+          usageCount = data.usageCount || 0;
+          usageResetDate = data.usageResetDate?.toMillis?.() || null;
         }
       }
     } catch (err) {
@@ -77,6 +83,17 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
 
   if (!hasAccess) {
     return res.status(403).json({ error: 'Upgrade required', upgradeRequired: true });
+  }
+
+  // --- MONTHLY LIMIT (free plan, outside trial) ---
+  if (!plan.allAccess && !inTrial && userSubscription === 'free' && !isAdminUid) {
+    const now = new Date();
+    const reset = usageResetDate ? new Date(usageResetDate) : null;
+    const isNewMonth = !reset || reset.getMonth() !== now.getMonth() || reset.getFullYear() !== now.getFullYear();
+    const effectiveCount = isNewMonth ? 0 : usageCount;
+    if (effectiveCount >= FREE_MONTHLY_LIMIT) {
+      return res.status(403).json({ error: 'Monthly limit reached', monthlyLimitReached: true });
+    }
   }
 
   // --- PROMPT OPTIMIZATION (CONCISE MODE) ---

@@ -16,11 +16,26 @@ export default function CategoryPage() {
   const category = getCategoryById(categoryId);
   const [selectedTool, setSelectedTool] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [rerunInputs, setRerunInputs] = useState(null);
 
   useEffect(() => {
     if (!category) {
       navigate('/dashboard');
       return;
+    }
+    // Check for Re-run request from History page
+    const rerunRaw = sessionStorage.getItem('gormaran_rerun');
+    if (rerunRaw) {
+      try {
+        const { toolId, inputs } = JSON.parse(rerunRaw);
+        sessionStorage.removeItem('gormaran_rerun');
+        const tool = category.tools.find(t => t.id === toolId);
+        if (tool) {
+          setSelectedTool(tool);
+          setRerunInputs(inputs);
+          return;
+        }
+      } catch {}
     }
     if (category.tools.length > 0) {
       setSelectedTool(category.tools[0]);
@@ -138,7 +153,12 @@ export default function CategoryPage() {
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <AIToolInterface tool={selectedTool} categoryId={categoryId} />
+                  <AIToolInterface
+                    tool={selectedTool}
+                    categoryId={categoryId}
+                    rerunInputs={rerunInputs}
+                    onRerunConsumed={() => setRerunInputs(null)}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>

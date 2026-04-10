@@ -3,6 +3,18 @@
   min-height: 70vh;
 }
 
+.history-page__search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.history-page__search {
+  flex: 1;
+  max-width: 420px;
+}
+
 .history-page__header {
   display: flex;
   justify-content: space-between;
