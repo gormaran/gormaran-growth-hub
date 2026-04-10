@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
+import { useWorkspace } from '../context/WorkspaceContext';
 import { createPortalSession } from '../utils/api';
 import './SettingsPage.css';
 
@@ -12,9 +13,17 @@ const EMPTY_BRAND = {
   toneOfVoice: '', usp: '', location: '', description: '',
 };
 
+const WS_EMOJIS = ['📁', '🏢', '🛒', '🎨', '📱', '💡', '🚀', '🌐', '🧪', '🏆'];
+
 export default function SettingsPage() {
-  const { currentUser, logout, refreshUserProfile, brandProfile: savedBrand, saveBrandProfile } = useAuth();
+  const { currentUser, logout, refreshUserProfile } = useAuth();
   const { subscription, usageCount, PLANS } = useSubscription();
+  const {
+    workspaces, currentWorkspace, brandProfile: savedBrand,
+    saveBrandProfile, maxWorkspaces, canCreateWorkspace,
+    createWorkspace, updateWorkspace, deleteWorkspace, switchWorkspace,
+  } = useWorkspace();
+
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [portalError, setPortalError] = useState('');
   const [copied, setCopied] = useState(false);
@@ -22,10 +31,28 @@ export default function SettingsPage() {
   const [savingBrand, setSavingBrand] = useState(false);
   const [brandSaved, setBrandSaved] = useState(false);
 
-  // Sync local form state from AuthContext whenever it changes (e.g. on first load)
+  // Workspace management state
+  const [newWsName, setNewWsName] = useState('');
+  const [newWsEmoji, setNewWsEmoji] = useState('📁');
+  const [creatingWs, setCreatingWs] = useState(false);
+  const [wsError, setWsError] = useState('');
+  const [editingWsId, setEditingWsId] = useState(null);
+  const [editWsName, setEditWsName] = useState('');
+  const [editWsEmoji, setEditWsEmoji] = useState('');
+  const workspacesRef = useRef(null);
+
+  // Sync local form state from WorkspaceContext whenever it changes
   useEffect(() => {
     if (savedBrand) setBrandProfile(prev => ({ ...EMPTY_BRAND, ...savedBrand }));
+    else setBrandProfile(EMPTY_BRAND);
   }, [savedBrand]);
+
+  // Scroll to workspaces section if hash is present
+  useEffect(() => {
+    if (window.location.hash === '#workspaces' && workspacesRef.current) {
+      setTimeout(() => workspacesRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+    }
+  }, []);
 
   async function handleSaveBrandProfile(e) {
     e.preventDefault();
@@ -38,6 +65,42 @@ export default function SettingsPage() {
       console.error('[BrandProfile] save failed:', err);
     } finally {
       setSavingBrand(false);
+    }
+  }
+
+  async function handleCreateWorkspace(e) {
+    e.preventDefault();
+    setWsError('');
+    if (!newWsName.trim()) return;
+    setCreatingWs(true);
+    try {
+      const ws = await createWorkspace({ name: newWsName.trim(), emoji: newWsEmoji });
+      switchWorkspace(ws.id);
+      setNewWsName('');
+      setNewWsEmoji('📁');
+    } catch (err) {
+      setWsError(err.message || 'Failed to create workspace');
+    } finally {
+      setCreatingWs(false);
+    }
+  }
+
+  async function handleUpdateWorkspace(wsId) {
+    if (!editWsName.trim()) return;
+    try {
+      await updateWorkspace(wsId, { name: editWsName.trim(), emoji: editWsEmoji });
+      setEditingWsId(null);
+    } catch (err) {
+      setWsError(err.message || 'Failed to update workspace');
+    }
+  }
+
+  async function handleDeleteWorkspace(wsId) {
+    if (!window.confirm('Delete this workspace? Its brand profile will also be removed.')) return;
+    try {
+      await deleteWorkspace(wsId);
+    } catch (err) {
+      setWsError(err.message || 'Failed to delete workspace');
     }
   }
 
@@ -178,9 +241,13 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18 }}
           >
-            <h2 className="settings__card-title">🏢 Brand Profile</h2>
+            <h2 className="settings__card-title">
+              🏢 Brand Profile
+              <span className="settings__ws-tag">{currentWorkspace.emoji} {currentWorkspace.name}</span>
+            </h2>
             <p className="settings__brand-hint">
               Fill in your brand details once — they'll auto-fill in every AI tool so you never have to type them again.
+              Each workspace has its own independent Brand Profile.
             </p>
             {!savedBrand && !brandProfile.companyName ? (
               <div className="settings__brand-loading">Loading…</div>
@@ -245,6 +312,121 @@ export default function SettingsPage() {
                   {brandSaved && <span className="settings__brand-saved">Saved — all tools will now auto-fill your brand info.</span>}
                 </div>
               </form>
+            )}
+          </motion.div>
+
+          {/* Workspaces */}
+          <motion.div
+            id="workspaces"
+            ref={workspacesRef}
+            className="settings__card"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.19 }}
+          >
+            <h2 className="settings__card-title">
+              🗂️ Workspaces
+              <span className="settings__ws-count">{workspaces.length} / {maxWorkspaces === Infinity ? '∞' : maxWorkspaces}</span>
+            </h2>
+            <p className="settings__brand-hint">
+              Each workspace has its own Brand Profile and history — perfect for managing multiple clients or projects.
+              {(subscription === 'free' || subscription === 'grow') && (
+                <> <a href="/pricing" className="settings__upgrade-link">Upgrade to Scale for up to 5 workspaces.</a></>
+              )}
+            </p>
+
+            {wsError && <div className="alert alert-error" style={{ marginBottom: '1rem' }}>{wsError}</div>}
+
+            {/* Workspace list */}
+            <div className="settings__ws-list">
+              {workspaces.map(ws => (
+                <div key={ws.id} className={`settings__ws-item${ws.id === currentWorkspace.id ? ' settings__ws-item--active' : ''}`}>
+                  {editingWsId === ws.id ? (
+                    <div className="settings__ws-edit">
+                      <div className="settings__ws-emoji-row">
+                        {WS_EMOJIS.map(e => (
+                          <button
+                            key={e}
+                            type="button"
+                            className={`settings__ws-emoji-btn${editWsEmoji === e ? ' active' : ''}`}
+                            onClick={() => setEditWsEmoji(e)}
+                          >{e}</button>
+                        ))}
+                      </div>
+                      <input
+                        className="form-input"
+                        value={editWsName}
+                        onChange={e => setEditWsName(e.target.value)}
+                        placeholder="Workspace name"
+                        maxLength={40}
+                      />
+                      <div className="settings__ws-edit-actions">
+                        <button className="btn btn-primary btn-sm" onClick={() => handleUpdateWorkspace(ws.id)}>Save</button>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setEditingWsId(null)}>Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        className="settings__ws-select"
+                        onClick={() => switchWorkspace(ws.id)}
+                        title="Switch to this workspace"
+                      >
+                        <span className="settings__ws-icon">{ws.emoji}</span>
+                        <span className="settings__ws-label">{ws.name}</span>
+                        {ws.id === currentWorkspace.id && <span className="settings__ws-active-dot">●</span>}
+                      </button>
+                      <div className="settings__ws-actions">
+                        {ws.id !== 'personal' && (
+                          <>
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              onClick={() => { setEditingWsId(ws.id); setEditWsName(ws.name); setEditWsEmoji(ws.emoji); }}
+                            >✏️</button>
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              onClick={() => handleDeleteWorkspace(ws.id)}
+                            >🗑</button>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Create new workspace */}
+            {canCreateWorkspace ? (
+              <form onSubmit={handleCreateWorkspace} className="settings__ws-new">
+                <div className="settings__ws-emoji-row">
+                  {WS_EMOJIS.map(e => (
+                    <button
+                      key={e}
+                      type="button"
+                      className={`settings__ws-emoji-btn${newWsEmoji === e ? ' active' : ''}`}
+                      onClick={() => setNewWsEmoji(e)}
+                    >{e}</button>
+                  ))}
+                </div>
+                <div className="settings__ws-new-row">
+                  <input
+                    className="form-input"
+                    value={newWsName}
+                    onChange={e => setNewWsName(e.target.value)}
+                    placeholder="New workspace name…"
+                    maxLength={40}
+                  />
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={creatingWs || !newWsName.trim()}>
+                    {creatingWs ? '…' : '＋ Create'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="settings__ws-limit">
+                <span>🔒 Workspace limit reached for your plan.</span>
+                <a href="/pricing" className="btn btn-primary btn-sm">Upgrade</a>
+              </div>
             )}
           </motion.div>
 

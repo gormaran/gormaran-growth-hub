@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
+import { useWorkspace } from '../context/WorkspaceContext';
 import './Navbar.css';
 
 const LANGUAGES = [
@@ -16,8 +17,10 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [wsMenuOpen, setWsMenuOpen] = useState(false);
   const { currentUser, logout } = useAuth();
   const { subscription } = useSubscription();
+  const { workspaces, currentWorkspace, switchWorkspace, canCreateWorkspace } = useWorkspace();
   const { i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,6 +38,7 @@ export default function Navbar() {
     setMobileOpen(false);
     setUserMenuOpen(false);
     setLangMenuOpen(false);
+    setWsMenuOpen(false);
   }, [location]);
 
   async function handleLogout() {
@@ -143,6 +147,62 @@ export default function Navbar() {
                 }
               </span>
 
+              {/* Workspace switcher */}
+              <div className="navbar__ws">
+                <button
+                  className="navbar__ws-btn"
+                  onClick={() => { setWsMenuOpen(!wsMenuOpen); setUserMenuOpen(false); setLangMenuOpen(false); }}
+                  title="Switch workspace"
+                >
+                  <span className="navbar__ws-emoji">{currentWorkspace.emoji}</span>
+                  <span className="navbar__ws-name">{currentWorkspace.name}</span>
+                  <span className={`navbar__lang-arrow ${wsMenuOpen ? 'open' : ''}`}>▾</span>
+                </button>
+
+                <AnimatePresence>
+                  {wsMenuOpen && (
+                    <motion.div
+                      className="navbar__ws-dropdown"
+                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      <div className="navbar__ws-header">Workspaces</div>
+                      {workspaces.map(ws => (
+                        <button
+                          key={ws.id}
+                          className={`navbar__ws-option ${ws.id === currentWorkspace.id ? 'navbar__ws-option--active' : ''}`}
+                          onClick={() => { switchWorkspace(ws.id); setWsMenuOpen(false); }}
+                        >
+                          <span>{ws.emoji}</span>
+                          <span>{ws.name}</span>
+                          {ws.id === currentWorkspace.id && <span className="navbar__ws-check">✓</span>}
+                        </button>
+                      ))}
+                      <div className="navbar__dropdown-divider" />
+                      {canCreateWorkspace ? (
+                        <button
+                          className="navbar__ws-option navbar__ws-option--new"
+                          onClick={() => { setWsMenuOpen(false); navigate('/settings#workspaces'); }}
+                        >
+                          <span>＋</span>
+                          <span>New workspace</span>
+                        </button>
+                      ) : (
+                        <button
+                          className="navbar__ws-option navbar__ws-option--upgrade"
+                          onClick={() => { setWsMenuOpen(false); navigate('/pricing'); }}
+                        >
+                          <span>🔒</span>
+                          <span>Upgrade for more</span>
+                        </button>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Profile icon + dropdown */}
               <button
                 className="navbar__avatar"
@@ -248,9 +308,9 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Backdrop for user menu or lang menu */}
-      {(userMenuOpen || langMenuOpen) && (
-        <div className="navbar__backdrop" onClick={() => { setUserMenuOpen(false); setLangMenuOpen(false); }} />
+      {/* Backdrop for user menu, lang menu, or ws menu */}
+      {(userMenuOpen || langMenuOpen || wsMenuOpen) && (
+        <div className="navbar__backdrop" onClick={() => { setUserMenuOpen(false); setLangMenuOpen(false); setWsMenuOpen(false); }} />
       )}
     </motion.nav>
   );

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { streamAIResponse, generateLogoImage, generateImage } from '../utils/api';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
+import { useWorkspace } from '../context/WorkspaceContext';
 import { collection, addDoc, getDocs, deleteDoc, doc, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import ReactMarkdown from 'react-markdown';
@@ -152,7 +153,8 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
   const [refImage, setRefImage] = useState(null); // { dataUrl, b64, mime, name }
   const refImageInputRef = useRef(null);
 
-  const { currentUser, brandProfile } = useAuth();
+  const { currentUser } = useAuth();
+  const { brandProfile, currentWorkspaceId } = useWorkspace();
   const { canUseSpecificTool, trackUsage, subscription, hasMonthlyUsageLeft, usageCount, FREE_MONTHLY_LIMIT, isInTrial } = useSubscription();
   const { t, i18n } = useTranslation();
 
@@ -592,6 +594,7 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
       addDoc(collection(db, 'users', currentUser.uid, 'history'), {
         toolId: tool.id, toolName: tool.name, categoryId,
         inputs: queryInputs, output: queryOutput,
+        workspaceId: currentWorkspaceId || 'personal',
         createdAt: serverTimestamp(),
       }).catch(console.error);
     }

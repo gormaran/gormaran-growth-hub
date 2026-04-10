@@ -7,10 +7,12 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
+import { useWorkspace } from '../context/WorkspaceContext';
 import './HistoryPage.css';
 
 export default function HistoryPage() {
   const { currentUser } = useAuth();
+  const { currentWorkspace, currentWorkspaceId } = useWorkspace();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [history, setHistory] = useState([]);
@@ -23,16 +25,21 @@ export default function HistoryPage() {
   useEffect(() => {
     if (!currentUser) return;
     loadHistory();
-  }, [currentUser]);
+  }, [currentUser, currentWorkspaceId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function loadHistory() {
+    setLoading(true);
     try {
       const q = query(
         collection(db, 'users', currentUser.uid, 'history'),
         orderBy('createdAt', 'desc')
       );
       const snap = await getDocs(q);
-      setHistory(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      // Filter by workspace: entries without workspaceId belong to 'personal'
+      const wsId = currentWorkspaceId || 'personal';
+      const filtered = all.filter(h => (h.workspaceId || 'personal') === wsId);
+      setHistory(filtered);
     } catch (e) {
       console.error(e);
     } finally {
@@ -96,6 +103,7 @@ export default function HistoryPage() {
           <div>
             <h1 className="history-page__title">
               🕐 {t('history.title', { defaultValue: 'Generation History' })}
+              <span className="history-page__ws-badge">{currentWorkspace.emoji} {currentWorkspace.name}</span>
             </h1>
             <p className="history-page__subtitle">
               {history.length} {t('history.totalGenerations', { defaultValue: 'generations saved' })}

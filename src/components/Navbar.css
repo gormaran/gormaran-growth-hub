@@ -415,3 +415,111 @@
   .navbar__inner { padding: 0 1rem; }
   .navbar__user .badge { display: none; }
 }
+
+/* ── Workspace Switcher ─────────────────────────────────────────── */
+.navbar__ws {
+  position: relative;
+}
+
+.navbar__ws-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  max-width: 140px;
+}
+
+.navbar__ws-btn:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(99,102,241,0.35);
+}
+
+.navbar__ws-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+
+.navbar__ws-emoji {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.navbar__ws-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  z-index: 1000;
+  overflow: hidden;
+  padding: 0.4rem 0;
+}
+
+.navbar__ws-header {
+  padding: 0.5rem 1rem 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.navbar__ws-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 1rem;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-fast);
+  font-family: var(--font-sans);
+}
+
+.navbar__ws-option:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.navbar__ws-option--active {
+  background: rgba(99,102,241,0.12);
+  color: var(--color-primary-light);
+  font-weight: 600;
+}
+
+.navbar__ws-check {
+  margin-left: auto;
+  color: var(--color-primary-light);
+  font-weight: 700;
+}
+
+.navbar__ws-option--new {
+  color: var(--color-primary-light);
+  font-weight: 500;
+}
+
+.navbar__ws-option--upgrade {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 768px) {
+  .navbar__ws { display: none; }
+}

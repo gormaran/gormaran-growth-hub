@@ -233,3 +233,177 @@
   .settings__action-row { flex-direction: column; align-items: flex-start; }
   .settings__brand-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Workspace Management ───────────────────────────────────────── */
+.settings__ws-count {
+  margin-left: 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 0.1rem 0.5rem;
+}
+
+.settings__ws-tag {
+  margin-left: 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary-light);
+  background: rgba(99,102,241,0.1);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 20px;
+  padding: 0.1rem 0.55rem;
+}
+
+.settings__upgrade-link {
+  color: var(--color-primary-light);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.settings__ws-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.settings__ws-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  transition: border-color var(--transition-fast);
+}
+
+.settings__ws-item--active {
+  border-color: rgba(99,102,241,0.4);
+  background: rgba(99,102,241,0.06);
+}
+
+.settings__ws-select {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  text-align: left;
+  padding: 0;
+}
+
+.settings__ws-icon {
+  font-size: 1.2rem;
+}
+
+.settings__ws-label {
+  font-weight: 500;
+}
+
+.settings__ws-active-dot {
+  color: var(--color-primary-light);
+  font-size: 0.6rem;
+  margin-left: 0.3rem;
+}
+
+.settings__ws-actions {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.settings__ws-edit {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settings__ws-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.settings__ws-emoji-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.25rem;
+}
+
+.settings__ws-emoji-btn {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.settings__ws-emoji-btn:hover,
+.settings__ws-emoji-btn.active {
+  border-color: rgba(99,102,241,0.5);
+  background: rgba(99,102,241,0.12);
+}
+
+.settings__ws-new {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settings__ws-new-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.settings__ws-new-row .form-input {
+  flex: 1;
+}
+
+.settings__ws-limit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  gap: 1rem;
+}
+
+/* ── History Page workspace badge ───────────────────────────────── */
+.history-page__ws-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary-light);
+  background: rgba(99,102,241,0.1);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 20px;
+  padding: 0.1rem 0.55rem;
+  vertical-align: middle;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
+import { WorkspaceProvider } from './context/WorkspaceContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -55,6 +56,7 @@ export default function App() {
       <AnalyticsTracker />
       <AuthProvider>
         <SubscriptionProvider>
+          <WorkspaceProvider>
           <Routes>
             {/* Public routes */}
             <Route
@@ -136,6 +138,7 @@ export default function App() {
             {/* Catch all */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </WorkspaceProvider>
         </SubscriptionProvider>
       </AuthProvider>
     </Router>
