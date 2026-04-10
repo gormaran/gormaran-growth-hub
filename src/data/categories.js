@@ -546,6 +546,7 @@ export const CATEGORIES = [
         name: 'Kling 3.0 — Video Prompts',
         description: 'Generate cinematic video prompts optimised for Higgsfield\'s Kling 3.0 model — includes motion control, camera direction and style parameters',
         icon: '🎥',
+        hasRefImage: true,
         inputs: [
           { id: 'scene', label: 'Scene Description', type: 'textarea', placeholder: 'e.g., A chef in a Michelin-star restaurant carefully plates an intricate dessert, steam rising, tight close-up on the hands', required: true },
           { id: 'subject', label: 'Main Subject / Character', type: 'text', placeholder: 'e.g., young woman, vintage sports car, abstract liquid, aerial cityscape' },
