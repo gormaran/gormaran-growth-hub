@@ -18,8 +18,6 @@ const aiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Category/tool definitions (mirrors frontend data/categories.js — system prompts and builders)
-// We re-import these here so backend is the source of truth for prompts
 const CATEGORY_PROMPTS = require('./categoryPrompts');
 
 // POST /api/ai/generate  — streaming SSE response
@@ -30,13 +28,12 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields: categoryId, toolId, inputs' });
   }
 
-  // Look up the tool config
   const tool = CATEGORY_PROMPTS[categoryId]?.[toolId];
   if (!tool) {
     return res.status(404).json({ error: `Tool "${toolId}" not found in category "${categoryId}"` });
   }
 
-  // Plan-based access control (read from Firestore for accuracy)
+  // --- ACCESS CONTROL ---
   const PLAN_ACCESS = {
     free:      { allowedTools: ['marketing:seo-keyword-research', 'marketing:seo-meta-tags', 'marketing:instagram-audit'] },
     grow:      { categories: ['marketing', 'content', 'digital'], allowedTools: ['strategy:business-plan'] },
@@ -44,11 +41,9 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
     evolution: { categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative', 'finance', 'startup', 'strategy'], allowedTools: [] },
     admin:     { allAccess: true },
   };
-  // Backward compat: map legacy plan names to current ones
   const PLAN_ALIASES = { 'pro': 'grow', 'business': 'evolution' };
   const TRIAL_DAYS = 14;
 
-  // Admin UID override — checked FIRST, bypasses Firestore entirely
   const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
   const isAdminUid = adminUids.includes(req.user?.uid);
 
@@ -68,49 +63,34 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
         }
       }
     } catch (err) {
-      console.error('[Subscription] Firestore read failed for uid', req.user?.uid, ':', err.message);
+      console.error('[Subscription] Firestore read failed:', err.message);
     }
-    // Normalize legacy plan names
     userSubscription = PLAN_ALIASES[userSubscription] || userSubscription;
   } else {
     userSubscription = 'admin';
   }
 
-  console.log('[Access]', { uid: req.user?.uid, subscription: userSubscription, tool: `${categoryId}:${toolId}`, isAdminUid });
-
   const plan = PLAN_ACCESS[userSubscription] || PLAN_ACCESS.free;
-
-  // Check trial: free users within 14 days get full access
-  const inTrial = userSubscription === 'free'
-    && userCreatedAt !== null
-    && (Date.now() - userCreatedAt) < TRIAL_DAYS * 24 * 60 * 60 * 1000;
-
+  const inTrial = userSubscription === 'free' && userCreatedAt && (Date.now() - userCreatedAt) < TRIAL_DAYS * 24 * 60 * 60 * 1000;
   const toolKey = `${categoryId}:${toolId}`;
-  const hasAccess = plan.allAccess
-    || inTrial
-    || plan.categories?.includes(categoryId)
-    || plan.allowedTools?.includes(toolKey);
+  const hasAccess = plan.allAccess || inTrial || plan.categories?.includes(categoryId) || plan.allowedTools?.includes(toolKey);
 
   if (!hasAccess) {
-    return res.status(403).json({
-      error: 'This tool is not available on your current plan. Upgrade to access it.',
-      upgradeRequired: true,
-    });
+    return res.status(403).json({ error: 'Upgrade required', upgradeRequired: true });
   }
 
-  // Language instruction based on user preference
+  // --- PROMPT OPTIMIZATION (CONCISE MODE) ---
   const LANGUAGE_NAMES = { en: 'English', es: 'Spanish', fr: 'French', de: 'German', it: 'Italian' };
   const lang = inputs._language && LANGUAGE_NAMES[inputs._language] ? inputs._language : 'en';
-  const languageInstruction = lang !== 'en'
-    ? `\n\nIMPORTANT: You MUST respond entirely in ${LANGUAGE_NAMES[lang]}. All section titles, content, analysis, tables and text must be written in ${LANGUAGE_NAMES[lang]}.`
-    : '';
+  
+  const languageInstruction = `\n\nIMPORTANT: Respond entirely in ${LANGUAGE_NAMES[lang]}.`;
+  
+  // Brevedad forzada al final del System Prompt
+  const brevityInstruction = "\n\nCRITICAL: Be extremely concise. NO introductions. NO filler text. Go straight to the tables and data. Use bullet points.";
+  
+  const systemPrompt = tool.systemPrompt + languageInstruction + brevityInstruction;
+  const userMessageText = tool.buildUserMessage(inputs);
 
-  const systemPrompt = tool.systemPrompt + languageInstruction;
-  const baseUserMessage = tool.buildUserMessage(inputs);
-
-  const userMessageText = baseUserMessage;
-
-  // If a reference image is attached, include it as a vision content block
   const userMessageContent = (inputs._ref_image_b64 && inputs._ref_image_mime)
     ? [
         { type: 'image', source: { type: 'base64', media_type: inputs._ref_image_mime, data: inputs._ref_image_b64 } },
@@ -118,7 +98,6 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
       ]
     : userMessageText;
 
-  // Set SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
@@ -127,8 +106,8 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
 
   try {
     const stream = client.messages.stream({
-      model: tool.model || 'claude-sonnet-4-6',
-      max_tokens: tool.maxTokens || 4096,
+      model: tool.model || 'claude-sonnet-4-6', // Vuelto al 4.6
+      max_tokens: 2500, // Ajustado para ser conciso pero dejar espacio a tablas
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessageContent }],
     });
@@ -139,7 +118,7 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
 
     stream.on('error', (err) => {
       console.error('[AI Stream Error]', err.message);
-      res.write(`data: ${JSON.stringify({ error: err.message || 'AI generation error' })}\n\n`);
+      res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
       res.end();
     });
 
@@ -148,7 +127,6 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
       res.end();
     });
 
-    // Handle client disconnect
     req.on('close', () => {
       stream.abort();
     });
