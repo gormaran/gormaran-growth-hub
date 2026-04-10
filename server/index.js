@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require('helmet');
 
+// Inicialización de Firebase
 const admin = require("firebase-admin");
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
@@ -17,80 +18,65 @@ const oauthRoutes = require("./routes/oauth");
 const instagramWebhook = require("./routes/instagramWebhook");
 const emailTrackingRoutes = require("./routes/emailTracking");
 
-
 const app = express();
+
+// Configuración para Render (Proxy)
 app.set('trust proxy', 1);
 
 /* ===============================
-   🔒 SECURITY HEADERS (helmet)
+   🔒 SEGURIDAD (Helmet)
 ================================ */
 app.use(helmet({
-  // This is an API-only server — no HTML pages served, so CSP is intentionally minimal
-  contentSecurityPolicy: false,
-  // Prevent MIME-type sniffing
-  noSniff: true,
-  // Deny framing from any origin
-  frameguard: { action: 'deny' },
-  // Remove X-Powered-By
-  hidePoweredBy: true,
-  // Strict Transport Security (1 year, include subdomains)
-  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
-  // Prevent IE from opening downloads in the site's context
-  ieNoOpen: true,
-  // Disable XSS filter (deprecated, modern browsers ignore it — CSP is the right tool)
-  xssFilter: false,
-})); // Required for Render (proxy) — fixes express-rate-limit X-Forwarded-For error
+  contentSecurityPolicy: false, // API pura
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
 const PORT = process.env.PORT || 5000;
 
-
 /* ===============================
-   🔥 CORS CONFIG (PRODUCTION READY)
+   🔥 CONFIGURACIÓN CORS (MODO RESCATE)
 ================================ */
-
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-  "https://gormaran-growth-hub-1.onrender.com",
-  "https://gormaran.io",
-  "https://www.gormaran.io",
-];
-
+// Usamos origin: true para que acepte cualquier petición que venga de tus dominios autorizados
+// pero sea flexible con los subdominios y pre-flights.
 app.use(cors({
-  origin: true,
+  origin: true, 
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
 
-
-
 /* ===============================
    🔥 BODY PARSING
 ================================ */
-
-// Stripe webhook necesita raw body
+// Stripe webhook necesita el body en crudo (raw)
 app.use("/api/stripe/webhook", express.raw({ type: "application/json" }));
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 /* ===============================
-   🔥 HEALTH CHECK
+   🔥 HEALTH CHECK (CON DIAGNÓSTICO REAL)
 ================================ */
 app.get("/health", (req, res) => {
+  const stripeKey = process.env.STRIPE_SECRET_KEY || "";
   res.json({
     status: "ok",
     timestamp: new Date().toISOString(),
-    env: {
+    diagnostics: {
       anthropic: !!process.env.ANTHROPIC_API_KEY,
-      stripe: !!process.env.STRIPE_SECRET_KEY,
       firebase: !!process.env.FIREBASE_SERVICE_ACCOUNT,
-    },
+      stripe: {
+        detected: stripeKey.length > 0,
+        length: stripeKey.length,
+        prefix: stripeKey.substring(0, 7) // Debería ser sk_live
+      },
+      env_node: process.env.NODE_ENV || "development"
+    }
   });
 });
 
 /* ===============================
-   🔥 ROUTES
+   🔥 RUTAS
 ================================ */
 app.use("/api/ai", aiRoutes);
 app.use("/api/stripe", stripeRoutes);
@@ -100,34 +86,27 @@ app.use("/api/webhooks/instagram", instagramWebhook);
 app.use("/api/email", emailTrackingRoutes);
 
 /* ===============================
-   🔥 404
+   🔥 MANEJO DE ERRORES
 ================================ */
 app.use((req, res) => {
-  res.status(404).json({
-    error: `Route ${req.method} ${req.url} not found`,
-  });
+  res.status(404).json({ error: `Ruta ${req.method} ${req.url} no encontrada` });
 });
 
-/* ===============================
-   🔥 ERROR HANDLER
-================================ */
 app.use((err, req, res, next) => {
   console.error("[Server Error]", err.message);
+  // Importante: Si hay un error, devolvemos JSON para no romper el CORS en el cliente
   res.status(err.status || 500).json({
-    error:
-      process.env.NODE_ENV === "production"
-        ? "Internal server error"
-        : err.message,
+    error: process.env.NODE_ENV === "production" ? "Internal server error" : err.message
   });
 });
 
 /* ===============================
-   🔥 START SERVER
+   🚀 ARRANQUE
 ================================ */
 app.listen(PORT, () => {
-  console.log(`\n🚀 Gormaran AI Growth Hub Server`);
-  console.log(`   Running on port: ${PORT}`);
-  console.log(`   Health: /health\n`);
+  console.log(`\n🚀 Gormaran AI Backend Listo`);
+  console.log(`   Puerto: ${PORT}`);
+  console.log(`   Stripe Key: ${process.env.STRIPE_SECRET_KEY ? "✅ Detectada" : "❌ Faltante"}\n`);
 });
 
 module.exports = app;
