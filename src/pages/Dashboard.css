@@ -5,10 +5,16 @@
   gap: 2.5rem;
 }
 
+/* Force stacking context on all dashboard children so z-index comparisons work */
+.dashboard > * {
+  position: relative;
+  z-index: 0;
+}
+
 /* Magic Bar */
 .dashboard__magic-bar {
   position: relative;
-  z-index: 10; /* establishes stacking context above sibling flex items */
+  z-index: 10;
 }
 
 .dashboard__magic-input-wrap {

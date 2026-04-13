@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useWorkspace } from '../context/WorkspaceContext';
-import { createPortalSession } from '../utils/api';
+import { createPortalSession, cancelSubscription } from '../utils/api';
 import './SettingsPage.css';
 
 const TONE_OPTIONS = ['Professional', 'Friendly & Casual', 'Bold & Direct', 'Empathetic', 'Authoritative', 'Creative'];
@@ -26,6 +26,9 @@ export default function SettingsPage() {
 
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [portalError, setPortalError] = useState('');
+  const [cancellingPlan, setCancellingPlan] = useState(false);
+  const [cancelConfirm, setCancelConfirm] = useState(false);
+  const [cancelledUntil, setCancelledUntil] = useState(null);
   const [copied, setCopied] = useState(false);
   const [brandProfile, setBrandProfile] = useState(EMPTY_BRAND);
   const [savingBrand, setSavingBrand] = useState(false);
@@ -115,6 +118,19 @@ export default function SettingsPage() {
       setPortalError(err.message || 'Failed to open billing portal. Please try again.');
     }
     setLoadingPortal(false);
+  }
+
+  async function handleCancelSubscription() {
+    setPortalError('');
+    setCancellingPlan(true);
+    try {
+      const { periodEnd } = await cancelSubscription();
+      setCancelledUntil(periodEnd);
+      setCancelConfirm(false);
+    } catch (err) {
+      setPortalError(err.message || 'Failed to cancel. Please try again.');
+    }
+    setCancellingPlan(false);
   }
 
   async function handleCopyUid() {
@@ -213,20 +229,51 @@ export default function SettingsPage() {
                   </a>
                 ) : (
                   <>
-                    <button
-                      className="btn btn-secondary"
-                      onClick={handleManageSubscription}
-                      disabled={loadingPortal}
-                    >
-                      {loadingPortal ? (
-                        <><span className="spinner" /> Loading...</>
-                      ) : (
-                        '⚙️ Manage Subscription'
-                      )}
-                    </button>
-                    <p className="settings__portal-note">
-                      Manage billing, change plan, or cancel via Stripe's secure portal.
-                    </p>
+                    {cancelledUntil ? (
+                      <div className="settings__cancel-confirm">
+                        <span className="settings__cancel-confirm-icon">✅</span>
+                        <p>Your subscription will remain active until <strong>{cancelledUntil}</strong>. You won't be charged again.</p>
+                      </div>
+                    ) : cancelConfirm ? (
+                      <div className="settings__cancel-confirm">
+                        <span className="settings__cancel-confirm-icon">⚠️</span>
+                        <p>Are you sure? You'll keep access until the end of your billing period.</p>
+                        <div className="settings__cancel-confirm-btns">
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={handleCancelSubscription}
+                            disabled={cancellingPlan}
+                          >
+                            {cancellingPlan ? <><span className="spinner" /> Cancelling...</> : 'Yes, cancel'}
+                          </button>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => setCancelConfirm(false)}
+                          >
+                            Keep my plan
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="settings__plan-btns">
+                        <a href="/pricing" className="btn btn-primary btn-sm">
+                          ⬆️ Upgrade Plan
+                        </a>
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={handleManageSubscription}
+                          disabled={loadingPortal}
+                        >
+                          {loadingPortal ? <><span className="spinner" /> Loading...</> : '🧾 Billing & Invoices'}
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-sm settings__cancel-btn"
+                          onClick={() => setCancelConfirm(true)}
+                        >
+                          Cancel subscription
+                        </button>
+                      </div>
+                    )}
                   </>
                 )}
                 {portalError && <div className="alert alert-error">{portalError}</div>}

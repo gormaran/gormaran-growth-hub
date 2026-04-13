@@ -133,6 +133,75 @@
   color: var(--text-muted);
 }
 
+.settings__plan-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.settings__cancel-btn {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.settings__cancel-btn:hover {
+  color: #f87171;
+}
+
+.settings__cancel-confirm {
+  background: rgba(248, 113, 113, 0.06);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.settings__cancel-confirm-icon {
+  font-size: 1.1rem;
+}
+
+.settings__cancel-confirm p {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.settings__cancel-confirm-btns {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+.btn-ghost {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+}
+
+.btn-ghost:hover {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
 /* Actions */
 .settings__actions {
   display: flex;

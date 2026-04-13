@@ -164,6 +164,57 @@ router.get('/subscription', verifyToken, async (req, res) => {
   }
 });
 
+// POST /api/stripe/cancel-subscription — Cancel at period end
+router.post('/cancel-subscription', verifyToken, async (req, res) => {
+  const user = req.user;
+
+  if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.includes('placeholder')) {
+    return res.status(503).json({ error: 'Payment system not configured yet.' });
+  }
+
+  try {
+    let customerId = null;
+    try {
+      const admin = require('firebase-admin');
+      if (admin.apps.length > 0) {
+        const userDoc = await admin.firestore().collection('users').doc(user.uid).get();
+        customerId = userDoc.data()?.stripeCustomerId || null;
+      }
+    } catch (_) {}
+
+    if (!customerId) {
+      const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+      if (customers.data.length === 0) {
+        return res.status(404).json({ error: 'No Stripe customer found for this user' });
+      }
+      customerId = customers.data[0].id;
+    }
+
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: 'active',
+      limit: 1,
+    });
+
+    if (subscriptions.data.length === 0) {
+      return res.status(404).json({ error: 'No active subscription found' });
+    }
+
+    const updated = await stripe.subscriptions.update(subscriptions.data[0].id, {
+      cancel_at_period_end: true,
+    });
+
+    const periodEnd = new Date(updated.cancel_at * 1000).toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    });
+
+    res.json({ success: true, cancelAt: updated.cancel_at, periodEnd });
+  } catch (err) {
+    console.error('[Stripe Cancel Error]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/stripe/webhook — Handle Stripe webhooks
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
