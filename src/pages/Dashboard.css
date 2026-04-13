@@ -65,17 +65,15 @@
   color: var(--text-primary);
 }
 
-.dashboard__magic-results {
+/* Portal dropdown — rendered in body, positioned with JS */
+.dashboard__magic-portal {
   position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
   background: var(--bg-card, #1e1e2e);
   border: 1px solid var(--accent-primary);
   border-radius: 12px;
   overflow: hidden;
-  z-index: 200;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.55);
+  z-index: 9999;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
 }
 
 .dashboard__magic-result {

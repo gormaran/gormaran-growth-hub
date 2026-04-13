@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { pushEvent } from '../utils/analytics';
 import { motion } from 'framer-motion';
@@ -103,6 +104,15 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [activeGoal, setActiveGoal] = useState(null);
+  const [dropdownRect, setDropdownRect] = useState(null);
+  const magicBarRef = useRef(null);
+
+  const updateDropdownRect = useCallback(() => {
+    if (magicBarRef.current) {
+      const r = magicBarRef.current.getBoundingClientRect();
+      setDropdownRect({ top: r.bottom + window.scrollY + 6, left: r.left, width: r.width });
+    }
+  }, []);
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
 
@@ -213,7 +223,7 @@ export default function Dashboard() {
           )}
 
           {/* Magic Bar */}
-          <div className="dashboard__magic-bar">
+          <div className="dashboard__magic-bar" ref={magicBarRef}>
             <div className="dashboard__magic-input-wrap">
               <span className="dashboard__magic-icon">🔍</span>
               <input
@@ -221,31 +231,38 @@ export default function Dashboard() {
                 type="text"
                 placeholder="Search tools — e.g. keyword, proposal, ads..."
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={e => { setSearch(e.target.value); updateDropdownRect(); }}
+                onFocus={updateDropdownRect}
               />
               {search && (
                 <button className="dashboard__magic-clear" onClick={() => setSearch('')}>✕</button>
               )}
             </div>
-            {searchResults.length > 0 && (
-              <div className="dashboard__magic-results">
-                {searchResults.map(({ tool, cat }) => (
-                  <button
-                    key={tool.id}
-                    className="dashboard__magic-result"
-                    onClick={() => handleSearchToolClick(cat.id, tool.id)}
-                  >
-                    <span className="dashboard__magic-result-icon">{tool.icon}</span>
-                    <span className="dashboard__magic-result-name">{tool.name}</span>
-                    <span className="dashboard__magic-result-cat">{cat.icon} {cat.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-            {search.trim() && searchResults.length === 0 && (
-              <div className="dashboard__magic-empty">No tools found for "{search}"</div>
-            )}
           </div>
+
+          {/* Magic Bar dropdown — rendered in body via Portal to avoid z-index stacking issues */}
+          {search.trim() && dropdownRect && createPortal(
+            <div
+              className="dashboard__magic-portal"
+              style={{ top: dropdownRect.top, left: dropdownRect.left, width: dropdownRect.width }}
+            >
+              {searchResults.length > 0
+                ? searchResults.map(({ tool, cat }) => (
+                    <button
+                      key={tool.id}
+                      className="dashboard__magic-result"
+                      onClick={() => { setSearch(''); handleSearchToolClick(cat.id, tool.id); }}
+                    >
+                      <span className="dashboard__magic-result-icon">{tool.icon}</span>
+                      <span className="dashboard__magic-result-name">{tool.name}</span>
+                      <span className="dashboard__magic-result-cat">{cat.icon} {cat.name}</span>
+                    </button>
+                  ))
+                : <div className="dashboard__magic-empty">No tools found for "{search}"</div>
+              }
+            </div>,
+            document.body
+          )}
 
           {/* Quick Wins */}
           <section className="dashboard__quick-wins">
