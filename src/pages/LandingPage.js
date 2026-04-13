@@ -44,6 +44,16 @@ const HERO_CHIPS = [
     fillKey: 'landing.promptbox.chip1.fill',
     dFill: 'Write a client proposal for a social media management service',
     route: '/category/agency',
+    categoryId: 'agency',
+    toolId: 'client-proposal',
+    exampleInputs: {
+      agency_name: 'Pixel Growth Agency',
+      client_name: 'BlueSky Retail Co.',
+      service: 'Social Media Management + Content Creation',
+      client_goal: 'Increase brand awareness and grow Instagram from 2k to 20k followers',
+      budget: '$2,500/month',
+      duration: '6 months',
+    },
   },
   {
     icon: '🔍',
@@ -52,6 +62,14 @@ const HERO_CHIPS = [
     fillKey: 'landing.promptbox.chip2.fill',
     dFill: 'Find the best keywords for my SaaS business blog',
     route: '/category/marketing',
+    categoryId: 'marketing',
+    toolId: 'seo-keyword-research',
+    exampleInputs: {
+      keyword: 'project management software',
+      industry: 'SaaS',
+      content_type: 'Blog Post',
+      audience: 'small business owners and startup founders',
+    },
   },
   {
     icon: '📣',
@@ -60,6 +78,16 @@ const HERO_CHIPS = [
     fillKey: 'landing.promptbox.chip3.fill',
     dFill: 'Create a Facebook & Instagram ad campaign for my product launch',
     route: '/category/digital',
+    categoryId: 'digital',
+    toolId: 'meta-ads',
+    exampleInputs: {
+      product: 'AI-powered project management app for remote teams',
+      target_audience: 'Startup founders and team leads, 25-45, interested in productivity',
+      offer: 'Free 14-day trial — no credit card required',
+      objective: 'Lead Generation',
+      budget: '$30-$100/day',
+      funnel_stage: 'Top of Funnel (Cold Traffic)',
+    },
   },
 ];
 
@@ -94,7 +122,18 @@ function HeroPromptBox() {
     if (!value.trim() || isStreaming) return;
 
     if (currentUser) {
-      navigate(activeChip !== null ? HERO_CHIPS[activeChip].route : '/dashboard');
+      if (activeChip !== null) {
+        const chip = HERO_CHIPS[activeChip];
+        if (chip.toolId && chip.exampleInputs) {
+          sessionStorage.setItem('gormaran_rerun', JSON.stringify({
+            toolId: chip.toolId,
+            inputs: chip.exampleInputs,
+          }));
+        }
+        navigate(chip.route);
+      } else {
+        navigate('/dashboard');
+      }
       return;
     }
 

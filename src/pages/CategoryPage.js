@@ -37,6 +37,16 @@ export default function CategoryPage() {
         }
       } catch {}
     }
+    // Check for direct tool selection from Magic Bar / Quick Wins
+    const selectToolId = sessionStorage.getItem('gormaran_select_tool');
+    if (selectToolId) {
+      sessionStorage.removeItem('gormaran_select_tool');
+      const tool = category.tools.find(t => t.id === selectToolId);
+      if (tool) {
+        setSelectedTool(tool);
+        return;
+      }
+    }
     if (category.tools.length > 0) {
       setSelectedTool(category.tools[0]);
     }

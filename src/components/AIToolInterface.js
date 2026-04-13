@@ -678,7 +678,23 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
       <div className="ai-tool__layout">
         {/* Input Panel */}
         <div className="ai-tool__panel ai-tool__input-panel">
-          <h3 className="ai-tool__panel-title">{t('ui.yourInputs', { defaultValue: '📝 Your Inputs' })}</h3>
+          <div className="ai-tool__panel-header">
+            <h3 className="ai-tool__panel-title">{t('ui.yourInputs', { defaultValue: '📝 Your Inputs' })}</h3>
+            {currentUser && brandProfile?.companyName && (
+              <button
+                type="button"
+                className="ai-tool__refill-btn"
+                onClick={() => {
+                  const { defaults, prefilled } = applyBrandProfile(brandProfile, tool?.inputs);
+                  setInputs(prev => ({ ...prev, ...defaults }));
+                  setPrefilledFields(prefilled);
+                }}
+                title="Re-apply your Brand Profile to all fields"
+              >
+                🏢 Refill from profile
+              </button>
+            )}
+          </div>
           <form onSubmit={handleGenerate} noValidate>
             {/* Templates */}
             {currentUser && templates.length > 0 && (
@@ -704,6 +720,17 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Brand profile nudge — shown only when logged in and profile is empty/incomplete */}
+            {currentUser && !brandProfile?.companyName && (
+              <div className="ai-tool__brand-nudge">
+                <span className="ai-tool__brand-nudge-icon">🏢</span>
+                <div className="ai-tool__brand-nudge-body">
+                  <strong>Fill in once, use everywhere</strong>
+                  <span>Save your business details in your <Link to="/settings" className="ai-tool__brand-nudge-link">Brand Profile</Link> and every form will auto-fill for you.</span>
+                </div>
               </div>
             )}
 
