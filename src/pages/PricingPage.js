@@ -9,10 +9,30 @@ import './PricingPage.css';
 
 // Plan metadata — only non-translatable values here
 const PLAN_META = [
-  { id: 'free',      price: 0,   featureCount: 5, lockedCount: 4, hasBadge: false, highlight: false, priceId: null },
-  { id: 'grow',      price: 19,  featureCount: 8, lockedCount: 0, hasBadge: true,  highlight: true,  priceId: process.env.REACT_APP_STRIPE_GROW_PRICE_ID },
-  { id: 'scale',     price: 49,  featureCount: 7, lockedCount: 0, hasBadge: true,  highlight: false, priceId: process.env.REACT_APP_STRIPE_SCALE_PRICE_ID },
-  { id: 'evolution', price: 129,  featureCount: 8, lockedCount: 0, hasBadge: true,  highlight: false, priceId: process.env.REACT_APP_STRIPE_EVOLUTION_PRICE_ID },
+  {
+    id: 'free', price: 0, featureCount: 5, lockedCount: 4, hasBadge: false,
+    monthlyPriceId: null,
+    annualPriceId: null,
+    annualTotal: 0, annualMonthly: 0,
+  },
+  {
+    id: 'grow', price: 19, featureCount: 8, lockedCount: 0, hasBadge: true,
+    monthlyPriceId: process.env.REACT_APP_STRIPE_GROW_PRICE_ID,
+    annualPriceId:  process.env.REACT_APP_STRIPE_GROW_ANNUAL_PRICE_ID,
+    annualTotal: 182.40, annualMonthly: 15.20,
+  },
+  {
+    id: 'scale', price: 49, featureCount: 7, lockedCount: 0, hasBadge: true,
+    monthlyPriceId: process.env.REACT_APP_STRIPE_SCALE_PRICE_ID,
+    annualPriceId:  process.env.REACT_APP_STRIPE_SCALE_ANNUAL_PRICE_ID,
+    annualTotal: 470.40, annualMonthly: 39.20,
+  },
+  {
+    id: 'evolution', price: 129, featureCount: 8, lockedCount: 0, hasBadge: true,
+    monthlyPriceId: process.env.REACT_APP_STRIPE_EVOLUTION_PRICE_ID,
+    annualPriceId:  process.env.REACT_APP_STRIPE_EVOLUTION_ANNUAL_PRICE_ID,
+    annualTotal: 1238.40, annualMonthly: 103.20,
+  },
 ];
 
 // Comparison table — 4 columns: free, grow, scale, evolution
@@ -49,6 +69,7 @@ export default function PricingPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const [billingPeriod, setBillingPeriod] = useState('annual'); // 'monthly' | 'annual'
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [error, setError] = useState('');
   const [promoCode, setPromoCode] = useState('');
@@ -113,7 +134,9 @@ export default function PricingPage() {
       return;
     }
 
-    if (!plan.priceId || plan.priceId === 'undefined') {
+    const priceId = billingPeriod === 'annual' ? plan.annualPriceId : plan.monthlyPriceId;
+
+    if (!priceId || priceId === 'undefined') {
       setError('Payment system is not configured yet. Please add Stripe price IDs to your environment variables.');
       return;
     }
@@ -121,7 +144,7 @@ export default function PricingPage() {
     setError('');
     setLoadingPlan(plan.id);
     try {
-      const { url } = await createCheckoutSession(plan.priceId, 'subscription', promoState?.promoId || null);
+      const { url } = await createCheckoutSession(priceId, 'subscription', promoState?.promoId || null);
       window.location.href = url;
     } catch (err) {
       setError(err.message || 'Failed to start checkout. Please try again.');
@@ -136,7 +159,8 @@ export default function PricingPage() {
     return t(`pricing.plan.${plan.id}.cta`);
   }
 
-  function getDiscountedPrice(originalPrice) {
+  function getDiscountedPrice(plan) {
+    const originalPrice = billingPeriod === 'annual' ? plan.annualMonthly : plan.price;
     if (!promoState || originalPrice === 0) return null;
     // discountLabel is e.g. "50% off" or "€10 off"
     const pctMatch = promoState.discountLabel?.match(/(\d+(?:\.\d+)?)\s*%/);
@@ -233,6 +257,27 @@ export default function PricingPage() {
           </div>
         </div>
 
+        {/* Billing period toggle */}
+        <div className="container">
+          <div className="pricing__billing-toggle">
+            <button
+              className={`pricing__billing-btn${billingPeriod === 'monthly' ? ' pricing__billing-btn--active' : ''}`}
+              onClick={() => setBillingPeriod('monthly')}
+            >
+              {t('pricing.monthly', { defaultValue: 'Monthly' })}
+            </button>
+            <button
+              className={`pricing__billing-btn${billingPeriod === 'annual' ? ' pricing__billing-btn--active' : ''}`}
+              onClick={() => setBillingPeriod('annual')}
+            >
+              {t('pricing.annual', { defaultValue: 'Annual' })}
+              <span className="pricing__billing-save">
+                {t('pricing.annualSaveBadge', { defaultValue: 'Save 20%' })}
+              </span>
+            </button>
+          </div>
+        </div>
+
         {/* Plans */}
         <div className="container">
           <motion.div
@@ -277,29 +322,47 @@ export default function PricingPage() {
                   </div>
 
                   <div className="pricing__plan-price">
-                    {getDiscountedPrice(plan.price) ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '2px' }}>
-                        <span style={{ textDecoration: 'line-through', opacity: 0.4, fontSize: '1rem', fontWeight: 500, lineHeight: 1 }}>
-                          €{plan.price}/mo
-                        </span>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
-                          <span className="pricing__plan-amount">€{getDiscountedPrice(plan.price)}</span>
-                          <span className="pricing__plan-period">{t('pricing.month', { defaultValue: '/month' })}</span>
+                    {(() => {
+                      if (plan.price === 0) {
+                        return (
+                          <>
+                            <span className="pricing__plan-amount">€0</span>
+                            <div className="pricing__plan-period">{t('pricing.forever', { defaultValue: 'forever free' })}</div>
+                          </>
+                        );
+                      }
+                      const displayMonthly = billingPeriod === 'annual' ? plan.annualMonthly : plan.price;
+                      const discounted = getDiscountedPrice(plan);
+                      return (
+                        <div className="pricing__plan-price-inner">
+                          {discounted ? (
+                            <>
+                              <span className="pricing__plan-amount--strike">€{displayMonthly}</span>
+                              <div className="pricing__plan-price-row">
+                                <span className="pricing__plan-amount">€{discounted}</span>
+                                <span className="pricing__plan-period">{t('pricing.month', { defaultValue: '/month' })}</span>
+                              </div>
+                              <span className="pricing__plan-promo-label">{promoState.discountLabel} applied</span>
+                            </>
+                          ) : (
+                            <>
+                              <div className="pricing__plan-price-row">
+                                <span className="pricing__plan-amount">€{displayMonthly}</span>
+                                <span className="pricing__plan-period">{t('pricing.month', { defaultValue: '/month' })}</span>
+                              </div>
+                            </>
+                          )}
+                          {billingPeriod === 'annual' && (
+                            <div className="pricing__plan-annual-note">
+                              €{plan.annualTotal} {t('pricing.billedAnnually', { defaultValue: 'billed annually' })}
+                              <span className="pricing__plan-annual-save">
+                                {t('pricing.savePerYear', { defaultValue: 'Save €{{n}}/yr', n: Math.round(plan.price * 12 - plan.annualTotal) }).replace('{{n}}', Math.round(plan.price * 12 - plan.annualTotal))}
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        <span style={{ color: '#4ade80', fontWeight: 700, fontSize: '0.8rem', marginTop: '2px' }}>
-                          {promoState.discountLabel} applied
-                        </span>
-                      </div>
-                    ) : (
-                      <>
-                        <span className="pricing__plan-amount">€{plan.price}</span>
-                        <div className="pricing__plan-period">
-                          {plan.price === 0
-                            ? t('pricing.forever', { defaultValue: 'forever free' })
-                            : t('pricing.month', { defaultValue: '/month' })}
-                        </div>
-                      </>
-                    )}
+                      );
+                    })()}
                   </div>
 
                   <button
