@@ -68,12 +68,12 @@
 /* Portal dropdown — rendered in body, positioned with JS */
 .dashboard__magic-portal {
   position: absolute;
-  background: var(--bg-card, #1e1e2e);
-  border: 1px solid var(--accent-primary);
+  background: #0d0d0d;
+  border: 1px solid #6366f1;
   border-radius: 12px;
   overflow: hidden;
   z-index: 9999;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.85);
 }
 
 .dashboard__magic-result {
@@ -81,14 +81,14 @@
   align-items: center;
   gap: 0.75rem;
   width: 100%;
-  background: none;
+  background: transparent;
   border: none;
-  border-bottom: 1px solid var(--border-color);
-  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #222;
+  padding: 0.8rem 1rem;
   cursor: pointer;
   text-align: left;
-  transition: background 0.15s;
-  color: var(--text-primary);
+  transition: background 0.12s;
+  color: #ffffff;
 }
 
 .dashboard__magic-result:last-child {
@@ -96,7 +96,7 @@
 }
 
 .dashboard__magic-result:hover {
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(99, 102, 241, 0.2);
 }
 
 .dashboard__magic-result-icon {
@@ -118,11 +118,8 @@
 .dashboard__magic-empty {
   padding: 0.85rem 1rem;
   font-size: 0.85rem;
-  color: var(--text-muted);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  margin-top: 6px;
-  background: var(--bg-secondary);
+  color: #aaa;
+  background: #0d0d0d;
 }
 
 /* Quick Wins */
