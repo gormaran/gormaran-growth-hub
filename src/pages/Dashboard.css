@@ -8,6 +8,7 @@
 /* Magic Bar */
 .dashboard__magic-bar {
   position: relative;
+  z-index: 10; /* establishes stacking context above sibling flex items */
 }
 
 .dashboard__magic-input-wrap {
@@ -63,12 +64,12 @@
   top: calc(100% + 6px);
   left: 0;
   right: 0;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--bg-card, #1e1e2e);
+  border: 1px solid var(--accent-primary);
   border-radius: 12px;
   overflow: hidden;
-  z-index: 100;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  z-index: 200;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.55);
 }
 
 .dashboard__magic-result {

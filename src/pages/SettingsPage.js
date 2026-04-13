@@ -19,7 +19,7 @@ export default function SettingsPage() {
   const { currentUser, logout, refreshUserProfile } = useAuth();
   const { subscription, usageCount, PLANS } = useSubscription();
   const {
-    workspaces, currentWorkspace, brandProfile: savedBrand,
+    workspaces, currentWorkspace, brandProfile: savedBrand, loadingWorkspaces,
     saveBrandProfile, maxWorkspaces, canCreateWorkspace,
     createWorkspace, updateWorkspace, deleteWorkspace, switchWorkspace,
   } = useWorkspace();
@@ -249,7 +249,7 @@ export default function SettingsPage() {
               Fill in your brand details once — they'll auto-fill in every AI tool so you never have to type them again.
               Each workspace has its own independent Brand Profile.
             </p>
-            {!savedBrand && !brandProfile.companyName ? (
+            {loadingWorkspaces ? (
               <div className="settings__brand-loading">Loading…</div>
             ) : (
               <form onSubmit={handleSaveBrandProfile} className="settings__brand-form">
