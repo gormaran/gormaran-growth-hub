@@ -1396,7 +1396,7 @@ export default function LandingPage() {
               </div>
               <span>
                 {t('landing.hero.joinPre', { defaultValue: 'Join' })}{' '}
-                <strong>{t('landing.hero.joinCount', { defaultValue: '70+' })}</strong>{' '}
+                <strong>{t('landing.hero.joinCount', { defaultValue: '331+' })}</strong>{' '}
                 {t('landing.hero.socialProof', { defaultValue: 'marketers & founders' })}
               </span>
             </motion.div>
