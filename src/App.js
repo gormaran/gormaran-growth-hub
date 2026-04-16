@@ -20,6 +20,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
 import HistoryPage from './pages/HistoryPage';
+import ContactoPage from './pages/ContactoPage';
 
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -134,6 +135,9 @@ export default function App() {
             <Route path="/privacy-policy" element={<AppLayout><PrivacyPolicy /></AppLayout>} />
             <Route path="/terms-of-service" element={<AppLayout><TermsOfService /></AppLayout>} />
             <Route path="/cookie-policy" element={<AppLayout><CookiePolicy /></AppLayout>} />
+
+            {/* Tarjeta de contacto — sin navbar/footer */}
+            <Route path="/contacto" element={<ContactoPage />} />
 
             {/* Catch all */}
             <Route path="*" element={<Navigate to="/" replace />} />
