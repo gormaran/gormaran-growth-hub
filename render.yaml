@@ -86,6 +86,8 @@ services:
         destination: /index.html
 
     envVars:
+      - key: CI
+        value: "false"
       - key: REACT_APP_API_URL
         value: https://gormaran-growth-hub-2.onrender.com
       # Set remaining REACT_APP_* vars in Render dashboard
