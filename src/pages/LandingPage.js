@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+import gsap from 'gsap';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -387,17 +388,10 @@ const DEMO_PHASES = [
 
 const DEMO_OUTPUT_LINES = [92, 78, 95, 65, 83, 55, 88, 72];
 
-function WorkflowDemo() {
+function WorkflowDemo({ phase, setPhase }) {
   const { t } = useTranslation();
-  const [phase, setPhase] = useState(0);
   const inViewRef = useRef(null);
   const inView = useInView(inViewRef, { once: true, margin: '-60px' });
-
-  useEffect(() => {
-    if (!inView) return;
-    const id = setInterval(() => setPhase((p) => (p + 1) % 3), 2500);
-    return () => clearInterval(id);
-  }, [inView]);
 
   return (
     <motion.div
@@ -650,23 +644,97 @@ function HeroShowcase() {
 }
 
 // ── How It Works New (BotDesk layout) ────────────────────────────
+const PHASE_MAP = [0, 1, 2, 2]; // step index → WorkflowDemo phase
+const STEP_DURATION = 3.5;      // seconds per step auto-advance
+
 function HowItWorksNew() {
   const { t } = useTranslation();
   const [active, setActive] = useState(0);
+  const [demoPhase, setDemoPhase] = useState(0);
+  const progressRefs = useRef([]);
+  const numRefs = useRef([]);
+  const tlRef = useRef(null);
+
+  const goToStep = useCallback((i) => {
+    setActive(i);
+    setDemoPhase(PHASE_MAP[i]);
+  }, []);
+
+  useEffect(() => {
+    const mm = gsap.matchMedia();
+
+    mm.add({ reduceMotion: '(prefers-reduced-motion: reduce)' }, (context) => {
+      const { reduceMotion } = context.conditions;
+
+      tlRef.current?.kill();
+      progressRefs.current.forEach((el) => {
+        if (el) gsap.set(el, { scaleX: 0, transformOrigin: 'left center' });
+      });
+
+      if (reduceMotion) return;
+
+      // Bounce the active step number
+      const numEl = numRefs.current[active];
+      if (numEl) {
+        gsap.fromTo(numEl,
+          { scale: 1 },
+          { scale: 1.18, duration: 0.18, yoyo: true, repeat: 1, ease: 'back.out(2)' }
+        );
+      }
+
+      // Fill progress bar, then advance to next step
+      const progressEl = progressRefs.current[active];
+      if (!progressEl) return;
+
+      tlRef.current = gsap.to(progressEl, {
+        scaleX: 1,
+        duration: STEP_DURATION,
+        ease: 'none',
+        transformOrigin: 'left center',
+        onComplete: () => {
+          setActive((prev) => {
+            const next = (prev + 1) % HOW_STEPS.length;
+            setDemoPhase(PHASE_MAP[next]);
+            return next;
+          });
+        },
+      });
+    });
+
+    return () => mm.revert();
+  }, [active]);
+
+  const handleMouseEnter = () => tlRef.current?.pause();
+  const handleMouseLeave = () => tlRef.current?.resume();
 
   return (
-    <div className="landing__how-layout">
+    <div
+      className="landing__how-layout"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="landing__how-steps-col">
         {HOW_STEPS.map((step, i) => (
           <button
             key={step.num}
             className={`landing__how-step-row${active === i ? ' active' : ''}`}
-            onClick={() => setActive(i)}
+            onClick={() => goToStep(i)}
           >
-            <div className="landing__how-step-row-num">{step.num}</div>
+            <div
+              className="landing__how-step-row-num"
+              ref={(el) => (numRefs.current[i] = el)}
+            >
+              {step.num}
+            </div>
             <div className="landing__how-step-row-content">
               <div className="landing__how-step-row-title">
                 {t(step.titleKey, { defaultValue: step.defaultTitle })}
+              </div>
+              <div className="landing__how-step-progress">
+                <div
+                  className="landing__how-step-progress-bar"
+                  ref={(el) => (progressRefs.current[i] = el)}
+                />
               </div>
               <AnimatePresence>
                 {active === i && (
@@ -686,7 +754,7 @@ function HowItWorksNew() {
         ))}
       </div>
       <div className="landing__how-visual-col">
-        <WorkflowDemo />
+        <WorkflowDemo phase={demoPhase} setPhase={setDemoPhase} />
       </div>
     </div>
   );
