@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gabriela Ormazabal — Gormaran.io</title>
+  <meta name="description" content="Founder & CEO de Gormaran.io — Plataforma de IA para crecimiento empresarial" />
+
+  <!-- Prevent indexing of this utility page -->
+  <meta name="robots" content="noindex" />
+
+  <!-- QR code library (pure JS, no external images) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --brand-dark: #0a0a0f;
+      --brand-purple: #7c3aed;
+      --brand-purple-light: #a78bfa;
+      --brand-cyan: #06b6d4;
+      --brand-white: #f8fafc;
+      --brand-muted: #94a3b8;
+      --glow-purple: rgba(124, 58, 237, 0.35);
+      --glow-cyan: rgba(6, 182, 212, 0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--brand-dark);
+      color: var(--brand-white);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 10%, var(--glow-purple) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 90%, var(--glow-cyan) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 24px;
+      padding: 40px 36px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      box-shadow:
+        0 0 0 1px rgba(124,58,237,0.1),
+        0 20px 60px rgba(0,0,0,0.5),
+        0 0 80px var(--glow-purple);
+      animation: fadeIn 0.6s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--brand-purple), var(--brand-cyan));
+      border-radius: 16px;
+      font-size: 28px;
+      font-weight: 900;
+      color: white;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px var(--glow-purple);
+    }
+
+    .name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--brand-white);
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--brand-purple-light);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .company {
+      font-size: 1rem;
+      font-weight: 600;
+      background: linear-gradient(90deg, var(--brand-purple-light), var(--brand-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 28px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent);
+      margin-bottom: 24px;
+    }
+
+    .contact-list {
+      list-style: none;
+      margin-bottom: 28px;
+    }
+
+    .contact-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      text-align: left;
+    }
+
+    .contact-list li:last-child { border-bottom: none; }
+
+    .icon {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .contact-label {
+      font-size: 0.7rem;
+      color: var(--brand-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .contact-value {
+      font-size: 0.9rem;
+      color: var(--brand-white);
+      font-weight: 500;
+    }
+
+    .contact-value a {
+      color: var(--brand-white);
+      text-decoration: none;
+    }
+
+    .contact-value a:hover {
+      color: var(--brand-purple-light);
+    }
+
+    /* Save contact button */
+    .btn-save {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--brand-purple), #5b21b6);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 12px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 24px var(--glow-purple);
+    }
+
+    .btn-save:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px var(--glow-purple);
+    }
+
+    .btn-save:active { transform: translateY(0); }
+
+    /* Visit website button */
+    .btn-web {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 20px;
+      background: transparent;
+      color: var(--brand-white);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 1px solid rgba(6,182,212,0.4);
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 28px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .btn-web:hover {
+      background: rgba(6,182,212,0.08);
+      border-color: var(--brand-cyan);
+    }
+
+    /* QR Section */
+    .qr-section {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 24px;
+    }
+
+    .qr-label {
+      font-size: 0.75rem;
+      color: var(--brand-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+
+    #qr-canvas {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 0 1px rgba(124,58,237,0.3), 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    /* Status toast */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: rgba(124,58,237,0.95);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(167,139,250,0.3);
+      z-index: 100;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .toast.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Countdown bar */
+    .redirect-bar {
+      display: none;
+      margin-top: 16px;
+      font-size: 0.78rem;
+      color: var(--brand-muted);
+    }
+
+    .progress-track {
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand-purple), var(--brand-cyan));
+      border-radius: 2px;
+      width: 0%;
+      transition: width linear;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="logo-mark">G</div>
+
+  <h1 class="name">Gabriela Ormazabal<br>de Aranzabal</h1>
+  <p class="title">Founder &amp; CEO</p>
+  <p class="company">gormaran.io</p>
+
+  <div class="divider"></div>
+
+  <ul class="contact-list">
+    <li>
+      <span class="icon">📱</span>
+      <div>
+        <span class="contact-label">Móvil</span>
+        <span class="contact-value"><a href="tel:+34688679474">+34 688 679 474</a></span>
+      </div>
+    </li>
+    <li>
+      <span class="icon">✉️</span>
+      <div>
+        <span class="contact-label">Email</span>
+        <span class="contact-value"><a href="mailto:gabriela.ormazabal@gormaran-marketing.com">gabriela.ormazabal@<br>gormaran-marketing.com</a></span>
+      </div>
+    </li>
+    <li>
+      <span class="icon">🌐</span>
+      <div>
+        <span class="contact-label">Web</span>
+        <span class="contact-value"><a href="https://gormaran.io" target="_blank">gormaran.io</a></span>
+      </div>
+    </li>
+  </ul>
+
+  <!-- Save contact: triggers vCard download -->
+  <a id="btn-save" class="btn-save" href="#" download="Gabriela_Ormazabal_Gormaran.vcf">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Guardar contacto
+  </a>
+
+  <!-- Visit website -->
+  <a class="btn-web" href="https://gormaran.io" target="_blank" rel="noopener">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    Visitar gormaran.io
+  </a>
+
+  <div id="redirect-bar" class="redirect-bar">
+    Redirigiendo a gormaran.io en <span id="countdown">5</span>s…
+    <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+  </div>
+
+  <!-- QR code of THIS page (fill in your deployed URL below) -->
+  <div class="qr-section">
+    <p class="qr-label">Comparte esta tarjeta</p>
+    <div id="qr-canvas"></div>
+  </div>
+
+</div>
+
+<div id="toast" class="toast">✅ ¡Contacto listo para guardar!</div>
+
+<script>
+  // ── 1. vCard data ─────────────────────────────────────────────
+  const vcardData = [
+    'BEGIN:VCARD',
+    'VERSION:3.0',
+    'FN:Gabriela Ormazabal de Aranzabal',
+    'N:Ormazabal de Aranzabal;Gabriela;;;',
+    'ORG:Gormaran.io',
+    'TITLE:Founder & CEO',
+    'TEL;TYPE=CELL:+34688679474',
+    'EMAIL;TYPE=WORK:gabriela.ormazabal@gormaran-marketing.com',
+    'URL:https://gormaran.io',
+    'END:VCARD'
+  ].join('\r\n');
+
+  // ── 2. Attach vCard blob to Save button ───────────────────────
+  const blob = new Blob([vcardData], { type: 'text/vcard;charset=utf-8' });
+  const vcardURL = URL.createObjectURL(blob);
+  const saveBtn = document.getElementById('btn-save');
+  saveBtn.href = vcardURL;
+
+  saveBtn.addEventListener('click', () => {
+    showToast('✅ ¡Contacto listo para guardar!');
+    startRedirect();
+  });
+
+  // ── 3. Toast notification ─────────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('visible');
+    setTimeout(() => t.classList.remove('visible'), 3500);
+  }
+
+  // ── 4. Redirect countdown after saving contact ────────────────
+  function startRedirect() {
+    const bar = document.getElementById('redirect-bar');
+    const fill = document.getElementById('progress-fill');
+    const counter = document.getElementById('countdown');
+    bar.style.display = 'block';
+    let secs = 5;
+    fill.style.transition = `width ${secs}s linear`;
+    requestAnimationFrame(() => { fill.style.width = '100%'; });
+
+    const interval = setInterval(() => {
+      secs--;
+      counter.textContent = secs;
+      if (secs <= 0) {
+        clearInterval(interval);
+        window.open('https://gormaran.io', '_blank');
+      }
+    }, 1000);
+  }
+
+  // ── 5. Generate QR code for this page ────────────────────────
+  // Replace PAGE_URL with your actual deployed URL
+  const PAGE_URL = window.location.href.split('?')[0];
+
+  new QRCode(document.getElementById('qr-canvas'), {
+    text: PAGE_URL,
+    width: 160,
+    height: 160,
+    colorDark: '#1e1b4b',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
+
+</body>
+</html>

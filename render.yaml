@@ -69,7 +69,7 @@ services:
         name: Content-Security-Policy
         value: >-
           default-src 'self';
-          script-src 'self' 'unsafe-inline' https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com;
+          script-src 'self' 'unsafe-inline' https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net;
           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
           font-src 'self' https://fonts.gstatic.com;
           img-src 'self' data: https: blob:;
@@ -81,6 +81,9 @@ services:
 
     # Redirect all routes to index.html (SPA fallback — same as public/_redirects)
     routes:
+      - type: rewrite
+        source: /contacto
+        destination: /contacto/index.html
       - type: rewrite
         source: /*
         destination: /index.html
