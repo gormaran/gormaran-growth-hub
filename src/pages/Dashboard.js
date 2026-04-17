@@ -235,8 +235,8 @@ export default function Dashboard() {
             </motion.div>
           )}
 
-          {/* Onboarding banner — step 1: complete brand profile / step 2: try a tool */}
-          {brandIncomplete ? (
+          {/* Onboarding banner — solo visible hasta completar perfil + onboarding */}
+          {!userProfile?.onboardingCompleted && brandIncomplete ? (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -252,7 +252,7 @@ export default function Dashboard() {
                 Set up now →
               </Link>
             </motion.div>
-          ) : (
+          ) : !userProfile?.onboardingCompleted ? (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -268,7 +268,7 @@ export default function Dashboard() {
                 Try it now →
               </Link>
             </motion.div>
-          )}
+          ) : null}
 
           {/* Magic Bar */}
           <div className="dashboard__magic-bar" ref={magicBarRef}>
