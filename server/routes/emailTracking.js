@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 
 const router = express.Router();
 
-const VALID_EMAIL_TYPES = ['day1', 'day3', 'day12', 'day14', 'reactivation'];
+const VALID_EMAIL_TYPES = ['hour1', 'hour6', 'hour23', 'day1', 'reactivation'];
 
 function requireApiKey(req, res, next) {
   const key = req.headers['x-api-key'];

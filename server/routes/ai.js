@@ -42,7 +42,7 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
     admin:     { allAccess: true },
   };
   const PLAN_ALIASES = { 'pro': 'grow', 'business': 'evolution' };
-  const TRIAL_DAYS = 14;
+  const TRIAL_DAYS = 1;
 
   const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
   const isAdminUid = adminUids.includes(req.user?.uid);

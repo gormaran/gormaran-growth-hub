@@ -84,7 +84,7 @@ const HERO_CHIPS = [
     exampleInputs: {
       product: 'AI-powered project management app for remote teams',
       target_audience: 'Startup founders and team leads, 25-45, interested in productivity',
-      offer: 'Free 14-day trial — no credit card required',
+      offer: 'Free 24-hour trial — no credit card required',
       objective: 'Lead Generation',
       budget: '$30-$100/day',
       funnel_stage: 'Top of Funnel (Cold Traffic)',
@@ -1447,7 +1447,7 @@ export default function LandingPage() {
               <span className="landing__trust-divider">·</span>
               <span className="landing__trust-item">
                 <span className="landing__trust-check">✓</span>
-                {t('landing.hero.trust2', { defaultValue: '14-day free trial' })}
+                {t('landing.hero.trust2', { defaultValue: '24-hour free trial' })}
               </span>
               <span className="landing__trust-divider">·</span>
               <span className="landing__trust-item">
@@ -1591,7 +1591,7 @@ export default function LandingPage() {
               <div className="landing__cta-trust">
                 <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust1', { defaultValue: 'No credit card required' })}</span>
                 <span className="landing__trust-divider">·</span>
-                <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust2', { defaultValue: '14-day free trial' })}</span>
+                <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust2', { defaultValue: '24-hour free trial' })}</span>
                 <span className="landing__trust-divider">·</span>
                 <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust3', { defaultValue: 'Cancel anytime' })}</span>
               </div>

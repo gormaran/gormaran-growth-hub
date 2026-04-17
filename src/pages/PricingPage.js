@@ -177,7 +177,7 @@ export default function PricingPage() {
 
   function translateVal(val) {
     if (val === 'unlimited') return t('pricing.comparison.unlimited', { defaultValue: 'Unlimited' });
-    if (val === 'trial')     return t('pricing.comparison.trial',     { defaultValue: '14-day trial' });
+    if (val === 'trial')     return t('pricing.comparison.trial',     { defaultValue: '24h trial' });
     if (val === 'partial')   return t('pricing.comparison.partial',   { defaultValue: '1 tool' });
     if (val === 'email')     return t('pricing.comparison.email',     { defaultValue: 'Email' });
     if (val === 'priority')  return t('pricing.comparison.priority',  { defaultValue: 'Priority' });
