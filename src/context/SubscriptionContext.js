@@ -9,13 +9,13 @@ export function useSubscription() {
   return useContext(SubscriptionContext);
 }
 
-const TRIAL_DAYS = 14;
+const TRIAL_DAYS = 1;
 export const FREE_MONTHLY_LIMIT = 10;
 
 export const PLANS = {
   free: {
     name: 'Free',
-    trialDays: TRIAL_DAYS,
+    trialHours: 24,
     // After trial ends, only these specific tools are accessible:
     allowedTools: ['marketing:seo-keyword-research', 'marketing:seo-meta-tags', 'marketing:instagram-audit'],
   },

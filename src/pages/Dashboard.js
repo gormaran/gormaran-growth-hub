@@ -132,7 +132,7 @@ export default function Dashboard() {
 
   const inTrial = isInTrial();
   const daysLeft = trialDaysRemaining();
-  const trialPct = Math.round((daysLeft / 14) * 100);
+  const trialPct = Math.round((daysLeft / 1) * 100);
   const brandIncomplete = !brandProfile?.companyName;
 
   const searchResults = useMemo(() => {
@@ -303,7 +303,7 @@ export default function Dashboard() {
               <div className="dashboard__plan-badge">
                 <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
                   {subscription === 'free' && inTrial
-                    ? `🎁 ${t('ui.freeTrialBadge', { defaultValue: 'Free Trial' })} · ${daysLeft} / 14 ${t('ui.trialDaysLeft', { defaultValue: 'days left' })}`
+                    ? `🎁 ${t('ui.freeTrialBadge', { defaultValue: 'Free Trial' })} · 24h`
                     : subscription === 'free'
                     ? t('ui.freePlan', { defaultValue: 'Free Plan' })
                     : subscription === 'grow'
@@ -334,7 +334,7 @@ export default function Dashboard() {
               <div className="dashboard__usage-info">
                 <span>🎁 {t('dashboard.trialActive', { defaultValue: 'Free trial — full access active' })}</span>
                 <span className="dashboard__usage-count">
-                  <strong>{daysLeft} / 14</strong> {t('ui.trialDaysLeft', { defaultValue: 'days left' })}
+                  {t('ui.trialDaysLeft', { defaultValue: '24h free trial active' })}
                 </span>
               </div>
               <div className="dashboard__usage-bar">
