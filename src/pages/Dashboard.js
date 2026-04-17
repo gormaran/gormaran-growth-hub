@@ -176,12 +176,35 @@ export default function Dashboard() {
     return results;
   }, [search]);
 
+  const PERSONA_ORDER = {
+    freelancer: ['agency', 'marketing', 'content', 'strategy', 'digital', 'creative', 'ecommerce', 'startup', 'finance'],
+    agency:     ['agency', 'strategy', 'marketing', 'content', 'creative', 'digital', 'ecommerce', 'startup', 'finance'],
+    business:   ['marketing', 'content', 'digital', 'strategy', 'ecommerce', 'creative', 'startup', 'finance', 'agency'],
+  };
+  const PERSONA_TOP = {
+    freelancer: ['agency', 'marketing', 'content'],
+    agency:     ['agency', 'strategy', 'marketing'],
+    business:   ['marketing', 'content', 'digital'],
+  };
+  const topCats = PERSONA_TOP[persona] || [];
+
   const visibleCategories = useMemo(() => {
-    const base = [...CATEGORIES.filter(c => !c.isAddon), ...CATEGORIES.filter(c => c.isAddon)];
+    const nonAddon = CATEGORIES.filter(c => !c.isAddon);
+    const addon    = CATEGORIES.filter(c => c.isAddon);
+    let ordered = nonAddon;
+    if (persona && PERSONA_ORDER[persona]) {
+      const order = PERSONA_ORDER[persona];
+      ordered = [...nonAddon].sort((a, b) => {
+        const ai = order.indexOf(a.id); const bi = order.indexOf(b.id);
+        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+      });
+    }
+    const base = [...ordered, ...addon];
     if (!activeGoal) return base;
     const goal = GOALS.find(g => g.id === activeGoal);
     return goal ? base.filter(c => goal.cats.includes(c.id)) : base;
-  }, [activeGoal]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeGoal, persona]);
 
   function handleQuickWin(win) {
     sessionStorage.setItem('gormaran_rerun', JSON.stringify({ toolId: win.toolId, inputs: win.inputs }));
@@ -462,10 +485,11 @@ export default function Dashboard() {
                   );
                 }
 
+                const isTop = topCats.includes(cat.id);
                 return (
                   <motion.div
                     key={cat.id}
-                    className={`dashboard__cat-card ${locked ? 'dashboard__cat-card--locked' : ''}`}
+                    className={`dashboard__cat-card ${locked ? 'dashboard__cat-card--locked' : ''} ${isTop ? 'dashboard__cat-card--top' : ''}`}
                     variants={fadeUp}
                     whileHover={{ y: -6, scale: 1.01 }}
                   >
@@ -480,6 +504,9 @@ export default function Dashboard() {
                       >
                         {cat.icon}
                       </div>
+                      {isTop && !locked && (
+                        <span className="dashboard__cat-recommended">⭐ Para ti</span>
+                      )}
                       {locked && (
                         <span className="dashboard__cat-lock">🔒 {CATEGORY_MIN_TIER[cat.id] || 'Grow'}</span>
                       )}
