@@ -9,6 +9,7 @@ import { useWorkspace } from '../context/WorkspaceContext';
 import { CATEGORIES } from '../data/categories';
 import { useTranslation } from 'react-i18next';
 import InstagramAuditSection from '../components/InstagramAuditSection';
+import OnboardingModal from '../components/OnboardingModal';
 import './Dashboard.css';
 
 const CATEGORY_MIN_TIER = {
@@ -28,63 +29,80 @@ const GOALS = [
   { id: 'digital',  label: '📈 Grow Digital',     cats: ['digital', 'ecommerce'] },
 ];
 
-const QUICK_WINS = [
-  {
-    icon: '🔬',
-    label: 'Competitor Research',
-    hint: 'for Airbnb',
-    cat: 'strategy',
-    toolId: 'competitor-research',
-    inputs: {
-      business_name: 'Airbnb',
-      business_url: 'https://airbnb.com',
-      your_product: 'Short-term rental marketplace connecting hosts and travelers',
-      location: 'Global',
-      target_customer: 'Travelers and property owners',
+const QUICK_WINS_BY_PERSONA = {
+  freelancer: [
+    {
+      icon: '📄', label: 'Propuesta de cliente', hint: 'lista en 2 minutos',
+      cat: 'agency', toolId: 'client-proposal',
+      inputs: { agency_name: 'Tu agencia', client_name: 'Nuevo cliente', service: 'Social Media Management', client_goal: 'Aumentar seguidores y ventas online', budget: '€800/mes', duration: 'Contrato mensual' },
     },
-  },
-  {
-    icon: '📄',
-    label: 'Client Proposal',
-    hint: 'for a design agency',
-    cat: 'agency',
-    toolId: 'client-proposal',
-    inputs: {
-      agency_name: 'Studio Nova',
-      client_name: 'GreenLeaf Organic Co.',
-      service: 'Brand Identity + Website Redesign',
-      client_goal: 'Modernize brand and increase online conversions by 40%',
-      budget: '$8,000 project',
-      duration: 'Project-based',
+    {
+      icon: '📱', label: 'Captions para cliente', hint: 'Instagram y LinkedIn',
+      cat: 'marketing', toolId: 'social-media-captions',
+      inputs: { topic: 'Lanzamiento de producto de tu cliente', brand_voice: 'Profesional y cercano', platforms: 'Instagram', goal: 'Engagement' },
     },
-  },
-  {
-    icon: '📱',
-    label: 'Social Captions',
-    hint: 'for a fitness brand',
-    cat: 'marketing',
-    toolId: 'social-media-captions',
-    inputs: {
-      topic: 'Spring fitness challenge — 30 days to your best self',
-      brand_voice: 'Inspiring',
-      platforms: 'Instagram',
-      goal: 'Engagement (comments/shares)',
+    {
+      icon: '🔬', label: 'Análisis de competidores', hint: 'para tu cliente',
+      cat: 'strategy', toolId: 'competitor-research',
+      inputs: { business_name: 'Cliente de ejemplo', your_product: 'Tienda de moda online', location: 'España', target_customer: 'Mujeres 25-45' },
     },
-  },
-  {
-    icon: '📝',
-    label: 'Blog Post',
-    hint: 'about email marketing',
-    cat: 'content',
-    toolId: 'blog-post',
-    inputs: {
-      topic: '10 Email Marketing Strategies That Actually Convert in 2025',
-      keyword: 'email marketing strategies',
-      audience: 'small business owners and digital marketers',
-      word_count: '1,500 words',
-      tone: 'Educational & Authoritative',
+    {
+      icon: '📝', label: 'Post de blog SEO', hint: 'para posicionar',
+      cat: 'content', toolId: 'blog-post',
+      inputs: { topic: 'Cómo elegir una agencia de marketing digital', keyword: 'agencia marketing digital', audience: 'Pymes y autónomos', word_count: '1.200 palabras', tone: 'Educativo y directo' },
     },
-  },
+  ],
+  agency: [
+    {
+      icon: '📄', label: 'Propuesta ganadora', hint: 'cierra el cliente',
+      cat: 'agency', toolId: 'client-proposal',
+      inputs: { agency_name: 'Tu agencia', client_name: 'Prospecto B2B', service: 'Estrategia digital + Contenido', client_goal: 'Generar leads cualificados', budget: '€2.500/mes', duration: 'Contrato trimestral' },
+    },
+    {
+      icon: '🔬', label: 'Competitor Research', hint: 'para el pitch',
+      cat: 'strategy', toolId: 'competitor-research',
+      inputs: { business_name: 'Cliente potencial', your_product: 'Software B2B SaaS', location: 'España/LATAM', target_customer: 'Directores de marketing' },
+    },
+    {
+      icon: '📊', label: 'Estrategia de campaña', hint: 'Meta + Google Ads',
+      cat: 'marketing', toolId: 'meta-ads-campaign',
+      inputs: { business_name: 'Cliente de tu agencia', product: 'Servicio o producto del cliente', target_audience: 'Define el público', budget: '€1.000/mes', objective: 'Conversiones' },
+    },
+    {
+      icon: '✍️', label: 'Captions para cliente', hint: '1 semana de contenido',
+      cat: 'marketing', toolId: 'social-media-captions',
+      inputs: { topic: 'Campaña de marca del cliente', brand_voice: 'Según briefing', platforms: 'Instagram, LinkedIn', goal: 'Engagement y alcance' },
+    },
+  ],
+  business: [
+    {
+      icon: '🔑', label: 'Keywords SEO', hint: 'para tu negocio',
+      cat: 'marketing', toolId: 'seo-keyword-research',
+      inputs: { business: 'Tu negocio', niche: 'Tu sector', location: 'España', goal: 'Atraer clientes orgánicos' },
+    },
+    {
+      icon: '📱', label: 'Captions para redes', hint: 'Instagram + LinkedIn',
+      cat: 'marketing', toolId: 'social-media-captions',
+      inputs: { topic: 'Presentación de tu negocio o producto estrella', brand_voice: 'Cercano y profesional', platforms: 'Instagram', goal: 'Seguidores y ventas' },
+    },
+    {
+      icon: '📝', label: 'Post de blog', hint: 'atrae clientes orgánicos',
+      cat: 'content', toolId: 'blog-post',
+      inputs: { topic: 'Guía definitiva sobre tu producto o servicio', keyword: 'palabra clave de tu sector', audience: 'Tus clientes ideales', word_count: '1.000 palabras', tone: 'Cercano y experto' },
+    },
+    {
+      icon: '🎯', label: 'Plan de negocio', hint: 'estrategia clara',
+      cat: 'strategy', toolId: 'business-plan',
+      inputs: { business_name: 'Tu negocio', industry: 'Tu sector', stage: 'En crecimiento', goal: 'Escalar ventas este año' },
+    },
+  ],
+};
+
+const QUICK_WINS_DEFAULT = [
+  { icon: '📄', label: 'Client Proposal', hint: 'for a design agency', cat: 'agency', toolId: 'client-proposal', inputs: { agency_name: 'Studio Nova', client_name: 'GreenLeaf Organic Co.', service: 'Brand Identity + Website Redesign', client_goal: 'Modernize brand and increase online conversions by 40%', budget: '$8,000 project', duration: 'Project-based' } },
+  { icon: '📱', label: 'Social Captions', hint: 'for a fitness brand', cat: 'marketing', toolId: 'social-media-captions', inputs: { topic: 'Spring fitness challenge', brand_voice: 'Inspiring', platforms: 'Instagram', goal: 'Engagement' } },
+  { icon: '🔬', label: 'Competitor Research', hint: 'for Airbnb', cat: 'strategy', toolId: 'competitor-research', inputs: { business_name: 'Airbnb', your_product: 'Short-term rental marketplace', location: 'Global', target_customer: 'Travelers' } },
+  { icon: '📝', label: 'Blog Post', hint: 'about email marketing', cat: 'content', toolId: 'blog-post', inputs: { topic: '10 Email Marketing Strategies That Actually Convert', keyword: 'email marketing strategies', audience: 'small business owners', word_count: '1,500 words', tone: 'Educational' } },
 ];
 
 const stagger = {
@@ -118,6 +136,10 @@ export default function Dashboard() {
 
   const paymentStatus = searchParams.get('payment');
   const PLAN_PRICES = { grow: 19, scale: 49, evolution: 129 };
+
+  const showOnboarding = userProfile && !userProfile.onboardingCompleted;
+  const persona = userProfile?.persona;
+  const quickWins = QUICK_WINS_BY_PERSONA[persona] || QUICK_WINS_DEFAULT;
 
   useEffect(() => {
     if (paymentStatus === 'success' && currentUser) {
@@ -173,6 +195,9 @@ export default function Dashboard() {
 
   return (
     <div className="page">
+      {showOnboarding && (
+        <OnboardingModal onComplete={() => refreshUserProfile(currentUser.uid)} />
+      )}
       <div className="container">
         <div className="dashboard">
 
@@ -268,7 +293,7 @@ export default function Dashboard() {
           <section className="dashboard__quick-wins">
             <h2 className="dashboard__section-title"><span>⚡</span> Try these now</h2>
             <div className="dashboard__quick-wins-grid">
-              {QUICK_WINS.map((win) => (
+              {quickWins.map((win) => (
                 <button
                   key={win.toolId}
                   className="dashboard__qw-card"
