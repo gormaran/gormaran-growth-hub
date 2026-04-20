@@ -44,7 +44,7 @@ const HERO_CHIPS = [
     labelKey: 'landing.promptbox.chip1',
     dLabel: 'Client Proposal',
     fillKey: 'landing.promptbox.chip1.fill',
-    dFill: 'Write a client proposal for a social media management service',
+    dFill: 'Write a client proposal for a social media management service — €2,500/month retainer',
     route: '/category/agency',
     categoryId: 'agency',
     toolId: 'client-proposal',
@@ -60,9 +60,9 @@ const HERO_CHIPS = [
   {
     icon: '🔍',
     labelKey: 'landing.promptbox.chip2',
-    dLabel: 'Keyword Research',
+    dLabel: 'B2B Outreach',
     fillKey: 'landing.promptbox.chip2.fill',
-    dFill: 'Find the best keywords for my SaaS business blog',
+    dFill: 'Write a 3-email cold outreach sequence to offer my B2B SaaS to marketing directors',
     route: '/category/marketing',
     categoryId: 'marketing',
     toolId: 'seo-keyword-research',
@@ -76,9 +76,9 @@ const HERO_CHIPS = [
   {
     icon: '📣',
     labelKey: 'landing.promptbox.chip3',
-    dLabel: 'Ads Campaign',
+    dLabel: 'Meta Ads Campaign',
     fillKey: 'landing.promptbox.chip3.fill',
-    dFill: 'Create a Facebook & Instagram ad campaign for my product launch',
+    dFill: 'Create a Meta Ads campaign for my fashion e-commerce with a €500/month budget',
     route: '/category/digital',
     categoryId: 'digital',
     toolId: 'meta-ads',
@@ -91,13 +91,82 @@ const HERO_CHIPS = [
       funnel_stage: 'Top of Funnel (Cold Traffic)',
     },
   },
+  {
+    icon: '✍️',
+    labelKey: 'landing.promptbox.chip4',
+    dLabel: 'SEO Blog Post',
+    fillKey: 'landing.promptbox.chip4.fill',
+    dFill: 'Write an SEO blog post about the best AI tools for small businesses in 2025',
+    route: '/category/content',
+    categoryId: 'content',
+    toolId: 'blog-post',
+    exampleInputs: {
+      topic: 'Best AI tools for small businesses in 2025',
+      keyword: 'ai tools small business',
+      audience: 'Freelancers and founders',
+      word_count: '800',
+      tone: 'Informative',
+    },
+  },
+  {
+    icon: '📧',
+    labelKey: 'landing.promptbox.chip5',
+    dLabel: 'Email Campaign',
+    fillKey: 'landing.promptbox.chip5.fill',
+    dFill: 'Create a 3-email welcome sequence for new subscribers of my project management SaaS',
+    route: '/category/marketing',
+    categoryId: 'marketing',
+    toolId: 'email-campaign',
+    exampleInputs: {
+      campaign_type: 'Welcome Sequence',
+      product: 'Project management SaaS for remote teams',
+      audience: 'New trial users',
+      goal: 'Convert trial users into paying subscribers',
+      tone: 'Friendly and professional',
+    },
+  },
+  {
+    icon: '🛒',
+    labelKey: 'landing.promptbox.chip6',
+    dLabel: 'Product Description',
+    fillKey: 'landing.promptbox.chip6.fill',
+    dFill: 'Write a persuasive product description for my premium wireless noise-cancelling headphones',
+    route: '/category/ecommerce',
+    categoryId: 'ecommerce',
+    toolId: 'product-description',
+    exampleInputs: {
+      product: 'Premium Wireless Noise-Cancelling Headphones',
+      features: '40h battery, ANC, Hi-Fi audio, foldable design',
+      audience: 'Remote workers and music lovers',
+      platform: 'Shopify',
+      price_tier: 'Premium (€149)',
+    },
+  },
+  {
+    icon: '🎯',
+    labelKey: 'landing.promptbox.chip7',
+    dLabel: 'SWOT Analysis',
+    fillKey: 'landing.promptbox.chip7.fill',
+    dFill: 'Do a full SWOT analysis for my EdTech startup targeting B2B clients in the corporate training market',
+    route: '/category/strategy',
+    categoryId: 'strategy',
+    toolId: 'swot-analysis',
+    exampleInputs: {
+      company: 'LearnFlow EdTech',
+      description: 'B2B corporate training platform with AI-personalized learning paths',
+      goal: 'Reach €1M ARR and close 50 enterprise clients in 12 months',
+    },
+  },
 ];
 
 const DEMO_LIMIT = 3;
 const DEMO_KEY = 'gormaran_demo_count';
 
+const TOTAL_TOOLS = 30;
+
 function HeroPromptBox() {
   const { t, i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [value, setValue] = useState('');
@@ -116,7 +185,7 @@ function HeroPromptBox() {
   const outputRef = useRef(null);
 
   const handleChip = (chip, idx) => {
-    setValue(t(chip.fillKey, { defaultValue: chip.dFill }));
+    setValue(t(chip.fillKey, { defaultValue: isEs ? (chip.esFill || chip.dFill) : chip.dFill }));
     setActiveChip(idx);
     setOutput('');
     inputRef.current?.focus();
@@ -266,6 +335,9 @@ function HeroPromptBox() {
               {t(chip.labelKey, { defaultValue: chip.dLabel })}
             </button>
           ))}
+          <span className="hero-promptbox__chip-more">
+            +{TOTAL_TOOLS - HERO_CHIPS.length} {isEs ? 'más' : 'more'}
+          </span>
         </div>
         {!currentUser && (
           <span className={`hero-promptbox__counter${isLimitReached ? ' hero-promptbox__counter--done' : ''}`}>
@@ -388,15 +460,176 @@ const HOW_STEPS = [
   },
 ];
 
+// ── How It Works — Mini Mockup Visuals ───────────────────────────
+const TOOL_TILES = [
+  { emoji: '📈', label: 'Marketing' },
+  { emoji: '✍️', label: 'Content', active: true },
+  { emoji: '🛠️', label: 'Digital' },
+  { emoji: '🎯', label: 'Strategy' },
+  { emoji: '🛒', label: 'E-com' },
+  { emoji: '🏢', label: 'Agency' },
+];
+
+const OUTPUT_LINES_WIDTHS = [72, 90, 65, 85, 55, 78, 60];
+
+function HiwMockup({ step, active }) {
+  if (step === 0) return (
+    <div className="hiw-mock hiw-mock--tiles">
+      <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
+        <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
+        <div className="hiw-mock__chrome-label">Gormaran AI</div>
+      </div>
+      <div className="hiw-mock__tile-grid">
+        {TOOL_TILES.map((tile) => (
+          <div key={tile.emoji} className={`hiw-mock__tile${tile.active ? ' hiw-mock__tile--active' : ''}`}>
+            <span className="hiw-mock__tile-emoji">{tile.emoji}</span>
+            <span className="hiw-mock__tile-label">{tile.label}</span>
+            <div className="hiw-mock__tile-bar" />
+            <div className="hiw-mock__tile-bar hiw-mock__tile-bar--sm" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  if (step === 1) return (
+    <div className="hiw-mock hiw-mock--form">
+      <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
+        <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
+        <div className="hiw-mock__chrome-label">✍️ Blog Post Writer</div>
+      </div>
+      <div className="hiw-mock__form-fields">
+        {['Tema', 'Keyword SEO', 'Audiencia'].map((label, i) => (
+          <div key={i} className="hiw-mock__field">
+            <div className="hiw-mock__field-label">{label}</div>
+            <div className="hiw-mock__field-input">
+              <motion.div
+                className="hiw-mock__field-fill"
+                initial={{ width: 0 }}
+                animate={active ? { width: ['40%', '75%', '88%'][i] } : { width: 0 }}
+                transition={{ duration: 0.7, delay: i * 0.25, ease: 'easeOut' }}
+              />
+            </div>
+          </div>
+        ))}
+        <motion.div
+          className="hiw-mock__gen-btn"
+          initial={{ opacity: 0 }}
+          animate={active ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ delay: 0.9 }}
+        >
+          ⚡ Generar con IA
+        </motion.div>
+      </div>
+    </div>
+  );
+
+  if (step === 2) return (
+    <div className="hiw-mock hiw-mock--output">
+      <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
+        <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
+        <div className="hiw-mock__output-badge">✨ AI Output</div>
+        <div className="hiw-mock__word-count">~680 palabras</div>
+      </div>
+      <div className="hiw-mock__lines">
+        {OUTPUT_LINES_WIDTHS.map((w, i) => (
+          <motion.div
+            key={i}
+            className={`hiw-mock__line${i === 0 ? ' hiw-mock__line--title' : ''}`}
+            style={{ width: `${w}%` }}
+            initial={{ scaleX: 0 }}
+            animate={active ? { scaleX: 1 } : { scaleX: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.07, ease: 'easeOut' }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+
+  if (step === 3) return (
+    <div className="hiw-mock hiw-mock--review">
+      <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
+        <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
+        <div className="hiw-mock__review-done">✓ Listo · 680 palabras</div>
+      </div>
+      <div className="hiw-mock__lines hiw-mock__lines--done">
+        {[80, 65, 90, 55].map((w, i) => (
+          <div key={i} className="hiw-mock__line" style={{ width: `${w}%` }} />
+        ))}
+      </div>
+      <div className="hiw-mock__actions">
+        <div className="hiw-mock__action-btn hiw-mock__action-btn--primary">Copiar ✓</div>
+        <div className="hiw-mock__action-btn">Descargar</div>
+        <div className="hiw-mock__action-btn">Editar</div>
+      </div>
+    </div>
+  );
+
+  return null;
+}
+
+// ── How It Works 2x2 Grid (Tradvio style) ────────────────────────
+function HowItWorksGrid() {
+  const { t } = useTranslation();
+  const [active, setActive] = useState(0);
+  const timerRef = useRef(null);
+
+  const startTimer = useCallback(() => {
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setActive(prev => (prev + 1) % HOW_STEPS.length);
+    }, 3800);
+  }, []);
+
+  useEffect(() => {
+    startTimer();
+    return () => clearInterval(timerRef.current);
+  }, [startTimer]);
+
+  const handleClick = (i) => {
+    setActive(i);
+    startTimer();
+  };
+
+  return (
+    <div className="hiw-grid">
+      {HOW_STEPS.map((step, i) => (
+        <motion.button
+          key={i}
+          className={`hiw-card${active === i ? ' hiw-card--active' : ''}`}
+          onClick={() => handleClick(i)}
+          whileHover={{ scale: 1.015 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="hiw-card__visual">
+            <HiwMockup step={i} active={active === i} />
+          </div>
+          <div className="hiw-card__footer">
+            <span className="hiw-card__num">{step.num}</span>
+            <div className="hiw-card__text">
+              <div className="hiw-card__title">
+                {t(step.titleKey, { defaultValue: step.defaultTitle })}
+              </div>
+              <div className="hiw-card__desc">
+                {t(step.descKey, { defaultValue: step.defaultDesc })}
+              </div>
+            </div>
+          </div>
+        </motion.button>
+      ))}
+    </div>
+  );
+}
+
 
 
 // ── Workflow Demo ──────────────────────────────────────────────────
 const DEMO_TOOLS = [
-  { cat: '📈 Marketing', name: 'Keyword Research' },
-  { cat: '✍️ Content',   name: 'Blog Post Writer', active: true },
-  { cat: '✍️ Content',   name: 'Newsletter Writer' },
-  { cat: '🛠️ Digital',   name: 'Google Ads Creator' },
-  { cat: '🎯 Strategy',  name: 'SWOT Analysis' },
+  { emoji: '📈', catKey: 'cat.marketing.name', nameKey: 'tool.seo-keyword-research.name' },
+  { emoji: '✍️', catKey: 'cat.content.name',   nameKey: 'tool.blog-post.name', active: true },
+  { emoji: '✍️', catKey: 'cat.content.name',   nameKey: 'tool.newsletter.name' },
+  { emoji: '🛠️', catKey: 'cat.digital.name',   nameKey: 'tool.google-ads.name' },
+  { emoji: '🎯', catKey: 'cat.strategy.name',  nameKey: 'tool.swot-analysis.name' },
 ];
 
 const DEMO_PHASES = [
@@ -448,13 +681,13 @@ function WorkflowDemo({ phase, setPhase }) {
           </div>
           {DEMO_TOOLS.map((tool) => (
             <motion.div
-              key={tool.name}
+              key={tool.nameKey}
               className={`wf-demo__tool${tool.active && phase >= 1 ? ' selected' : ''}${tool.active && phase === 0 ? ' highlight' : ''}`}
               animate={tool.active && phase === 0 ? { x: [0, 4, 0] } : {}}
               transition={{ duration: 0.5, delay: 0.8, repeat: 1 }}
             >
-              <span className="wf-demo__tool-cat">{tool.cat}</span>
-              <span className="wf-demo__tool-name">{tool.name}</span>
+              <span className="wf-demo__tool-cat">{tool.emoji} {t(tool.catKey)}</span>
+              <span className="wf-demo__tool-name">{t(tool.nameKey)}</span>
             </motion.div>
           ))}
         </div>
@@ -494,7 +727,7 @@ function WorkflowDemo({ phase, setPhase }) {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="wf-demo__tool-header">✍️ Blog Post Writer</div>
+                <div className="wf-demo__tool-header">✍️ {t('tool.blog-post.name')}</div>
                 <div className="wf-demo__form">
                   {[
                     { label: t('landing.how.demo.field1', { defaultValue: 'Topic' }),    val: 'AI tools for small businesses in 2025' },
@@ -1126,10 +1359,10 @@ function WhatYouGet() {
 
 // ── Workflow Chain Section ────────────────────────────────────────
 const WORKFLOW_CHAIN = [
-  { step: '01', tool: 'SEO Keyword Research', cat: '📈 Marketing', time: '2 min', output: '20 ranked keywords' },
-  { step: '02', tool: 'Blog Post Writer',      cat: '✍️ Content',   time: '2 min', output: '800-word post' },
-  { step: '03', tool: 'Social Media Captions', cat: '📈 Marketing', time: '1 min', output: '5 ready captions' },
-  { step: '04', tool: 'Email Campaign',        cat: '📈 Marketing', time: '2 min', output: 'Full email copy' },
+  { step: '01', toolKey: 'tool.seo-keyword-research.name', catEmoji: '📈', catKey: 'cat.marketing.name', time: '2 min', outputEn: '20 ranked keywords', outputEs: '20 palabras clave' },
+  { step: '02', toolKey: 'tool.blog-post.name',            catEmoji: '✍️', catKey: 'cat.content.name',   time: '2 min', outputEn: '800-word post',       outputEs: 'Post de 800 palabras' },
+  { step: '03', toolKey: 'tool.social-media-captions.name',catEmoji: '📈', catKey: 'cat.marketing.name', time: '1 min', outputEn: '5 ready captions',    outputEs: '5 captions listos' },
+  { step: '04', toolKey: 'tool.email-campaign.name',       catEmoji: '📈', catKey: 'cat.marketing.name', time: '2 min', outputEn: 'Full email copy',      outputEs: 'Email copy completo' },
 ];
 
 function WorkflowChain() {
@@ -1159,11 +1392,11 @@ function WorkflowChain() {
             <motion.div key={item.step} className="landing__workflow-item" variants={fadeUp}>
               <div className="landing__workflow-step">{item.step}</div>
               <div className="landing__workflow-card">
-                <div className="landing__workflow-cat">{item.cat}</div>
-                <div className="landing__workflow-tool">{item.tool}</div>
+                <div className="landing__workflow-cat">{item.catEmoji} {t(item.catKey)}</div>
+                <div className="landing__workflow-tool">{t(item.toolKey)}</div>
                 <div className="landing__workflow-meta">
                   <span className="landing__workflow-time">⏱ {item.time}</span>
-                  <span className="landing__workflow-output">→ {item.output}</span>
+                  <span className="landing__workflow-output">→ {isEs ? item.outputEs : item.outputEn}</span>
                 </div>
               </div>
               {i < WORKFLOW_CHAIN.length - 1 && (
@@ -1513,7 +1746,7 @@ export default function LandingPage() {
               {t('landing.how.title')}
             </h2>
           </AnimatedSection>
-          <HowItWorksNew />
+          <HowItWorksGrid />
         </div>
       </section>
 

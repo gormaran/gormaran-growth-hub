@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useWorkspace } from '../context/WorkspaceContext';
+import { useTheme } from '../context/ThemeContext';
 import './Navbar.css';
 
 const LANGUAGES = [
@@ -22,6 +23,7 @@ export default function Navbar() {
   const { subscription } = useSubscription();
   const { workspaces, currentWorkspace, switchWorkspace, canCreateWorkspace } = useWorkspace();
   const { i18n } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -54,14 +56,16 @@ export default function Navbar() {
 
   const navLinks = currentUser
     ? [
-        { to: '/real-time-data', label: 'Real Time Data' },
         { to: '/dashboard', label: 'Dashboard' },
         { to: '/pricing', label: 'Pricing' },
+        { to: '/blog', label: 'Blog' },
+        { to: '/academy', label: 'Academy' },
       ]
     : [
-        { to: '/real-time-data', label: 'Real Time Data' },
-        { to: '/#features', label: 'Features' },
-        { to: '/pricing', label: 'Pricing' },
+        { to: '/#how-it-works', label: 'Cómo funciona' },
+        { to: '/pricing', label: 'Precios' },
+        { to: '/blog', label: 'Blog' },
+        { to: '/academy', label: 'Academy' },
       ];
 
   const isActive = (to) => location.pathname === to;
@@ -98,6 +102,16 @@ export default function Navbar() {
 
         {/* Right section */}
         <div className="navbar__right">
+          {/* Theme toggle */}
+          <button
+            className="navbar__theme-btn"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+
           {/* Language Selector - always visible */}
           <div className="navbar__lang">
             <button

@@ -820,5 +820,45 @@
   "landing.dash.signInBtn": "Iniciar sesión →",
   "landing.dash.ga.metrics": "Visitas · Conversiones · Ingresos",
   "landing.dash.ig.metrics": "Seguidores · Alcance · Engagement",
-  "landing.dash.li.metrics": "Vistas de perfil · Conexiones · Posts"
+  "landing.dash.li.metrics": "Vistas de perfil · Conexiones · Posts",
+
+  "landing.how.pill": "Cómo Funciona",
+  "landing.how.step4.title": "Revisa y Publica",
+  "landing.how.step4.desc": "Edita, refina o copia tu resultado directamente. Tú mantienes el control total — la IA hace el trabajo pesado.",
+
+  "landing.stats.saved": "ahorradas por usuario / día",
+  "landing.stats.pertool": "min de media por herramienta",
+  "landing.stats.prompts": "prompts necesarios",
+
+  "landing.workflow.pill": "Flujo de Trabajo Completo",
+  "landing.workflow.titlePre": "Un flujo de marketing completo",
+  "landing.workflow.titleHighlight": "en 10 minutos",
+  "landing.workflow.subtitle": "Encadena varias herramientas. Cada resultado alimenta el siguiente — sin copiar y pegar, sin cambiar de app.",
+
+  "landing.automation.pill": "Automatización",
+  "landing.automation.titlePre": "No solo generes contenido.",
+  "landing.automation.titleHighlight": "Automatiza todo tu flujo de trabajo.",
+  "landing.automation.desc": "Conecta Gormaran con n8n para construir pipelines de marketing completos que funcionan en piloto automático — desde la investigación hasta la publicación, sin tocar una pantalla.",
+  "landing.automation.feat1": "Dispara flujos desde cualquier evento",
+  "landing.automation.feat2": "Conecta con 400+ apps (Notion, Slack, Gmail…)",
+  "landing.automation.feat3": "Programa y repite cualquier tarea de IA automáticamente",
+  "landing.automation.cta": "Añadir Automatización — €10 →",
+
+  "landing.whychatgpt.pill": "Por qué Gormaran",
+  "landing.wyg.pill": "Herramientas",
+  "landing.support.pill": "Soporte",
+
+  "landing.plans.pill": "Precios",
+  "landing.plans.title2": "Empieza gratis. Escala sin límites.",
+  "landing.cta.getDemo": "Cómo funciona ↓",
+
+  "landing.promptbox.chip4": "Post de Blog SEO",
+  "landing.promptbox.chip4.fill": "Escribe un post de blog SEO sobre las mejores herramientas de IA para pequeñas empresas en 2025",
+  "landing.promptbox.chip5": "Campaña de Email",
+  "landing.promptbox.chip5.fill": "Crea una secuencia de 3 emails de bienvenida para nuevos suscriptores de mi SaaS de gestión de proyectos",
+  "landing.promptbox.chip6": "Descripción de Producto",
+  "landing.promptbox.chip6.fill": "Escribe una descripción de producto persuasiva para mis auriculares inalámbricos premium con cancelación de ruido",
+  "landing.promptbox.chip7": "Análisis DAFO",
+  "landing.promptbox.chip7.fill": "Haz un análisis DAFO completo para mi startup de tecnología educativa que quiere captar clientes B2B",
+  "landing.promptbox.moreTools": "+{{n}} herramientas más"
 }
