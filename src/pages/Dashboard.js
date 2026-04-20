@@ -544,12 +544,14 @@ export default function Dashboard() {
                       >
                         {cat.icon}
                       </div>
-                      {isTop && !locked && (
-                        <span className="dashboard__cat-recommended">{isEs ? '⭐ Para ti' : '⭐ For you'}</span>
-                      )}
-                      {locked && (
-                        <span className="dashboard__cat-lock">🔒 {CATEGORY_MIN_TIER[cat.id] || 'Grow'}</span>
-                      )}
+                      <div className="dashboard__cat-badges">
+                        {locked && (
+                          <span className="dashboard__cat-lock">🔒 {CATEGORY_MIN_TIER[cat.id] || 'Grow'}</span>
+                        )}
+                        {isTop && (
+                          <span className="dashboard__cat-recommended">{isEs ? '⭐ Para ti' : '⭐ For you'}</span>
+                        )}
+                      </div>
                     </div>
                     <h3 className="dashboard__cat-name">{catName}</h3>
                     <p className="dashboard__cat-desc">{catDesc}</p>

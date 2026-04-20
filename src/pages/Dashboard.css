@@ -404,6 +404,13 @@
   flex-shrink: 0;
 }
 
+.dashboard__cat-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
 .dashboard__cat-lock {
   font-size: 0.72rem;
   background: rgba(139,92,246,0.15);
