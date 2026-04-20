@@ -184,11 +184,11 @@
 /* ── Hero Prompt Box ─────────────────────────────────────────────── */
 .hero-promptbox {
   width: 100%;
-  max-width: 600px;
+  max-width: 760px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 4px 4px 10px;
+  border-radius: 20px;
+  padding: 6px 6px 14px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -200,8 +200,8 @@
 .hero-promptbox__input-row {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
-  padding: 4px 6px 4px 12px;
+  gap: 10px;
+  padding: 6px 8px 6px 18px;
 }
 
 .hero-promptbox__input {
@@ -210,12 +210,12 @@
   border: none;
   outline: none;
   color: var(--text-primary);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 1rem;
+  line-height: 1.65;
   resize: none;
-  min-height: 44px;
-  max-height: 120px;
-  padding: 10px 0;
+  min-height: 56px;
+  max-height: 160px;
+  padding: 12px 0;
   font-family: inherit;
 }
 
@@ -225,9 +225,9 @@
 
 .hero-promptbox__send {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   border: none;
   background: rgba(99, 102, 241, 0.2);
   color: rgba(255, 255, 255, 0.35);
@@ -325,14 +325,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 6px 10px 2px;
+  gap: 10px;
+  padding: 8px 14px 2px;
 }
 
 .hero-promptbox__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 7px;
 }
 
 .hero-promptbox__chip {
