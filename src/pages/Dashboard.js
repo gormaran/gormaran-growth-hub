@@ -13,6 +13,7 @@ import OnboardingModal from '../components/OnboardingModal';
 import './Dashboard.css';
 
 const CATEGORY_MIN_TIER = {
+  digital:   'Grow',
   strategy:  'Scale',
   ecommerce: 'Scale',
   agency:    'Scale',
@@ -20,6 +21,8 @@ const CATEGORY_MIN_TIER = {
   startup:   'Evolution',
   finance:   'Evolution',
 };
+
+const TIER_RANK = { Grow: 1, Scale: 2, Evolution: 3 };
 
 const GOALS = [
   { id: 'clients',  labelEs: '🤝 Conseguir Clientes', labelEn: '🤝 Get Clients',    cats: ['strategy', 'agency'] },
@@ -213,14 +216,17 @@ export default function Dashboard() {
   const visibleCategories = useMemo(() => {
     const nonAddon = CATEGORIES.filter(c => !c.isAddon);
     const addon    = CATEGORIES.filter(c => c.isAddon);
-    let ordered = nonAddon;
-    if (persona && PERSONA_ORDER[persona]) {
-      const order = PERSONA_ORDER[persona];
-      ordered = [...nonAddon].sort((a, b) => {
-        const ai = order.indexOf(a.id); const bi = order.indexOf(b.id);
-        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-      });
-    }
+    const personaOrder = (persona && PERSONA_ORDER[persona]) || [];
+    const tierOf = (cat) => TIER_RANK[CATEGORY_MIN_TIER[cat.id]] ?? 0;
+    const personaRank = (cat) => {
+      const i = personaOrder.indexOf(cat.id);
+      return i === -1 ? 99 : i;
+    };
+    const ordered = [...nonAddon].sort((a, b) => {
+      const tierDiff = tierOf(a) - tierOf(b);
+      if (tierDiff !== 0) return tierDiff;
+      return personaRank(a) - personaRank(b);
+    });
     const base = [...ordered, ...addon];
     if (!activeGoal) return base;
     if (activeGoal === 'top') return base.filter(c => topCats.includes(c.id));
