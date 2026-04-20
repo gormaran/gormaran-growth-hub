@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { collection, doc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useWorkspace } from '../context/WorkspaceContext';
-import { createPortalSession, cancelSubscription } from '../utils/api';
+import { createPortalSession, cancelSubscription, listApiKeys, generateApiKey, revokeApiKey } from '../utils/api';
 import './SettingsPage.css';
 
 const TONE_OPTIONS = ['Professional', 'Friendly & Casual', 'Bold & Direct', 'Empathetic', 'Authoritative', 'Creative'];
@@ -34,6 +36,25 @@ export default function SettingsPage() {
   const [savingBrand, setSavingBrand] = useState(false);
   const [brandSaved, setBrandSaved] = useState(false);
 
+  // API Keys state (Enterprise)
+  const [apiKeys, setApiKeys] = useState([]);
+  const [loadingKeys, setLoadingKeys] = useState(false);
+  const [generatingKey, setGeneratingKey] = useState(false);
+  const [newKeyName, setNewKeyName] = useState('');
+  const [revealedKey, setRevealedKey] = useState(null);
+  const [copiedKey, setCopiedKey] = useState(false);
+  const [keysError, setKeysError] = useState('');
+
+  // White-label state (Enterprise)
+  const [whiteLabelEnabled, setWhiteLabelEnabled] = useState(false);
+
+  // Team management state (Enterprise)
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviting, setInviting] = useState(false);
+  const [inviteError, setInviteError] = useState('');
+  const [inviteSuccess, setInviteSuccess] = useState('');
+
   // Workspace management state
   const [newWsName, setNewWsName] = useState('');
   const [newWsEmoji, setNewWsEmoji] = useState('📁');
@@ -46,9 +67,31 @@ export default function SettingsPage() {
 
   // Sync local form state from WorkspaceContext whenever it changes
   useEffect(() => {
-    if (savedBrand) setBrandProfile(prev => ({ ...EMPTY_BRAND, ...savedBrand }));
-    else setBrandProfile(EMPTY_BRAND);
+    if (savedBrand) {
+      setBrandProfile(prev => ({ ...EMPTY_BRAND, ...savedBrand }));
+      setWhiteLabelEnabled(!!savedBrand.whiteLabelEnabled);
+    } else {
+      setBrandProfile(EMPTY_BRAND);
+      setWhiteLabelEnabled(false);
+    }
   }, [savedBrand]);
+
+  // Load API keys and team for Enterprise users
+  const plan = PLANS[subscription] || PLANS.free;
+  useEffect(() => {
+    if (!plan.apiAccess) return;
+    setLoadingKeys(true);
+    listApiKeys()
+      .then(({ keys }) => setApiKeys(keys))
+      .catch(err => setKeysError(err.message))
+      .finally(() => setLoadingKeys(false));
+
+    if (currentUser?.uid) {
+      getDocs(collection(db, 'users', currentUser.uid, 'team'))
+        .then(snap => setTeamMembers(snap.docs.map(d => ({ id: d.id, ...d.data() }))))
+        .catch(() => {});
+    }
+  }, [plan.apiAccess, currentUser?.uid]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Scroll to workspaces section if hash is present
   useEffect(() => {
@@ -56,6 +99,90 @@ export default function SettingsPage() {
       setTimeout(() => workspacesRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
     }
   }, []);
+
+  async function handleGenerateKey(e) {
+    e.preventDefault();
+    if (!newKeyName.trim()) return;
+    setKeysError('');
+    setGeneratingKey(true);
+    try {
+      const data = await generateApiKey(newKeyName.trim());
+      setRevealedKey(data);
+      setApiKeys(prev => [...prev, { id: data.id, name: data.name, prefix: data.prefix, createdAt: Date.now(), lastUsed: null }]);
+      setNewKeyName('');
+    } catch (err) {
+      setKeysError(err.message);
+    } finally {
+      setGeneratingKey(false);
+    }
+  }
+
+  async function handleRevokeKey(keyId) {
+    if (!window.confirm('Revoke this API key? Any integrations using it will stop working.')) return;
+    try {
+      await revokeApiKey(keyId);
+      setApiKeys(prev => prev.filter(k => k.id !== keyId));
+    } catch (err) {
+      setKeysError(err.message);
+    }
+  }
+
+  async function handleCopyRevealedKey() {
+    if (!revealedKey?.key) return;
+    await navigator.clipboard.writeText(revealedKey.key);
+    setCopiedKey(true);
+    setTimeout(() => setCopiedKey(false), 2500);
+  }
+
+  async function handleToggleWhiteLabel(enabled) {
+    setWhiteLabelEnabled(enabled);
+    try {
+      await saveBrandProfile({ ...brandProfile, whiteLabelEnabled: enabled });
+    } catch (err) {
+      console.error('[WhiteLabel] save failed:', err);
+    }
+  }
+
+  async function handleInviteMember(e) {
+    e.preventDefault();
+    const email = inviteEmail.trim().toLowerCase();
+    if (!email || !email.includes('@')) {
+      setInviteError('Enter a valid email address.');
+      return;
+    }
+    setInviteError('');
+    setInviteSuccess('');
+    setInviting(true);
+    try {
+      await setDoc(doc(db, 'users', currentUser.uid, 'team', email), {
+        email,
+        status: 'invited',
+        invitedAt: new Date().toISOString(),
+      });
+      setTeamMembers(prev => {
+        const existing = prev.find(m => m.id === email);
+        if (existing) return prev;
+        return [...prev, { id: email, email, status: 'invited', invitedAt: new Date().toISOString() }];
+      });
+      setInviteEmail('');
+      setInviteSuccess(`Invite sent to ${email}`);
+      setTimeout(() => setInviteSuccess(''), 4000);
+    } catch (err) {
+      setInviteError(err.message || 'Failed to invite member');
+    } finally {
+      setInviting(false);
+    }
+  }
+
+  async function handleRemoveMember(memberId) {
+    if (!window.confirm('Remove this team member?')) return;
+    try {
+      await deleteDoc(doc(db, 'users', currentUser.uid, 'team', memberId));
+      setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+    } catch (err) {
+      console.error('[Team] remove failed:', err);
+    }
+  }
 
   async function handleSaveBrandProfile(e) {
     e.preventDefault();
@@ -139,8 +266,7 @@ export default function SettingsPage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const plan = PLANS[subscription] || PLANS.free;
-  const usageDisplay = plan.allAccess ? 'Unlimited' : `${usageCount} today`;
+  const usageDisplay = plan.allAccess || plan.unlimitedUsage ? 'Unlimited' : `${usageCount} / month`;
 
   return (
     <div className="page">
@@ -196,17 +322,11 @@ export default function SettingsPage() {
               <div className="settings__plan-info">
                 <div className="settings__plan-row">
                   <span className="settings__plan-label">Current Plan</span>
-                  <span className={`badge ${subscription === 'free' ? 'badge-free' : 'badge-pro'}`}>
-                    {subscription === 'free'
-                      ? 'Free'
-                      : subscription === 'grow'
-                      ? '⭐ Grow'
-                      : subscription === 'scale'
-                      ? '💎 Scale'
-                      : subscription === 'evolution'
-                      ? '🚀 Evolution'
-                      : subscription === 'admin'
-                      ? '🔑 Admin'
+                  <span className={`badge ${subscription === 'free' ? 'badge-free' : (plan.apiAccess ? 'badge-enterprise' : 'badge-pro')}`}>
+                    {subscription === 'free' ? 'Free'
+                      : (subscription === 'enterprise' || subscription === 'evolution' || subscription === 'business') ? '🏢 Enterprise'
+                      : (subscription === 'pro' || subscription === 'grow' || subscription === 'scale') ? '⭐ Pro'
+                      : subscription === 'admin' ? '🔑 Admin'
                       : subscription}
                   </span>
                 </div>
@@ -352,6 +472,24 @@ export default function SettingsPage() {
                       placeholder="Short description of what you do and for whom…" />
                   </div>
                 </div>
+                {plan.apiAccess && (
+                  <div className="settings__brand-full settings__whitelabel">
+                    <label className="settings__whitelabel-label">
+                      <div>
+                        <strong>White-label mode</strong>
+                        <p>Hide all Gormaran branding in tool outputs — your clients only see your brand.</p>
+                      </div>
+                      <div
+                        className={`settings__toggle${whiteLabelEnabled ? ' settings__toggle--on' : ''}`}
+                        onClick={() => handleToggleWhiteLabel(!whiteLabelEnabled)}
+                        role="switch"
+                        aria-checked={whiteLabelEnabled}
+                      >
+                        <span className="settings__toggle-knob" />
+                      </div>
+                    </label>
+                  </div>
+                )}
                 <div className="settings__brand-actions">
                   <button type="submit" className="btn btn-primary" disabled={savingBrand}>
                     {savingBrand ? '…' : brandSaved ? '✅ Saved!' : '💾 Save Brand Profile'}
@@ -377,8 +515,8 @@ export default function SettingsPage() {
             </h2>
             <p className="settings__brand-hint">
               Each workspace has its own Brand Profile and history — perfect for managing multiple clients or projects.
-              {(subscription === 'free' || subscription === 'grow') && (
-                <> <a href="/pricing" className="settings__upgrade-link">Upgrade to Scale for up to 5 workspaces.</a></>
+              {(subscription === 'free') && (
+                <> <a href="/pricing" className="settings__upgrade-link">Upgrade to Pro for up to 3 workspaces, or Enterprise for unlimited.</a></>
               )}
             </p>
 
@@ -476,6 +614,205 @@ export default function SettingsPage() {
               </div>
             )}
           </motion.div>
+
+          {/* API Keys — Enterprise only */}
+          {plan.apiAccess && (
+            <motion.div
+              className="settings__card"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.195 }}
+            >
+              <h2 className="settings__card-title">
+                🔑 API Keys
+                <span className="settings__ws-tag">Enterprise</span>
+              </h2>
+              <p className="settings__brand-hint">
+                Use API keys to access Gormaran from your own apps, n8n workflows, or custom integrations.
+                Each key works with <code>Authorization: Bearer grm_live_...</code>.
+              </p>
+
+              {keysError && <div className="alert alert-error">{keysError}</div>}
+
+              {/* Revealed key — show once */}
+              {revealedKey && (
+                <div className="settings__apikey-reveal">
+                  <p className="settings__apikey-reveal-warn">⚠️ Copy this key now — it won't be shown again.</p>
+                  <div className="settings__apikey-reveal-row">
+                    <code className="settings__apikey-code">{revealedKey.key}</code>
+                    <button className="btn btn-primary btn-sm" onClick={handleCopyRevealedKey}>
+                      {copiedKey ? '✅ Copied!' : '📋 Copy'}
+                    </button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setRevealedKey(null)}>Dismiss</button>
+                  </div>
+                </div>
+              )}
+
+              {/* Keys list */}
+              {loadingKeys ? (
+                <div className="settings__brand-loading">Loading keys…</div>
+              ) : (
+                <div className="settings__apikey-list">
+                  {apiKeys.length === 0 && !revealedKey && (
+                    <p className="settings__brand-hint">No API keys yet. Generate your first key below.</p>
+                  )}
+                  {apiKeys.map(key => (
+                    <div key={key.id} className="settings__apikey-item">
+                      <div className="settings__apikey-info">
+                        <span className="settings__apikey-name">{key.name}</span>
+                        <code className="settings__apikey-prefix">{key.prefix}</code>
+                        <span className="settings__apikey-meta">
+                          Created {key.createdAt ? new Date(key.createdAt).toLocaleDateString() : '—'}
+                          {key.lastUsed ? ` · Last used ${new Date(key.lastUsed).toLocaleDateString()}` : ''}
+                        </span>
+                      </div>
+                      <button
+                        className="btn btn-ghost btn-sm settings__apikey-revoke"
+                        onClick={() => handleRevokeKey(key.id)}
+                      >
+                        Revoke
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Generate new key */}
+              {apiKeys.length < 5 && (
+                <form onSubmit={handleGenerateKey} className="settings__apikey-generate">
+                  <input
+                    className="form-input"
+                    value={newKeyName}
+                    onChange={e => setNewKeyName(e.target.value)}
+                    placeholder="Key name (e.g. n8n integration, client dashboard)"
+                    maxLength={50}
+                  />
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={generatingKey || !newKeyName.trim()}>
+                    {generatingKey ? '…' : '＋ Generate Key'}
+                  </button>
+                </form>
+              )}
+              {apiKeys.length >= 5 && (
+                <p className="settings__brand-hint">Maximum 5 API keys reached. Revoke one to create another.</p>
+              )}
+
+              {/* API Docs hint */}
+              <div className="settings__apikey-docs">
+                <strong>API Endpoint:</strong>{' '}
+                <code>{process.env.REACT_APP_API_URL || 'https://gormaran-growth-hub.onrender.com'}/api/v1/generate</code>
+                <br />
+                <strong>Tools list:</strong>{' '}
+                <code>GET /api/v1/tools</code>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Team Management — Enterprise only */}
+          {plan.apiAccess && (
+            <motion.div
+              className="settings__card"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.198 }}
+            >
+              <h2 className="settings__card-title">
+                👥 Team Management
+                <span className="settings__ws-tag">Enterprise</span>
+              </h2>
+              <p className="settings__brand-hint">
+                Invite team members to collaborate in your workspaces. They'll receive an email with access instructions.
+              </p>
+
+              {inviteError && <div className="alert alert-error">{inviteError}</div>}
+              {inviteSuccess && <div className="alert alert-success">{inviteSuccess}</div>}
+
+              {/* Team members list */}
+              {teamMembers.length > 0 && (
+                <div className="settings__team-list">
+                  {teamMembers.map(member => (
+                    <div key={member.id} className="settings__team-item">
+                      <div className="settings__team-info">
+                        <span className="settings__team-email">{member.email}</span>
+                        <span className={`badge ${member.status === 'active' ? 'badge-pro' : 'badge-free'}`}>
+                          {member.status}
+                        </span>
+                      </div>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => handleRemoveMember(member.id)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Invite form */}
+              <form onSubmit={handleInviteMember} className="settings__team-invite">
+                <input
+                  className="form-input"
+                  type="email"
+                  value={inviteEmail}
+                  onChange={e => { setInviteEmail(e.target.value); setInviteError(''); }}
+                  placeholder="colleague@company.com"
+                />
+                <button type="submit" className="btn btn-primary btn-sm" disabled={inviting || !inviteEmail.trim()}>
+                  {inviting ? '…' : '✉️ Invite'}
+                </button>
+              </form>
+
+              <div className="settings__brand-hint" style={{ marginTop: 0 }}>
+                <strong>SSO:</strong> Google sign-in is enabled for all plans. SAML/Okta SSO available on request —{' '}
+                <a href="mailto:hola@gormaran.io" className="settings__upgrade-link">contact us</a>.
+              </div>
+            </motion.div>
+          )}
+
+          {/* SLA / Support — Enterprise only */}
+          {plan.apiAccess && (
+            <motion.div
+              className="settings__card settings__card--enterprise-sla"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h2 className="settings__card-title">
+                🛡️ Enterprise SLA & Support
+                <span className="settings__ws-tag">Enterprise</span>
+              </h2>
+              <div className="settings__sla-grid">
+                <div className="settings__sla-item">
+                  <span className="settings__sla-icon">⚡</span>
+                  <div>
+                    <strong>99.9% Uptime SLA</strong>
+                    <p>Guaranteed availability with automatic incident notifications.</p>
+                  </div>
+                </div>
+                <div className="settings__sla-item">
+                  <span className="settings__sla-icon">💬</span>
+                  <div>
+                    <strong>Dedicated Account Manager</strong>
+                    <p>Direct Slack or email channel. Response within 4 business hours.</p>
+                  </div>
+                </div>
+                <div className="settings__sla-item">
+                  <span className="settings__sla-icon">🚀</span>
+                  <div>
+                    <strong>Personalized Onboarding</strong>
+                    <p>1-hour onboarding call to set up your team, workspaces, and integrations.</p>
+                  </div>
+                </div>
+                <div className="settings__sla-item">
+                  <span className="settings__sla-icon">📋</span>
+                  <div>
+                    <strong>Contact</strong>
+                    <p><a href="mailto:enterprise@gormaran.io" className="settings__upgrade-link">enterprise@gormaran.io</a></p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {/* Account actions */}
           <motion.div

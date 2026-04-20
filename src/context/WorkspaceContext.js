@@ -12,12 +12,13 @@ export function useWorkspace() { return useContext(WorkspaceContext); }
 
 export const PERSONAL_WS = { id: 'personal', name: 'Personal', emoji: '🏠' };
 
+const PLAN_ALIASES = { grow: 'pro', scale: 'pro', evolution: 'enterprise', business: 'enterprise' };
+
 // Max workspaces per plan (including Personal)
 export const WORKSPACE_LIMITS = {
   free: 1,
-  grow: 1,
-  scale: 5,
-  evolution: Infinity,
+  pro: 3,
+  enterprise: Infinity,
   admin: Infinity,
 };
 
@@ -30,7 +31,8 @@ export function WorkspaceProvider({ children }) {
   const [brandProfile, setBrandProfile] = useState(null);
   const [loadingWorkspaces, setLoadingWorkspaces] = useState(true);
 
-  const maxWorkspaces = WORKSPACE_LIMITS[subscription] ?? 1;
+  const resolvedPlan = PLAN_ALIASES[subscription] || subscription;
+  const maxWorkspaces = WORKSPACE_LIMITS[resolvedPlan] ?? 1;
   const currentWorkspace = workspaces.find(w => w.id === currentWorkspaceId) || PERSONAL_WS;
   const canCreateWorkspace = workspaces.length < maxWorkspaces;
 

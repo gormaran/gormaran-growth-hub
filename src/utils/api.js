@@ -212,6 +212,45 @@ export async function generateImage(inputs) {
   return response.json(); // { imageUrl, revisedPrompt }
 }
 
+// ── API Key Management (Enterprise) ──────────────────────────────────────────
+
+export async function listApiKeys() {
+  const authHeaders = await getAuthHeader();
+  const response = await fetch(`${API_URL}/api/apikeys`, { headers: authHeaders });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to list API keys');
+  }
+  return response.json(); // { keys: [{ id, name, prefix, createdAt, lastUsed }] }
+}
+
+export async function generateApiKey(name = 'API Key') {
+  const authHeaders = await getAuthHeader();
+  const response = await fetch(`${API_URL}/api/apikeys`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders },
+    body: JSON.stringify({ name }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to generate API key');
+  }
+  return response.json(); // { id, key, prefix, name }
+}
+
+export async function revokeApiKey(keyId) {
+  const authHeaders = await getAuthHeader();
+  const response = await fetch(`${API_URL}/api/apikeys/${keyId}`, {
+    method: 'DELETE',
+    headers: authHeaders,
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to revoke API key');
+  }
+  return response.json();
+}
+
 // Get current subscription status
 export async function getSubscriptionStatus() {
   const authHeaders = await getAuthHeader();

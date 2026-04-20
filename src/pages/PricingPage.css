@@ -99,6 +99,10 @@
   margin: 0 auto 4rem;
   align-items: start;
 }
+.pricing2__plans--3col {
+  grid-template-columns: 1fr 1.1fr 1fr;
+  max-width: 1100px;
+}
 
 /* Plan card base */
 .pricing2__plan {
@@ -195,6 +199,47 @@
 .pricing2__plan-cta--current {
   pointer-events: none;
   opacity: 0.6;
+}
+
+/* Enterprise card */
+.pricing2__plan--enterprise {
+  border-color: rgba(251,191,36,0.4);
+  box-shadow: 0 0 0 1px rgba(251,191,36,0.15), 0 8px 40px rgba(251,191,36,0.08);
+}
+.pricing2__plan--enterprise .pricing2__plan-amount {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.pricing2__plan-badge-top--enterprise {
+  background: linear-gradient(135deg, #d97706, #f59e0b) !important;
+}
+.btn-enterprise {
+  background: linear-gradient(135deg, #d97706, #f59e0b) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 4px 20px rgba(245,158,11,0.3);
+  width: 100%;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 12px;
+}
+.btn-enterprise:hover {
+  opacity: 0.9;
+  box-shadow: 0 6px 28px rgba(245,158,11,0.4);
+}
+
+/* Comparison table enterprise column */
+.pricing2__th--enterprise {
+  color: #f59e0b;
+  font-weight: 700;
+}
+.pricing2__td--enterprise {
+  text-align: center;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 /* Guarantee text */
@@ -473,8 +518,15 @@
 }
 
 /* Responsive */
+@media (max-width: 960px) {
+  .pricing2__plans--3col { grid-template-columns: 1fr 1fr; }
+  .pricing2__plans--3col .pricing2__plan--enterprise { grid-column: 1 / -1; }
+}
+
 @media (max-width: 768px) {
-  .pricing2__plans { grid-template-columns: 1fr; max-width: 440px; margin-left: auto; margin-right: auto; }
+  .pricing2__plans,
+  .pricing2__plans--3col { grid-template-columns: 1fr; max-width: 440px; margin-left: auto; margin-right: auto; }
+  .pricing2__plans--3col .pricing2__plan--enterprise { grid-column: auto; }
   .pricing2__roi { padding: 2rem 1.5rem; }
   .pricing2__addon { flex-direction: column; align-items: flex-start; padding: 1.5rem; }
   .pricing2__addon-right { align-items: flex-start; text-align: left; width: 100%; }

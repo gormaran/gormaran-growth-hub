@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
-import { createCheckoutSession, validatePromoCode } from '../utils/api';
+import { createCheckoutSession, validatePromoCode, generateApiKey } from '../utils/api';
 import { useTranslation } from 'react-i18next';
 import './PricingPage.css';
 
@@ -15,6 +15,26 @@ const PRO = {
   monthlyPriceId: process.env.REACT_APP_STRIPE_PRO_PRICE_ID,
   annualPriceId:  process.env.REACT_APP_STRIPE_PRO_ANNUAL_PRICE_ID,
 };
+
+const ENTERPRISE = {
+  id: 'enterprise',
+  monthlyPrice: 499,
+  annualMonthly: 399,
+  annualTotal: 4788,
+  monthlyPriceId: process.env.REACT_APP_STRIPE_ENTERPRISE_PRICE_ID,
+  annualPriceId:  process.env.REACT_APP_STRIPE_ENTERPRISE_ANNUAL_PRICE_ID,
+};
+
+const ENTERPRISE_FEATURES = [
+  { text: 'Todo lo de Pro, sin límites', en: 'Everything in Pro, no limits', highlight: true },
+  { text: 'White-label — tu marca, sin mencionar Gormaran', en: 'White-label — your brand, no Gormaran mention' },
+  { text: 'Acceso API con streaming (REST + SSE)', en: 'API access with streaming (REST + SSE)' },
+  { text: 'Workspaces ilimitados (multi-cliente)', en: 'Unlimited workspaces (multi-client)' },
+  { text: 'Gestión de equipo — invita colaboradores', en: 'Team management — invite collaborators' },
+  { text: 'SSO Google · SAML on request', en: 'Google SSO · SAML on request' },
+  { text: 'SLA 99.9% uptime + soporte dedicado', en: '99.9% uptime SLA + dedicated support' },
+  { text: 'Onboarding personalizado', en: 'Personalized onboarding' },
+];
 
 const FREE_FEATURES = [
   { text: '10 automatizaciones al mes', en: '10 automations per month' },
@@ -113,6 +133,24 @@ export default function PricingPage() {
     setLoadingPlan(null);
   }
 
+  async function handleEnterpriseSelect() {
+    if (!currentUser) { navigate('/auth?mode=register'); return; }
+    const priceId = billingPeriod === 'annual' ? ENTERPRISE.annualPriceId : ENTERPRISE.monthlyPriceId;
+    if (!priceId || priceId === 'undefined') {
+      window.location.href = 'mailto:hola@gormaran.io?subject=Enterprise%20Plan';
+      return;
+    }
+    setError('');
+    setLoadingPlan('enterprise');
+    try {
+      const { url } = await createCheckoutSession(priceId, 'subscription', promoState?.promoId || null);
+      window.location.href = url;
+    } catch (err) {
+      setError(err.message || 'Failed to start checkout.');
+    }
+    setLoadingPlan(null);
+  }
+
   async function handleAddonSelect() {
     if (!currentUser) { navigate('/auth?mode=register'); return; }
     const addonPriceId = process.env.REACT_APP_STRIPE_N8N_ADDON_PRICE_ID;
@@ -130,6 +168,7 @@ export default function PricingPage() {
   }
 
   const displayPrice = billingPeriod === 'annual' ? PRO.annualMonthly : PRO.monthlyPrice;
+  const displayEnterprisePrice = billingPeriod === 'annual' ? ENTERPRISE.annualMonthly : ENTERPRISE.monthlyPrice;
   const roiEx = ROI_EXAMPLES[activeRoi];
   const roiValue = roiEx.hours * roiEx.rate;
 
@@ -214,7 +253,7 @@ export default function PricingPage() {
         {/* ── PLANS ── */}
         <div className="container">
           <motion.div
-            className="pricing2__plans"
+            className="pricing2__plans pricing2__plans--3col"
             initial="hidden"
             animate="visible"
             variants={stagger}
@@ -290,6 +329,52 @@ export default function PricingPage() {
               </p>
               <ul className="pricing2__features">
                 {PRO_FEATURES.map((f) => (
+                  <li key={f.text} className={`pricing2__feature${f.highlight ? ' pricing2__feature--highlight' : ''}`}>
+                    <span className="pricing2__feature-check">✓</span>
+                    <span>{isEs ? f.text : f.en}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* ENTERPRISE */}
+            <motion.div className="pricing2__plan pricing2__plan--enterprise" variants={fadeUp}>
+              <div className="pricing2__plan-badge-top pricing2__plan-badge-top--enterprise">
+                {isEs ? '🏢 Enterprise' : '🏢 Enterprise'}
+              </div>
+              <div className="pricing2__plan-header">
+                <h2 className="pricing2__plan-name">Enterprise</h2>
+                <p className="pricing2__plan-desc">
+                  {isEs
+                    ? 'Para agencias que revenden y equipos que escalan sin límites'
+                    : 'For agencies that resell and teams scaling without limits'}
+                </p>
+              </div>
+              <div className="pricing2__plan-price">
+                <span className="pricing2__plan-amount">€{displayEnterprisePrice}</span>
+                <span className="pricing2__plan-period">/mes</span>
+              </div>
+              {billingPeriod === 'annual' && (
+                <p className="pricing2__plan-annual-note">
+                  €{ENTERPRISE.annualTotal} {isEs ? 'al año — ahorras' : 'per year — you save'} €{ENTERPRISE.monthlyPrice * 12 - ENTERPRISE.annualTotal}
+                </p>
+              )}
+              <button
+                className={`btn btn-enterprise pricing2__plan-cta${subscription === 'enterprise' ? ' pricing2__plan-cta--current' : ''}`}
+                onClick={handleEnterpriseSelect}
+                disabled={subscription === 'enterprise' || loadingPlan === 'enterprise'}
+              >
+                {subscription === 'enterprise'
+                  ? (isEs ? '✅ Plan actual' : '✅ Current plan')
+                  : loadingPlan === 'enterprise'
+                  ? (isEs ? 'Procesando...' : 'Processing...')
+                  : (isEs ? 'Contratar Enterprise →' : 'Get Enterprise →')}
+              </button>
+              <p className="pricing2__guarantee">
+                🔒 {isEs ? 'Sin permanencia · Cancela cuando quieras · SLA incluido' : 'No lock-in · Cancel anytime · SLA included'}
+              </p>
+              <ul className="pricing2__features">
+                {ENTERPRISE_FEATURES.map((f) => (
                   <li key={f.text} className={`pricing2__feature${f.highlight ? ' pricing2__feature--highlight' : ''}`}>
                     <span className="pricing2__feature-check">✓</span>
                     <span>{isEs ? f.text : f.en}</span>
@@ -411,7 +496,7 @@ export default function PricingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="pricing2__section-title">
-              {isEs ? 'Free vs Pro — qué cambia' : 'Free vs Pro — what changes'}
+              {isEs ? 'Comparativa de planes' : 'Plan comparison'}
             </h2>
             <div className="pricing2__table-wrap">
               <table className="pricing2__table">
@@ -420,21 +505,27 @@ export default function PricingPage() {
                     <th></th>
                     <th className="pricing2__th--free">Free</th>
                     <th className="pricing2__th--pro">Pro</th>
+                    <th className="pricing2__th--enterprise">Enterprise</th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { label: isEs ? 'Automatizaciones / mes' : 'Automations / month', free: '10',         pro: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞' },
-                    { label: isEs ? 'Herramientas de IA (30+)' : 'AI tools (30+)',    free: '✅',         pro: '✅' },
-                    { label: isEs ? 'Workspace de marca' : 'Brand workspace',         free: '✅',         pro: '✅' },
-                    { label: isEs ? 'Streaming IA' : 'AI streaming',                  free: '✅',         pro: '✅' },
-                    { label: isEs ? 'Templates por nicho' : 'Niche templates',        free: '❌',         pro: '✅' },
-                    { label: isEs ? 'Soporte prioritario' : 'Priority support',       free: isEs ? 'Email' : 'Email', pro: isEs ? 'Prioritario' : 'Priority' },
+                    { label: isEs ? 'Automatizaciones / mes' : 'Automations / month', free: '10', pro: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞', ent: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞' },
+                    { label: isEs ? 'Herramientas de IA (30+)' : 'AI tools (30+)', free: '✅', pro: '✅', ent: '✅' },
+                    { label: isEs ? 'Workspaces' : 'Workspaces', free: '1', pro: '3', ent: isEs ? 'Ilimitados' : 'Unlimited' },
+                    { label: isEs ? 'Streaming IA' : 'AI streaming', free: '✅', pro: '✅', ent: '✅' },
+                    { label: isEs ? 'White-label' : 'White-label', free: '❌', pro: '❌', ent: '✅' },
+                    { label: isEs ? 'Acceso API' : 'API access', free: '❌', pro: '❌', ent: '✅' },
+                    { label: isEs ? 'Gestión de equipo' : 'Team management', free: '❌', pro: '❌', ent: '✅' },
+                    { label: isEs ? 'SSO' : 'SSO', free: '❌', pro: 'Google', ent: isEs ? 'Google + SAML' : 'Google + SAML' },
+                    { label: isEs ? 'SLA uptime' : 'Uptime SLA', free: '❌', pro: '❌', ent: '99.9%' },
+                    { label: isEs ? 'Soporte' : 'Support', free: 'Email', pro: isEs ? 'Prioritario' : 'Priority', ent: isEs ? 'Dedicado' : 'Dedicated' },
                   ].map((row, i) => (
                     <tr key={i}>
                       <td>{row.label}</td>
                       <td className="pricing2__td--free">{row.free}</td>
                       <td className="pricing2__td--pro">{row.pro}</td>
+                      <td className="pricing2__td--enterprise">{row.ent}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -467,8 +558,8 @@ export default function PricingPage() {
                 a: isEs ? 'No. El plan Free es 100% gratuito, sin tarjeta de crédito. Solo un email para registrarte.' : 'No. Free is 100% free, no credit card. Just an email to sign up.',
               },
               {
-                q: isEs ? '¿Ofrecéis planes para agencias o equipos?' : 'Do you offer agency or team plans?',
-                a: isEs ? 'Estamos trabajando en funcionalidades de equipo. Por ahora, contáctanos en hola@gormaran.io y encontramos la mejor solución para ti.' : 'We\'re building team features. For now, contact us at hola@gormaran.io and we\'ll find the best setup for you.',
+                q: isEs ? '¿Qué incluye el plan Enterprise?' : 'What does the Enterprise plan include?',
+                a: isEs ? 'Enterprise incluye todo lo de Pro más: white-label (tus clientes no ven Gormaran), acceso API para integrar en tus workflows, workspaces ilimitados, gestión de equipo, SSO y soporte dedicado con SLA 99.9%.' : 'Enterprise includes everything in Pro plus: white-label (clients don\'t see Gormaran), API access for workflow integration, unlimited workspaces, team management, SSO, and dedicated support with 99.9% SLA.',
               },
             ].map((item, i) => (
               <div key={i} className="pricing2__faq-item">
