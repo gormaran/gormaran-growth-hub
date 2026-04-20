@@ -9,9 +9,6 @@ import './LandingPage.css';
 import WhatsAppPopup from '../components/WhatsAppPopup';
 import NichePopup from '../components/NichePopup';
 
-// ── Update this with your YouTube video ID when ready ─────────────
-const DEMO_VIDEO_ID = '';
-
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
@@ -662,99 +659,6 @@ function HeroShowcase() {
         </motion.div>
       </div>
     </div>
-  );
-}
-
-// ── Hero Video (right panel) ──────────────────────────────────────
-function HeroVideo({ isEs }) {
-  const [playing, setPlaying] = useState(false);
-  const hasVideo = Boolean(DEMO_VIDEO_ID);
-
-  if (playing && hasVideo) {
-    return (
-      <div className="hero-video__wrap">
-        <iframe
-          className="hero-video__iframe"
-          src={`https://www.youtube.com/embed/${DEMO_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`}
-          title="Gormaran demo"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-    );
-  }
-
-  return (
-    <motion.div
-      className="hero-video__wrap"
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className="hero-video__placeholder" onClick={() => hasVideo && setPlaying(true)}>
-        {/* Fake browser chrome */}
-        <div className="hero-video__chrome">
-          <div className="hero-video__dots">
-            <span /><span /><span />
-          </div>
-          <div className="hero-video__url">gormaran.io/dashboard</div>
-        </div>
-
-        {/* Fake product UI inside */}
-        <div className="hero-video__screen">
-          <div className="hero-video__screen-sidebar">
-            {['📈 Marketing','✍️ Contenido','🎯 Estrategia','🛒 Ecommerce','🏢 Agencia'].map(l => (
-              <div key={l} className="hero-video__screen-item">{l}</div>
-            ))}
-          </div>
-          <div className="hero-video__screen-main">
-            <div className="hero-video__screen-toolbar">
-              <div className="hero-video__screen-label">AI Content Generator</div>
-              <div className="hero-video__screen-badge">● Live</div>
-            </div>
-            <div className="hero-video__screen-output">
-              {[95, 80, 100, 65, 88, 72].map((w, i) => (
-                <motion.div
-                  key={i}
-                  className="hero-video__screen-line"
-                  style={{ width: `${w}%` }}
-                  initial={{ opacity: 0, scaleX: 0 }}
-                  animate={{ opacity: 1, scaleX: 1 }}
-                  transition={{ duration: 0.4, delay: 0.5 + i * 0.12, ease: 'easeOut' }}
-                />
-              ))}
-            </div>
-            <div className="hero-video__screen-stats">
-              <div className="hero-video__screen-stat">
-                <span className="hero-video__screen-stat-val">12s</span>
-                <span className="hero-video__screen-stat-lbl">{isEs ? 'generado' : 'generated'}</span>
-              </div>
-              <div className="hero-video__screen-stat">
-                <span className="hero-video__screen-stat-val">98%</span>
-                <span className="hero-video__screen-stat-lbl">{isEs ? 'calidad' : 'quality'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Play button overlay — only if video configured */}
-        {hasVideo && (
-          <div className="hero-video__play">
-            <div className="hero-video__play-btn">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-            </div>
-            <span>{isEs ? 'Ver cómo funciona' : 'Watch how it works'}</span>
-          </div>
-        )}
-
-        {/* Corner label */}
-        <div className="hero-video__label">
-          {isEs ? '✨ En vivo — así funciona Gormaran' : '✨ Live — this is how Gormaran works'}
-        </div>
-      </div>
-    </motion.div>
   );
 }
 
@@ -1526,10 +1430,9 @@ export default function LandingPage() {
           <div className="landing__grid-pattern" />
         </div>
 
-        <div className="container landing__hero-grid">
-          {/* ── LEFT: text content ── */}
+        <div className="container">
           <motion.div
-            className="landing__hero-content landing__hero-content--left"
+            className="landing__hero-content"
             initial="hidden"
             animate="visible"
             variants={stagger}
@@ -1550,6 +1453,8 @@ export default function LandingPage() {
               <br />
               {t('landing.hero.subtitleLine2', { defaultValue: 'No generic prompts.' })}
             </motion.p>
+
+            <HeroPromptBox />
 
             <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.35, delay: 0.15 }}>
               <Link to="/auth?mode=register" className="btn btn-primary btn-lg landing__cta-btn">
@@ -1595,9 +1500,8 @@ export default function LandingPage() {
             </motion.div>
           </motion.div>
 
-          {/* ── RIGHT: video / product preview ── */}
-          <HeroVideo isEs={isEs} />
         </div>
+        <HeroShowcase />
       </section>
 
       {/* ── 2: How It Works ── */}
