@@ -9,16 +9,16 @@ import './PricingPage.css';
 
 const GROW = {
   id: 'grow',
-  monthlyPrice: 19,
-  annualMonthly: 15,
+  monthlyPrice: 29,
+  annualMonthly: 23,
   monthlyPriceId: process.env.REACT_APP_STRIPE_GROW_PRICE_ID,
   annualPriceId:  process.env.REACT_APP_STRIPE_GROW_ANNUAL_PRICE_ID,
 };
 
 const EVOLUTION = {
   id: 'evolution',
-  monthlyPrice: 129,
-  annualMonthly: 103,
+  monthlyPrice: 99,
+  annualMonthly: 79,
   monthlyPriceId: process.env.REACT_APP_STRIPE_EVOLUTION_PRICE_ID,
   annualPriceId:  process.env.REACT_APP_STRIPE_EVOLUTION_ANNUAL_PRICE_ID,
 };
