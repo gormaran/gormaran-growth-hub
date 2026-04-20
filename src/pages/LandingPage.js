@@ -96,7 +96,7 @@ const DEMO_LIMIT = 3;
 const DEMO_KEY = 'gormaran_demo_count';
 
 function HeroPromptBox() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [value, setValue] = useState('');
@@ -197,7 +197,7 @@ function HeroPromptBox() {
             transition={{ duration: 0.3 }}
           >
             <span className="hero-promptbox__spinner" />
-            <span>Conectando servidor AI… un momento</span>
+            <span>{i18n.language?.startsWith('es') ? 'Conectando servidor AI… un momento' : 'Connecting AI server… one moment'}</span>
           </motion.div>
         )}
         {output && (
@@ -1132,7 +1132,8 @@ const WORKFLOW_CHAIN = [
 ];
 
 function WorkflowChain() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
   return (
     <section className="landing__workflow section">
       <div className="container">
@@ -1177,9 +1178,9 @@ function WorkflowChain() {
           viewport={{ once: true }}
           transition={{ duration: 0.4, delay: 0.5 }}
         >
-          <span className="landing__workflow-total-label">Total time:</span>
-          <span className="landing__workflow-total-value gradient-text">~7 minutes</span>
-          <span className="landing__workflow-total-vs">vs. 3+ hours manually</span>
+          <span className="landing__workflow-total-label">{isEs ? 'Tiempo total:' : 'Total time:'}</span>
+          <span className="landing__workflow-total-value gradient-text">{isEs ? '~7 minutos' : '~7 minutes'}</span>
+          <span className="landing__workflow-total-vs">{isEs ? 'vs. 3+ horas manualmente' : 'vs. 3+ hours manually'}</span>
         </motion.div>
       </div>
     </section>
@@ -1188,7 +1189,8 @@ function WorkflowChain() {
 
 // ── Automation Section ────────────────────────────────────────────
 function AutomationSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
   return (
     <section className="landing__automation section">
       <div className="container">
@@ -1233,13 +1235,13 @@ function AutomationSection() {
             <div className="landing__automation-card">
               <div className="landing__automation-card-header">
                 <span className="landing__automation-card-dot landing__automation-card-dot--green" />
-                <span className="landing__automation-card-label">⚡ n8n Workflow — Active</span>
+                <span className="landing__automation-card-label">⚡ n8n Workflow — {isEs ? 'Activo' : 'Active'}</span>
               </div>
               {[
-                { icon: '🔍', label: 'Keyword Research', status: '✓ Done' },
-                { icon: '✍️', label: 'Blog Post Writer', status: '✓ Done' },
-                { icon: '📱', label: 'Social Captions', status: '↻ Running…' },
-                { icon: '📧', label: 'Email Campaign', status: '⏳ Queued' },
+                { icon: '🔍', label: isEs ? 'Keyword Research' : 'Keyword Research', status: isEs ? '✓ Hecho' : '✓ Done' },
+                { icon: '✍️', label: isEs ? 'Blog Post Writer' : 'Blog Post Writer', status: isEs ? '✓ Hecho' : '✓ Done' },
+                { icon: '📱', label: isEs ? 'Social Captions' : 'Social Captions', status: isEs ? '↻ En curso…' : '↻ Running…' },
+                { icon: '📧', label: isEs ? 'Email Campaign' : 'Email Campaign', status: isEs ? '⏳ En cola' : '⏳ Queued' },
               ].map((node, i) => (
                 <motion.div
                   key={i}
@@ -1271,7 +1273,8 @@ const CHATGPT_VS = [
 ];
 
 function WhyNotChatGPT() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
   return (
     <section className="landing__whychatgpt section">
       <div className="container">
@@ -1326,11 +1329,13 @@ function WhyNotChatGPT() {
           transition={{ duration: 0.45, delay: 0.2 }}
         >
           <p className="landing__quote-text">
-            "I went from spending 3 hours a week on blog content to under 20 minutes. The outputs are structured and ready to publish — no editing needed."
+            {isEs
+              ? '"Pasé de dedicar 3 horas semanales al contenido del blog a menos de 20 minutos. Los resultados son estructurados y están listos para publicar — sin edición."'
+              : '"I went from spending 3 hours a week on blog content to under 20 minutes. The outputs are structured and ready to publish — no editing needed."'}
           </p>
           <footer className="landing__quote-author">
             <strong>Laura M.</strong>
-            <span>Marketing Manager</span>
+            <span>{isEs ? 'Marketing Manager' : 'Marketing Manager'}</span>
           </footer>
         </motion.blockquote>
       </div>
@@ -1404,7 +1409,8 @@ function SupportSection() {
 
 // ── Main Component ───────────────────────────────────────────────
 export default function LandingPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL || 'https://gormaran-growth-hub-2.onrender.com'}/health`).catch(() => {});
@@ -1553,9 +1559,9 @@ export default function LandingPage() {
       <section className="landing__plans section">
         <div className="container">
           <AnimatedSection>
-            <span className="section-pill">{t('landing.plans.pill', { defaultValue: 'Precios' })}</span>
+            <span className="section-pill">{t('landing.plans.pill', { defaultValue: isEs ? 'Precios' : 'Pricing' })}</span>
             <h2 className="section-title">
-              {t('landing.plans.title2', { defaultValue: 'Empieza gratis. Escala sin límites.' })}
+              {t('landing.plans.title2', { defaultValue: isEs ? 'Empieza gratis. Escala sin límites.' : 'Start free. Scale without limits.' })}
             </h2>
           </AnimatedSection>
           <motion.div
@@ -1568,41 +1574,46 @@ export default function LandingPage() {
             {/* FREE */}
             <motion.div className="landing__plan2 landing__plan2--free" variants={fadeUp}>
               <h3 className="landing__plan2-name">Free</h3>
-              <div className="landing__plan2-price">€0 <span>/mes</span></div>
+              <div className="landing__plan2-price">€0 <span>{isEs ? '/mes' : '/mo'}</span></div>
               <ul className="landing__plan2-features">
-                <li>✓ {t('landing.plan.free.f1', { defaultValue: '10 automatizaciones al mes' })}</li>
-                <li>✓ {t('landing.plan.free.f2', { defaultValue: 'Todas las herramientas de IA (30+)' })}</li>
-                <li>✓ {t('landing.plan.free.f3', { defaultValue: '1 workspace' })}</li>
-                <li className="landing__plan2-locked">✗ {t('landing.plan.free.locked', { defaultValue: 'Automatizaciones ilimitadas' })}</li>
+                <li>✓ {isEs ? '10 automatizaciones al mes' : '10 automations per month'}</li>
+                <li>✓ {isEs ? 'Todas las herramientas de IA (30+)' : 'All AI tools (30+)'}</li>
+                <li>✓ {isEs ? '1 workspace' : '1 workspace'}</li>
+                <li className="landing__plan2-locked">✗ {isEs ? 'Automatizaciones ilimitadas' : 'Unlimited automations'}</li>
               </ul>
               <Link to="/auth?mode=register" className="btn btn-secondary landing__plan2-cta">
-                {t('landing.plan.free.cta', { defaultValue: 'Empezar gratis' })}
+                {isEs ? 'Empezar gratis' : 'Start free'}
               </Link>
             </motion.div>
 
-            {/* PRO */}
+            {/* GROW */}
             <motion.div className="landing__plan2 landing__plan2--pro" variants={fadeUp}>
-              <div className="landing__plan2-badge">⭐ {t('landing.plan.pro.badge', { defaultValue: 'Más Popular' })}</div>
-              <h3 className="landing__plan2-name">Pro</h3>
+              <div className="landing__plan2-badge">⭐ {isEs ? 'Más Popular' : 'Most Popular'}</div>
+              <h3 className="landing__plan2-name">Grow</h3>
               <div className="landing__plan2-price">
-                €79 <span>/{t('landing.plan.annual', { defaultValue: 'mes (anual)' })}</span>
+                €15 <span>/{isEs ? 'mes (anual)' : 'mo (annual)'}</span>
               </div>
-              <p className="landing__plan2-annual">{t('landing.plan.pro.annual', { defaultValue: 'o €99/mes mensual' })}</p>
+              <p className="landing__plan2-annual">{isEs ? 'o €19/mes mensual' : 'or €19/mo monthly'}</p>
               <ul className="landing__plan2-features">
-                <li>✓ <strong>{t('landing.plan.pro.f1', { defaultValue: 'Automatizaciones ilimitadas' })}</strong></li>
-                <li>✓ {t('landing.plan.pro.f2', { defaultValue: 'Todas las herramientas de IA (30+)' })}</li>
-                <li>✓ {t('landing.plan.pro.f3', { defaultValue: 'Workspace con perfil de marca' })}</li>
-                <li>✓ {t('landing.plan.pro.f4', { defaultValue: 'Templates optimizados por nicho' })}</li>
-                <li>✓ {t('landing.plan.pro.f5', { defaultValue: 'Soporte prioritario' })}</li>
+                <li>✓ <strong>{isEs ? 'Automatizaciones ilimitadas' : 'Unlimited automations'}</strong></li>
+                <li>✓ {isEs ? 'Todas las herramientas de IA (30+)' : 'All AI tools (30+)'}</li>
+                <li>✓ {isEs ? '3 workspaces con perfil de marca' : '3 workspaces with brand profile'}</li>
+                <li>✓ {isEs ? 'Templates optimizados por nicho' : 'Niche-optimized templates'}</li>
+                <li>✓ {isEs ? 'Gestión de equipo' : 'Team management'}</li>
               </ul>
               <Link to="/pricing" className="btn btn-primary landing__plan2-cta">
-                {t('landing.plan.pro.cta', { defaultValue: 'Ver Plan Pro →' })}
+                {isEs ? 'Ver Plan Grow →' : 'See Grow Plan →'}
               </Link>
               <p className="landing__plan2-guarantee">
-                🔒 {t('landing.plan.guarantee', { defaultValue: 'Garantía 7 días · Sin permanencia' })}
+                🔒 {isEs ? 'Garantía 7 días · Sin permanencia' : '7-day guarantee · No lock-in'}
               </p>
             </motion.div>
           </motion.div>
+          <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+            <Link to="/pricing" className="btn btn-secondary btn-sm">
+              {isEs ? 'Ver todos los planes (Scale, Evolution) →' : 'See all plans (Scale, Evolution) →'}
+            </Link>
+          </div>
         </div>
       </section>
 
