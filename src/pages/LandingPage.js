@@ -104,6 +104,8 @@ function HeroPromptBox() {
   const [isFocused, setIsFocused] = useState(false);
   const [output, setOutput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
+  const [slowServer, setSlowServer] = useState(false);
+  const slowTimerRef = useRef(null);
   const [usesLeft, setUsesLeft] = useState(() => {
     const used = parseInt(localStorage.getItem(DEMO_KEY) || '0', 10);
     return Math.max(0, DEMO_LIMIT - used);
@@ -149,6 +151,8 @@ function HeroPromptBox() {
     setUsesLeft(Math.max(0, DEMO_LIMIT - newUsed));
     setOutput('');
     setIsStreaming(true);
+    setSlowServer(false);
+    slowTimerRef.current = setTimeout(() => setSlowServer(true), 3500);
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -157,11 +161,13 @@ function HeroPromptBox() {
       prompt: value.trim(),
       signal: controller.signal,
       onChunk: (text) => {
+        clearTimeout(slowTimerRef.current);
+        setSlowServer(false);
         setOutput((prev) => prev + text);
         outputRef.current?.scrollTo({ top: outputRef.current.scrollHeight, behavior: 'smooth' });
       },
-      onDone: () => setIsStreaming(false),
-      onError: () => setIsStreaming(false),
+      onDone: () => { clearTimeout(slowTimerRef.current); setIsStreaming(false); },
+      onError: () => { clearTimeout(slowTimerRef.current); setSlowServer(false); setIsStreaming(false); },
     });
   }, [value, isStreaming, currentUser, activeChip, navigate]);
 
@@ -182,6 +188,18 @@ function HeroPromptBox() {
       transition={{ duration: 0.35, delay: 0.12 }}
     >
       <AnimatePresence>
+        {slowServer && !output && (
+          <motion.div
+            className="hero-promptbox__slow-msg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <span className="hero-promptbox__spinner" />
+            <span>Conectando servidor AI… un momento</span>
+          </motion.div>
+        )}
         {output && (
           <motion.div
             ref={outputRef}
@@ -1387,6 +1405,10 @@ function SupportSection() {
 // ── Main Component ───────────────────────────────────────────────
 export default function LandingPage() {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_API_URL || 'https://gormaran-growth-hub-2.onrender.com'}/health`).catch(() => {});
+  }, []);
 
   return (
     <div className="landing">

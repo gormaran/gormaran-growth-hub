@@ -8,32 +8,38 @@ const STEPS = [
   {
     id: 'role',
     question: '¿Cómo describes mejor tu situación?',
-    subtitle: 'Te mostramos las herramientas más relevantes para ti',
+    subtitle: 'Personalizamos las herramientas según tu contexto',
     options: [
-      { id: 'freelancer', emoji: '💼', label: 'Soy freelancer', sub: 'Gestiono proyectos para clientes' },
-      { id: 'agency',     emoji: '🚀', label: 'Llevo una agencia', sub: 'Equipo de marketing o diseño' },
-      { id: 'business',   emoji: '🏪', label: 'Tengo mi negocio', sub: 'Marca propia o tienda' },
+      { id: 'agency_small', emoji: '🚀', label: 'Llevo una agencia', sub: 'Equipo de marketing de 5 a 20 personas' },
+      { id: 'consultant',   emoji: '💼', label: 'Soy consultor/a independiente', sub: 'Gestiono varios clientes yo solo/a' },
+      { id: 'ecommerce',    emoji: '🛍️', label: 'Tengo un e-commerce', sub: 'Marketing interno para mi tienda online' },
+      { id: 'saas_b2b',     emoji: '⚙️', label: 'Tengo un SaaS B2B', sub: 'Hago mi propio go-to-market' },
     ],
   },
   {
     id: 'goal',
-    question: '¿Cuál es tu prioridad ahora mismo?',
-    subtitle: 'Empezamos por lo que más te importa',
+    question: '¿Cuál es tu mayor reto ahora mismo?',
+    subtitle: 'Empezamos por lo que más te duele',
     byRole: {
-      freelancer: [
-        { id: 'clients',  emoji: '🤝', label: 'Conseguir más clientes', sub: 'Propuestas, pitch y captación' },
-        { id: 'content',  emoji: '✍️', label: 'Crear contenido rápido', sub: 'Para redes, web y blog' },
-        { id: 'digital',  emoji: '📈', label: 'Crecer en redes sociales', sub: 'SEO, ads y social media' },
+      agency_small: [
+        { id: 'reports',   emoji: '📊', label: 'Automatizar informes de clientes', sub: 'Liberar 40+ horas al mes' },
+        { id: 'content',   emoji: '✍️', label: 'Crear contenido más rápido', sub: 'Copys, posts y estrategias en minutos' },
+        { id: 'clients',   emoji: '🤝', label: 'Ganar nuevos clientes', sub: 'Propuestas y presentaciones que convierten' },
       ],
-      agency: [
-        { id: 'clients',  emoji: '🤝', label: 'Ganar nuevos clientes', sub: 'Propuestas y presentaciones' },
-        { id: 'delivery', emoji: '⚡', label: 'Acelerar entregables', sub: 'Contenido y estrategia más rápido' },
-        { id: 'digital',  emoji: '📊', label: 'Resultados para clientes', sub: 'Campañas y analítica' },
+      consultant: [
+        { id: 'capacity',  emoji: '⚡', label: 'Multiplicar mi capacidad', sub: 'Hacer el trabajo de 3 sin contratar' },
+        { id: 'content',   emoji: '✍️', label: 'Crear contenido de autoridad', sub: 'LinkedIn, blog y email para captar leads' },
+        { id: 'proposals', emoji: '📄', label: 'Cerrar más propuestas', sub: 'Textos de venta y pitch más efectivos' },
       ],
-      business: [
-        { id: 'customers', emoji: '🛒', label: 'Atraer más clientes', sub: 'SEO, ads y visibilidad' },
-        { id: 'content',   emoji: '✍️', label: 'Crear contenido de marca', sub: 'Redes, blog y email' },
-        { id: 'strategy',  emoji: '🎯', label: 'Definir mi estrategia', sub: 'Posicionamiento y crecimiento' },
+      ecommerce: [
+        { id: 'roas',      emoji: '📈', label: 'Mejorar mi ROAS', sub: 'Segmentación y copy de anuncios con IA' },
+        { id: 'content',   emoji: '🖼️', label: 'Crear contenido de producto', sub: 'Descripciones, posts y emails en masa' },
+        { id: 'seo',       emoji: '🔍', label: 'Posicionar en buscadores', sub: 'SEO y blog para tráfico orgánico' },
+      ],
+      saas_b2b: [
+        { id: 'gtm',       emoji: '🎯', label: 'Acelerar el go-to-market', sub: 'Copy, casos de uso y mensajes de venta' },
+        { id: 'content',   emoji: '✍️', label: 'Crear contenido técnico y de marca', sub: 'Blog, SEO y LinkedIn para SaaS' },
+        { id: 'leads',     emoji: '🤝', label: 'Generar más leads calificados', sub: 'Outreach, email y landing pages' },
       ],
     },
   },
@@ -64,7 +70,7 @@ export default function OnboardingModal({ onComplete }) {
     try {
       await updateDoc(doc(db, 'users', currentUser.uid), {
         persona: next.role,
-        personaGoal: next.goal || next.delivery || next.customers || next.strategy,
+        personaGoal: next.goal,
         onboardingCompleted: true,
       });
       await refreshUserProfile(currentUser.uid);

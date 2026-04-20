@@ -30,70 +30,92 @@ const GOALS = [
 ];
 
 const QUICK_WINS_BY_PERSONA = {
-  freelancer: [
+  agency_small: [
     {
-      icon: '📄', label: 'Propuesta de cliente', hint: 'lista en 2 minutos',
+      icon: '📄', label: 'Propuesta de cliente', hint: 'cierra el contrato hoy',
       cat: 'agency', toolId: 'client-proposal',
-      inputs: { agency_name: 'Tu agencia', client_name: 'Nuevo cliente', service: 'Social Media Management', client_goal: 'Aumentar seguidores y ventas online', budget: '€800/mes', duration: 'Contrato mensual' },
+      inputs: { agency_name: 'Tu agencia', client_name: 'Nuevo cliente', service: 'Estrategia digital + Contenido', client_goal: 'Generar leads y aumentar ventas online', budget: '€2.000/mes', duration: 'Contrato trimestral' },
     },
     {
-      icon: '📱', label: 'Captions para cliente', hint: 'Instagram y LinkedIn',
-      cat: 'marketing', toolId: 'social-media-captions',
-      inputs: { topic: 'Lanzamiento de producto de tu cliente', brand_voice: 'Profesional y cercano', platforms: 'Instagram', goal: 'Engagement' },
-    },
-    {
-      icon: '🔬', label: 'Análisis de competidores', hint: 'para tu cliente',
-      cat: 'strategy', toolId: 'competitor-research',
-      inputs: { business_name: 'Cliente de ejemplo', your_product: 'Tienda de moda online', location: 'España', target_customer: 'Mujeres 25-45' },
-    },
-    {
-      icon: '📝', label: 'Post de blog SEO', hint: 'para posicionar',
-      cat: 'content', toolId: 'blog-post',
-      inputs: { topic: 'Cómo elegir una agencia de marketing digital', keyword: 'agencia marketing digital', audience: 'Pymes y autónomos', word_count: '1.200 palabras', tone: 'Educativo y directo' },
-    },
-  ],
-  agency: [
-    {
-      icon: '📄', label: 'Propuesta ganadora', hint: 'cierra el cliente',
-      cat: 'agency', toolId: 'client-proposal',
-      inputs: { agency_name: 'Tu agencia', client_name: 'Prospecto B2B', service: 'Estrategia digital + Contenido', client_goal: 'Generar leads cualificados', budget: '€2.500/mes', duration: 'Contrato trimestral' },
-    },
-    {
-      icon: '🔬', label: 'Competitor Research', hint: 'para el pitch',
-      cat: 'strategy', toolId: 'competitor-research',
-      inputs: { business_name: 'Cliente potencial', your_product: 'Software B2B SaaS', location: 'España/LATAM', target_customer: 'Directores de marketing' },
-    },
-    {
-      icon: '📊', label: 'Estrategia de campaña', hint: 'Meta + Google Ads',
-      cat: 'marketing', toolId: 'meta-ads-campaign',
-      inputs: { business_name: 'Cliente de tu agencia', product: 'Servicio o producto del cliente', target_audience: 'Define el público', budget: '€1.000/mes', objective: 'Conversiones' },
+      icon: '📊', label: 'Informe de resultados', hint: 'para tu cliente en 3 min',
+      cat: 'agency', toolId: 'campaign-report',
+      inputs: { client_name: 'Cliente mensual', period: 'Marzo 2025', channels: 'Meta Ads + Google Ads', highlights: 'ROAS 4.2x, 38% más leads vs mes anterior' },
     },
     {
       icon: '✍️', label: 'Captions para cliente', hint: '1 semana de contenido',
       cat: 'marketing', toolId: 'social-media-captions',
-      inputs: { topic: 'Campaña de marca del cliente', brand_voice: 'Según briefing', platforms: 'Instagram, LinkedIn', goal: 'Engagement y alcance' },
+      inputs: { topic: 'Lanzamiento de producto del cliente', brand_voice: 'Profesional y cercano', platforms: 'Instagram, LinkedIn', goal: 'Engagement y alcance' },
+    },
+    {
+      icon: '🔬', label: 'Análisis de competidores', hint: 'para el pitch',
+      cat: 'strategy', toolId: 'competitor-research',
+      inputs: { business_name: 'Prospecto de agencia', your_product: 'Servicio de marketing digital', location: 'España', target_customer: 'Directores de marketing B2B' },
     },
   ],
-  business: [
+  consultant: [
     {
-      icon: '🔑', label: 'Keywords SEO', hint: 'para tu negocio',
-      cat: 'marketing', toolId: 'seo-keyword-research',
-      inputs: { business: 'Tu negocio', niche: 'Tu sector', location: 'España', goal: 'Atraer clientes orgánicos' },
+      icon: '📄', label: 'Propuesta de consultoría', hint: 'lista en 2 minutos',
+      cat: 'agency', toolId: 'client-proposal',
+      inputs: { agency_name: 'Tu consultoría', client_name: 'Nuevo cliente', service: 'Auditoría y estrategia de marketing digital', client_goal: 'Optimizar presencia online y generar leads', budget: '€1.500 proyecto', duration: 'Proyecto puntual + retainer opcional' },
     },
     {
-      icon: '📱', label: 'Captions para redes', hint: 'Instagram + LinkedIn',
-      cat: 'marketing', toolId: 'social-media-captions',
-      inputs: { topic: 'Presentación de tu negocio o producto estrella', brand_voice: 'Cercano y profesional', platforms: 'Instagram', goal: 'Seguidores y ventas' },
-    },
-    {
-      icon: '📝', label: 'Post de blog', hint: 'atrae clientes orgánicos',
+      icon: '✍️', label: 'Post LinkedIn autoridad', hint: 'capta leads orgánicos',
       cat: 'content', toolId: 'blog-post',
-      inputs: { topic: 'Guía definitiva sobre tu producto o servicio', keyword: 'palabra clave de tu sector', audience: 'Tus clientes ideales', word_count: '1.000 palabras', tone: 'Cercano y experto' },
+      inputs: { topic: 'Los 3 errores que cometen las pymes al hacer marketing digital', keyword: 'marketing digital pymes', audience: 'Directores y fundadores', word_count: '800 palabras', tone: 'Experto y directo' },
     },
     {
-      icon: '🎯', label: 'Plan de negocio', hint: 'estrategia clara',
+      icon: '📧', label: 'Secuencia de email nurturing', hint: 'convierte leads fríos',
+      cat: 'marketing', toolId: 'email-sequence',
+      inputs: { business: 'Tu consultoría', product: 'Servicio de consultoría de marketing', audience: 'Leads que descargaron tu guía gratuita', goal: 'Agendar llamada de descubrimiento', emails: '4 emails' },
+    },
+    {
+      icon: '🔬', label: 'Análisis de competidores', hint: 'para el pitch de cliente',
+      cat: 'strategy', toolId: 'competitor-research',
+      inputs: { business_name: 'Cliente potencial', your_product: 'Producto o servicio del cliente', location: 'España', target_customer: 'Cliente ideal del cliente' },
+    },
+  ],
+  ecommerce: [
+    {
+      icon: '📊', label: 'Campaña Meta Ads', hint: 'mejor ROAS desde el día 1',
+      cat: 'marketing', toolId: 'meta-ads-campaign',
+      inputs: { business_name: 'Tu tienda online', product: 'Producto estrella de tu catálogo', target_audience: 'Compradores interesados en tu categoría', budget: '€500/mes', objective: 'Conversiones y ventas' },
+    },
+    {
+      icon: '🔑', label: 'Keywords SEO', hint: 'tráfico orgánico gratis',
+      cat: 'marketing', toolId: 'seo-keyword-research',
+      inputs: { business: 'Tu e-commerce', niche: 'Tu categoría de producto', location: 'España', goal: 'Posicionar fichas de producto y blog' },
+    },
+    {
+      icon: '📝', label: 'Descripciones de producto', hint: 'que sí convierten',
+      cat: 'content', toolId: 'blog-post',
+      inputs: { topic: 'Descripción optimizada para tu producto estrella', keyword: 'nombre producto + categoría', audience: 'Compradores potenciales', word_count: '400 palabras', tone: 'Persuasivo y claro' },
+    },
+    {
+      icon: '📧', label: 'Email de recuperación carrito', hint: 'recupera ventas perdidas',
+      cat: 'marketing', toolId: 'email-sequence',
+      inputs: { business: 'Tu tienda online', product: 'Productos en carrito abandonado', audience: 'Clientes que no completaron la compra', goal: 'Recuperar ventas', emails: '3 emails (1h, 24h, 72h)' },
+    },
+  ],
+  saas_b2b: [
+    {
+      icon: '🎯', label: 'Mensajes de venta B2B', hint: 'tu propuesta de valor clara',
       cat: 'strategy', toolId: 'business-plan',
-      inputs: { business_name: 'Tu negocio', industry: 'Tu sector', stage: 'En crecimiento', goal: 'Escalar ventas este año' },
+      inputs: { business_name: 'Tu SaaS', industry: 'Software B2B', stage: 'Growth', goal: 'Definir messaging y go-to-market para Q2' },
+    },
+    {
+      icon: '📧', label: 'Secuencia outreach frío', hint: 'abre puertas con ICP',
+      cat: 'marketing', toolId: 'email-sequence',
+      inputs: { business: 'Tu SaaS B2B', product: 'Tu producto', audience: 'Head of Marketing en empresas 50-200 empleados', goal: 'Agendar demo', emails: '5 emails (día 1, 3, 7, 14, 21)' },
+    },
+    {
+      icon: '📝', label: 'Artículo SEO técnico', hint: 'posiciona para tu ICP',
+      cat: 'content', toolId: 'blog-post',
+      inputs: { topic: 'Cómo automatizar [tu caso de uso] para equipos de marketing', keyword: 'automatización marketing B2B', audience: 'Marketing managers en SaaS y tech', word_count: '1.500 palabras', tone: 'Técnico y orientado a resultados' },
+    },
+    {
+      icon: '🔬', label: 'Análisis de competidores SaaS', hint: 'diferénciate en el pitch',
+      cat: 'strategy', toolId: 'competitor-research',
+      inputs: { business_name: 'Tu SaaS', your_product: 'Tu solución B2B', location: 'España/Europa', target_customer: 'Marketing teams en empresas tecnológicas' },
     },
   ],
 };
@@ -177,14 +199,16 @@ export default function Dashboard() {
   }, [search]);
 
   const PERSONA_ORDER = {
-    freelancer: ['agency', 'marketing', 'content', 'strategy', 'digital', 'creative', 'ecommerce', 'startup', 'finance'],
-    agency:     ['agency', 'strategy', 'marketing', 'content', 'creative', 'digital', 'ecommerce', 'startup', 'finance'],
-    business:   ['marketing', 'content', 'digital', 'strategy', 'ecommerce', 'creative', 'startup', 'finance', 'agency'],
+    agency_small: ['agency', 'strategy', 'marketing', 'content', 'creative', 'digital', 'ecommerce', 'startup', 'finance'],
+    consultant:   ['agency', 'content', 'marketing', 'strategy', 'digital', 'creative', 'startup', 'finance', 'ecommerce'],
+    ecommerce:    ['marketing', 'ecommerce', 'content', 'digital', 'strategy', 'creative', 'agency', 'startup', 'finance'],
+    saas_b2b:     ['strategy', 'marketing', 'content', 'digital', 'startup', 'agency', 'creative', 'finance', 'ecommerce'],
   };
   const PERSONA_TOP = {
-    freelancer: ['agency', 'marketing', 'content'],
-    agency:     ['agency', 'strategy', 'marketing'],
-    business:   ['marketing', 'content', 'digital'],
+    agency_small: ['agency', 'strategy', 'marketing'],
+    consultant:   ['agency', 'content', 'marketing'],
+    ecommerce:    ['marketing', 'ecommerce', 'content'],
+    saas_b2b:     ['strategy', 'marketing', 'content'],
   };
   const topCats = PERSONA_TOP[persona] || [];
 

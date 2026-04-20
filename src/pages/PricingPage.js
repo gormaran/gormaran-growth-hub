@@ -206,6 +206,24 @@ export default function PricingPage() {
           <p className="pricing__subtitle">
             {t('pricing.hero.subtitle', { defaultValue: "Start free. Upgrade when you're ready. No contracts, cancel anytime." })}
           </p>
+
+          {/* Niche ROI pills */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+            {[
+              { emoji: '🚀', text: t('pricing.niche.agency', { defaultValue: 'Agencies: save 40+ hrs/month' }) },
+              { emoji: '💼', text: t('pricing.niche.consultant', { defaultValue: 'Consultants: 3× client capacity' }) },
+              { emoji: '🛍️', text: t('pricing.niche.ecommerce', { defaultValue: 'E-commerce: improve ROAS with AI' }) },
+              { emoji: '⚙️', text: t('pricing.niche.saas', { defaultValue: 'B2B SaaS: accelerate go-to-market' }) },
+            ].map(({ emoji, text }) => (
+              <span key={text} style={{
+                display: 'inline-flex', alignItems: 'center', gap: '6px',
+                background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)',
+                borderRadius: '100px', padding: '0.3rem 0.9rem', fontSize: '0.82rem', color: '#c4b5fd', fontWeight: 600,
+              }}>
+                {emoji} {text}
+              </span>
+            ))}
+          </div>
         </motion.div>
 
         {error && (
