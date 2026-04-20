@@ -11,6 +11,14 @@ export function useSubscription() {
 
 export const FREE_MONTHLY_LIMIT = 10;
 
+export const PLAN_CATEGORIES = {
+  free:      ['marketing', 'content'],
+  grow:      ['marketing', 'content', 'digital'],
+  scale:     ['marketing', 'content', 'digital', 'strategy', 'ecommerce', 'agency', 'creative'],
+  evolution: null,  // all categories
+  admin:     null,  // all categories
+};
+
 export const PLANS = {
   free: {
     name: 'Free',
@@ -108,8 +116,10 @@ export function SubscriptionProvider({ children }) {
     return true;
   }
 
-  function isCategoryLocked() {
-    return false; // No category locking in new model — only usage quota
+  function isCategoryLocked(categoryId) {
+    const allowed = PLAN_CATEGORIES[subscription];
+    if (allowed === null || allowed === undefined) return false; // evolution/admin
+    return !allowed.includes(categoryId);
   }
 
   function hasMonthlyUsageLeft() {
@@ -147,6 +157,7 @@ export function SubscriptionProvider({ children }) {
     getPlanLimits,
     PLANS,
     FREE_MONTHLY_LIMIT,
+    PLAN_CATEGORIES,
     refreshUserProfile,
   };
 

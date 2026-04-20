@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { streamDemoResponse } from '../utils/api';
 import './LandingPage.css';
 import WhatsAppPopup from '../components/WhatsAppPopup';
+import NichePopup from '../components/NichePopup';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -1411,6 +1412,7 @@ function SupportSection() {
 export default function LandingPage() {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL || 'https://gormaran-growth-hub-2.onrender.com'}/health`).catch(() => {});
@@ -1666,6 +1668,7 @@ export default function LandingPage() {
       </section>
 
       <WhatsAppPopup />
+      {!currentUser && <NichePopup />}
     </div>
   );
 }

@@ -12,8 +12,14 @@ import InstagramAuditSection from '../components/InstagramAuditSection';
 import OnboardingModal from '../components/OnboardingModal';
 import './Dashboard.css';
 
-// All categories are accessible on all plans — locking is usage-based (free: 10/month)
-const CATEGORY_MIN_TIER = {};
+const CATEGORY_MIN_TIER = {
+  strategy:  'Scale',
+  ecommerce: 'Scale',
+  agency:    'Scale',
+  creative:  'Scale',
+  startup:   'Evolution',
+  finance:   'Evolution',
+};
 
 const GOALS = [
   { id: 'clients',  label: '🤝 Get Clients',     cats: ['strategy', 'agency'] },

@@ -4,6 +4,16 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 
+const PERSONA_KEY = 'gormaran_pending_persona';
+
+const PERSONA_TO_ROLE = {
+  freelancer:   'consultant',
+  agency:       'agency_small',
+  ecommerce:    'ecommerce',
+  saas_startup: 'saas_b2b',
+  corporation:  'corporation',
+};
+
 const STEPS = [
   {
     id: 'role',
@@ -14,6 +24,7 @@ const STEPS = [
       { id: 'consultant',   emoji: '💼', label: 'Soy consultor/a independiente', sub: 'Gestiono varios clientes yo solo/a' },
       { id: 'ecommerce',    emoji: '🛍️', label: 'Tengo un e-commerce', sub: 'Marketing interno para mi tienda online' },
       { id: 'saas_b2b',     emoji: '⚙️', label: 'Tengo un SaaS B2B', sub: 'Hago mi propio go-to-market' },
+      { id: 'corporation',  emoji: '🏛️', label: 'Soy parte de una corporación', sub: 'Gran empresa con necesidades de API y white-label' },
     ],
   },
   {
@@ -41,14 +52,25 @@ const STEPS = [
         { id: 'content',   emoji: '✍️', label: 'Crear contenido técnico y de marca', sub: 'Blog, SEO y LinkedIn para SaaS' },
         { id: 'leads',     emoji: '🤝', label: 'Generar más leads calificados', sub: 'Outreach, email y landing pages' },
       ],
+      corporation: [
+        { id: 'api',       emoji: '⚙️', label: 'Integrar Gormaran vía API', sub: 'REST + SSE para flujos internos o productos' },
+        { id: 'whitelabel',emoji: '🏷️', label: 'Desplegar bajo mi marca', sub: 'White-label sin mención a Gormaran' },
+        { id: 'team',      emoji: '👥', label: 'Escalar mi equipo de marketing', sub: 'Multi-workspace y colaboradores ilimitados' },
+      ],
     },
   },
 ];
 
+function getPrefillRole() {
+  const pending = localStorage.getItem(PERSONA_KEY);
+  return pending ? PERSONA_TO_ROLE[pending] || null : null;
+}
+
 export default function OnboardingModal({ onComplete }) {
   const { currentUser, refreshUserProfile } = useAuth();
-  const [step, setStep] = useState(0);
-  const [selected, setSelected] = useState({});
+  const prefillRole = getPrefillRole();
+  const [step, setStep] = useState(prefillRole ? 1 : 0);
+  const [selected, setSelected] = useState(prefillRole ? { role: prefillRole } : {});
   const [saving, setSaving] = useState(false);
 
   const current = STEPS[step];
@@ -73,10 +95,12 @@ export default function OnboardingModal({ onComplete }) {
         personaGoal: next.goal,
         onboardingCompleted: true,
       });
+      localStorage.removeItem(PERSONA_KEY);
       await refreshUserProfile(currentUser.uid);
       onComplete(next);
     } catch (e) {
       console.error('Onboarding save error:', e);
+      localStorage.removeItem(PERSONA_KEY);
       onComplete(next);
     }
     setSaving(false);

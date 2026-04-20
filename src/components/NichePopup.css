@@ -1,0 +1,164 @@
+.niche-popup__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: niche-fade-in 0.3s ease;
+}
+
+@keyframes niche-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.niche-popup {
+  background: var(--bg-surface, #1a1a2e);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 520px;
+  width: 100%;
+  position: relative;
+  animation: niche-slide-up 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes niche-slide-up {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.niche-popup__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-muted, #888);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.niche-popup__close:hover {
+  color: var(--text-primary, #fff);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.niche-popup__header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.niche-popup__emoji {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.niche-popup__title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary, #fff);
+  margin: 0 0 0.5rem;
+}
+
+.niche-popup__subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted, #aaa);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.niche-popup__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.niche-popup__option {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  width: 100%;
+}
+
+.niche-popup__option:hover {
+  border-color: rgba(99, 102, 241, 0.6);
+  background: rgba(99, 102, 241, 0.08);
+  transform: translateX(3px);
+}
+
+.niche-popup__option-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.niche-popup__option-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.niche-popup__option-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+}
+
+.niche-popup__option-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted, #aaa);
+}
+
+.niche-popup__option-arrow {
+  font-size: 1rem;
+  color: var(--text-muted, #888);
+  flex-shrink: 0;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.niche-popup__option:hover .niche-popup__option-arrow {
+  transform: translateX(4px);
+  color: #6366f1;
+}
+
+.niche-popup__skip {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.82rem;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.niche-popup__skip:hover {
+  color: var(--text-primary, #ccc);
+}
+
+@media (max-width: 480px) {
+  .niche-popup {
+    padding: 1.5rem 1.25rem;
+    border-radius: 16px;
+  }
+
+  .niche-popup__title {
+    font-size: 1.2rem;
+  }
+}

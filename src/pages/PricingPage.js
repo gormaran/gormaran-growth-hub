@@ -32,28 +32,31 @@ const EVOLUTION = {
 };
 
 const FREE_FEATURES = [
-  { es: '10 automatizaciones al mes', en: '10 automations per month' },
-  { es: 'Todas las herramientas de IA (30+)', en: 'All AI tools (30+)' },
+  { es: '10 generaciones IA al mes', en: '10 AI generations per month' },
+  { es: 'Herramientas: Marketing + Contenido', en: 'Tools: Marketing + Content' },
   { es: '1 workspace con perfil de marca', en: '1 workspace with brand profile' },
   { es: 'Streaming IA en tiempo real', en: 'Real-time AI streaming' },
+  { es: 'Add-on n8n disponible (€10/10 flujos)', en: 'n8n add-on available (€10/10 flows)' },
 ];
 
 const GROW_FEATURES = [
-  { es: 'Automatizaciones ilimitadas', en: 'Unlimited automations', highlight: true },
-  { es: 'Todas las herramientas de IA (30+)', en: 'All AI tools (30+)' },
+  { es: 'Generaciones IA ilimitadas', en: 'Unlimited AI generations', highlight: true },
+  { es: 'Herramientas: Marketing + Contenido + Digital', en: 'Tools: Marketing + Content + Digital' },
   { es: '3 workspaces con perfil de marca', en: '3 workspaces with brand profile' },
   { es: 'Streaming IA en tiempo real', en: 'Real-time AI streaming' },
   { es: 'Templates optimizados por nicho', en: 'Niche-optimized templates' },
   { es: 'Gestión de equipo (colaboradores)', en: 'Team management (collaborators)' },
   { es: 'Soporte por email prioritario', en: 'Priority email support' },
+  { es: 'Add-on n8n disponible (€10/10 flujos)', en: 'n8n add-on available (€10/10 flows)' },
 ];
 
 const SCALE_FEATURES = [
   { es: 'Todo lo del plan Grow', en: 'Everything in Grow', highlight: true },
+  { es: '+ Estrategia, Agencia, Ecommerce, Creatividad', en: '+ Strategy, Agency, Ecommerce, Creative' },
   { es: '5 workspaces con perfil de marca', en: '5 workspaces with brand profile' },
   { es: 'Historial de resultados', en: 'Output history' },
-  { es: 'Integraciones avanzadas (n8n, Make)', en: 'Advanced integrations (n8n, Make)' },
   { es: 'Soporte dedicado por email', en: 'Dedicated email support' },
+  { es: 'Add-on n8n disponible (€10/10 flujos)', en: 'n8n add-on available (€10/10 flows)' },
 ];
 
 const EVOLUTION_FEATURES = [
@@ -531,15 +534,34 @@ export default function PricingPage() {
                 </thead>
                 <tbody>
                   {[
-                    { label: isEs ? 'Automatizaciones / mes' : 'Automations / month', free: '10', grow: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞', scale: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞', evo: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞' },
-                    { label: isEs ? 'Herramientas de IA (30+)' : 'AI tools (30+)', free: '✅', grow: '✅', scale: '✅', evo: '✅' },
+                    {
+                      label: isEs ? 'Generaciones IA / mes' : 'AI generations / month',
+                      free: '10',
+                      grow: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞',
+                      scale: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞',
+                      evo: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞',
+                    },
+                    {
+                      label: isEs ? 'Categorías de herramientas' : 'Tool categories',
+                      free: isEs ? 'Marketing + Contenido' : 'Marketing + Content',
+                      grow: isEs ? '+ Digital' : '+ Digital',
+                      scale: isEs ? '+ Estrategia, Ecommerce, Agencia, Creatividad' : '+ Strategy, Ecommerce, Agency, Creative',
+                      evo: isEs ? 'Todas (30+ herramientas)' : 'All (30+ tools)',
+                    },
+                    {
+                      label: isEs ? 'Automatizaciones n8n (Add-on)' : 'n8n Automations (Add-on)',
+                      free: isEs ? '€10 / 10 flujos' : '€10 / 10 flows',
+                      grow: isEs ? '€10 / 10 flujos' : '€10 / 10 flows',
+                      scale: isEs ? '€10 / 10 flujos' : '€10 / 10 flows',
+                      evo: isEs ? '€10 / 10 flujos' : '€10 / 10 flows',
+                    },
                     { label: isEs ? 'Workspaces' : 'Workspaces', free: '1', grow: '3', scale: '5', evo: isEs ? 'Ilimitados' : 'Unlimited' },
                     { label: isEs ? 'Gestión de equipo' : 'Team management', free: '❌', grow: '✅', scale: '✅', evo: '✅' },
                     { label: isEs ? 'Streaming IA' : 'AI streaming', free: '✅', grow: '✅', scale: '✅', evo: '✅' },
                     { label: isEs ? 'White-label' : 'White-label', free: '❌', grow: '❌', scale: '❌', evo: '✅' },
                     { label: isEs ? 'Acceso API' : 'API access', free: '❌', grow: '❌', scale: '❌', evo: '✅' },
                     { label: isEs ? 'SLA uptime' : 'Uptime SLA', free: '❌', grow: '❌', scale: '❌', evo: '99.9%' },
-                    { label: isEs ? 'Soporte' : 'Support', free: isEs ? 'Email' : 'Email', grow: isEs ? 'Prioritario' : 'Priority', scale: isEs ? 'Prioritario' : 'Priority', evo: isEs ? 'Dedicado' : 'Dedicated' },
+                    { label: isEs ? 'Soporte' : 'Support', free: 'Email', grow: isEs ? 'Prioritario' : 'Priority', scale: isEs ? 'Prioritario' : 'Priority', evo: isEs ? 'Dedicado' : 'Dedicated' },
                   ].map((row, i) => (
                     <tr key={i}>
                       <td>{row.label}</td>
