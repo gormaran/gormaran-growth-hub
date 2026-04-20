@@ -449,14 +449,6 @@ export default function Dashboard() {
                 <span>🚀</span> {t('ui.aiToolCategories', { defaultValue: 'AI Tool Categories' })}
               </h2>
               <div className="dashboard__goal-filters">
-                {topCats.length > 0 && (
-                  <button
-                    className={`dashboard__goal-btn${activeGoal === 'top' ? ' dashboard__goal-btn--active' : ''}`}
-                    onClick={() => setActiveGoal(prev => prev === 'top' ? null : 'top')}
-                  >
-                    {isEs ? '⭐ Para ti' : '⭐ For you'}
-                  </button>
-                )}
                 {GOALS.map(goal => (
                   <button
                     key={goal.id}
@@ -466,6 +458,14 @@ export default function Dashboard() {
                     {isEs ? goal.labelEs : goal.labelEn}
                   </button>
                 ))}
+                {topCats.length > 0 && (
+                  <button
+                    className={`dashboard__goal-btn${activeGoal === 'top' ? ' dashboard__goal-btn--active' : ''}`}
+                    onClick={() => setActiveGoal(prev => prev === 'top' ? null : 'top')}
+                  >
+                    {isEs ? '⭐ Para ti' : '⭐ For you'}
+                  </button>
+                )}
               </div>
             </div>
 

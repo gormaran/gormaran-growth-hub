@@ -250,23 +250,6 @@ export const CATEGORIES = [
           { id: 'avoid', label: 'What to Avoid (optional)', type: 'text', placeholder: 'e.g., No clichés like light bulbs, no dark colors' },
         ],
       },
-      {
-        id: 'instagram-carousel',
-        name: 'Instagram Carousel Generator',
-        description: 'Generate slide-by-slide carousel content with hooks, body copy and CTAs — upload a reference image for style matching',
-        icon: '🎠',
-        hasRefImage: true,
-        inputs: [
-          { id: 'topic', label: 'Carousel Topic / Hook', type: 'textarea', placeholder: 'e.g., 5 reasons why your Instagram reach is dying (and how to fix it)', required: true },
-          { id: 'slides', label: 'Number of Slides', type: 'select', options: ['3 slides', '5 slides', '7 slides', '10 slides'], required: true },
-          { id: 'niche', label: 'Niche / Industry', type: 'text', placeholder: 'e.g., personal finance, fitness, marketing, real estate', required: true },
-          { id: 'audience', label: 'Target Audience', type: 'text', placeholder: 'e.g., female entrepreneurs aged 25–35', required: true },
-          { id: 'tone', label: 'Tone', type: 'select', options: ['Educational', 'Inspirational', 'Conversational', 'Bold & Direct', 'Storytelling', 'Humorous'], required: true },
-          { id: 'cta', label: 'Call to Action (last slide)', type: 'text', placeholder: 'e.g., Save this post, Follow for more, DM me "CAROUSEL"', required: true },
-          { id: 'extra', label: 'Extra Context (optional)', type: 'textarea', placeholder: 'e.g., brand colors, key message, product to promote, specific stats to include' },
-        ],
-        maxTokens: 6000,
-      },
     ],
   },
   {
