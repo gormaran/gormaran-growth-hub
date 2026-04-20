@@ -22,9 +22,9 @@ const CATEGORY_MIN_TIER = {
 };
 
 const GOALS = [
-  { id: 'clients',  label: '🤝 Get Clients',     cats: ['strategy', 'agency'] },
-  { id: 'content',  label: '✍️ Create Content',   cats: ['content', 'marketing', 'creative'] },
-  { id: 'digital',  label: '📈 Grow Digital',     cats: ['digital', 'ecommerce'] },
+  { id: 'clients',  labelEs: '🤝 Conseguir Clientes', labelEn: '🤝 Get Clients',    cats: ['strategy', 'agency'] },
+  { id: 'content',  labelEs: '✍️ Crear Contenido',    labelEn: '✍️ Create Content',  cats: ['content', 'marketing', 'creative'] },
+  { id: 'digital',  labelEs: '📈 Crecer Digital',     labelEn: '📈 Grow Digital',    cats: ['digital', 'ecommerce'] },
 ];
 
 const QUICK_WINS_BY_PERSONA = {
@@ -152,7 +152,8 @@ export default function Dashboard() {
     }
   }, []);
   const [searchParams] = useSearchParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
 
   const paymentStatus = searchParams.get('payment');
   const PLAN_PRICES = { pro: 99, enterprise: 499 };
@@ -222,6 +223,7 @@ export default function Dashboard() {
     }
     const base = [...ordered, ...addon];
     if (!activeGoal) return base;
+    if (activeGoal === 'top') return base.filter(c => topCats.includes(c.id));
     const goal = GOALS.find(g => g.id === activeGoal);
     return goal ? base.filter(c => goal.cats.includes(c.id)) : base;
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -264,13 +266,15 @@ export default function Dashboard() {
               className="dashboard__onboarding-banner dashboard__onboarding-banner--brand"
             >
               <div>
-                <p className="dashboard__onboarding-title">🏢 Set up your Brand Profile first</p>
+                <p className="dashboard__onboarding-title">{isEs ? '🏢 Configura tu Perfil de Marca primero' : '🏢 Set up your Brand Profile first'}</p>
                 <p className="dashboard__onboarding-sub">
-                  Fill in your business details once and every tool will auto-fill for you — no more typing the same info over and over.
+                  {isEs
+                    ? 'Rellena los datos de tu negocio una vez y todas las herramientas se autocompletarán — sin repetir la misma info.'
+                    : 'Fill in your business details once and every tool will auto-fill for you — no more typing the same info over and over.'}
                 </p>
               </div>
               <Link to="/settings" className="btn btn-primary btn-sm" style={{ whiteSpace: 'nowrap' }}>
-                Set up now →
+                {isEs ? 'Configurar →' : 'Set up now →'}
               </Link>
             </motion.div>
           ) : !userProfile?.onboardingCompleted ? (
@@ -280,13 +284,15 @@ export default function Dashboard() {
               className="dashboard__onboarding-banner dashboard__onboarding-banner--tool"
             >
               <div>
-                <p className="dashboard__onboarding-title">👋 Ready to go, {currentUser?.displayName?.split(' ')[0] || 'there'}!</p>
+                <p className="dashboard__onboarding-title">👋 {isEs ? `¡Todo listo, ${currentUser?.displayName?.split(' ')[0] || ''}!` : `Ready to go, ${currentUser?.displayName?.split(' ')[0] || 'there'}!`}</p>
                 <p className="dashboard__onboarding-sub">
-                  Your Brand Profile is set. Most users start with the <strong>Proposal Generator</strong> — it saves 2+ hours on your first use.
+                  {isEs
+                    ? <>Tu Perfil de Marca está listo. La mayoría empieza con el <strong>Generador de Propuestas</strong> — ahorra +2 horas en el primer uso.</>
+                    : <>Your Brand Profile is set. Most users start with the <strong>Proposal Generator</strong> — it saves 2+ hours on your first use.</>}
                 </p>
               </div>
               <Link to="/category/strategy" className="btn btn-primary btn-sm" style={{ whiteSpace: 'nowrap' }}>
-                Try it now →
+                {isEs ? 'Probarlo →' : 'Try it now →'}
               </Link>
             </motion.div>
           ) : null}
@@ -298,7 +304,7 @@ export default function Dashboard() {
               <input
                 className="dashboard__magic-input"
                 type="text"
-                placeholder="Search tools — e.g. keyword, proposal, ads..."
+                placeholder={isEs ? 'Buscar herramientas — p.ej. keywords, propuesta, ads...' : 'Search tools — e.g. keyword, proposal, ads...'}
                 value={search}
                 onChange={e => { setSearch(e.target.value); updateDropdownRect(); }}
                 onFocus={updateDropdownRect}
@@ -327,7 +333,7 @@ export default function Dashboard() {
                       <span className="dashboard__magic-result-cat">{cat.icon} {cat.name}</span>
                     </button>
                   ))
-                : <div className="dashboard__magic-empty">No tools found for "{search}"</div>
+                : <div className="dashboard__magic-empty">{isEs ? `Sin resultados para "${search}"` : `No tools found for "${search}"`}</div>
               }
             </div>,
             document.body
@@ -335,7 +341,7 @@ export default function Dashboard() {
 
           {/* Quick Wins */}
           <section className="dashboard__quick-wins">
-            <h2 className="dashboard__section-title"><span>⚡</span> Try these now</h2>
+            <h2 className="dashboard__section-title"><span>⚡</span> {isEs ? 'Prueba ahora' : 'Try these now'}</h2>
             <div className="dashboard__quick-wins-grid">
               {quickWins.map((win) => (
                 <button
@@ -443,13 +449,21 @@ export default function Dashboard() {
                 <span>🚀</span> {t('ui.aiToolCategories', { defaultValue: 'AI Tool Categories' })}
               </h2>
               <div className="dashboard__goal-filters">
+                {topCats.length > 0 && (
+                  <button
+                    className={`dashboard__goal-btn${activeGoal === 'top' ? ' dashboard__goal-btn--active' : ''}`}
+                    onClick={() => setActiveGoal(prev => prev === 'top' ? null : 'top')}
+                  >
+                    {isEs ? '⭐ Para ti' : '⭐ For you'}
+                  </button>
+                )}
                 {GOALS.map(goal => (
                   <button
                     key={goal.id}
                     className={`dashboard__goal-btn${activeGoal === goal.id ? ' dashboard__goal-btn--active' : ''}`}
                     onClick={() => setActiveGoal(prev => prev === goal.id ? null : goal.id)}
                   >
-                    {goal.label}
+                    {isEs ? goal.labelEs : goal.labelEn}
                   </button>
                 ))}
               </div>
@@ -531,7 +545,7 @@ export default function Dashboard() {
                         {cat.icon}
                       </div>
                       {isTop && !locked && (
-                        <span className="dashboard__cat-recommended">⭐ Para ti</span>
+                        <span className="dashboard__cat-recommended">{isEs ? '⭐ Para ti' : '⭐ For you'}</span>
                       )}
                       {locked && (
                         <span className="dashboard__cat-lock">🔒 {CATEGORY_MIN_TIER[cat.id] || 'Grow'}</span>
@@ -581,7 +595,7 @@ export default function Dashboard() {
           >
             <span className="dashboard__tip-icon">💡</span>
             <p>
-              <strong>Pro tip:</strong> Each tool has custom-engineered AI prompts. Fill in all fields for the most precise, actionable output.
+              <strong>{isEs ? 'Consejo pro:' : 'Pro tip:'}</strong> {isEs ? 'Cada herramienta tiene prompts de IA personalizados. Rellena todos los campos para obtener el resultado más preciso y accionable.' : 'Each tool has custom-engineered AI prompts. Fill in all fields for the most precise, actionable output.'}
             </p>
           </motion.div>
         </div>
