@@ -32,6 +32,9 @@ export const PLANS = {
   admin: {
     name: 'Admin',
     allAccess: true,
+    unlimitedUsage: true,
+    apiAccess: true,
+    whiteLabel: true,
   },
 };
 
