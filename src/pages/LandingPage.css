@@ -16,12 +16,67 @@
 }
 
 [data-theme="light"] .hero-promptbox {
-  background: rgba(255,255,255,0.9);
-  border-color: rgba(0,0,0,0.1);
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.12);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
 }
 
 [data-theme="light"] .hero-promptbox__input {
-  color: var(--text-primary);
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .hero-promptbox__input::placeholder {
+  color: rgba(0,0,0,0.35);
+}
+
+[data-theme="light"] .hero-promptbox__send {
+  background: rgba(99,102,241,0.12);
+  color: rgba(99,102,241,0.5);
+}
+
+[data-theme="light"] .hero-promptbox__chip {
+  border-color: rgba(0,0,0,0.1);
+  background: rgba(0,0,0,0.04);
+  color: rgba(0,0,0,0.55);
+}
+
+[data-theme="light"] .hero-promptbox__chip:hover {
+  border-color: rgba(99,102,241,0.4);
+  background: rgba(99,102,241,0.08);
+  color: #4f46e5;
+}
+
+[data-theme="light"] .hero-promptbox__chip--active {
+  border-color: rgba(99,102,241,0.5);
+  background: rgba(99,102,241,0.1);
+  color: #4338ca;
+}
+
+[data-theme="light"] .hero-promptbox__chip-more {
+  border-color: rgba(0,0,0,0.15);
+  color: rgba(0,0,0,0.35);
+}
+
+[data-theme="light"] .hero-promptbox__counter {
+  color: rgba(0,0,0,0.35);
+}
+
+[data-theme="light"] .hero-promptbox__output {
+  border-bottom-color: rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .hero-promptbox__output-text {
+  color: rgba(0,0,0,0.7);
+}
+
+[data-theme="light"] .hero-promptbox__slow-msg {
+  border-bottom-color: rgba(0,0,0,0.08);
+  color: #64748b;
+}
+
+[data-theme="light"] .hero-promptbox__spinner {
+  border-color: rgba(0,0,0,0.15);
+  border-top-color: #6366f1;
 }
 
 [data-theme="light"] .hiw-mock {
