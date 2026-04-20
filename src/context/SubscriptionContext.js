@@ -13,8 +13,8 @@ export const FREE_MONTHLY_LIMIT = 10;
 
 export const PLAN_CATEGORIES = {
   free:      ['marketing', 'content'],
-  grow:      ['marketing', 'content', 'digital', 'strategy', 'ecommerce', 'agency', 'creative'],
-  scale:     ['marketing', 'content', 'digital', 'strategy', 'ecommerce', 'agency', 'creative'], // legacy — treated as grow
+  grow:      ['marketing', 'content', 'digital'],
+  scale:     ['marketing', 'content', 'digital', 'strategy', 'ecommerce', 'agency', 'creative'],
   evolution: null,  // all categories
   admin:     null,  // all categories
 };
@@ -31,8 +31,8 @@ export const PLANS = {
     unlimitedUsage: true,
     teamAccess: true,
   },
-  scale: {  // legacy support — same capabilities as grow
-    name: 'Grow',
+  scale: {
+    name: 'Scale',
     allCategories: true,
     unlimitedUsage: true,
     teamAccess: true,

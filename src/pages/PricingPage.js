@@ -9,16 +9,24 @@ import './PricingPage.css';
 
 const GROW = {
   id: 'grow',
-  monthlyPrice: 29,
-  annualMonthly: 23,
+  monthlyPrice: 19,
+  annualMonthly: 15,
   monthlyPriceId: process.env.REACT_APP_STRIPE_GROW_PRICE_ID,
   annualPriceId:  process.env.REACT_APP_STRIPE_GROW_ANNUAL_PRICE_ID,
 };
 
+const SCALE = {
+  id: 'scale',
+  monthlyPrice: 49,
+  annualMonthly: 39,
+  monthlyPriceId: process.env.REACT_APP_STRIPE_SCALE_PRICE_ID,
+  annualPriceId:  process.env.REACT_APP_STRIPE_SCALE_ANNUAL_PRICE_ID,
+};
+
 const EVOLUTION = {
   id: 'evolution',
-  monthlyPrice: 99,
-  annualMonthly: 79,
+  monthlyPrice: 129,
+  annualMonthly: 103,
   monthlyPriceId: process.env.REACT_APP_STRIPE_EVOLUTION_PRICE_ID,
   annualPriceId:  process.env.REACT_APP_STRIPE_EVOLUTION_ANNUAL_PRICE_ID,
 };
@@ -33,19 +41,26 @@ const FREE_FEATURES = [
 
 const GROW_FEATURES = [
   { es: 'Generaciones IA ilimitadas', en: 'Unlimited AI generations', highlight: true },
-  { es: 'Herramientas: Marketing, Contenido, Digital, Estrategia, Agencia, Ecommerce + Creatividad', en: 'Tools: Marketing, Content, Digital, Strategy, Agency, Ecommerce + Creative' },
+  { es: 'Herramientas: Marketing + Contenido + Digital', en: 'Tools: Marketing + Content + Digital' },
   { es: '3 workspaces con perfil de marca', en: '3 workspaces with brand profile' },
   { es: 'Streaming IA en tiempo real', en: 'Real-time AI streaming' },
-  { es: 'Historial de resultados', en: 'Output history' },
   { es: 'Templates optimizados por nicho', en: 'Niche-optimized templates' },
   { es: 'Gestión de equipo (colaboradores)', en: 'Team management (collaborators)' },
-  { es: 'Integraciones avanzadas (n8n, Make)', en: 'Advanced integrations (n8n, Make)' },
   { es: 'Soporte por email prioritario', en: 'Priority email support' },
   { es: 'Add-on n8n disponible (€10/10 flujos)', en: 'n8n add-on available (€10/10 flows)' },
 ];
 
-const EVOLUTION_FEATURES = [
+const SCALE_FEATURES = [
   { es: 'Todo lo del plan Grow', en: 'Everything in Grow', highlight: true },
+  { es: '+ Estrategia, Agencia, Ecommerce, Creatividad', en: '+ Strategy, Agency, Ecommerce, Creative' },
+  { es: '5 workspaces con perfil de marca', en: '5 workspaces with brand profile' },
+  { es: 'Historial de resultados', en: 'Output history' },
+  { es: 'Soporte dedicado por email', en: 'Dedicated email support' },
+  { es: 'Add-on n8n disponible (€10/10 flujos)', en: 'n8n add-on available (€10/10 flows)' },
+];
+
+const EVOLUTION_FEATURES = [
+  { es: 'Todo lo del plan Scale', en: 'Everything in Scale', highlight: true },
   { es: 'White-label — tu marca, sin Gormaran', en: 'White-label — your brand, no Gormaran' },
   { es: 'Acceso API con streaming (REST + SSE)', en: 'API access with streaming (REST + SSE)' },
   { es: 'Workspaces ilimitados (multi-cliente)', en: 'Unlimited workspaces (multi-client)' },
@@ -142,6 +157,7 @@ export default function PricingPage() {
   }
 
   const growPrice = billingPeriod === 'annual' ? GROW.annualMonthly : GROW.monthlyPrice;
+  const scalePrice = billingPeriod === 'annual' ? SCALE.annualMonthly : SCALE.monthlyPrice;
   const evoPrice = billingPeriod === 'annual' ? EVOLUTION.annualMonthly : EVOLUTION.monthlyPrice;
   const roiEx = ROI_EXAMPLES[activeRoi];
   const roiValue = roiEx.hours * roiEx.rate;
@@ -157,7 +173,7 @@ export default function PricingPage() {
     }
     return (
       <button
-        className={`btn ${planId === 'grow' ? 'btn-primary' : 'btn-evolution'} pricing2__plan-cta`}
+        className={`btn ${planId === 'grow' ? 'btn-primary' : planId === 'scale' ? 'btn-scale' : 'btn-evolution'} pricing2__plan-cta`}
         onClick={() => handlePlanSelect(planId, priceObj)}
         disabled={loadingPlan === planId}
       >
@@ -247,7 +263,7 @@ export default function PricingPage() {
         {/* ── PLANS ── */}
         <div className="container">
           <motion.div
-            className="pricing2__plans pricing2__plans--3col"
+            className="pricing2__plans pricing2__plans--4col"
             initial="hidden"
             animate="visible"
             variants={stagger}
@@ -294,17 +310,17 @@ export default function PricingPage() {
                 <h2 className="pricing2__plan-name">Grow</h2>
                 <p className="pricing2__plan-desc">
                   {isEs
-                    ? 'Para freelancers, consultores y agencias de marketing sin límites'
-                    : 'For freelancers, consultants & marketing agencies without limits'}
+                    ? 'Para profesionales y agencias que no pueden permitirse límites'
+                    : 'For professionals & agencies who can\'t afford limits'}
                 </p>
               </div>
               <div className="pricing2__plan-price">
                 <span className="pricing2__plan-amount">€{growPrice}</span>
-                <span className="pricing2__plan-period">{isEs ? '/mes' : '/mo'}</span>
+                <span className="pricing2__plan-period">/mes</span>
               </div>
               {billingPeriod === 'annual' && (
                 <p className="pricing2__plan-annual-note">
-                  {isEs ? `€${Math.round(GROW.monthlyPrice * 12 * 0.8)}/año — ahorras €${GROW.monthlyPrice * 12 - Math.round(GROW.monthlyPrice * 12 * 0.8)}` : `€${Math.round(GROW.monthlyPrice * 12 * 0.8)}/year — save €${GROW.monthlyPrice * 12 - Math.round(GROW.monthlyPrice * 12 * 0.8)}`}
+                  {isEs ? `€${GROW.monthlyPrice * 12 * 0.8}/año — ahorras €${GROW.monthlyPrice * 12 - Math.round(GROW.monthlyPrice * 12 * 0.8)}` : `€${Math.round(GROW.monthlyPrice * 12 * 0.8)}/year — save €${GROW.monthlyPrice * 12 - Math.round(GROW.monthlyPrice * 12 * 0.8)}`}
                 </p>
               )}
               {planCta('grow', GROW, growPrice, isEs ? 'Empezar Grow →' : 'Start Grow →')}
@@ -313,6 +329,39 @@ export default function PricingPage() {
               </p>
               <ul className="pricing2__features">
                 {GROW_FEATURES.map((f) => (
+                  <li key={f.es} className={`pricing2__feature${f.highlight ? ' pricing2__feature--highlight' : ''}`}>
+                    <span className="pricing2__feature-check">✓</span>
+                    <span>{isEs ? f.es : f.en}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* SCALE */}
+            <motion.div className="pricing2__plan pricing2__plan--scale" variants={fadeUp}>
+              <div className="pricing2__plan-header">
+                <h2 className="pricing2__plan-name">Scale</h2>
+                <p className="pricing2__plan-desc">
+                  {isEs
+                    ? 'Para equipos y agencias que escalan con múltiples clientes'
+                    : 'For teams & agencies scaling across multiple clients'}
+                </p>
+              </div>
+              <div className="pricing2__plan-price">
+                <span className="pricing2__plan-amount">€{scalePrice}</span>
+                <span className="pricing2__plan-period">/mes</span>
+              </div>
+              {billingPeriod === 'annual' && (
+                <p className="pricing2__plan-annual-note">
+                  {isEs ? `€${Math.round(SCALE.monthlyPrice * 12 * 0.8)}/año — ahorras €${SCALE.monthlyPrice * 12 - Math.round(SCALE.monthlyPrice * 12 * 0.8)}` : `€${Math.round(SCALE.monthlyPrice * 12 * 0.8)}/year — save €${SCALE.monthlyPrice * 12 - Math.round(SCALE.monthlyPrice * 12 * 0.8)}`}
+                </p>
+              )}
+              {planCta('scale', SCALE, scalePrice, isEs ? 'Empezar Scale →' : 'Start Scale →')}
+              <p className="pricing2__guarantee">
+                🔒 {isEs ? 'Garantía 7 días · Sin permanencia · Cancela cuando quieras' : '7-day money-back · No lock-in · Cancel anytime'}
+              </p>
+              <ul className="pricing2__features">
+                {SCALE_FEATURES.map((f) => (
                   <li key={f.es} className={`pricing2__feature${f.highlight ? ' pricing2__feature--highlight' : ''}`}>
                     <span className="pricing2__feature-check">✓</span>
                     <span>{isEs ? f.es : f.en}</span>
@@ -330,8 +379,8 @@ export default function PricingPage() {
                 <h2 className="pricing2__plan-name">Evolution</h2>
                 <p className="pricing2__plan-desc">
                   {isEs
-                    ? 'Para corporaciones que necesitan API, white-label y soporte dedicado'
-                    : 'For corporations needing API access, white-label & dedicated support'}
+                    ? 'Para agencias que revenden y equipos que necesitan API y white-label'
+                    : 'For agencies that resell and teams needing API & white-label'}
                 </p>
               </div>
               <div className="pricing2__plan-price">
@@ -479,6 +528,7 @@ export default function PricingPage() {
                     <th></th>
                     <th className="pricing2__th--free">Free</th>
                     <th className="pricing2__th--grow">Grow</th>
+                    <th className="pricing2__th--scale">Scale</th>
                     <th className="pricing2__th--evolution">Evolution</th>
                   </tr>
                 </thead>
@@ -488,33 +538,36 @@ export default function PricingPage() {
                       label: isEs ? 'Generaciones IA / mes' : 'AI generations / month',
                       free: '10',
                       grow: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞',
+                      scale: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞',
                       evo: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞',
                     },
                     {
-                      label: isEs ? 'Herramientas de IA' : 'AI tools',
+                      label: isEs ? 'Categorías de herramientas' : 'Tool categories',
                       free: isEs ? 'Marketing + Contenido' : 'Marketing + Content',
-                      grow: isEs ? '7 categorías (30+ herramientas)' : '7 categories (30+ tools)',
-                      evo: isEs ? 'Todas las categorías ∞' : 'All categories ∞',
+                      grow: isEs ? '+ Digital' : '+ Digital',
+                      scale: isEs ? '+ Estrategia, Ecommerce, Agencia, Creatividad' : '+ Strategy, Ecommerce, Agency, Creative',
+                      evo: isEs ? 'Todas (30+ herramientas)' : 'All (30+ tools)',
                     },
                     {
                       label: isEs ? 'Automatizaciones n8n (Add-on)' : 'n8n Automations (Add-on)',
                       free: isEs ? '€10 / 10 flujos' : '€10 / 10 flows',
                       grow: isEs ? '€10 / 10 flujos' : '€10 / 10 flows',
+                      scale: isEs ? '€10 / 10 flujos' : '€10 / 10 flows',
                       evo: isEs ? '€10 / 10 flujos' : '€10 / 10 flows',
                     },
-                    { label: isEs ? 'Workspaces' : 'Workspaces', free: '1', grow: '3', evo: isEs ? 'Ilimitados' : 'Unlimited' },
-                    { label: isEs ? 'Gestión de equipo' : 'Team management', free: '❌', grow: '✅', evo: '✅' },
-                    { label: isEs ? 'Historial de resultados' : 'Output history', free: '❌', grow: '✅', evo: '✅' },
-                    { label: isEs ? 'Streaming IA' : 'AI streaming', free: '✅', grow: '✅', evo: '✅' },
-                    { label: isEs ? 'White-label' : 'White-label', free: '❌', grow: '❌', evo: '✅' },
-                    { label: isEs ? 'Acceso API' : 'API access', free: '❌', grow: '❌', evo: '✅' },
-                    { label: isEs ? 'SLA uptime' : 'Uptime SLA', free: '❌', grow: '❌', evo: '99.9%' },
-                    { label: isEs ? 'Soporte' : 'Support', free: 'Email', grow: isEs ? 'Prioritario' : 'Priority', evo: isEs ? 'Dedicado' : 'Dedicated' },
+                    { label: isEs ? 'Workspaces' : 'Workspaces', free: '1', grow: '3', scale: '5', evo: isEs ? 'Ilimitados' : 'Unlimited' },
+                    { label: isEs ? 'Gestión de equipo' : 'Team management', free: '❌', grow: '✅', scale: '✅', evo: '✅' },
+                    { label: isEs ? 'Streaming IA' : 'AI streaming', free: '✅', grow: '✅', scale: '✅', evo: '✅' },
+                    { label: isEs ? 'White-label' : 'White-label', free: '❌', grow: '❌', scale: '❌', evo: '✅' },
+                    { label: isEs ? 'Acceso API' : 'API access', free: '❌', grow: '❌', scale: '❌', evo: '✅' },
+                    { label: isEs ? 'SLA uptime' : 'Uptime SLA', free: '❌', grow: '❌', scale: '❌', evo: '99.9%' },
+                    { label: isEs ? 'Soporte' : 'Support', free: 'Email', grow: isEs ? 'Prioritario' : 'Priority', scale: isEs ? 'Prioritario' : 'Priority', evo: isEs ? 'Dedicado' : 'Dedicated' },
                   ].map((row, i) => (
                     <tr key={i}>
                       <td>{row.label}</td>
                       <td className="pricing2__td--free">{row.free}</td>
                       <td className="pricing2__td--grow">{row.grow}</td>
+                      <td className="pricing2__td--scale">{row.scale}</td>
                       <td className="pricing2__td--evolution">{row.evo}</td>
                     </tr>
                   ))}
@@ -544,10 +597,10 @@ export default function PricingPage() {
                 a: isEs ? '7 días de garantía total en todos los planes de pago. Si no estás satisfecho, te devolvemos el 100% sin preguntas.' : '7-day full money-back on all paid plans. Not happy? We refund 100%, no questions asked.',
               },
               {
-                q: isEs ? '¿Cuál es la diferencia entre Grow y Evolution?' : 'What is the difference between Grow and Evolution?',
+                q: isEs ? '¿Cuál es la diferencia entre Grow, Scale y Evolution?' : 'What is the difference between Grow, Scale and Evolution?',
                 a: isEs
-                  ? 'Grow incluye generaciones IA ilimitadas, 7 categorías de herramientas (30+), 3 workspaces, historial de resultados y gestión de equipo. Evolution añade todas las herramientas, workspaces ilimitados, white-label, acceso API (REST + SSE) y SLA 99.9% — diseñado para corporaciones.'
-                  : 'Grow includes unlimited AI generations, 7 tool categories (30+), 3 workspaces, output history and team management. Evolution adds all tools, unlimited workspaces, white-label, API access (REST + SSE) and 99.9% SLA — built for corporations.',
+                  ? 'Grow incluye uso ilimitado, 3 workspaces y gestión de equipo. Scale añade 5 workspaces e integraciones avanzadas. Evolution desbloquea white-label, acceso API, workspaces ilimitados y SLA 99.9%.'
+                  : 'Grow includes unlimited use, 3 workspaces and team management. Scale adds 5 workspaces and advanced integrations. Evolution unlocks white-label, API access, unlimited workspaces and 99.9% SLA.',
               },
               {
                 q: isEs ? '¿Necesito tarjeta de crédito para el plan Free?' : 'Do I need a credit card for Free?',
