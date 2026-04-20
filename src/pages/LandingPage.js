@@ -194,22 +194,26 @@ function HeroPromptBox() {
   const handleSubmit = useCallback(() => {
     if (!value.trim() || isStreaming) return;
 
-    if (currentUser) {
-      if (activeChip !== null) {
-        const chip = HERO_CHIPS[activeChip];
-        if (chip.toolId && chip.exampleInputs) {
-          sessionStorage.setItem('gormaran_rerun', JSON.stringify({
-            toolId: chip.toolId,
-            inputs: chip.exampleInputs,
-          }));
-        }
-        navigate(chip.route);
-      } else {
-        navigate('/dashboard');
+    // Chip selected → always navigate to the tool (ProtectedRoute gates non-auth users)
+    if (activeChip !== null) {
+      const chip = HERO_CHIPS[activeChip];
+      if (chip.toolId && chip.exampleInputs) {
+        sessionStorage.setItem('gormaran_rerun', JSON.stringify({
+          toolId: chip.toolId,
+          inputs: chip.exampleInputs,
+        }));
       }
+      navigate(chip.route);
       return;
     }
 
+    // No chip selected + authenticated → go to dashboard
+    if (currentUser) {
+      navigate('/dashboard');
+      return;
+    }
+
+    // No chip + anonymous → run demo (max 3 uses)
     const used = parseInt(localStorage.getItem(DEMO_KEY) || '0', 10);
     if (used >= DEMO_LIMIT) {
       navigate('/auth?mode=register');
@@ -462,17 +466,17 @@ const HOW_STEPS = [
 
 // ── How It Works — Mini Mockup Visuals ───────────────────────────
 const TOOL_TILES = [
-  { emoji: '📈', label: 'Marketing' },
-  { emoji: '✍️', label: 'Content', active: true },
-  { emoji: '🛠️', label: 'Digital' },
-  { emoji: '🎯', label: 'Strategy' },
-  { emoji: '🛒', label: 'E-com' },
-  { emoji: '🏢', label: 'Agency' },
+  { emoji: '📈', labelEs: 'Marketing',  labelEn: 'Marketing' },
+  { emoji: '✍️', labelEs: 'Contenido',  labelEn: 'Content',  active: true },
+  { emoji: '🛠️', labelEs: 'Digital',    labelEn: 'Digital' },
+  { emoji: '🎯', labelEs: 'Estrategia', labelEn: 'Strategy' },
+  { emoji: '🛒', labelEs: 'E-com',      labelEn: 'E-com' },
+  { emoji: '🏢', labelEs: 'Agencias',   labelEn: 'Agency' },
 ];
 
 const OUTPUT_LINES_WIDTHS = [72, 90, 65, 85, 55, 78, 60];
 
-function HiwMockup({ step, active }) {
+function HiwMockup({ step, active, isEs }) {
   if (step === 0) return (
     <div className="hiw-mock hiw-mock--tiles">
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
@@ -483,7 +487,7 @@ function HiwMockup({ step, active }) {
         {TOOL_TILES.map((tile) => (
           <div key={tile.emoji} className={`hiw-mock__tile${tile.active ? ' hiw-mock__tile--active' : ''}`}>
             <span className="hiw-mock__tile-emoji">{tile.emoji}</span>
-            <span className="hiw-mock__tile-label">{tile.label}</span>
+            <span className="hiw-mock__tile-label">{isEs ? tile.labelEs : tile.labelEn}</span>
             <div className="hiw-mock__tile-bar" />
             <div className="hiw-mock__tile-bar hiw-mock__tile-bar--sm" />
           </div>
@@ -496,10 +500,10 @@ function HiwMockup({ step, active }) {
     <div className="hiw-mock hiw-mock--form">
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
         <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
-        <div className="hiw-mock__chrome-label">✍️ Blog Post Writer</div>
+        <div className="hiw-mock__chrome-label">✍️ {isEs ? 'Escritor de Blog' : 'Blog Post Writer'}</div>
       </div>
       <div className="hiw-mock__form-fields">
-        {['Tema', 'Keyword SEO', 'Audiencia'].map((label, i) => (
+        {(isEs ? ['Tema', 'Keyword SEO', 'Audiencia'] : ['Topic', 'SEO Keyword', 'Audience']).map((label, i) => (
           <div key={i} className="hiw-mock__field">
             <div className="hiw-mock__field-label">{label}</div>
             <div className="hiw-mock__field-input">
@@ -518,7 +522,7 @@ function HiwMockup({ step, active }) {
           animate={active ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 0.9 }}
         >
-          ⚡ Generar con IA
+          {isEs ? '⚡ Generar con IA' : '⚡ Generate with AI'}
         </motion.div>
       </div>
     </div>
@@ -528,8 +532,8 @@ function HiwMockup({ step, active }) {
     <div className="hiw-mock hiw-mock--output">
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
         <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
-        <div className="hiw-mock__output-badge">✨ AI Output</div>
-        <div className="hiw-mock__word-count">~680 palabras</div>
+        <div className="hiw-mock__output-badge">✨ {isEs ? 'Resultado IA' : 'AI Output'}</div>
+        <div className="hiw-mock__word-count">~680 {isEs ? 'palabras' : 'words'}</div>
       </div>
       <div className="hiw-mock__lines">
         {OUTPUT_LINES_WIDTHS.map((w, i) => (
@@ -550,7 +554,7 @@ function HiwMockup({ step, active }) {
     <div className="hiw-mock hiw-mock--review">
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
         <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
-        <div className="hiw-mock__review-done">✓ Listo · 680 palabras</div>
+        <div className="hiw-mock__review-done">✓ {isEs ? 'Listo · 680 palabras' : 'Done · 680 words'}</div>
       </div>
       <div className="hiw-mock__lines hiw-mock__lines--done">
         {[80, 65, 90, 55].map((w, i) => (
@@ -558,9 +562,9 @@ function HiwMockup({ step, active }) {
         ))}
       </div>
       <div className="hiw-mock__actions">
-        <div className="hiw-mock__action-btn hiw-mock__action-btn--primary">Copiar ✓</div>
-        <div className="hiw-mock__action-btn">Descargar</div>
-        <div className="hiw-mock__action-btn">Editar</div>
+        <div className="hiw-mock__action-btn hiw-mock__action-btn--primary">{isEs ? 'Copiar ✓' : 'Copy ✓'}</div>
+        <div className="hiw-mock__action-btn">{isEs ? 'Descargar' : 'Download'}</div>
+        <div className="hiw-mock__action-btn">{isEs ? 'Editar' : 'Edit'}</div>
       </div>
     </div>
   );
@@ -570,7 +574,8 @@ function HiwMockup({ step, active }) {
 
 // ── How It Works 2x2 Grid (Tradvio style) ────────────────────────
 function HowItWorksGrid() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
   const [active, setActive] = useState(0);
   const timerRef = useRef(null);
 
@@ -602,7 +607,7 @@ function HowItWorksGrid() {
           transition={{ duration: 0.2 }}
         >
           <div className="hiw-card__visual">
-            <HiwMockup step={i} active={active === i} />
+            <HiwMockup step={i} active={active === i} isEs={isEs} />
           </div>
           <div className="hiw-card__footer">
             <span className="hiw-card__num">{step.num}</span>

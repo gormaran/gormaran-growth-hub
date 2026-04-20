@@ -28,6 +28,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const currentLang = LANGUAGES.find(l => l.code === i18n.language) || LANGUAGES[0];
+  const isEs = i18n.language?.startsWith('es');
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -57,13 +58,13 @@ export default function Navbar() {
   const navLinks = currentUser
     ? [
         { to: '/dashboard', label: 'Dashboard' },
-        { to: '/pricing', label: 'Pricing' },
+        { to: '/pricing', label: isEs ? 'Precios' : 'Pricing' },
         { to: '/blog', label: 'Blog' },
         { to: '/academy', label: 'Academy' },
       ]
     : [
-        { to: '/#how-it-works', label: 'Cómo funciona' },
-        { to: '/pricing', label: 'Precios' },
+        { to: '/#how-it-works', label: isEs ? 'Cómo funciona' : 'How it works' },
+        { to: '/pricing', label: isEs ? 'Precios' : 'Pricing' },
         { to: '/blog', label: 'Blog' },
         { to: '/academy', label: 'Academy' },
       ];
