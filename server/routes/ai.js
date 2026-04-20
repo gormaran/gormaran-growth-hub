@@ -35,14 +35,13 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
 
   // --- ACCESS CONTROL ---
   const PLAN_ACCESS = {
-    free:      { allowedTools: ['marketing:seo-keyword-research', 'marketing:seo-meta-tags', 'marketing:instagram-audit'] },
-    grow:      { categories: ['marketing', 'content', 'digital'], allowedTools: ['strategy:business-plan'] },
-    scale:     { categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative'], allowedTools: ['strategy:business-plan'] },
-    evolution: { categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative', 'finance', 'startup', 'strategy'], allowedTools: [] },
-    admin:     { allAccess: true },
+    free:       { allCategories: true },
+    pro:        { allCategories: true, unlimitedUsage: true },
+    enterprise: { allCategories: true, unlimitedUsage: true },
+    admin:      { allAccess: true },
   };
-  const PLAN_ALIASES = { 'pro': 'grow', 'business': 'evolution' };
-  const TRIAL_DAYS = 1;
+  // Map legacy plan names from existing Firestore users
+  const PLAN_ALIASES = { 'grow': 'pro', 'scale': 'pro', 'evolution': 'enterprise', 'business': 'enterprise' };
 
   const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
   const isAdminUid = adminUids.includes(req.user?.uid);
@@ -77,16 +76,14 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
   }
 
   const plan = PLAN_ACCESS[userSubscription] || PLAN_ACCESS.free;
-  const inTrial = userSubscription === 'free' && userCreatedAt && (Date.now() - userCreatedAt) < TRIAL_DAYS * 24 * 60 * 60 * 1000;
-  const toolKey = `${categoryId}:${toolId}`;
-  const hasAccess = plan.allAccess || inTrial || plan.categories?.includes(categoryId) || plan.allowedTools?.includes(toolKey);
 
-  if (!hasAccess) {
+  // All plans have access to all tools; only usage quota matters for free
+  if (!plan.allAccess && !plan.allCategories) {
     return res.status(403).json({ error: 'Upgrade required', upgradeRequired: true });
   }
 
-  // --- MONTHLY LIMIT (free plan, outside trial) ---
-  if (!plan.allAccess && !inTrial && userSubscription === 'free' && !isAdminUid) {
+  // --- MONTHLY LIMIT (free plan only) ---
+  if (!plan.allAccess && !plan.unlimitedUsage && userSubscription === 'free' && !isAdminUid) {
     const now = new Date();
     const reset = usageResetDate ? new Date(usageResetDate) : null;
     const isNewMonth = !reset || reset.getMonth() !== now.getMonth() || reset.getFullYear() !== now.getFullYear();

@@ -9,30 +9,25 @@ export function useSubscription() {
   return useContext(SubscriptionContext);
 }
 
-const TRIAL_DAYS = 1;
 export const FREE_MONTHLY_LIMIT = 10;
 
 export const PLANS = {
   free: {
     name: 'Free',
-    trialHours: 24,
-    // After trial ends, only these specific tools are accessible:
-    allowedTools: ['marketing:seo-keyword-research', 'marketing:seo-meta-tags', 'marketing:instagram-audit'],
+    monthlyLimit: FREE_MONTHLY_LIMIT,
+    allCategories: true,
   },
-  grow: {
-    name: 'Grow',
-    categories: ['marketing', 'content', 'digital'],
-    allowedTools: ['strategy:business-plan'],
+  pro: {
+    name: 'Pro',
+    allCategories: true,
+    unlimitedUsage: true,
   },
-  scale: {
-    name: 'Scale',
-    categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative'],
-    allowedTools: ['strategy:business-plan'],
-  },
-  evolution: {
-    name: 'Evolution',
-    categories: ['marketing', 'content', 'digital', 'ecommerce', 'agency', 'creative', 'finance', 'startup', 'strategy'],
-    allowedTools: [],
+  enterprise: {
+    name: 'Enterprise',
+    allCategories: true,
+    unlimitedUsage: true,
+    whiteLabel: true,
+    apiAccess: true,
   },
   admin: {
     name: 'Admin',
@@ -47,7 +42,7 @@ export function SubscriptionProvider({ children }) {
   const [checkingSubscription, setCheckingSubscription] = useState(true);
 
   // Backward compat: map legacy plan names to current ones
-  const PLAN_ALIASES = { 'pro': 'grow', 'business': 'evolution' };
+  const PLAN_ALIASES = { 'grow': 'pro', 'scale': 'pro', 'evolution': 'enterprise', 'business': 'enterprise' };
 
   // Admin UID override — mirrors server-side ADMIN_UIDS check
   const ADMIN_UIDS = (process.env.REACT_APP_ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -85,72 +80,32 @@ export function SubscriptionProvider({ children }) {
     }
   }, [userProfile, currentUser]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // --- Trial helpers ---
-
-  function getCreatedAtMs() {
-    const createdAt = userProfile?.createdAt;
-    if (!createdAt) return null;
-    if (typeof createdAt.toMillis === 'function') return createdAt.toMillis();
-    return new Date(createdAt).getTime();
-  }
-
-  function isInTrial() {
-    if (subscription !== 'free') return false;
-    const ms = getCreatedAtMs();
-    if (!ms) return false;
-    return (Date.now() - ms) < TRIAL_DAYS * 24 * 60 * 60 * 1000;
-  }
-
-  function trialDaysRemaining() {
-    if (subscription !== 'free') return 0;
-    const ms = getCreatedAtMs();
-    if (!ms) return 0;
-    const elapsed = Date.now() - ms;
-    const remaining = TRIAL_DAYS * 24 * 60 * 60 * 1000 - elapsed;
-    return remaining > 0 ? Math.ceil(remaining / (24 * 60 * 60 * 1000)) : 0;
-  }
-
   // --- Access functions ---
 
   function getPlan() {
     return PLANS[subscription] || PLANS.free;
   }
 
-  function canUseSpecificTool(categoryId, toolId) {
+  function isInTrial() { return false; }
+  function trialDaysRemaining() { return 0; }
+
+  function canUseSpecificTool(categoryId) {
     if (!currentUser) return false;
-    const plan = getPlan();
-    if (plan.allAccess) return true;
-    if (isInTrial()) return true;
-    if (plan.categories?.includes(categoryId)) return true;
-    if (plan.allowedTools?.includes(`${categoryId}:${toolId}`)) return true;
-    return false;
+    return true; // All plans have access to all tools; usage quota enforced separately
   }
 
-  // Category-level check — true if user can access ANY tool in the category
   function canUseTool(categoryId) {
     if (!currentUser) return false;
-    const plan = getPlan();
-    if (plan.allAccess) return true;
-    if (isInTrial()) return true;
-    if (plan.categories?.includes(categoryId)) return true;
-    if (plan.allowedTools?.some((t) => t.startsWith(`${categoryId}:`))) return true;
-    return false;
+    return true;
   }
 
-  function isCategoryLocked(categoryId) {
-    const plan = getPlan();
-    if (plan.allAccess) return false;
-    if (isInTrial()) return false;
-    if (plan.categories?.includes(categoryId)) return false;
-    if (plan.allowedTools?.some((t) => t.startsWith(`${categoryId}:`))) return false;
-    return true;
+  function isCategoryLocked() {
+    return false; // No category locking in new model — only usage quota
   }
 
   function hasMonthlyUsageLeft() {
     const plan = getPlan();
-    if (plan.allAccess) return true;
-    if (subscription !== 'free') return true;
-    if (isInTrial()) return true;
+    if (plan.allAccess || plan.unlimitedUsage) return true;
     return usageCount < FREE_MONTHLY_LIMIT;
   }
 

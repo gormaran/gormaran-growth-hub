@@ -12,16 +12,8 @@ import InstagramAuditSection from '../components/InstagramAuditSection';
 import OnboardingModal from '../components/OnboardingModal';
 import './Dashboard.css';
 
-const CATEGORY_MIN_TIER = {
-  content:    'Grow',
-  strategy:   'Grow',
-  digital:    'Grow',
-  ecommerce:  'Scale',
-  agency:     'Scale',
-  creative:   'Scale',
-  startup:    'Evolution',
-  finance:    'Evolution',
-};
+// All categories are accessible on all plans — locking is usage-based (free: 10/month)
+const CATEGORY_MIN_TIER = {};
 
 const GOALS = [
   { id: 'clients',  label: '🤝 Get Clients',     cats: ['strategy', 'agency'] },
@@ -139,7 +131,7 @@ const fadeUp = {
 
 export default function Dashboard() {
   const { currentUser, refreshUserProfile, userProfile } = useAuth();
-  const { subscription, isCategoryLocked, isInTrial, trialDaysRemaining } = useSubscription();
+  const { subscription, isCategoryLocked, isInTrial, usageCount, FREE_MONTHLY_LIMIT } = useSubscription();
   const { brandProfile } = useWorkspace();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
@@ -157,7 +149,7 @@ export default function Dashboard() {
   const { t } = useTranslation();
 
   const paymentStatus = searchParams.get('payment');
-  const PLAN_PRICES = { grow: 19, scale: 49, evolution: 129 };
+  const PLAN_PRICES = { pro: 99, enterprise: 499 };
 
   const showOnboarding = userProfile && !userProfile.onboardingCompleted;
   const persona = userProfile?.persona;
@@ -174,9 +166,8 @@ export default function Dashboard() {
     }
   }, [paymentStatus, currentUser]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const inTrial = isInTrial();
-  const daysLeft = trialDaysRemaining();
-  const trialPct = Math.round((daysLeft / 1) * 100);
+  const inTrial = false;
+  const usagePct = subscription === 'free' ? Math.min(100, Math.round((usageCount / FREE_MONTHLY_LIMIT) * 100)) : 100;
   const brandIncomplete = !brandProfile?.companyName;
 
   const searchResults = useMemo(() => {
@@ -395,8 +386,8 @@ export default function Dashboard() {
             </div>
           </motion.div>
 
-          {/* Trial countdown */}
-          {subscription === 'free' && inTrial && (
+          {/* Free plan usage quota */}
+          {subscription === 'free' && (
             <motion.div
               className="dashboard__usage"
               initial={{ opacity: 0, y: 16 }}
@@ -404,32 +395,19 @@ export default function Dashboard() {
               transition={{ delay: 0.1 }}
             >
               <div className="dashboard__usage-info">
-                <span>🎁 {t('dashboard.trialActive', { defaultValue: 'Free trial — full access active' })}</span>
+                <span>{t('dashboard.freeUsage', { defaultValue: 'Free plan — monthly usage' })}</span>
                 <span className="dashboard__usage-count">
-                  {t('ui.trialDaysLeft', { defaultValue: '24h free trial active' })}
+                  <strong>{usageCount}</strong> / {FREE_MONTHLY_LIMIT} {t('dashboard.automations', { defaultValue: 'automations' })}
                 </span>
               </div>
               <div className="dashboard__usage-bar">
-                <div className="dashboard__usage-fill" style={{ width: `${trialPct}%` }} />
+                <div className="dashboard__usage-fill" style={{ width: `${usagePct}%` }} />
               </div>
               <p className="dashboard__usage-note">
-                {t('dashboard.trialNote', { defaultValue: 'After your trial, only Keyword Research & Meta Tags remain free. ' })}
-                <Link to="/pricing">{t('ui.upgradeForUnlimited', { defaultValue: 'Upgrade for unlimited access' })}</Link>
-              </p>
-            </motion.div>
-          )}
-
-          {/* Post-trial notice */}
-          {subscription === 'free' && !inTrial && (
-            <motion.div
-              className="dashboard__usage"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <p className="dashboard__usage-note" style={{ margin: 0 }}>
-                🔒 {t('dashboard.trialEnded', { defaultValue: 'Your free trial has ended. Only Keyword Research & Meta Tags are available. ' })}
-                <Link to="/pricing">{t('ui.upgrade', { defaultValue: 'Upgrade' })} →</Link>
+                {usageCount >= FREE_MONTHLY_LIMIT
+                  ? <>{t('dashboard.limitReached', { defaultValue: 'Monthly limit reached. ' })}<Link to="/pricing">{t('ui.upgrade', { defaultValue: 'Upgrade to Pro' })} →</Link></>
+                  : <>{t('dashboard.freeNote', { defaultValue: 'Upgrade to Pro for unlimited automations, 5 workspaces & integrations. ' })}<Link to="/pricing">{t('ui.seePlans', { defaultValue: 'See plans' })} →</Link></>
+                }
               </p>
             </motion.div>
           )}

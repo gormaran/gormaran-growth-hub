@@ -10,48 +10,39 @@ import './PricingPage.css';
 // Plan metadata — only non-translatable values here
 const PLAN_META = [
   {
-    id: 'free', price: 0, featureCount: 5, lockedCount: 4, hasBadge: false,
+    id: 'free', price: 0, featureCount: 4, lockedCount: 3, hasBadge: false,
     monthlyPriceId: null,
     annualPriceId: null,
     annualTotal: 0, annualMonthly: 0,
   },
   {
-    id: 'grow', price: 19, featureCount: 8, lockedCount: 0, hasBadge: true,
-    monthlyPriceId: process.env.REACT_APP_STRIPE_GROW_PRICE_ID,
-    annualPriceId:  process.env.REACT_APP_STRIPE_GROW_ANNUAL_PRICE_ID,
-    annualTotal: 182.40, annualMonthly: 15.20,
+    id: 'pro', price: 99, featureCount: 7, lockedCount: 0, hasBadge: true,
+    monthlyPriceId: process.env.REACT_APP_STRIPE_PRO_PRICE_ID,
+    annualPriceId:  process.env.REACT_APP_STRIPE_PRO_ANNUAL_PRICE_ID,
+    annualTotal: 950.40, annualMonthly: 79.20,
   },
   {
-    id: 'scale', price: 49, featureCount: 7, lockedCount: 0, hasBadge: true,
-    monthlyPriceId: process.env.REACT_APP_STRIPE_SCALE_PRICE_ID,
-    annualPriceId:  process.env.REACT_APP_STRIPE_SCALE_ANNUAL_PRICE_ID,
-    annualTotal: 470.40, annualMonthly: 39.20,
-  },
-  {
-    id: 'evolution', price: 129, featureCount: 8, lockedCount: 0, hasBadge: true,
-    monthlyPriceId: process.env.REACT_APP_STRIPE_EVOLUTION_PRICE_ID,
-    annualPriceId:  process.env.REACT_APP_STRIPE_EVOLUTION_ANNUAL_PRICE_ID,
-    annualTotal: 1238.40, annualMonthly: 103.20,
+    id: 'enterprise', price: 499, featureCount: 8, lockedCount: 0, hasBadge: true,
+    monthlyPriceId: process.env.REACT_APP_STRIPE_ENTERPRISE_PRICE_ID,
+    annualPriceId:  process.env.REACT_APP_STRIPE_ENTERPRISE_ANNUAL_PRICE_ID,
+    annualTotal: 4790.40, annualMonthly: 399.20,
   },
 ];
 
-// Comparison table — 4 columns: free, grow, scale, evolution
+// Comparison table — 3 columns: free, pro, enterprise
 const COMPARISON_ROWS = [
-  { idx: 0,  free: 'trial',    grow: 'unlimited', scale: 'unlimited', evolution: 'unlimited' },
-  { idx: 1,  free: '⚠️',      grow: '✅',        scale: '✅',        evolution: '✅' },
-  { idx: 2,  free: '❌',       grow: '✅',        scale: '✅',        evolution: '✅' },
-  { idx: 3,  free: '❌',       grow: '✅',        scale: '✅',        evolution: '✅' },
-  { idx: 4,  free: '❌',       grow: 'partial',   scale: 'partial',   evolution: '✅' },
-  { idx: 5,  free: '❌',       grow: '❌',        scale: '✅',        evolution: '✅' },
-  { idx: 6,  free: '❌',       grow: '❌',        scale: '✅',        evolution: '✅' },
-  { idx: 7,  free: '❌',       grow: '❌',        scale: '✅',        evolution: '✅' },
-  { idx: 8,  free: '❌',       grow: '❌',        scale: '❌',        evolution: '✅' },
-  { idx: 9,  free: '❌',       grow: '❌',        scale: '❌',        evolution: '✅' },
-  { idx: 10, free: 'email',    grow: 'priority',  scale: 'priority',  evolution: 'dedicated' },
-  { idx: 11, free: 'addon',    grow: 'addon',     scale: 'addon',     evolution: 'addon' },
+  { idx: 0,  free: '10/month', pro: 'unlimited', enterprise: 'unlimited' },
+  { idx: 1,  free: '✅',       pro: '✅',        enterprise: '✅' },
+  { idx: 2,  free: '1',        pro: '5',         enterprise: 'unlimited' },
+  { idx: 3,  free: '❌',       pro: '✅',        enterprise: '✅' },
+  { idx: 4,  free: '❌',       pro: '✅',        enterprise: '✅' },
+  { idx: 5,  free: '❌',       pro: '❌',        enterprise: '✅' },
+  { idx: 6,  free: '❌',       pro: '❌',        enterprise: '✅' },
+  { idx: 7,  free: '❌',       pro: '❌',        enterprise: '✅' },
+  { idx: 8,  free: 'email',    pro: 'priority',  enterprise: 'dedicated' },
 ];
 
-const FAQ_COUNT = 6;
+const FAQ_COUNT = 5;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -177,12 +168,9 @@ export default function PricingPage() {
 
   function translateVal(val) {
     if (val === 'unlimited') return t('pricing.comparison.unlimited', { defaultValue: 'Unlimited' });
-    if (val === 'trial')     return t('pricing.comparison.trial',     { defaultValue: '24h trial' });
-    if (val === 'partial')   return t('pricing.comparison.partial',   { defaultValue: '1 tool' });
     if (val === 'email')     return t('pricing.comparison.email',     { defaultValue: 'Email' });
     if (val === 'priority')  return t('pricing.comparison.priority',  { defaultValue: 'Priority' });
     if (val === 'dedicated') return t('pricing.comparison.dedicated', { defaultValue: 'Dedicated' });
-    if (val === 'addon')     return t('pricing.comparison.addon',     { defaultValue: '➕ Add-on' });
     return val;
   }
 
@@ -299,7 +287,7 @@ export default function PricingPage() {
         {/* Plans */}
         <div className="container">
           <motion.div
-            className="pricing__plans pricing__plans--4"
+            className="pricing__plans pricing__plans--3"
             initial="hidden"
             animate="visible"
             variants={stagger}
@@ -482,9 +470,8 @@ export default function PricingPage() {
                   <tr>
                     <th>{t('pricing.comparison.featureCol', { defaultValue: 'Feature' })}</th>
                     <th className="pricing__th--free">{t('pricing.plan.free.name', { defaultValue: 'Free' })}</th>
-                    <th className="pricing__th--grow">{t('pricing.plan.grow.name', { defaultValue: 'Grow' })}</th>
-                    <th className="pricing__th--scale">{t('pricing.plan.scale.name', { defaultValue: 'Scale' })}</th>
-                    <th className="pricing__th--evolution">{t('pricing.plan.evolution.name', { defaultValue: 'Evolution' })}</th>
+                    <th className="pricing__th--pro">{t('pricing.plan.pro.name', { defaultValue: 'Pro' })}</th>
+                    <th className="pricing__th--enterprise">{t('pricing.plan.enterprise.name', { defaultValue: 'Enterprise' })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -492,9 +479,8 @@ export default function PricingPage() {
                     <tr key={row.idx}>
                       <td>{t(`pricing.comparison.row.${row.idx}`)}</td>
                       <td className="pricing__td--free">{translateVal(row.free)}</td>
-                      <td className="pricing__td--grow">{translateVal(row.grow)}</td>
-                      <td className="pricing__td--scale">{translateVal(row.scale)}</td>
-                      <td className="pricing__td--evolution">{translateVal(row.evolution)}</td>
+                      <td className="pricing__td--pro">{translateVal(row.pro)}</td>
+                      <td className="pricing__td--enterprise">{translateVal(row.enterprise)}</td>
                     </tr>
                   ))}
                 </tbody>
