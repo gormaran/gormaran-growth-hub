@@ -49,6 +49,19 @@ export default function Navbar() {
     navigate('/');
   }
 
+  function handleHashLink(e, to) {
+    if (!to.includes('#')) return;
+    e.preventDefault();
+    const [path, hash] = to.split('#');
+    const target = path === '' || path === '/' ? '/' : path;
+    if (location.pathname === target || (target === '/' && location.pathname === '/')) {
+      document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate(target);
+      setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 300);
+    }
+  }
+
   function changeLanguage(lng) {
     i18n.changeLanguage(lng);
     localStorage.setItem('language', lng);
@@ -95,6 +108,7 @@ export default function Navbar() {
               key={link.to}
               to={link.to}
               className={`navbar__link ${isActive(link.to) ? 'navbar__link--active' : ''}`}
+              onClick={link.to.includes('#') ? (e) => handleHashLink(e, link.to) : undefined}
             >
               {link.label}
             </Link>
@@ -287,7 +301,12 @@ export default function Navbar() {
             transition={{ duration: 0.25 }}
           >
             {navLinks.map((link) => (
-              <Link key={link.to} to={link.to} className="navbar__mobile-link">
+              <Link
+                key={link.to}
+                to={link.to}
+                className="navbar__mobile-link"
+                onClick={link.to.includes('#') ? (e) => handleHashLink(e, link.to) : undefined}
+              >
                 {link.label}
               </Link>
             ))}
