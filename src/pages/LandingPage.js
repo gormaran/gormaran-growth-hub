@@ -1549,27 +1549,59 @@ export default function LandingPage() {
       {/* ── 9: Client Logos (social proof before price) ── */}
       <ClientLogos />
 
-      {/* ── 10: Plans (price after all value shown) ── */}
+      {/* ── 10: Plans ── */}
       <section className="landing__plans section">
         <div className="container">
           <AnimatedSection>
-            <span className="section-pill">{t('landing.plans.pill', { defaultValue: 'Pricing' })}</span>
+            <span className="section-pill">{t('landing.plans.pill', { defaultValue: 'Precios' })}</span>
             <h2 className="section-title">
-              {t('landing.plans.title')}
+              {t('landing.plans.title2', { defaultValue: 'Empieza gratis. Escala sin límites.' })}
             </h2>
           </AnimatedSection>
           <motion.div
-            className="landing__plans-grid"
+            className="landing__plans2"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-20px' }}
             variants={stagger}
           >
-            {PLANS.map((plan) => (
-              <motion.div key={plan.name} variants={fadeUp}>
-                <PlanFlipCard plan={plan} />
-              </motion.div>
-            ))}
+            {/* FREE */}
+            <motion.div className="landing__plan2 landing__plan2--free" variants={fadeUp}>
+              <h3 className="landing__plan2-name">Free</h3>
+              <div className="landing__plan2-price">€0 <span>/mes</span></div>
+              <ul className="landing__plan2-features">
+                <li>✓ {t('landing.plan.free.f1', { defaultValue: '10 automatizaciones al mes' })}</li>
+                <li>✓ {t('landing.plan.free.f2', { defaultValue: 'Todas las herramientas de IA (30+)' })}</li>
+                <li>✓ {t('landing.plan.free.f3', { defaultValue: '1 workspace' })}</li>
+                <li className="landing__plan2-locked">✗ {t('landing.plan.free.locked', { defaultValue: 'Automatizaciones ilimitadas' })}</li>
+              </ul>
+              <Link to="/auth?mode=register" className="btn btn-secondary landing__plan2-cta">
+                {t('landing.plan.free.cta', { defaultValue: 'Empezar gratis' })}
+              </Link>
+            </motion.div>
+
+            {/* PRO */}
+            <motion.div className="landing__plan2 landing__plan2--pro" variants={fadeUp}>
+              <div className="landing__plan2-badge">⭐ {t('landing.plan.pro.badge', { defaultValue: 'Más Popular' })}</div>
+              <h3 className="landing__plan2-name">Pro</h3>
+              <div className="landing__plan2-price">
+                €79 <span>/{t('landing.plan.annual', { defaultValue: 'mes (anual)' })}</span>
+              </div>
+              <p className="landing__plan2-annual">{t('landing.plan.pro.annual', { defaultValue: 'o €99/mes mensual' })}</p>
+              <ul className="landing__plan2-features">
+                <li>✓ <strong>{t('landing.plan.pro.f1', { defaultValue: 'Automatizaciones ilimitadas' })}</strong></li>
+                <li>✓ {t('landing.plan.pro.f2', { defaultValue: 'Todas las herramientas de IA (30+)' })}</li>
+                <li>✓ {t('landing.plan.pro.f3', { defaultValue: 'Workspace con perfil de marca' })}</li>
+                <li>✓ {t('landing.plan.pro.f4', { defaultValue: 'Templates optimizados por nicho' })}</li>
+                <li>✓ {t('landing.plan.pro.f5', { defaultValue: 'Soporte prioritario' })}</li>
+              </ul>
+              <Link to="/pricing" className="btn btn-primary landing__plan2-cta">
+                {t('landing.plan.pro.cta', { defaultValue: 'Ver Plan Pro →' })}
+              </Link>
+              <p className="landing__plan2-guarantee">
+                🔒 {t('landing.plan.guarantee', { defaultValue: 'Garantía 7 días · Sin permanencia' })}
+              </p>
+            </motion.div>
           </motion.div>
         </div>
       </section>

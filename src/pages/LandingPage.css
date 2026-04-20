@@ -1767,6 +1767,79 @@
   margin-top: 3rem;
 }
 
+/* New 2-plan layout */
+.landing__plans2 {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 1.5rem;
+  max-width: 780px;
+  margin: 2.5rem auto 0;
+}
+.landing__plan2 {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.landing__plan2--pro {
+  border-color: rgba(99,102,241,0.5);
+  box-shadow: 0 0 0 1px rgba(99,102,241,0.15), 0 8px 40px rgba(99,102,241,0.12);
+  position: relative;
+}
+.landing__plan2-badge {
+  position: absolute;
+  top: -13px; left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 1rem;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.landing__plan2-name { font-size: 1.3rem; font-weight: 800; }
+.landing__plan2-price {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.landing__plan2--pro .landing__plan2-price {
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.landing__plan2-price span { font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
+.landing__plan2-annual { font-size: 0.78rem; color: var(--text-muted); margin: -0.5rem 0 0; }
+.landing__plan2-features {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 0.5rem;
+  font-size: 0.87rem; color: var(--text-secondary);
+  flex: 1;
+}
+.landing__plan2-features li strong { color: var(--text-primary); }
+.landing__plan2-locked { color: var(--text-muted) !important; opacity: 0.5; }
+.landing__plan2-cta { width: 100%; text-align: center; }
+.landing__plan2--pro .landing__plan2-cta {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+.landing__plan2-guarantee {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .landing__plans2 { grid-template-columns: 1fr; max-width: 400px; }
+}
+
 .landing__plan-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);

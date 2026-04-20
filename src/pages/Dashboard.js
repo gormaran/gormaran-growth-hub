@@ -378,9 +378,9 @@ export default function Dashboard() {
                     : `✅ ${subscription}`}
                 </span>
               </div>
-              {(subscription === 'free' || subscription === 'grow') && (
+              {subscription === 'free' && (
                 <Link to="/pricing" className="btn btn-primary btn-sm">
-                  {t('ui.upgrade', { defaultValue: 'Upgrade' })} ↗
+                  {t('ui.upgrade', { defaultValue: 'Pro →' })}
                 </Link>
               )}
             </div>
@@ -389,26 +389,44 @@ export default function Dashboard() {
           {/* Free plan usage quota */}
           {subscription === 'free' && (
             <motion.div
-              className="dashboard__usage"
+              className={`dashboard__usage${usageCount >= FREE_MONTHLY_LIMIT ? ' dashboard__usage--limit' : usageCount >= 7 ? ' dashboard__usage--warning' : ''}`}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <div className="dashboard__usage-info">
-                <span>{t('dashboard.freeUsage', { defaultValue: 'Free plan — monthly usage' })}</span>
-                <span className="dashboard__usage-count">
-                  <strong>{usageCount}</strong> / {FREE_MONTHLY_LIMIT} {t('dashboard.automations', { defaultValue: 'automations' })}
-                </span>
-              </div>
-              <div className="dashboard__usage-bar">
-                <div className="dashboard__usage-fill" style={{ width: `${usagePct}%` }} />
-              </div>
-              <p className="dashboard__usage-note">
-                {usageCount >= FREE_MONTHLY_LIMIT
-                  ? <>{t('dashboard.limitReached', { defaultValue: 'Monthly limit reached. ' })}<Link to="/pricing">{t('ui.upgrade', { defaultValue: 'Upgrade to Pro' })} →</Link></>
-                  : <>{t('dashboard.freeNote', { defaultValue: 'Upgrade to Pro for unlimited automations, 5 workspaces & integrations. ' })}<Link to="/pricing">{t('ui.seePlans', { defaultValue: 'See plans' })} →</Link></>
-                }
-              </p>
+              {usageCount >= FREE_MONTHLY_LIMIT ? (
+                /* Hard limit hit — full upgrade CTA */
+                <div className="dashboard__usage-upgrade">
+                  <div className="dashboard__usage-upgrade-text">
+                    <span className="dashboard__usage-upgrade-title">🚫 {t('dashboard.limitReached', { defaultValue: 'Límite mensual alcanzado' })}</span>
+                    <span className="dashboard__usage-upgrade-sub">{t('dashboard.limitNote', { defaultValue: 'Has usado las 10 automatizaciones gratuitas de este mes.' })}</span>
+                  </div>
+                  <Link to="/pricing" className="btn btn-primary btn-sm">
+                    {t('dashboard.upgradePro', { defaultValue: 'Ir a Pro — sin límites →' })}
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  <div className="dashboard__usage-info">
+                    <span>
+                      {usageCount >= 7
+                        ? <><strong style={{ color: '#fbbf24' }}>⚠️ {FREE_MONTHLY_LIMIT - usageCount} {t('dashboard.left', { defaultValue: 'automatizaciones restantes' })}</strong></>
+                        : t('dashboard.freeUsage', { defaultValue: 'Plan gratuito — uso mensual' })
+                      }
+                    </span>
+                    <span className="dashboard__usage-count">
+                      <strong>{usageCount}</strong> / {FREE_MONTHLY_LIMIT}
+                    </span>
+                  </div>
+                  <div className="dashboard__usage-bar">
+                    <div className="dashboard__usage-fill" style={{ width: `${usagePct}%` }} />
+                  </div>
+                  <p className="dashboard__usage-note">
+                    {t('dashboard.freeNote', { defaultValue: 'Pásate a Pro para automatizaciones ilimitadas. ' })}
+                    <Link to="/pricing">{t('ui.seePlans', { defaultValue: 'Ver planes' })} →</Link>
+                  </p>
+                </>
+              )}
             </motion.div>
           )}
 

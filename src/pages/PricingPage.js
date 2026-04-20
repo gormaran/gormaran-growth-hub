@@ -7,42 +7,38 @@ import { createCheckoutSession, validatePromoCode } from '../utils/api';
 import { useTranslation } from 'react-i18next';
 import './PricingPage.css';
 
-// Plan metadata — only non-translatable values here
-const PLAN_META = [
-  {
-    id: 'free', price: 0, featureCount: 4, lockedCount: 3, hasBadge: false,
-    monthlyPriceId: null,
-    annualPriceId: null,
-    annualTotal: 0, annualMonthly: 0,
-  },
-  {
-    id: 'pro', price: 99, featureCount: 7, lockedCount: 0, hasBadge: true,
-    monthlyPriceId: process.env.REACT_APP_STRIPE_PRO_PRICE_ID,
-    annualPriceId:  process.env.REACT_APP_STRIPE_PRO_ANNUAL_PRICE_ID,
-    annualTotal: 950.40, annualMonthly: 79.20,
-  },
-  {
-    id: 'enterprise', price: 499, featureCount: 8, lockedCount: 0, hasBadge: true,
-    monthlyPriceId: process.env.REACT_APP_STRIPE_ENTERPRISE_PRICE_ID,
-    annualPriceId:  process.env.REACT_APP_STRIPE_ENTERPRISE_ANNUAL_PRICE_ID,
-    annualTotal: 4790.40, annualMonthly: 399.20,
-  },
+const PRO = {
+  id: 'pro',
+  monthlyPrice: 99,
+  annualMonthly: 79,
+  annualTotal: 948,
+  monthlyPriceId: process.env.REACT_APP_STRIPE_PRO_PRICE_ID,
+  annualPriceId:  process.env.REACT_APP_STRIPE_PRO_ANNUAL_PRICE_ID,
+};
+
+const FREE_FEATURES = [
+  { text: '10 automatizaciones al mes', en: '10 automations per month' },
+  { text: 'Todas las herramientas de IA (30+)', en: 'All AI tools (30+)' },
+  { text: '1 workspace con perfil de marca', en: '1 workspace with brand profile' },
+  { text: 'Streaming IA en tiempo real', en: 'Real-time AI streaming' },
 ];
 
-// Comparison table — 3 columns: free, pro, enterprise
-const COMPARISON_ROWS = [
-  { idx: 0,  free: '10/month', pro: 'unlimited', enterprise: 'unlimited' },
-  { idx: 1,  free: '✅',       pro: '✅',        enterprise: '✅' },
-  { idx: 2,  free: '1',        pro: '5',         enterprise: 'unlimited' },
-  { idx: 3,  free: '❌',       pro: '✅',        enterprise: '✅' },
-  { idx: 4,  free: '❌',       pro: '✅',        enterprise: '✅' },
-  { idx: 5,  free: '❌',       pro: '❌',        enterprise: '✅' },
-  { idx: 6,  free: '❌',       pro: '❌',        enterprise: '✅' },
-  { idx: 7,  free: '❌',       pro: '❌',        enterprise: '✅' },
-  { idx: 8,  free: 'email',    pro: 'priority',  enterprise: 'dedicated' },
+const PRO_FEATURES = [
+  { text: 'Automatizaciones ilimitadas', en: 'Unlimited automations', highlight: true },
+  { text: 'Todas las herramientas de IA (30+)', en: 'All AI tools (30+)' },
+  { text: '1 workspace con perfil de marca', en: '1 workspace with brand profile' },
+  { text: 'Streaming IA en tiempo real', en: 'Real-time AI streaming' },
+  { text: 'Resultados optimizados por nicho', en: 'Niche-optimized outputs' },
+  { text: 'Historial de resultados', en: 'Output history' },
+  { text: 'Soporte por email prioritario', en: 'Priority email support' },
 ];
 
-const FAQ_COUNT = 5;
+const ROI_EXAMPLES = [
+  { role: '🚀 Agencia (5-20 personas)', hours: 40, rate: 35, label: 'agencias' },
+  { role: '💼 Consultor independiente',  hours: 25, rate: 50, label: 'consultores' },
+  { role: '🛍️ E-commerce',              hours: 20, rate: 30, label: 'e-commerce' },
+  { role: '⚙️ SaaS B2B',                hours: 30, rate: 60, label: 'saas' },
+];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -51,28 +47,29 @@ const fadeUp = {
 
 const stagger = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.08 } },
 };
 
 export default function PricingPage() {
   const { currentUser } = useAuth();
   const { subscription } = useSubscription();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
   const [searchParams] = useSearchParams();
-  const [billingPeriod, setBillingPeriod] = useState('annual'); // 'monthly' | 'annual'
+  const [billingPeriod, setBillingPeriod] = useState('annual');
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [error, setError] = useState('');
   const [promoCode, setPromoCode] = useState('');
-  const [promoState, setPromoState] = useState(null); // { promoId, discountLabel, name } | null
+  const [promoState, setPromoState] = useState(null);
   const [promoError, setPromoError] = useState('');
   const [promoLoading, setPromoLoading] = useState(false);
+  const [activeRoi, setActiveRoi] = useState(0);
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/health`).catch(() => {});
   }, []);
 
-  // Pre-fill promo code from URL param: /pricing?promo=PRO50
   useEffect(() => {
     const param = searchParams.get('promo');
     if (param) setPromoCode(param.toUpperCase());
@@ -93,356 +90,308 @@ export default function PricingPage() {
     setPromoLoading(false);
   }
 
-  async function handleAddonSelect() {
+  async function handleProSelect() {
     if (!currentUser) {
       navigate('/auth?mode=register');
       return;
     }
-    const addonPriceId = process.env.REACT_APP_STRIPE_N8N_ADDON_PRICE_ID;
-    if (!addonPriceId || addonPriceId === 'undefined') {
-      setError('N8n add-on payment is not configured yet. Please add REACT_APP_STRIPE_N8N_ADDON_PRICE_ID to your environment variables.');
+    const priceId = billingPeriod === 'annual' ? PRO.annualPriceId : PRO.monthlyPriceId;
+    if (!priceId || priceId === 'undefined') {
+      setError(isEs
+        ? 'El sistema de pago aún no está configurado. Contacta con hola@gormaran.io'
+        : 'Payment system not configured yet. Contact hola@gormaran.io');
       return;
     }
     setError('');
+    setLoadingPlan('pro');
+    try {
+      const { url } = await createCheckoutSession(priceId, 'subscription', promoState?.promoId || null);
+      window.location.href = url;
+    } catch (err) {
+      setError(err.message || 'Failed to start checkout.');
+    }
+    setLoadingPlan(null);
+  }
+
+  async function handleAddonSelect() {
+    if (!currentUser) { navigate('/auth?mode=register'); return; }
+    const addonPriceId = process.env.REACT_APP_STRIPE_N8N_ADDON_PRICE_ID;
+    if (!addonPriceId || addonPriceId === 'undefined') {
+      setError('N8n add-on not configured. Contact hola@gormaran.io'); return;
+    }
     setLoadingPlan('addon');
     try {
       const { url } = await createCheckoutSession(addonPriceId, 'payment', promoState?.promoId || null);
       window.location.href = url;
     } catch (err) {
-      setError(err.message || 'Failed to start checkout. Please try again.');
+      setError(err.message || 'Failed to start checkout.');
     }
     setLoadingPlan(null);
   }
 
-  async function handlePlanSelect(plan) {
-    if (plan.id === 'free') {
-      navigate('/auth?mode=register');
-      return;
-    }
-
-    if (!currentUser) {
-      navigate('/auth?mode=register');
-      return;
-    }
-
-    const priceId = billingPeriod === 'annual' ? plan.annualPriceId : plan.monthlyPriceId;
-
-    if (!priceId || priceId === 'undefined') {
-      setError('Payment system is not configured yet. Please add Stripe price IDs to your environment variables.');
-      return;
-    }
-
-    setError('');
-    setLoadingPlan(plan.id);
-    try {
-      const { url } = await createCheckoutSession(priceId, 'subscription', promoState?.promoId || null);
-      window.location.href = url;
-    } catch (err) {
-      setError(err.message || 'Failed to start checkout. Please try again.');
-    }
-    setLoadingPlan(null);
-  }
-
-  function getPlanCta(plan) {
-    if (!currentUser && plan.id !== 'free') return t('pricing.signUpToStart', { defaultValue: 'Sign Up to Start' });
-    if (subscription === plan.id) return t('pricing.currentPlan', { defaultValue: '✅ Current Plan' });
-    if (plan.id === 'free' && subscription !== 'free') return t('pricing.downgrade', { defaultValue: 'Downgrade' });
-    return t(`pricing.plan.${plan.id}.cta`);
-  }
-
-  function getDiscountedPrice(plan) {
-    const originalPrice = billingPeriod === 'annual' ? plan.annualMonthly : plan.price;
-    if (!promoState || originalPrice === 0) return null;
-    // discountLabel is e.g. "50% off" or "€10 off"
-    const pctMatch = promoState.discountLabel?.match(/(\d+(?:\.\d+)?)\s*%/);
-    if (pctMatch) {
-      const pct = parseFloat(pctMatch[1]);
-      return (originalPrice * (1 - pct / 100)).toFixed(2).replace(/\.00$/, '');
-    }
-    const amtMatch = promoState.discountLabel?.match(/€\s*(\d+(?:\.\d+)?)/);
-    if (amtMatch) {
-      return Math.max(0, originalPrice - parseFloat(amtMatch[1])).toFixed(2).replace(/\.00$/, '');
-    }
-    return null;
-  }
-
-  function translateVal(val) {
-    if (val === 'unlimited') return t('pricing.comparison.unlimited', { defaultValue: 'Unlimited' });
-    if (val === 'email')     return t('pricing.comparison.email',     { defaultValue: 'Email' });
-    if (val === 'priority')  return t('pricing.comparison.priority',  { defaultValue: 'Priority' });
-    if (val === 'dedicated') return t('pricing.comparison.dedicated', { defaultValue: 'Dedicated' });
-    return val;
-  }
+  const displayPrice = billingPeriod === 'annual' ? PRO.annualMonthly : PRO.monthlyPrice;
+  const roiEx = ROI_EXAMPLES[activeRoi];
+  const roiValue = roiEx.hours * roiEx.rate;
 
   return (
     <div className="page">
-      <div className="pricing">
-        {/* Hero */}
+      <div className="pricing2">
+
+        {/* ── HERO ── */}
         <motion.div
-          className="pricing__hero container"
+          className="pricing2__hero container"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.55 }}
         >
           <span className="badge badge-primary">
-            {t('pricing.hero.badge', { defaultValue: 'Simple, Transparent Pricing' })}
+            {isEs ? '💸 Precios Simples' : '💸 Simple Pricing'}
           </span>
-          <h1 className="pricing__title">
-            {t('pricing.hero.titlePre', { defaultValue: 'Choose Your' })}{' '}
-            <span className="gradient-text">{t('pricing.hero.titleHighlight', { defaultValue: 'Growth Plan' })}</span>
+          <h1 className="pricing2__title">
+            {isEs
+              ? <>Tu tiempo vale más que <span className="gradient-text">€{displayPrice}/mes</span></>
+              : <>Your time is worth more than <span className="gradient-text">€{displayPrice}/mo</span></>
+            }
           </h1>
-          <p className="pricing__subtitle">
-            {t('pricing.hero.subtitle', { defaultValue: "Start free. Upgrade when you're ready. No contracts, cancel anytime." })}
+          <p className="pricing2__subtitle">
+            {isEs
+              ? 'Automatiza tu marketing con IA. Sin límites. Sin contratos. Con resultados reales.'
+              : 'Automate your marketing with AI. No limits. No contracts. Real results.'}
           </p>
-
-          {/* Niche ROI pills */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', justifyContent: 'center', marginTop: '1.5rem' }}>
-            {[
-              { emoji: '🚀', text: t('pricing.niche.agency', { defaultValue: 'Agencies: save 40+ hrs/month' }) },
-              { emoji: '💼', text: t('pricing.niche.consultant', { defaultValue: 'Consultants: 3× client capacity' }) },
-              { emoji: '🛍️', text: t('pricing.niche.ecommerce', { defaultValue: 'E-commerce: improve ROAS with AI' }) },
-              { emoji: '⚙️', text: t('pricing.niche.saas', { defaultValue: 'B2B SaaS: accelerate go-to-market' }) },
-            ].map(({ emoji, text }) => (
-              <span key={text} style={{
-                display: 'inline-flex', alignItems: 'center', gap: '6px',
-                background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)',
-                borderRadius: '100px', padding: '0.3rem 0.9rem', fontSize: '0.82rem', color: '#c4b5fd', fontWeight: 600,
-              }}>
-                {emoji} {text}
-              </span>
-            ))}
-          </div>
         </motion.div>
+
+        {/* ── BILLING TOGGLE ── */}
+        <div className="container">
+          <div className="pricing2__toggle">
+            <button
+              className={`pricing2__toggle-btn${billingPeriod === 'monthly' ? ' pricing2__toggle-btn--active' : ''}`}
+              onClick={() => setBillingPeriod('monthly')}
+            >
+              {isEs ? 'Mensual' : 'Monthly'}
+            </button>
+            <button
+              className={`pricing2__toggle-btn${billingPeriod === 'annual' ? ' pricing2__toggle-btn--active' : ''}`}
+              onClick={() => setBillingPeriod('annual')}
+            >
+              {isEs ? 'Anual' : 'Annual'}
+              <span className="pricing2__save-badge">{isEs ? 'Ahorra 20%' : 'Save 20%'}</span>
+            </button>
+          </div>
+        </div>
 
         {error && (
           <div className="container">
-            <div className="alert alert-warning" style={{ marginBottom: '2rem' }}>
-              ⚠️ {error}
-            </div>
+            <div className="alert alert-warning" style={{ marginBottom: '1.5rem' }}>⚠️ {error}</div>
           </div>
         )}
 
-        {/* Promo code */}
+        {/* ── PROMO CODE ── */}
         <div className="container">
-          <div className="pricing__promo">
-            <p className="pricing__promo-label">
-              {t('pricing.promo.label', { defaultValue: 'Have a discount code?' })}
-            </p>
-            <div className="pricing__promo-row">
-              <input
-                className="pricing__promo-input"
-                type="text"
-                placeholder={t('pricing.promo.placeholder', { defaultValue: 'Enter code' })}
-                value={promoCode}
-                onChange={(e) => {
-                  setPromoCode(e.target.value);
-                  setPromoState(null);
-                  setPromoError('');
-                }}
-                onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
-                disabled={promoLoading}
-              />
-              <button
-                className="btn btn-secondary pricing__promo-btn"
-                onClick={handleApplyPromo}
-                disabled={promoLoading || !promoCode.trim()}
-              >
-                {promoLoading
-                  ? t('pricing.promo.applying', { defaultValue: 'Applying...' })
-                  : t('pricing.promo.apply', { defaultValue: 'Apply' })}
-              </button>
-            </div>
+          <div className="pricing2__promo">
+            <input
+              className="pricing2__promo-input"
+              type="text"
+              placeholder={isEs ? 'Código de descuento' : 'Discount code'}
+              value={promoCode}
+              onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoState(null); setPromoError(''); }}
+              onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
+              disabled={promoLoading}
+            />
+            <button
+              className="btn btn-secondary pricing2__promo-btn"
+              onClick={handleApplyPromo}
+              disabled={promoLoading || !promoCode.trim()}
+            >
+              {promoLoading ? '...' : (isEs ? 'Aplicar' : 'Apply')}
+            </button>
             {promoState && (
-              <p className="pricing__promo-success">
-                ✅ {t('pricing.promo.applied', { defaultValue: 'Code applied' })}: <strong>{promoState.name}</strong> — {promoState.discountLabel}
-              </p>
+              <span className="pricing2__promo-ok">✅ {promoState.name} — {promoState.discountLabel}</span>
             )}
-            {promoError && (
-              <p className="pricing__promo-error">⚠️ {promoError}</p>
-            )}
+            {promoError && <span className="pricing2__promo-err">⚠️ {promoError}</span>}
           </div>
         </div>
 
-        {/* Billing period toggle */}
-        <div className="container">
-          <div className="pricing__billing-toggle">
-            <button
-              className={`pricing__billing-btn${billingPeriod === 'monthly' ? ' pricing__billing-btn--active' : ''}`}
-              onClick={() => setBillingPeriod('monthly')}
-            >
-              {t('pricing.monthly', { defaultValue: 'Monthly' })}
-            </button>
-            <button
-              className={`pricing__billing-btn${billingPeriod === 'annual' ? ' pricing__billing-btn--active' : ''}`}
-              onClick={() => setBillingPeriod('annual')}
-            >
-              {t('pricing.annual', { defaultValue: 'Annual' })}
-              <span className="pricing__billing-save">
-                {t('pricing.annualSaveBadge', { defaultValue: 'Save 20%' })}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* Plans */}
+        {/* ── PLANS ── */}
         <div className="container">
           <motion.div
-            className="pricing__plans pricing__plans--3"
+            className="pricing2__plans"
             initial="hidden"
             animate="visible"
             variants={stagger}
           >
-            {PLAN_META.map((plan) => {
-              const features = Array.from({ length: plan.featureCount }, (_, i) =>
-                t(`pricing.plan.${plan.id}.feature.${i}`)
-              );
-              const locked = Array.from({ length: plan.lockedCount }, (_, i) =>
-                t(`pricing.plan.${plan.id}.locked.${i}`)
-              );
+            {/* FREE */}
+            <motion.div className="pricing2__plan pricing2__plan--free" variants={fadeUp}>
+              <div className="pricing2__plan-header">
+                <h2 className="pricing2__plan-name">Free</h2>
+                <p className="pricing2__plan-desc">
+                  {isEs ? 'Explora todas las herramientas sin tarjeta' : 'Explore all tools, no credit card'}
+                </p>
+              </div>
+              <div className="pricing2__plan-price">
+                <span className="pricing2__plan-amount">€0</span>
+                <span className="pricing2__plan-period">{isEs ? 'para siempre' : 'forever'}</span>
+              </div>
+              <Link
+                to="/auth?mode=register"
+                className={`btn btn-secondary pricing2__plan-cta${subscription === 'free' ? ' pricing2__plan-cta--current' : ''}`}
+              >
+                {subscription === 'free' ? (isEs ? '✅ Plan actual' : '✅ Current plan') : (isEs ? 'Empezar gratis' : 'Start free')}
+              </Link>
+              <ul className="pricing2__features">
+                {FREE_FEATURES.map((f) => (
+                  <li key={f.text} className="pricing2__feature">
+                    <span className="pricing2__feature-check">✓</span>
+                    <span>{isEs ? f.text : f.en}</span>
+                  </li>
+                ))}
+                <li className="pricing2__feature pricing2__feature--locked">
+                  <span className="pricing2__feature-lock">✗</span>
+                  <span>{isEs ? 'Automatizaciones ilimitadas' : 'Unlimited automations'}</span>
+                </li>
+              </ul>
+            </motion.div>
 
-              return (
-                <motion.div
-                  key={plan.id}
-                  className={`pricing__plan pricing__plan--${plan.id} ${subscription === plan.id ? 'pricing__plan--current' : ''}`}
-                  variants={fadeUp}
-                  whileHover={{ y: -6 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                >
-                  <div className="pricing__plan-glow" />
-
-                  {plan.hasBadge && subscription !== plan.id && (
-                    <div className="pricing__plan-badge">
-                      {t(`pricing.plan.${plan.id}.badge`)}
-                    </div>
-                  )}
-
-                  {subscription === plan.id && (
-                    <div className="pricing__plan-badge pricing__plan-badge--current">
-                      {t('pricing.currentPlan', { defaultValue: '✅ Current Plan' })}
-                    </div>
-                  )}
-
-                  <div className="pricing__plan-header">
-                    <h2 className="pricing__plan-name">{t(`pricing.plan.${plan.id}.name`)}</h2>
-                    <p className="pricing__plan-desc">{t(`pricing.plan.${plan.id}.desc`)}</p>
-                  </div>
-
-                  <div className="pricing__plan-price">
-                    {(() => {
-                      if (plan.price === 0) {
-                        return (
-                          <>
-                            <span className="pricing__plan-amount">€0</span>
-                            <div className="pricing__plan-period">{t('pricing.forever', { defaultValue: 'forever free' })}</div>
-                          </>
-                        );
-                      }
-                      const displayMonthly = billingPeriod === 'annual' ? plan.annualMonthly : plan.price;
-                      const discounted = getDiscountedPrice(plan);
-                      return (
-                        <div className="pricing__plan-price-inner">
-                          {discounted ? (
-                            <>
-                              <span className="pricing__plan-amount--strike">€{displayMonthly}</span>
-                              <div className="pricing__plan-price-row">
-                                <span className="pricing__plan-amount">€{discounted}</span>
-                                <span className="pricing__plan-period">{t('pricing.month', { defaultValue: '/month' })}</span>
-                              </div>
-                              <span className="pricing__plan-promo-label">{promoState.discountLabel} applied</span>
-                            </>
-                          ) : (
-                            <>
-                              <div className="pricing__plan-price-row">
-                                <span className="pricing__plan-amount">€{displayMonthly}</span>
-                                <span className="pricing__plan-period">{t('pricing.month', { defaultValue: '/month' })}</span>
-                              </div>
-                            </>
-                          )}
-                          {billingPeriod === 'annual' && (
-                            <div className="pricing__plan-annual-note">
-                              €{plan.annualTotal} {t('pricing.billedAnnually', { defaultValue: 'billed annually' })}
-                              <span className="pricing__plan-annual-save">
-                                {t('pricing.savePerYear', { defaultValue: 'Save €{{n}}/yr', n: Math.round(plan.price * 12 - plan.annualTotal) }).replace('{{n}}', Math.round(plan.price * 12 - plan.annualTotal))}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </div>
-
-                  <button
-                    className={`btn btn-secondary pricing__plan-cta`}
-                    onClick={() => handlePlanSelect(plan)}
-                    disabled={subscription === plan.id || loadingPlan === plan.id}
-                  >
-                    {loadingPlan === plan.id ? (
-                      <><span className="spinner" /> {t('pricing.processing', { defaultValue: 'Processing...' })}</>
-                    ) : (
-                      getPlanCta(plan)
-                    )}
-                  </button>
-
-                  <div className="pricing__features">
-                    {features.map((f) => (
-                      <div key={f} className="pricing__feature pricing__feature--included">
-                        <span className="pricing__feature-icon">✅</span>
-                        <span>{f}</span>
-                      </div>
-                    ))}
-                    {locked.map((f) => (
-                      <div key={f} className="pricing__feature pricing__feature--locked">
-                        <span className="pricing__feature-icon">🔒</span>
-                        <span>{f}</span>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              );
-            })}
+            {/* PRO */}
+            <motion.div className="pricing2__plan pricing2__plan--pro" variants={fadeUp}>
+              <div className="pricing2__plan-glow" />
+              <div className="pricing2__plan-badge-top">
+                {isEs ? '⭐ Más Popular' : '⭐ Most Popular'}
+              </div>
+              <div className="pricing2__plan-header">
+                <h2 className="pricing2__plan-name">Pro</h2>
+                <p className="pricing2__plan-desc">
+                  {isEs
+                    ? 'Para agencias y consultores que no pueden permitirse límites'
+                    : 'For agencies & consultants who can\'t afford limits'}
+                </p>
+              </div>
+              <div className="pricing2__plan-price">
+                <span className="pricing2__plan-amount">€{displayPrice}</span>
+                <span className="pricing2__plan-period">/mes</span>
+              </div>
+              {billingPeriod === 'annual' && (
+                <p className="pricing2__plan-annual-note">
+                  €{PRO.annualTotal} {isEs ? 'al año — ahorras' : 'per year — you save'} €{PRO.monthlyPrice * 12 - PRO.annualTotal}
+                </p>
+              )}
+              <button
+                className={`btn btn-primary pricing2__plan-cta${subscription === 'pro' ? ' pricing2__plan-cta--current' : ''}`}
+                onClick={handleProSelect}
+                disabled={subscription === 'pro' || loadingPlan === 'pro'}
+              >
+                {subscription === 'pro'
+                  ? (isEs ? '✅ Plan actual' : '✅ Current plan')
+                  : loadingPlan === 'pro'
+                  ? (isEs ? 'Procesando...' : 'Processing...')
+                  : (isEs ? `Empezar Pro →` : `Start Pro →`)}
+              </button>
+              <p className="pricing2__guarantee">
+                🔒 {isEs ? 'Garantía 7 días · Sin permanencia · Cancela cuando quieras' : '7-day money-back · No lock-in · Cancel anytime'}
+              </p>
+              <ul className="pricing2__features">
+                {PRO_FEATURES.map((f) => (
+                  <li key={f.text} className={`pricing2__feature${f.highlight ? ' pricing2__feature--highlight' : ''}`}>
+                    <span className="pricing2__feature-check">✓</span>
+                    <span>{isEs ? f.text : f.en}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
           </motion.div>
         </div>
 
-        {/* N8n Add-on */}
+        {/* ── ROI CALCULATOR ── */}
         <div className="container">
           <motion.div
-            className="pricing__addon"
+            className="pricing2__roi"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="pricing2__roi-title">
+              {isEs ? '¿Cuánto vale tu tiempo?' : 'What is your time worth?'}
+            </h2>
+            <p className="pricing2__roi-sub">
+              {isEs
+                ? 'Gormaran ahorra 20-40 horas al mes. Eso es mucho más que €99.'
+                : 'Gormaran saves 20-40 hours/month. That\'s worth far more than €99.'}
+            </p>
+            <div className="pricing2__roi-tabs">
+              {ROI_EXAMPLES.map((ex, i) => (
+                <button
+                  key={i}
+                  className={`pricing2__roi-tab${activeRoi === i ? ' pricing2__roi-tab--active' : ''}`}
+                  onClick={() => setActiveRoi(i)}
+                >
+                  {ex.role}
+                </button>
+              ))}
+            </div>
+            <div className="pricing2__roi-result">
+              <div className="pricing2__roi-math">
+                <div className="pricing2__roi-item">
+                  <span className="pricing2__roi-num">{roiEx.hours}h</span>
+                  <span className="pricing2__roi-label">{isEs ? 'ahorro/mes' : 'saved/month'}</span>
+                </div>
+                <span className="pricing2__roi-op">×</span>
+                <div className="pricing2__roi-item">
+                  <span className="pricing2__roi-num">€{roiEx.rate}</span>
+                  <span className="pricing2__roi-label">{isEs ? 'tu hora' : 'your hour'}</span>
+                </div>
+                <span className="pricing2__roi-op">=</span>
+                <div className="pricing2__roi-item pricing2__roi-item--total">
+                  <span className="pricing2__roi-num pricing2__roi-num--big">€{roiEx.hours * roiEx.rate}</span>
+                  <span className="pricing2__roi-label">{isEs ? 'valor/mes' : 'value/month'}</span>
+                </div>
+              </div>
+              <div className="pricing2__roi-verdict">
+                {isEs
+                  ? <>Pagas <strong>€{displayPrice}/mes</strong>. Recuperas <strong>€{roiValue - displayPrice}+</strong> en valor.</>
+                  : <>You pay <strong>€{displayPrice}/mo</strong>. You get back <strong>€{roiValue - displayPrice}+</strong> in value.</>}
+              </div>
+              <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
+                {isEs ? `Empezar Pro por €${displayPrice}/mes →` : `Start Pro for €${displayPrice}/mo →`}
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* ── N8N ADDON ── */}
+        <div className="container">
+          <motion.div
+            className="pricing2__addon"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.5 }}
           >
-            <div className="pricing__addon-left">
-              <span className="badge badge-primary pricing__addon-badge">
-                {t('pricing.addon.badge', { defaultValue: '⚡ Add-on' })}
-              </span>
-              <h3 className="pricing__addon-title">
+            <div className="pricing2__addon-left">
+              <span className="badge badge-primary">⚡ Add-on</span>
+              <h3 className="pricing2__addon-title">
                 {t('pricing.addon.title', { defaultValue: 'N8n Automation' })}
               </h3>
-              <p className="pricing__addon-desc">
-                {t('pricing.addon.desc', { defaultValue: 'Design powerful no-code automations using n8n — available for any plan.' })}
+              <p className="pricing2__addon-desc">
+                {isEs
+                  ? 'Conecta Gormaran con tus flujos de trabajo. Disponible para cualquier plan.'
+                  : 'Connect Gormaran to your workflows. Available for any plan.'}
               </p>
-              <ul className="pricing__addon-features">
+              <ul className="pricing2__addon-features">
                 {[0, 1, 2, 3].map((i) => (
                   <li key={i}>✅ {t(`pricing.addon.feature.${i}`)}</li>
                 ))}
               </ul>
             </div>
-
-            <div className="pricing__addon-right">
-              <div className="pricing__addon-price">
-                <span className="pricing__addon-amount">
-                  {t('pricing.addon.price', { defaultValue: '€10' })}
-                </span>
-                <span className="pricing__addon-period">
-                  {t('pricing.addon.period', { defaultValue: '/ 10 workflows' })}
-                </span>
+            <div className="pricing2__addon-right">
+              <div className="pricing2__addon-price">
+                <span className="pricing2__addon-amount">{t('pricing.addon.price', { defaultValue: '€10' })}</span>
+                <span className="pricing2__addon-period">{t('pricing.addon.period', { defaultValue: '/ 10 workflows' })}</span>
               </div>
-              <p className="pricing__addon-renew">
-                {t('pricing.addon.renew', { defaultValue: 'No expiry · Works with any plan · Buy more when you need' })}
+              <p className="pricing2__addon-renew">
+                {t('pricing.addon.renew', { defaultValue: 'No expiry · Works with any plan' })}
               </p>
               <button
-                className="btn btn-primary pricing__plan-cta"
+                className="btn btn-primary pricing2__addon-cta"
                 onClick={handleAddonSelect}
                 disabled={loadingPlan === 'addon'}
               >
@@ -452,35 +401,40 @@ export default function PricingPage() {
           </motion.div>
         </div>
 
-        {/* Comparison table */}
+        {/* ── COMPARISON TABLE ── */}
         <div className="container">
           <motion.div
-            className="pricing__comparison"
+            className="pricing2__comparison"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="pricing__comparison-title">
-              {t('pricing.comparison.title', { defaultValue: 'Full Feature Comparison' })}
+            <h2 className="pricing2__section-title">
+              {isEs ? 'Free vs Pro — qué cambia' : 'Free vs Pro — what changes'}
             </h2>
-            <div className="pricing__table-wrap">
-              <table className="pricing__table">
+            <div className="pricing2__table-wrap">
+              <table className="pricing2__table">
                 <thead>
                   <tr>
-                    <th>{t('pricing.comparison.featureCol', { defaultValue: 'Feature' })}</th>
-                    <th className="pricing__th--free">{t('pricing.plan.free.name', { defaultValue: 'Free' })}</th>
-                    <th className="pricing__th--pro">{t('pricing.plan.pro.name', { defaultValue: 'Pro' })}</th>
-                    <th className="pricing__th--enterprise">{t('pricing.plan.enterprise.name', { defaultValue: 'Enterprise' })}</th>
+                    <th></th>
+                    <th className="pricing2__th--free">Free</th>
+                    <th className="pricing2__th--pro">Pro</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {COMPARISON_ROWS.map((row) => (
-                    <tr key={row.idx}>
-                      <td>{t(`pricing.comparison.row.${row.idx}`)}</td>
-                      <td className="pricing__td--free">{translateVal(row.free)}</td>
-                      <td className="pricing__td--pro">{translateVal(row.pro)}</td>
-                      <td className="pricing__td--enterprise">{translateVal(row.enterprise)}</td>
+                  {[
+                    { label: isEs ? 'Automatizaciones / mes' : 'Automations / month', free: '10',         pro: isEs ? 'Ilimitadas ∞' : 'Unlimited ∞' },
+                    { label: isEs ? 'Herramientas de IA (30+)' : 'AI tools (30+)',    free: '✅',         pro: '✅' },
+                    { label: isEs ? 'Workspace de marca' : 'Brand workspace',         free: '✅',         pro: '✅' },
+                    { label: isEs ? 'Streaming IA' : 'AI streaming',                  free: '✅',         pro: '✅' },
+                    { label: isEs ? 'Templates por nicho' : 'Niche templates',        free: '❌',         pro: '✅' },
+                    { label: isEs ? 'Soporte prioritario' : 'Priority support',       free: isEs ? 'Email' : 'Email', pro: isEs ? 'Prioritario' : 'Priority' },
+                  ].map((row, i) => (
+                    <tr key={i}>
+                      <td>{row.label}</td>
+                      <td className="pricing2__td--free">{row.free}</td>
+                      <td className="pricing2__td--pro">{row.pro}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -489,39 +443,77 @@ export default function PricingPage() {
           </motion.div>
         </div>
 
-        {/* FAQ */}
-        <div className="container pricing__faq">
-          <h2 className="pricing__comparison-title">
-            {t('pricing.faq.title', { defaultValue: 'Frequently Asked Questions' })}
+        {/* ── FAQ ── */}
+        <div className="container pricing2__faq">
+          <h2 className="pricing2__section-title">
+            {isEs ? 'Preguntas frecuentes' : 'Frequently asked questions'}
           </h2>
-          <div className="pricing__faq-grid">
-            {Array.from({ length: FAQ_COUNT }, (_, i) => (
-              <div key={i} className="pricing__faq-item">
-                <h4>{t(`pricing.faq.${i}.q`)}</h4>
-                <p>{t(`pricing.faq.${i}.a`)}</p>
+          <div className="pricing2__faq-grid">
+            {[
+              {
+                q: isEs ? '¿Qué es una "automatización"?' : 'What counts as an "automation"?',
+                a: isEs ? 'Cada vez que usas una herramienta de IA para generar un resultado cuenta como 1 automatización. El plan Free incluye 10 al mes.' : 'Each time you use an AI tool to generate an output counts as 1 automation. Free includes 10/month.',
+              },
+              {
+                q: isEs ? '¿Puedo cancelar cuando quiera?' : 'Can I cancel anytime?',
+                a: isEs ? 'Sí. Cancela desde tu perfil en cualquier momento. Sin penalizaciones, sin preguntas. Tu plan baja a Free automáticamente.' : 'Yes. Cancel from your profile anytime. No penalties, no questions. Drops to Free automatically.',
+              },
+              {
+                q: isEs ? '¿Hay garantía de devolución?' : 'Is there a money-back guarantee?',
+                a: isEs ? '7 días de garantía total en el plan Pro. Si no estás satisfecho, te devolvemos el 100% sin preguntas.' : '7-day full money-back on Pro. Not happy? We refund 100%, no questions asked.',
+              },
+              {
+                q: isEs ? '¿Necesito tarjeta de crédito para el plan Free?' : 'Do I need a credit card for Free?',
+                a: isEs ? 'No. El plan Free es 100% gratuito, sin tarjeta de crédito. Solo un email para registrarte.' : 'No. Free is 100% free, no credit card. Just an email to sign up.',
+              },
+              {
+                q: isEs ? '¿Ofrecéis planes para agencias o equipos?' : 'Do you offer agency or team plans?',
+                a: isEs ? 'Estamos trabajando en funcionalidades de equipo. Por ahora, contáctanos en hola@gormaran.io y encontramos la mejor solución para ti.' : 'We\'re building team features. For now, contact us at hola@gormaran.io and we\'ll find the best setup for you.',
+              },
+            ].map((item, i) => (
+              <div key={i} className="pricing2__faq-item">
+                <h4>{item.q}</h4>
+                <p>{item.a}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="container pricing__bottom-cta">
+        {/* ── BOTTOM CTA ── */}
+        <div className="container pricing2__bottom-cta">
           <motion.div
-            className="pricing__cta-card"
+            className="pricing2__cta-card"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
+            <div className="pricing2__cta-proof">
+              {['A','B','C','D','E'].map((l) => (
+                <div key={l} className="pricing2__cta-avatar">{l}</div>
+              ))}
+              <span>{isEs ? '370+ marketers ya lo usan' : '370+ marketers already using it'}</span>
+            </div>
             <h2>
-              {t('pricing.cta.titlePre', { defaultValue: 'Ready to' })}{' '}
-              <span className="gradient-text">{t('pricing.cta.titleHighlight', { defaultValue: 'Get Started?' })}</span>
+              {isEs
+                ? <>¿Listo para trabajar <span className="gradient-text">sin límites?</span></>
+                : <>Ready to work <span className="gradient-text">without limits?</span></>}
             </h2>
-            <p>{t('pricing.cta.subtitle', { defaultValue: 'Join thousands of marketers, founders, and agencies growing with AI.' })}</p>
-            <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
-              {t('pricing.cta.btn', { defaultValue: 'Start Free Today →' })}
-            </Link>
+            <p>
+              {isEs
+                ? 'Prueba Pro gratis 7 días. Si no te convence, te devolvemos el dinero.'
+                : 'Try Pro free for 7 days. Not convinced? Full refund.'}
+            </p>
+            <div className="pricing2__cta-actions">
+              <button className="btn btn-primary btn-lg" onClick={handleProSelect} disabled={loadingPlan === 'pro'}>
+                {loadingPlan === 'pro' ? '...' : (isEs ? `Empezar Pro — €${displayPrice}/mes →` : `Start Pro — €${displayPrice}/mo →`)}
+              </button>
+              <Link to="/auth?mode=register" className="btn btn-secondary">
+                {isEs ? 'O empieza gratis' : 'Or start free'}
+              </Link>
+            </div>
           </motion.div>
         </div>
+
       </div>
     </div>
   );

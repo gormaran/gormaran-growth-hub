@@ -584,6 +584,41 @@
   margin: 0;
 }
 
+/* Usage bar states */
+.dashboard__usage--warning {
+  border-color: rgba(251,191,36,0.35) !important;
+  background: var(--bg-card);
+}
+.dashboard__usage--warning .dashboard__usage-fill {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b) !important;
+}
+.dashboard__usage--limit {
+  border-color: rgba(239,68,68,0.35) !important;
+  background: rgba(239,68,68,0.04) !important;
+  padding: 1rem 1.5rem !important;
+}
+.dashboard__usage-upgrade {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.dashboard__usage-upgrade-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.dashboard__usage-upgrade-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.dashboard__usage-upgrade-sub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
 @media (max-width: 640px) {
   .dashboard__grid { grid-template-columns: 1fr; }
   .dashboard__header { flex-direction: column; }
