@@ -408,107 +408,6 @@ export default function PricingPage() {
           </motion.div>
         </div>
 
-        {/* ── ROI CALCULATOR ── */}
-        <div className="container">
-          <motion.div
-            className="pricing2__roi"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="pricing2__roi-title">
-              {isEs ? '¿Cuánto vale tu tiempo?' : 'What is your time worth?'}
-            </h2>
-            <p className="pricing2__roi-sub">
-              {isEs
-                ? `Gormaran ahorra 20-40 horas al mes. Eso es mucho más que €${growPrice}.`
-                : `Gormaran saves 20-40 hours/month. That's worth far more than €${growPrice}.`}
-            </p>
-            <div className="pricing2__roi-tabs">
-              {ROI_EXAMPLES.map((ex, i) => (
-                <button
-                  key={i}
-                  className={`pricing2__roi-tab${activeRoi === i ? ' pricing2__roi-tab--active' : ''}`}
-                  onClick={() => setActiveRoi(i)}
-                >
-                  {isEs ? ex.role : ex.roleEn}
-                </button>
-              ))}
-            </div>
-            <div className="pricing2__roi-result">
-              <div className="pricing2__roi-math">
-                <div className="pricing2__roi-item">
-                  <span className="pricing2__roi-num">{roiEx.hours}h</span>
-                  <span className="pricing2__roi-label">{isEs ? 'ahorro/mes' : 'saved/month'}</span>
-                </div>
-                <span className="pricing2__roi-op">×</span>
-                <div className="pricing2__roi-item">
-                  <span className="pricing2__roi-num">€{roiEx.rate}</span>
-                  <span className="pricing2__roi-label">{isEs ? 'tu hora' : 'your hour'}</span>
-                </div>
-                <span className="pricing2__roi-op">=</span>
-                <div className="pricing2__roi-item pricing2__roi-item--total">
-                  <span className="pricing2__roi-num pricing2__roi-num--big">€{roiValue}</span>
-                  <span className="pricing2__roi-label">{isEs ? 'valor/mes' : 'value/month'}</span>
-                </div>
-              </div>
-              <div className="pricing2__roi-verdict">
-                {isEs
-                  ? <>Pagas <strong>€{growPrice}/mes</strong>. Recuperas <strong>€{roiValue - growPrice}+</strong> en valor.</>
-                  : <>You pay <strong>€{growPrice}/mo</strong>. You get back <strong>€{roiValue - growPrice}+</strong> in value.</>}
-              </div>
-              <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
-                {isEs ? `Empezar Grow por €${growPrice}/mes →` : `Start Grow for €${growPrice}/mo →`}
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* ── N8N ADDON ── */}
-        <div className="container">
-          <motion.div
-            className="pricing2__addon"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="pricing2__addon-left">
-              <span className="badge badge-primary">⚡ Add-on</span>
-              <h3 className="pricing2__addon-title">
-                {t('pricing.addon.title', { defaultValue: 'n8n Automation' })}
-              </h3>
-              <p className="pricing2__addon-desc">
-                {isEs
-                  ? 'Conecta Gormaran con tus flujos de trabajo. Disponible para cualquier plan.'
-                  : 'Connect Gormaran to your workflows. Available for any plan.'}
-              </p>
-              <ul className="pricing2__addon-features">
-                {[0, 1, 2, 3].map((i) => (
-                  <li key={i}>✅ {t(`pricing.addon.feature.${i}`)}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="pricing2__addon-right">
-              <div className="pricing2__addon-price">
-                <span className="pricing2__addon-amount">{t('pricing.addon.price', { defaultValue: '€10' })}</span>
-                <span className="pricing2__addon-period">{t('pricing.addon.period', { defaultValue: '/ 10 workflows' })}</span>
-              </div>
-              <p className="pricing2__addon-renew">
-                {isEs ? 'Sin caducidad · Válido para cualquier plan · Compra más cuando quieras' : 'No expiry · Works with any plan · Buy more when you need'}
-              </p>
-              <button
-                className="btn btn-primary pricing2__addon-cta"
-                onClick={handleAddonSelect}
-                disabled={loadingPlan === 'addon'}
-              >
-                {loadingPlan === 'addon' ? '...' : (isEs ? 'Añadir Add-on →' : 'Get Add-on →')}
-              </button>
-            </div>
-          </motion.div>
-        </div>
-
         {/* ── COMPARISON TABLE ── */}
         <div className="container">
           <motion.div
@@ -613,6 +512,107 @@ export default function PricingPage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* ── ROI CALCULATOR ── */}
+        <div className="container">
+          <motion.div
+            className="pricing2__roi"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="pricing2__roi-title">
+              {isEs ? '¿Cuánto vale tu tiempo?' : 'What is your time worth?'}
+            </h2>
+            <p className="pricing2__roi-sub">
+              {isEs
+                ? `Gormaran ahorra 20-40 horas al mes. Eso es mucho más que €${growPrice}.`
+                : `Gormaran saves 20-40 hours/month. That's worth far more than €${growPrice}.`}
+            </p>
+            <div className="pricing2__roi-tabs">
+              {ROI_EXAMPLES.map((ex, i) => (
+                <button
+                  key={i}
+                  className={`pricing2__roi-tab${activeRoi === i ? ' pricing2__roi-tab--active' : ''}`}
+                  onClick={() => setActiveRoi(i)}
+                >
+                  {isEs ? ex.role : ex.roleEn}
+                </button>
+              ))}
+            </div>
+            <div className="pricing2__roi-result">
+              <div className="pricing2__roi-math">
+                <div className="pricing2__roi-item">
+                  <span className="pricing2__roi-num">{roiEx.hours}h</span>
+                  <span className="pricing2__roi-label">{isEs ? 'ahorro/mes' : 'saved/month'}</span>
+                </div>
+                <span className="pricing2__roi-op">×</span>
+                <div className="pricing2__roi-item">
+                  <span className="pricing2__roi-num">€{roiEx.rate}</span>
+                  <span className="pricing2__roi-label">{isEs ? 'tu hora' : 'your hour'}</span>
+                </div>
+                <span className="pricing2__roi-op">=</span>
+                <div className="pricing2__roi-item pricing2__roi-item--total">
+                  <span className="pricing2__roi-num pricing2__roi-num--big">€{roiValue}</span>
+                  <span className="pricing2__roi-label">{isEs ? 'valor/mes' : 'value/month'}</span>
+                </div>
+              </div>
+              <div className="pricing2__roi-verdict">
+                {isEs
+                  ? <>Pagas <strong>€{growPrice}/mes</strong>. Recuperas <strong>€{roiValue - growPrice}+</strong> en valor.</>
+                  : <>You pay <strong>€{growPrice}/mo</strong>. You get back <strong>€{roiValue - growPrice}+</strong> in value.</>}
+              </div>
+              <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
+                {isEs ? `Empezar Grow por €${growPrice}/mes →` : `Start Grow for €${growPrice}/mo →`}
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* ── N8N ADDON ── */}
+        <div className="container">
+          <motion.div
+            className="pricing2__addon"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="pricing2__addon-left">
+              <span className="badge badge-primary">⚡ Add-on</span>
+              <h3 className="pricing2__addon-title">
+                {t('pricing.addon.title', { defaultValue: 'n8n Automation' })}
+              </h3>
+              <p className="pricing2__addon-desc">
+                {isEs
+                  ? 'Conecta Gormaran con tus flujos de trabajo. Disponible para cualquier plan.'
+                  : 'Connect Gormaran to your workflows. Available for any plan.'}
+              </p>
+              <ul className="pricing2__addon-features">
+                {[0, 1, 2, 3].map((i) => (
+                  <li key={i}>✅ {t(`pricing.addon.feature.${i}`)}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="pricing2__addon-right">
+              <div className="pricing2__addon-price">
+                <span className="pricing2__addon-amount">{t('pricing.addon.price', { defaultValue: '€10' })}</span>
+                <span className="pricing2__addon-period">{t('pricing.addon.period', { defaultValue: '/ 10 workflows' })}</span>
+              </div>
+              <p className="pricing2__addon-renew">
+                {isEs ? 'Sin caducidad · Válido para cualquier plan · Compra más cuando quieras' : 'No expiry · Works with any plan · Buy more when you need'}
+              </p>
+              <button
+                className="btn btn-primary pricing2__addon-cta"
+                onClick={handleAddonSelect}
+                disabled={loadingPlan === 'addon'}
+              >
+                {loadingPlan === 'addon' ? '...' : (isEs ? 'Añadir Add-on →' : 'Get Add-on →')}
+              </button>
+            </div>
+          </motion.div>
         </div>
 
         {/* ── BOTTOM CTA ── */}
