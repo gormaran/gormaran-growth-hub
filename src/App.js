@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider } from './context/AuthContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
 import { WorkspaceProvider } from './context/WorkspaceContext';
@@ -41,15 +42,17 @@ function AnalyticsTracker() {
 
 
 function ComingSoon({ page }) {
+  const { i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
+  const label = isEs ? 'Próximamente' : 'Coming Soon';
+  const desc = page === 'Academy'
+    ? (isEs ? 'Cursos, tutoriales y guías para dominar el marketing con IA. Disponible muy pronto.' : 'Courses, tutorials and guides to master AI marketing. Available very soon.')
+    : (isEs ? 'Artículos, estrategias y tendencias de marketing con IA escritos por el equipo de Gormaran.' : 'Articles, strategies and AI marketing trends written by the Gormaran team.');
   return (
     <div className="page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', gap: '1rem', textAlign: 'center', padding: '2rem' }}>
       <div style={{ fontSize: '3rem' }}>{page === 'Academy' ? '🎓' : '📝'}</div>
-      <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>{page} — <span style={{ background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Próximamente</span></h1>
-      <p style={{ color: 'var(--text-secondary)', maxWidth: 480 }}>
-        {page === 'Academy'
-          ? 'Cursos, tutoriales y guías para dominar el marketing con IA. Disponible muy pronto.'
-          : 'Artículos, estrategias y tendencias de marketing con IA escritos por el equipo de Gormaran.'}
-      </p>
+      <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>{page} — <span style={{ background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{label}</span></h1>
+      <p style={{ color: 'var(--text-secondary)', maxWidth: 480 }}>{desc}</p>
     </div>
   );
 }
