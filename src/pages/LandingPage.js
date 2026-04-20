@@ -298,7 +298,7 @@ function HeroPromptBox() {
           ref={inputRef}
           className="hero-promptbox__input"
           value={value}
-          onChange={(e) => { setValue(e.target.value); setActiveChip(null); }}
+          onChange={(e) => { setValue(e.target.value); if (!e.target.value.trim()) setActiveChip(null); }}
           onKeyDown={handleKey}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
