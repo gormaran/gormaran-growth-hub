@@ -461,6 +461,51 @@
   gap: 1rem;
 }
 
+/* ── Locked card state ──────────────────────────────────────────── */
+.settings__card--locked {
+  opacity: 0.75;
+}
+
+.settings__locked-cta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.settings__locked-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.settings__locked-cta > div {
+  flex: 1;
+  min-width: 160px;
+}
+
+.settings__locked-cta strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.settings__locked-cta p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.settings__ws-tag--evolution {
+  background: rgba(245,158,11,0.12) !important;
+  color: #f59e0b !important;
+  border-color: rgba(245,158,11,0.3) !important;
+}
+
 /* ── White-label toggle ─────────────────────────────────────────── */
 .settings__whitelabel {
   background: rgba(245,158,11,0.05);

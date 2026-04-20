@@ -17,22 +17,31 @@ export const PLANS = {
     monthlyLimit: FREE_MONTHLY_LIMIT,
     allCategories: true,
   },
-  pro: {
-    name: 'Pro',
+  grow: {
+    name: 'Grow',
     allCategories: true,
     unlimitedUsage: true,
+    teamAccess: true,
   },
-  enterprise: {
-    name: 'Enterprise',
+  scale: {
+    name: 'Scale',
     allCategories: true,
     unlimitedUsage: true,
-    whiteLabel: true,
+    teamAccess: true,
+  },
+  evolution: {
+    name: 'Evolution',
+    allCategories: true,
+    unlimitedUsage: true,
+    teamAccess: true,
     apiAccess: true,
+    whiteLabel: true,
   },
   admin: {
     name: 'Admin',
     allAccess: true,
     unlimitedUsage: true,
+    teamAccess: true,
     apiAccess: true,
     whiteLabel: true,
   },
@@ -43,9 +52,6 @@ export function SubscriptionProvider({ children }) {
   const [subscription, setSubscription] = useState('free');
   const [usageCount, setUsageCount] = useState(0);
   const [checkingSubscription, setCheckingSubscription] = useState(true);
-
-  // Backward compat: map legacy plan names to current ones
-  const PLAN_ALIASES = { 'grow': 'pro', 'scale': 'pro', 'evolution': 'enterprise', 'business': 'enterprise' };
 
   // Admin UID override — mirrors server-side ADMIN_UIDS check
   const ADMIN_UIDS = (process.env.REACT_APP_ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -58,7 +64,7 @@ export function SubscriptionProvider({ children }) {
     }
     if (userProfile) {
       const raw = userProfile.subscription || 'free';
-      setSubscription(PLAN_ALIASES[raw] || raw);
+      setSubscription(raw);
 
       // Monthly reset: if usageResetDate is from a previous month, reset the counter
       const resetTs = userProfile.usageResetDate;

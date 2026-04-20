@@ -322,10 +322,11 @@ export default function SettingsPage() {
               <div className="settings__plan-info">
                 <div className="settings__plan-row">
                   <span className="settings__plan-label">Current Plan</span>
-                  <span className={`badge ${subscription === 'free' ? 'badge-free' : (plan.apiAccess ? 'badge-enterprise' : 'badge-pro')}`}>
+                  <span className={`badge ${subscription === 'free' ? 'badge-free' : subscription === 'evolution' ? 'badge-enterprise' : 'badge-pro'}`}>
                     {subscription === 'free' ? 'Free'
-                      : (subscription === 'enterprise' || subscription === 'evolution' || subscription === 'business') ? '🏢 Enterprise'
-                      : (subscription === 'pro' || subscription === 'grow' || subscription === 'scale') ? '⭐ Pro'
+                      : subscription === 'grow' ? '⭐ Grow'
+                      : subscription === 'scale' ? '💎 Scale'
+                      : subscription === 'evolution' ? '🚀 Evolution'
                       : subscription === 'admin' ? '🔑 Admin'
                       : subscription}
                   </span>
@@ -615,204 +616,226 @@ export default function SettingsPage() {
             )}
           </motion.div>
 
-          {/* API Keys — Enterprise only */}
-          {plan.apiAccess && (
-            <motion.div
-              className="settings__card"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.195 }}
-            >
-              <h2 className="settings__card-title">
-                🔑 API Keys
-                <span className="settings__ws-tag">Enterprise</span>
-              </h2>
-              <p className="settings__brand-hint">
-                Use API keys to access Gormaran from your own apps, n8n workflows, or custom integrations.
-                Each key works with <code>Authorization: Bearer grm_live_...</code>.
-              </p>
+          {/* Team Management — Grow+ */}
+          <motion.div
+            className={`settings__card${!plan.teamAccess ? ' settings__card--locked' : ''}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.195 }}
+          >
+            <h2 className="settings__card-title">
+              👥 Team Management
+              <span className="settings__ws-tag">Grow+</span>
+            </h2>
+            <p className="settings__brand-hint">
+              Invite colaboradores a tus workspaces. Recibirán un email con instrucciones de acceso.
+            </p>
 
-              {keysError && <div className="alert alert-error">{keysError}</div>}
-
-              {/* Revealed key — show once */}
-              {revealedKey && (
-                <div className="settings__apikey-reveal">
-                  <p className="settings__apikey-reveal-warn">⚠️ Copy this key now — it won't be shown again.</p>
-                  <div className="settings__apikey-reveal-row">
-                    <code className="settings__apikey-code">{revealedKey.key}</code>
-                    <button className="btn btn-primary btn-sm" onClick={handleCopyRevealedKey}>
-                      {copiedKey ? '✅ Copied!' : '📋 Copy'}
-                    </button>
-                    <button className="btn btn-ghost btn-sm" onClick={() => setRevealedKey(null)}>Dismiss</button>
-                  </div>
+            {!plan.teamAccess ? (
+              <div className="settings__locked-cta">
+                <span className="settings__locked-icon">🔒</span>
+                <div>
+                  <strong>Disponible desde el plan Grow</strong>
+                  <p>Gestiona tu equipo y colabora con otros usuarios en tus workspaces.</p>
                 </div>
-              )}
+                <a href="/pricing" className="btn btn-primary btn-sm">Ver planes →</a>
+              </div>
+            ) : (
+              <>
+                {inviteError && <div className="alert alert-error">{inviteError}</div>}
+                {inviteSuccess && <div className="alert alert-success">{inviteSuccess}</div>}
 
-              {/* Keys list */}
-              {loadingKeys ? (
-                <div className="settings__brand-loading">Loading keys…</div>
-              ) : (
-                <div className="settings__apikey-list">
-                  {apiKeys.length === 0 && !revealedKey && (
-                    <p className="settings__brand-hint">No API keys yet. Generate your first key below.</p>
-                  )}
-                  {apiKeys.map(key => (
-                    <div key={key.id} className="settings__apikey-item">
-                      <div className="settings__apikey-info">
-                        <span className="settings__apikey-name">{key.name}</span>
-                        <code className="settings__apikey-prefix">{key.prefix}</code>
-                        <span className="settings__apikey-meta">
-                          Created {key.createdAt ? new Date(key.createdAt).toLocaleDateString() : '—'}
-                          {key.lastUsed ? ` · Last used ${new Date(key.lastUsed).toLocaleDateString()}` : ''}
-                        </span>
+                {teamMembers.length > 0 && (
+                  <div className="settings__team-list">
+                    {teamMembers.map(member => (
+                      <div key={member.id} className="settings__team-item">
+                        <div className="settings__team-info">
+                          <span className="settings__team-email">{member.email}</span>
+                          <span className={`badge ${member.status === 'active' ? 'badge-pro' : 'badge-free'}`}>
+                            {member.status}
+                          </span>
+                        </div>
+                        <button className="btn btn-ghost btn-sm" onClick={() => handleRemoveMember(member.id)}>
+                          Remove
+                        </button>
                       </div>
-                      <button
-                        className="btn btn-ghost btn-sm settings__apikey-revoke"
-                        onClick={() => handleRevokeKey(key.id)}
-                      >
-                        Revoke
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
 
-              {/* Generate new key */}
-              {apiKeys.length < 5 && (
-                <form onSubmit={handleGenerateKey} className="settings__apikey-generate">
+                <form onSubmit={handleInviteMember} className="settings__team-invite">
                   <input
                     className="form-input"
-                    value={newKeyName}
-                    onChange={e => setNewKeyName(e.target.value)}
-                    placeholder="Key name (e.g. n8n integration, client dashboard)"
-                    maxLength={50}
+                    type="email"
+                    value={inviteEmail}
+                    onChange={e => { setInviteEmail(e.target.value); setInviteError(''); }}
+                    placeholder="colleague@company.com"
                   />
-                  <button type="submit" className="btn btn-primary btn-sm" disabled={generatingKey || !newKeyName.trim()}>
-                    {generatingKey ? '…' : '＋ Generate Key'}
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={inviting || !inviteEmail.trim()}>
+                    {inviting ? '…' : '✉️ Invite'}
                   </button>
                 </form>
-              )}
-              {apiKeys.length >= 5 && (
-                <p className="settings__brand-hint">Maximum 5 API keys reached. Revoke one to create another.</p>
-              )}
 
-              {/* API Docs hint */}
-              <div className="settings__apikey-docs">
-                <strong>API Endpoint:</strong>{' '}
-                <code>{process.env.REACT_APP_API_URL || 'https://gormaran-growth-hub.onrender.com'}/api/v1/generate</code>
-                <br />
-                <strong>Tools list:</strong>{' '}
-                <code>GET /api/v1/tools</code>
-              </div>
-            </motion.div>
-          )}
+                <p className="settings__brand-hint" style={{ marginTop: 0 }}>
+                  <strong>SSO:</strong> Google sign-in activo en todos los planes. SAML/Okta disponible bajo petición —{' '}
+                  <a href="mailto:hola@gormaran.io" className="settings__upgrade-link">contáctanos</a>.
+                </p>
+              </>
+            )}
+          </motion.div>
 
-          {/* Team Management — Enterprise only */}
-          {plan.apiAccess && (
-            <motion.div
-              className="settings__card"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.198 }}
-            >
-              <h2 className="settings__card-title">
-                👥 Team Management
-                <span className="settings__ws-tag">Enterprise</span>
-              </h2>
-              <p className="settings__brand-hint">
-                Invite team members to collaborate in your workspaces. They'll receive an email with access instructions.
-              </p>
+          {/* API Keys — Evolution only */}
+          <motion.div
+            className={`settings__card${!plan.apiAccess ? ' settings__card--locked' : ''}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.198 }}
+          >
+            <h2 className="settings__card-title">
+              🔑 API Keys
+              <span className="settings__ws-tag settings__ws-tag--evolution">Evolution</span>
+            </h2>
+            <p className="settings__brand-hint">
+              Conecta Gormaran con tus propias apps, flujos de n8n o integraciones externas usando tu clave API.
+            </p>
 
-              {inviteError && <div className="alert alert-error">{inviteError}</div>}
-              {inviteSuccess && <div className="alert alert-success">{inviteSuccess}</div>}
-
-              {/* Team members list */}
-              {teamMembers.length > 0 && (
-                <div className="settings__team-list">
-                  {teamMembers.map(member => (
-                    <div key={member.id} className="settings__team-item">
-                      <div className="settings__team-info">
-                        <span className="settings__team-email">{member.email}</span>
-                        <span className={`badge ${member.status === 'active' ? 'badge-pro' : 'badge-free'}`}>
-                          {member.status}
-                        </span>
-                      </div>
-                      <button
-                        className="btn btn-ghost btn-sm"
-                        onClick={() => handleRemoveMember(member.id)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
+            {!plan.apiAccess ? (
+              <div className="settings__locked-cta">
+                <span className="settings__locked-icon">🔒</span>
+                <div>
+                  <strong>Disponible en el plan Evolution</strong>
+                  <p>Acceso REST + streaming SSE. Compatible con n8n, Make, Zapier y cualquier HTTP client.</p>
                 </div>
-              )}
-
-              {/* Invite form */}
-              <form onSubmit={handleInviteMember} className="settings__team-invite">
-                <input
-                  className="form-input"
-                  type="email"
-                  value={inviteEmail}
-                  onChange={e => { setInviteEmail(e.target.value); setInviteError(''); }}
-                  placeholder="colleague@company.com"
-                />
-                <button type="submit" className="btn btn-primary btn-sm" disabled={inviting || !inviteEmail.trim()}>
-                  {inviting ? '…' : '✉️ Invite'}
-                </button>
-              </form>
-
-              <div className="settings__brand-hint" style={{ marginTop: 0 }}>
-                <strong>SSO:</strong> Google sign-in is enabled for all plans. SAML/Okta SSO available on request —{' '}
-                <a href="mailto:hola@gormaran.io" className="settings__upgrade-link">contact us</a>.
+                <a href="/pricing" className="btn btn-primary btn-sm">Ver Evolution →</a>
               </div>
-            </motion.div>
-          )}
+            ) : (
+              <>
+                {keysError && <div className="alert alert-error">{keysError}</div>}
 
-          {/* SLA / Support — Enterprise only */}
-          {plan.apiAccess && (
-            <motion.div
-              className="settings__card settings__card--enterprise-sla"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h2 className="settings__card-title">
-                🛡️ Enterprise SLA & Support
-                <span className="settings__ws-tag">Enterprise</span>
-              </h2>
+                {revealedKey && (
+                  <div className="settings__apikey-reveal">
+                    <p className="settings__apikey-reveal-warn">⚠️ Copia esta clave ahora — no se mostrará de nuevo.</p>
+                    <div className="settings__apikey-reveal-row">
+                      <code className="settings__apikey-code">{revealedKey.key}</code>
+                      <button className="btn btn-primary btn-sm" onClick={handleCopyRevealedKey}>
+                        {copiedKey ? '✅ Copiada' : '📋 Copiar'}
+                      </button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => setRevealedKey(null)}>Descartar</button>
+                    </div>
+                  </div>
+                )}
+
+                {loadingKeys ? (
+                  <div className="settings__brand-loading">Cargando claves…</div>
+                ) : (
+                  <div className="settings__apikey-list">
+                    {apiKeys.length === 0 && !revealedKey && (
+                      <p className="settings__brand-hint">Sin claves API. Genera tu primera clave abajo.</p>
+                    )}
+                    {apiKeys.map(key => (
+                      <div key={key.id} className="settings__apikey-item">
+                        <div className="settings__apikey-info">
+                          <span className="settings__apikey-name">{key.name}</span>
+                          <code className="settings__apikey-prefix">{key.prefix}</code>
+                          <span className="settings__apikey-meta">
+                            Creada {key.createdAt ? new Date(key.createdAt).toLocaleDateString() : '—'}
+                            {key.lastUsed ? ` · Último uso ${new Date(key.lastUsed).toLocaleDateString()}` : ''}
+                          </span>
+                        </div>
+                        <button className="btn btn-ghost btn-sm settings__apikey-revoke" onClick={() => handleRevokeKey(key.id)}>
+                          Revocar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {apiKeys.length < 5 && (
+                  <form onSubmit={handleGenerateKey} className="settings__apikey-generate">
+                    <input
+                      className="form-input"
+                      value={newKeyName}
+                      onChange={e => setNewKeyName(e.target.value)}
+                      placeholder="Nombre de la clave (ej: n8n, dashboard cliente)"
+                      maxLength={50}
+                    />
+                    <button type="submit" className="btn btn-primary btn-sm" disabled={generatingKey || !newKeyName.trim()}>
+                      {generatingKey ? '…' : '＋ Generar clave'}
+                    </button>
+                  </form>
+                )}
+                {apiKeys.length >= 5 && (
+                  <p className="settings__brand-hint">Límite de 5 claves alcanzado. Revoca una para crear otra.</p>
+                )}
+
+                <div className="settings__apikey-docs">
+                  <strong>Endpoint:</strong>{' '}
+                  <code>{process.env.REACT_APP_API_URL || 'https://gormaran-growth-hub.onrender.com'}/api/v1/generate</code>
+                  <br />
+                  <strong>Listar herramientas:</strong>{' '}
+                  <code>GET /api/v1/tools</code>
+                  <br />
+                  <strong>Header:</strong>{' '}
+                  <code>Authorization: Bearer grm_live_...</code>
+                </div>
+              </>
+            )}
+          </motion.div>
+
+          {/* SLA / Support — Evolution only */}
+          <motion.div
+            className={`settings__card settings__card--enterprise-sla${!plan.apiAccess ? ' settings__card--locked' : ''}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <h2 className="settings__card-title">
+              🛡️ SLA & Soporte dedicado
+              <span className="settings__ws-tag settings__ws-tag--evolution">Evolution</span>
+            </h2>
+
+            {!plan.apiAccess ? (
+              <div className="settings__locked-cta">
+                <span className="settings__locked-icon">🔒</span>
+                <div>
+                  <strong>Disponible en el plan Evolution</strong>
+                  <p>99.9% uptime garantizado, account manager dedicado y onboarding personalizado.</p>
+                </div>
+                <a href="/pricing" className="btn btn-primary btn-sm">Ver Evolution →</a>
+              </div>
+            ) : (
               <div className="settings__sla-grid">
                 <div className="settings__sla-item">
                   <span className="settings__sla-icon">⚡</span>
                   <div>
-                    <strong>99.9% Uptime SLA</strong>
-                    <p>Guaranteed availability with automatic incident notifications.</p>
+                    <strong>SLA 99.9% Uptime</strong>
+                    <p>Disponibilidad garantizada con notificaciones automáticas de incidencias.</p>
                   </div>
                 </div>
                 <div className="settings__sla-item">
                   <span className="settings__sla-icon">💬</span>
                   <div>
-                    <strong>Dedicated Account Manager</strong>
-                    <p>Direct Slack or email channel. Response within 4 business hours.</p>
+                    <strong>Account Manager dedicado</strong>
+                    <p>Canal directo por Slack o email. Respuesta en ≤4 horas laborables.</p>
                   </div>
                 </div>
                 <div className="settings__sla-item">
                   <span className="settings__sla-icon">🚀</span>
                   <div>
-                    <strong>Personalized Onboarding</strong>
-                    <p>1-hour onboarding call to set up your team, workspaces, and integrations.</p>
+                    <strong>Onboarding personalizado</strong>
+                    <p>Videollamada de 1h para configurar tu equipo, workspaces e integraciones.</p>
                   </div>
                 </div>
                 <div className="settings__sla-item">
                   <span className="settings__sla-icon">📋</span>
                   <div>
-                    <strong>Contact</strong>
+                    <strong>Contacto Enterprise</strong>
                     <p><a href="mailto:enterprise@gormaran.io" className="settings__upgrade-link">enterprise@gormaran.io</a></p>
                   </div>
                 </div>
               </div>
-            </motion.div>
-          )}
+            )}
+          </motion.div>
 
           {/* Account actions */}
           <motion.div
