@@ -20,6 +20,9 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
 import HistoryPage from './pages/HistoryPage';
+import AcademyPage from './pages/AcademyPage';
+import SuccessStoriesPage from './pages/SuccessStoriesPage';
+import BlogPage from './pages/BlogPage';
 
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -129,6 +132,11 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Content pages */}
+            <Route path="/academy" element={<AppLayout><AcademyPage /></AppLayout>} />
+            <Route path="/success-stories" element={<AppLayout><SuccessStoriesPage /></AppLayout>} />
+            <Route path="/blog" element={<AppLayout><BlogPage /></AppLayout>} />
 
             {/* Legal pages */}
             <Route path="/privacy-policy" element={<AppLayout><PrivacyPolicy /></AppLayout>} />

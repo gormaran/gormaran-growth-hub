@@ -13,10 +13,10 @@ import OnboardingModal from '../components/OnboardingModal';
 import './Dashboard.css';
 
 const CATEGORY_MIN_TIER = {
-  strategy:  'Scale',
-  ecommerce: 'Scale',
-  agency:    'Scale',
-  creative:  'Scale',
+  strategy:  'Grow',
+  ecommerce: 'Grow',
+  agency:    'Grow',
+  creative:  'Grow',
   startup:   'Evolution',
   finance:   'Evolution',
 };

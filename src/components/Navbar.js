@@ -7,6 +7,16 @@ import { useSubscription } from '../context/SubscriptionContext';
 import { useWorkspace } from '../context/WorkspaceContext';
 import './Navbar.css';
 
+function useTheme() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('gormaran_theme') || 'dark');
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('gormaran_theme', theme);
+  }, [theme]);
+  const toggle = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
+  return [theme, toggle];
+}
+
 const LANGUAGES = [
   { code: 'en', label: 'English', abbr: 'EN' },
   { code: 'es', label: 'Español', abbr: 'ES' },
@@ -18,10 +28,12 @@ export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [wsMenuOpen, setWsMenuOpen] = useState(false);
+  const [theme, toggleTheme] = useTheme();
   const { currentUser, logout } = useAuth();
   const { subscription } = useSubscription();
   const { workspaces, currentWorkspace, switchWorkspace, canCreateWorkspace } = useWorkspace();
   const { i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -54,14 +66,16 @@ export default function Navbar() {
 
   const navLinks = currentUser
     ? [
-        { to: '/real-time-data', label: 'Real Time Data' },
+        { to: '/real-time-data', label: isEs ? 'Tiempo Real' : 'Real Time Data' },
         { to: '/dashboard', label: 'Dashboard' },
-        { to: '/pricing', label: 'Pricing' },
+        { to: '/pricing', label: isEs ? 'Precios' : 'Pricing' },
       ]
     : [
-        { to: '/real-time-data', label: 'Real Time Data' },
-        { to: '/#features', label: 'Features' },
-        { to: '/pricing', label: 'Pricing' },
+        { to: '/#features', label: isEs ? 'Funcionalidades' : 'Features' },
+        { to: '/success-stories', label: isEs ? 'Casos de éxito' : 'Success Stories' },
+        { to: '/academy', label: 'Academy' },
+        { to: '/blog', label: 'Blog' },
+        { to: '/pricing', label: isEs ? 'Precios' : 'Pricing' },
       ];
 
   const isActive = (to) => location.pathname === to;
@@ -98,6 +112,16 @@ export default function Navbar() {
 
         {/* Right section */}
         <div className="navbar__right">
+          {/* Theme toggle */}
+          <button
+            className="navbar__theme-toggle"
+            onClick={toggleTheme}
+            aria-label="Toggle dark/light mode"
+            title={theme === 'dark' ? (isEs ? 'Modo claro' : 'Light mode') : (isEs ? 'Modo oscuro' : 'Dark mode')}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+
           {/* Language Selector - always visible */}
           <div className="navbar__lang">
             <button
