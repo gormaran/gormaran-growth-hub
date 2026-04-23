@@ -3,16 +3,19 @@
 }
 
 .blog-post__hero {
-  width: 100%;
-  max-height: 460px;
-  overflow: hidden;
+  max-width: 760px;
+  margin: 2.5rem auto 0;
+  padding: 0 1.5rem;
+  text-align: center;
 }
 
 .blog-post__hero-img {
-  width: 100%;
-  max-height: 460px;
-  object-fit: cover;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
   display: block;
+  margin: 0 auto;
 }
 
 .blog-post__container {
