@@ -227,4 +227,29 @@ router.post('/demo', demoLimiter, async (req, res) => {
   }
 });
 
+// POST /api/ai/translate — translate text using Claude
+router.post('/translate', verifyToken, async (req, res) => {
+  const { text, from = 'es', to = 'en' } = req.body;
+  if (!text) return res.status(400).json({ error: 'Missing text' });
+
+  const langNames = { es: 'Spanish', en: 'English', fr: 'French', de: 'German' };
+  const fromLang = langNames[from] || from;
+  const toLang = langNames[to] || to;
+
+  try {
+    const message = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 8192,
+      messages: [{
+        role: 'user',
+        content: `Translate the following text from ${fromLang} to ${toLang}. Return ONLY the translated text, nothing else — no explanations, no quotes, no preamble.\n\n${text}`,
+      }],
+    });
+    const translated = message.content[0]?.text || text;
+    res.json({ translatedText: translated });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

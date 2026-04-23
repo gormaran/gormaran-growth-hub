@@ -251,6 +251,19 @@ export async function revokeApiKey(keyId) {
   return response.json();
 }
 
+// Translate text using Claude via backend
+export async function translateText(text, from = 'es', to = 'en') {
+  const authHeaders = await getAuthHeader();
+  const response = await fetch(`${API_URL}/api/ai/translate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders },
+    body: JSON.stringify({ text, from, to }),
+  });
+  if (!response.ok) throw new Error('Translation failed');
+  const data = await response.json();
+  return data.translatedText;
+}
+
 // Get current subscription status
 export async function getSubscriptionStatus() {
   const authHeaders = await getAuthHeader();

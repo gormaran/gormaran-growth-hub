@@ -8,6 +8,7 @@ import {
   getAllPostsAdmin, getPostById, createPost, updatePost,
   deletePost, uploadBlogImage, generateSlug,
 } from '../utils/blogService';
+import { translateText } from '../utils/api';
 import './AdminBlogPage.css';
 
 const ADMIN_EMAILS = [
@@ -54,13 +55,22 @@ function parseClaudeOutput(text) {
   const enMatch = text.match(/##\s*[^\n]*ENGLISH VERSION[^\n]*\n([\s\S]+?)(?:\n---\n🔗|\n---\s*$|$)/i);
   if (enMatch) result.content_en = enMatch[1].replace(/^#[^\n]*\n+/, '').trim();
 
-  // Old single-language: extract from first H1 heading to internal links section
+  // Old single-language: extract all content from first H1 to internal links
   if (!result.content_es) {
-    const h1Match = text.match(/^# .+\n+([\s\S]+?)(?:\n---\n\n?🔗 INTERNAL|\n🔗 INTERNAL|$)/m);
-    if (h1Match) {
-      const body = h1Match[1].trim();
-      result.content_es = body;
-      if (!result.content_en) result.content_en = body;
+    const h1Idx = text.search(/^# /m);
+    if (h1Idx !== -1) {
+      const afterH1 = text.indexOf('\n', h1Idx) + 1;
+      const internalIdx = text.indexOf('🔗 INTERNAL', afterH1);
+      let contentEnd = text.length;
+      if (internalIdx > afterH1) {
+        const lastSep = text.lastIndexOf('\n---', internalIdx);
+        contentEnd = lastSep > afterH1 ? lastSep : internalIdx;
+      }
+      const body = text.slice(afterH1, contentEnd).trim();
+      if (body) {
+        result.content_es = body;
+        result.content_en = body; // will be translated later if single-language
+      }
     }
   }
 
@@ -259,17 +269,42 @@ function PostEditor({ postId }) {
     });
   }
 
-  function handleImport() {
+  async function handleImport() {
     const parsed = parseClaudeOutput(importText);
     const filled = Object.keys(parsed).filter(k => parsed[k]);
     if (!filled.length) {
       setImportMsg('⚠️ No se detectó el formato del skill. Pega el output completo.');
       return;
     }
+
+    // Detect single-language (old format): EN fields equal ES fields
+    const isSingleLang = parsed.seo_title_es && parsed.seo_title_es === parsed.seo_title_en;
+
+    if (isSingleLang) {
+      setImportMsg('⏳ Traduciendo al inglés…');
+      try {
+        const [titleEn, metaEn, contentEn] = await Promise.all([
+          parsed.seo_title_es ? translateText(parsed.seo_title_es) : Promise.resolve(''),
+          parsed.meta_desc_es ? translateText(parsed.meta_desc_es) : Promise.resolve(''),
+          parsed.content_es   ? translateText(parsed.content_es)   : Promise.resolve(''),
+        ]);
+        parsed.seo_title_en = titleEn;
+        parsed.meta_desc_en = metaEn;
+        parsed.content_en   = contentEn;
+      } catch {
+        setImportMsg('⚠️ Traducción fallida — campo EN copiado del ES. Tradúcelo manualmente.');
+        await new Promise(r => setTimeout(r, 2500));
+      }
+    }
+
+    // Slug always from English title
+    const slugSource = parsed.seo_title_en || parsed.seo_title_es;
+    if (slugSource) parsed.slug = generateSlug(slugSource);
+
     setPost(prev => ({ ...prev, ...parsed }));
-    setImportMsg(`✅ Rellenado: ${filled.join(', ')}`);
+    setImportMsg('✅ Campos rellenados y traducidos');
     setImportText('');
-    setTimeout(() => { setImportOpen(false); setImportMsg(''); }, 1500);
+    setTimeout(() => { setImportOpen(false); setImportMsg(''); }, 1800);
   }
 
   async function handleFeaturedImage(file) {
