@@ -105,8 +105,13 @@ function MarkdownEditor({ value, onChange, onImageUpload, placeholder }) {
     const start = ta.selectionStart;
     const lineStart = value.lastIndexOf('\n', start - 1) + 1;
     const newVal = value.slice(0, lineStart) + prefix + value.slice(lineStart);
+    const newPos = start + prefix.length;
     onChange(newVal);
-    setTimeout(() => ta.focus(), 0);
+    setTimeout(() => {
+      ta.focus();
+      ta.selectionStart = newPos;
+      ta.selectionEnd = newPos;
+    }, 0);
   }
 
   async function handleImageFile(file) {
