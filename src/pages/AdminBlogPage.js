@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { useAuth } from '../context/AuthContext';
 import {
   getAllPostsAdmin, getPostById, createPost, updatePost,
@@ -89,10 +90,15 @@ function MarkdownEditor({ value, onChange, onImageUpload, placeholder }) {
   }
 
   const toolbar = [
-    { label: 'B', title: 'Bold', action: () => insertAt('**', '**') },
-    { label: 'I', title: 'Italic', action: () => insertAt('*', '*') },
+    { label: 'B', title: 'Bold', action: () => insertAt('**', '**'), style: { fontWeight: 900 } },
+    { label: 'I', title: 'Italic', action: () => insertAt('*', '*'), style: { fontStyle: 'italic' } },
+    { label: <u>U</u>, title: 'Underline', action: () => insertAt('<u>', '</u>') },
     { label: 'H2', title: 'Heading 2', action: () => insertBlock('## ') },
     { label: 'H3', title: 'Heading 3', action: () => insertBlock('### ') },
+    { label: '—', title: 'Separator', action: null },
+    { label: '⬅', title: 'Align left', action: () => insertAt('<div style="text-align:left">', '</div>') },
+    { label: '↔', title: 'Center', action: () => insertAt('<div style="text-align:center">', '</div>') },
+    { label: '➡', title: 'Align right', action: () => insertAt('<div style="text-align:right">', '</div>') },
     { label: '—', title: 'Separator', action: null },
     { label: '🔗', title: 'Link', action: promptLink },
     { label: '🖼', title: 'Image', action: () => fileRef.current?.click() },
@@ -108,7 +114,7 @@ function MarkdownEditor({ value, onChange, onImageUpload, placeholder }) {
         {toolbar.map((btn, i) =>
           btn.action === null
             ? <span key={i} className="md-editor__sep" />
-            : <button key={i} type="button" title={btn.title} className="md-editor__tool" onClick={btn.action}>{btn.label}</button>
+            : <button key={i} type="button" title={btn.title} className="md-editor__tool" onClick={btn.action} style={btn.style || {}}>{btn.label}</button>
         )}
         <div style={{ flex: 1 }} />
         <button type="button" className={`md-editor__tool ${preview ? 'active' : ''}`} onClick={() => setPreview(!preview)}>
@@ -124,7 +130,7 @@ function MarkdownEditor({ value, onChange, onImageUpload, placeholder }) {
       />
       {preview ? (
         <div className="md-editor__preview">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{value || '*No content yet*'}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{value || '*No content yet*'}</ReactMarkdown>
         </div>
       ) : (
         <textarea

@@ -329,7 +329,7 @@ details[open] .ablog__panel-title::after { content: ' ▴'; }
 .md-editor__preview ul, .md-editor__preview ol { padding-left: 1.5rem; margin-bottom: 1rem; }
 .md-editor__preview li { margin-bottom: 0.35rem; }
 .md-editor__preview blockquote { border-left: 3px solid var(--accent-primary); padding: 0.5rem 1rem; margin: 1rem 0; color: var(--text-secondary); background: var(--bg-secondary); border-radius: 0 8px 8px 0; }
-.md-editor__preview img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+.md-editor__preview img { width: auto; max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0; display: block; }
 .md-editor__preview table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
 .md-editor__preview th, .md-editor__preview td { padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); text-align: left; }
 .md-editor__preview th { background: var(--bg-secondary); font-weight: 600; }

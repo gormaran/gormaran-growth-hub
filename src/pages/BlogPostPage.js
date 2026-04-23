@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { useTranslation } from 'react-i18next';
 import { getPostBySlug } from '../utils/blogService';
 import './BlogPostPage.css';
@@ -83,7 +84,7 @@ export default function BlogPostPage() {
         )}
 
         <article className="blog-post__content">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
         </article>
 
         <div className="blog-post__footer">
