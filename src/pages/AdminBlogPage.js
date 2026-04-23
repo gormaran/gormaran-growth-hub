@@ -9,7 +9,10 @@ import {
 } from '../utils/blogService';
 import './AdminBlogPage.css';
 
-const ADMIN_EMAIL = 'gabriela.ormazabal@gormaran-marketing.com';
+const ADMIN_EMAILS = [
+  'gabriela.ormazabal@gormaran-marketing.com',
+  'gabriela.ormazabal@gmail.com',
+];
 
 const EMPTY_POST = {
   slug: '',
@@ -339,7 +342,7 @@ export default function AdminBlogPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const isAdmin = currentUser?.email === ADMIN_EMAIL;
+  const isAdmin = ADMIN_EMAILS.includes(currentUser?.email?.toLowerCase().trim());
 
   const loadPosts = useCallback(async () => {
     setLoading(true);
@@ -358,7 +361,14 @@ export default function AdminBlogPage() {
     return <div className="ablog__access">Inicia sesión para acceder.</div>;
   }
   if (!isAdmin) {
-    return <div className="ablog__access">Acceso restringido.</div>;
+    return (
+      <div className="ablog__access">
+        <p>Acceso restringido.</p>
+        <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', opacity: 0.6 }}>
+          Email actual: {currentUser.email}
+        </p>
+      </div>
+    );
   }
 
   if (postId) {

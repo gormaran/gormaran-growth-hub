@@ -157,11 +157,7 @@ export default function App() {
             <Route path="/terms-of-service" element={<AppLayout><TermsOfService /></AppLayout>} />
             <Route path="/cookie-policy" element={<AppLayout><CookiePolicy /></AppLayout>} />
 
-            {/* Blog */}
-            <Route path="/blog" element={<AppLayout><BlogListPage /></AppLayout>} />
-            <Route path="/blog/:slug" element={<AppLayout><BlogPostPage /></AppLayout>} />
-
-            {/* Admin blog — protected + admin-only */}
+            {/* Admin blog — MUST be before /blog routes to avoid matching conflicts */}
             <Route
               path="/admin/blog"
               element={
@@ -182,6 +178,10 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Blog */}
+            <Route path="/blog" element={<AppLayout><BlogListPage /></AppLayout>} />
+            <Route path="/blog/:slug" element={<AppLayout><BlogPostPage /></AppLayout>} />
 
             <Route path="/academy" element={<AppLayout><ComingSoon page="Academy" /></AppLayout>} />
 

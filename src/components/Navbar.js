@@ -68,12 +68,16 @@ export default function Navbar() {
     setLangMenuOpen(false);
   }
 
+  const ADMIN_EMAILS = ['gabriela.ormazabal@gormaran-marketing.com', 'gabriela.ormazabal@gmail.com'];
+  const isAdmin = ADMIN_EMAILS.includes(currentUser?.email?.toLowerCase().trim());
+
   const navLinks = currentUser
     ? [
         { to: '/dashboard', label: 'Dashboard' },
         { to: '/pricing', label: isEs ? 'Precios' : 'Pricing' },
         { to: '/blog', label: 'Blog' },
         { to: '/academy', label: 'Academy' },
+        ...(isAdmin ? [{ to: '/admin/blog', label: '✏️ Blog Admin' }] : []),
       ]
     : [
         { to: '/#how-it-works', label: isEs ? 'Cómo funciona' : 'How it works' },
