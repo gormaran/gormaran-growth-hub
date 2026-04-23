@@ -22,6 +22,9 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
 import HistoryPage from './pages/HistoryPage';
+import BlogListPage from './pages/BlogListPage';
+import BlogPostPage from './pages/BlogPostPage';
+import AdminBlogPage from './pages/AdminBlogPage';
 
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -154,8 +157,32 @@ export default function App() {
             <Route path="/terms-of-service" element={<AppLayout><TermsOfService /></AppLayout>} />
             <Route path="/cookie-policy" element={<AppLayout><CookiePolicy /></AppLayout>} />
 
-            {/* Coming soon pages */}
-            <Route path="/blog" element={<AppLayout><ComingSoon page="Blog" /></AppLayout>} />
+            {/* Blog */}
+            <Route path="/blog" element={<AppLayout><BlogListPage /></AppLayout>} />
+            <Route path="/blog/:slug" element={<AppLayout><BlogPostPage /></AppLayout>} />
+
+            {/* Admin blog — protected + admin-only */}
+            <Route
+              path="/admin/blog"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <AdminBlogPage />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/blog/:postId"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <AdminBlogPage />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+
             <Route path="/academy" element={<AppLayout><ComingSoon page="Academy" /></AppLayout>} />
 
             {/* Catch all */}
