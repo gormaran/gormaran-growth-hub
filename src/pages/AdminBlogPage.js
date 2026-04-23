@@ -17,17 +17,53 @@ const ADMIN_EMAILS = [
 
 function parseClaudeOutput(text) {
   const result = {};
-  for (const line of text.split('\n')) {
-    if (line.includes('📌 SEO TITLE (ES):')) result.seo_title_es = line.split('📌 SEO TITLE (ES):')[1]?.replace(/\[.*?\]/g, '').trim();
-    if (line.includes('📌 SEO TITLE (EN):')) result.seo_title_en = line.split('📌 SEO TITLE (EN):')[1]?.replace(/\[.*?\]/g, '').trim();
-    if (line.includes('🔗 SLUG:'))           result.slug = line.split('🔗 SLUG:')[1]?.replace(/\[.*?\]/g, '').trim();
-    if (line.includes('📄 META (ES):'))      result.meta_desc_es = line.split('📄 META (ES):')[1]?.replace(/\[.*?\]/g, '').trim();
-    if (line.includes('📄 META (EN):'))      result.meta_desc_en = line.split('📄 META (EN):')[1]?.replace(/\[.*?\]/g, '').trim();
+
+  function val(line, marker) {
+    return line.split(marker)[1]?.replace(/\[.*?\]/g, '').trim() || '';
   }
-  const esMatch = text.match(/##\s*🇪🇸 VERSIÓN EN ESPAÑOL\s*\n([\s\S]+?)(?:\n---\n|\n##\s*🇬🇧)/);
-  if (esMatch) result.content_es = esMatch[1].replace(/^#[^\n]*\n/, '').trim();
-  const enMatch = text.match(/##\s*🇬🇧 ENGLISH VERSION\s*\n([\s\S]+?)(?:\n---\n🔗|\n---\s*$|$)/);
-  if (enMatch) result.content_en = enMatch[1].replace(/^#[^\n]*\n/, '').trim();
+
+  for (const line of text.split('\n')) {
+    // New bilingual format
+    if (line.includes('SEO TITLE (ES):'))   result.seo_title_es = val(line, 'SEO TITLE (ES):');
+    if (line.includes('SEO TITLE (EN):'))   result.seo_title_en = val(line, 'SEO TITLE (EN):');
+    if (line.includes('META (ES):'))        result.meta_desc_es = val(line, 'META (ES):');
+    if (line.includes('META (EN):'))        result.meta_desc_en = val(line, 'META (EN):');
+
+    // Old single-language format — fills both fields
+    if (line.includes('SEO TITLE:') && !line.includes('(ES)') && !line.includes('(EN)')) {
+      const v = val(line, 'SEO TITLE:');
+      if (!result.seo_title_es) result.seo_title_es = v;
+      if (!result.seo_title_en) result.seo_title_en = v;
+    }
+    if (line.includes('META DESCRIPTION:')) {
+      const v = val(line, 'META DESCRIPTION:');
+      if (!result.meta_desc_es) result.meta_desc_es = v;
+      if (!result.meta_desc_en) result.meta_desc_en = v;
+    }
+
+    // Slug — same in both formats
+    if (line.includes('SLUG:') && !line.includes('SUGGESTION')) {
+      result.slug = val(line, 'SLUG:');
+    }
+  }
+
+  // New bilingual content
+  const esMatch = text.match(/##\s*[^\n]*VERSIÓN EN ESPAÑOL[^\n]*\n([\s\S]+?)(?:\n---\n|\n##\s*[^\n]*ENGLISH)/i);
+  if (esMatch) result.content_es = esMatch[1].replace(/^#[^\n]*\n+/, '').trim();
+
+  const enMatch = text.match(/##\s*[^\n]*ENGLISH VERSION[^\n]*\n([\s\S]+?)(?:\n---\n🔗|\n---\s*$|$)/i);
+  if (enMatch) result.content_en = enMatch[1].replace(/^#[^\n]*\n+/, '').trim();
+
+  // Old single-language: extract from first H1 heading to internal links section
+  if (!result.content_es) {
+    const h1Match = text.match(/^# .+\n+([\s\S]+?)(?:\n---\n\n?🔗 INTERNAL|\n🔗 INTERNAL|$)/m);
+    if (h1Match) {
+      const body = h1Match[1].trim();
+      result.content_es = body;
+      if (!result.content_en) result.content_en = body;
+    }
+  }
+
   return result;
 }
 
