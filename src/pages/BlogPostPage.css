@@ -292,7 +292,7 @@
 .blog-post__content h2 { font-size: 1.5rem; }
 .blog-post__content h3 { font-size: 1.2rem; }
 
-.blog-post__content p { margin-bottom: 1.25rem; }
+.blog-post__content p { margin-bottom: 1.25rem; text-align: justify; }
 
 .blog-post__content a {
   color: var(--accent-primary);

@@ -324,7 +324,7 @@ details[open] .ablog__panel-title::after { content: ' ▴'; }
 .md-editor__preview h3 { margin: 1.5rem 0 0.5rem; font-weight: 700; }
 .md-editor__preview h2 { font-size: 1.3rem; }
 .md-editor__preview h3 { font-size: 1.1rem; }
-.md-editor__preview p { margin-bottom: 1rem; }
+.md-editor__preview p { margin-bottom: 1rem; text-align: justify; }
 .md-editor__preview a { color: var(--accent-primary); text-decoration: underline; }
 .md-editor__preview ul, .md-editor__preview ol { padding-left: 1.5rem; margin-bottom: 1rem; }
 .md-editor__preview li { margin-bottom: 0.35rem; }

@@ -18,7 +18,11 @@ function formatViews(n) {
 
 function excerpt(content, max = 160) {
   if (!content) return '';
-  const plain = content.replace(/[#*`>\[\]!]/g, '').replace(/\n+/g, ' ').trim();
+  const plain = content
+    .replace(/<[^>]*>/g, '')          // strip HTML tags
+    .replace(/[#*`>\[\]!_~]/g, '')    // strip markdown syntax
+    .replace(/\n+/g, ' ')
+    .trim();
   return plain.length > max ? plain.slice(0, max) + '…' : plain;
 }
 
