@@ -24,16 +24,29 @@ function formatNumber(n) {
 function ShareButton({ title, url }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const wrapRef = React.useRef(null);
 
-  async function handleShare() {
-    if (navigator.share) {
-      try { await navigator.share({ title, url }); return; } catch (_) {}
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
     }
-    setOpen(o => !o);
-  }
+    if (open) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
 
   function copyLink() {
-    navigator.clipboard.writeText(url).catch(() => {});
+    const text = url || window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).catch(() => {});
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
     setCopied(true);
     setTimeout(() => { setCopied(false); setOpen(false); }, 2000);
   }
@@ -45,16 +58,16 @@ function ShareButton({ title, url }) {
   ];
 
   return (
-    <div className="share-wrap">
-      <button className="share-btn" onClick={handleShare}>↗ Compartir</button>
+    <div className="share-wrap" ref={wrapRef}>
+      <button className="share-btn" onClick={() => setOpen(o => !o)}>↗ Compartir</button>
       {open && (
         <div className="share-menu">
-          <button className="share-menu__item" onClick={copyLink}>
-            {copied ? '✅ Enlace copiado' : '📋 Copiar enlace'}
+          <button className="share-menu__item share-menu__item--primary" onClick={copyLink}>
+            {copied ? '✅ ¡Enlace copiado!' : '📋 Copiar enlace'}
           </button>
           {networks.map(n => (
             <a key={n.label} className="share-menu__item" href={n.href} target="_blank" rel="noopener noreferrer">
-              {n.icon} {n.label}
+              <span>{n.icon}</span> {n.label}
             </a>
           ))}
         </div>
