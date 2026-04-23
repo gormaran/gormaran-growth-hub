@@ -105,8 +105,21 @@
   flex: 1;
 }
 
+.blog-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  gap: 0.5rem;
+}
+
 .blog-card__date {
   font-size: 0.78rem;
   color: var(--text-muted);
-  margin-top: auto;
+}
+
+.blog-card__views {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }

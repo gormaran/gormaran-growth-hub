@@ -10,6 +10,12 @@ function formatDate(ts) {
   return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+function formatViews(n) {
+  if (!n) return '0';
+  if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
+  return String(n);
+}
+
 function excerpt(content, max = 160) {
   if (!content) return '';
   const plain = content.replace(/[#*`>\[\]!]/g, '').replace(/\n+/g, ' ').trim();
@@ -60,7 +66,10 @@ export default function BlogListPage() {
                 <div className="blog-card__body">
                   <h2 className="blog-card__title">{postTitle}</h2>
                   {postExcerpt && <p className="blog-card__excerpt">{postExcerpt}</p>}
-                  <span className="blog-card__date">{formatDate(p.published_at)}</span>
+                  <div className="blog-card__footer">
+                    <span className="blog-card__date">{formatDate(p.published_at)}</span>
+                    <span className="blog-card__views">👁 {formatViews(p.view_count)}</span>
+                  </div>
                 </div>
               </Link>
             );
