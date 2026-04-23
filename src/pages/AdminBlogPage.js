@@ -14,6 +14,22 @@ const ADMIN_EMAILS = [
   'gabriela.ormazabal@gmail.com',
 ];
 
+function parseClaudeOutput(text) {
+  const result = {};
+  for (const line of text.split('\n')) {
+    if (line.includes('📌 SEO TITLE (ES):')) result.seo_title_es = line.split('📌 SEO TITLE (ES):')[1]?.replace(/\[.*?\]/g, '').trim();
+    if (line.includes('📌 SEO TITLE (EN):')) result.seo_title_en = line.split('📌 SEO TITLE (EN):')[1]?.replace(/\[.*?\]/g, '').trim();
+    if (line.includes('🔗 SLUG:'))           result.slug = line.split('🔗 SLUG:')[1]?.replace(/\[.*?\]/g, '').trim();
+    if (line.includes('📄 META (ES):'))      result.meta_desc_es = line.split('📄 META (ES):')[1]?.replace(/\[.*?\]/g, '').trim();
+    if (line.includes('📄 META (EN):'))      result.meta_desc_en = line.split('📄 META (EN):')[1]?.replace(/\[.*?\]/g, '').trim();
+  }
+  const esMatch = text.match(/##\s*🇪🇸 VERSIÓN EN ESPAÑOL\s*\n([\s\S]+?)(?:\n---\n|\n##\s*🇬🇧)/);
+  if (esMatch) result.content_es = esMatch[1].replace(/^#[^\n]*\n/, '').trim();
+  const enMatch = text.match(/##\s*🇬🇧 ENGLISH VERSION\s*\n([\s\S]+?)(?:\n---\n🔗|\n---\s*$|$)/);
+  if (enMatch) result.content_en = enMatch[1].replace(/^#[^\n]*\n/, '').trim();
+  return result;
+}
+
 const EMPTY_POST = {
   slug: '',
   status: 'draft',
@@ -173,6 +189,10 @@ function PostEditor({ postId }) {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
   const [imgUploading, setImgUploading] = useState(false);
+  const [imgError, setImgError] = useState('');
+  const [importText, setImportText] = useState('');
+  const [importOpen, setImportOpen] = useState(postId === 'new');
+  const [importMsg, setImportMsg] = useState('');
   const featImgRef = useRef(null);
 
   useEffect(() => {
@@ -191,12 +211,28 @@ function PostEditor({ postId }) {
     });
   }
 
+  function handleImport() {
+    const parsed = parseClaudeOutput(importText);
+    const filled = Object.keys(parsed).filter(k => parsed[k]);
+    if (!filled.length) {
+      setImportMsg('⚠️ No se detectó el formato del skill. Pega el output completo.');
+      return;
+    }
+    setPost(prev => ({ ...prev, ...parsed }));
+    setImportMsg(`✅ Rellenado: ${filled.join(', ')}`);
+    setImportText('');
+    setTimeout(() => { setImportOpen(false); setImportMsg(''); }, 1500);
+  }
+
   async function handleFeaturedImage(file) {
     if (!file) return;
     setImgUploading(true);
+    setImgError('');
     try {
       const url = await uploadBlogImage(file);
       set('featured_image', url);
+    } catch (e) {
+      setImgError('Error al subir: ' + (e.message || 'revisa Firebase Storage rules'));
     } finally {
       setImgUploading(false);
     }
@@ -247,6 +283,41 @@ function PostEditor({ postId }) {
         </div>
       </div>
 
+      {/* Claude import panel */}
+      <div className="ablog__import-panel">
+        <button
+          type="button"
+          className="ablog__import-toggle"
+          onClick={() => setImportOpen(o => !o)}
+        >
+          🤖 {importOpen ? 'Cerrar importador' : 'Importar desde Claude'}
+        </button>
+        {importOpen && (
+          <div className="ablog__import-body">
+            <p className="ablog__import-hint">
+              Pega aquí el output completo del skill — todos los campos se rellenan automáticamente.
+            </p>
+            <textarea
+              className="ablog__import-ta"
+              value={importText}
+              onChange={e => setImportText(e.target.value)}
+              placeholder="Pega el output de Claude aquí…"
+            />
+            <div className="ablog__import-row">
+              {importMsg && <span className="ablog__msg">{importMsg}</span>}
+              <button
+                type="button"
+                className="ablog__btn ablog__btn--primary"
+                onClick={handleImport}
+                disabled={!importText.trim()}
+              >
+                Rellenar campos
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* SEO + Meta panel */}
       <details className="ablog__panel" open>
         <summary className="ablog__panel-title">SEO & Metadatos</summary>
@@ -291,16 +362,28 @@ function PostEditor({ postId }) {
             <label className="ablog__label">
               Imagen destacada
               <div className="ablog__feat-img-row">
-                {post.featured_image && (
-                  <img src={post.featured_image} alt="featured" className="ablog__feat-thumb" />
+                {post.featured_image ? (
+                  <img
+                    src={post.featured_image}
+                    alt="featured"
+                    className="ablog__feat-thumb"
+                    onError={e => { e.target.style.display='none'; setImgError('No se puede mostrar la imagen (revisa Firebase Storage rules)'); }}
+                    onLoad={() => setImgError('')}
+                  />
+                ) : (
+                  <span className="ablog__feat-placeholder">Sin imagen</span>
                 )}
                 <button type="button" className="ablog__btn ablog__btn--sm" onClick={() => featImgRef.current?.click()} disabled={imgUploading}>
                   {imgUploading ? 'Subiendo…' : '📷 Subir imagen'}
                 </button>
                 {post.featured_image && (
-                  <button type="button" className="ablog__btn ablog__btn--sm ablog__btn--danger" onClick={() => set('featured_image', '')}>✕</button>
+                  <button type="button" className="ablog__btn ablog__btn--sm ablog__btn--danger" onClick={() => { set('featured_image', ''); setImgError(''); }}>✕ Quitar</button>
                 )}
               </div>
+              {imgError && <span className="ablog__img-error">{imgError}</span>}
+              {post.featured_image && !imgError && (
+                <span className="ablog__img-url" title={post.featured_image}>✅ Imagen subida</span>
+              )}
               <input ref={featImgRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => handleFeaturedImage(e.target.files?.[0])} />
             </label>
           </div>

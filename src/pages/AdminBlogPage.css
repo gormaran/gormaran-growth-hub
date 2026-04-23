@@ -1,7 +1,7 @@
 .ablog {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
+  padding: 5rem 1.5rem 4rem;
 }
 
 .ablog__header {
@@ -197,6 +197,72 @@ details[open] .ablog__panel-title::after { content: ' ▴'; }
   color: var(--accent-primary);
   background: var(--bg-primary);
   border-bottom: 2px solid var(--accent-primary);
+}
+
+/* Image helpers */
+.ablog__feat-placeholder { font-size: 0.8rem; color: var(--text-muted); padding: 0.4rem; }
+.ablog__img-error { font-size: 0.78rem; color: #ef4444; margin-top: 0.3rem; }
+.ablog__img-url { font-size: 0.78rem; color: #16a34a; margin-top: 0.3rem; }
+
+/* Claude import panel */
+.ablog__import-panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-primary);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ablog__import-toggle {
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.ablog__import-toggle:hover { background: var(--bg-tertiary, #f3f4f6); }
+
+.ablog__import-body {
+  padding: 1.25rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ablog__import-hint {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.ablog__import-ta {
+  width: 100%;
+  min-height: 180px;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: 'SF Mono', monospace;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+.ablog__import-ta:focus { border-color: var(--accent-primary); }
+
+.ablog__import-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 /* Markdown editor */
