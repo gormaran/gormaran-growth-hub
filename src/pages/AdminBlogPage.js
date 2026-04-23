@@ -135,6 +135,7 @@ function MarkdownEditor({ value, onChange, onImageUpload, placeholder }) {
     { label: '⬅', title: 'Align left', action: () => insertAt('<div style="text-align:left">', '</div>') },
     { label: '↔', title: 'Center', action: () => insertAt('<div style="text-align:center">', '</div>') },
     { label: '➡', title: 'Align right', action: () => insertAt('<div style="text-align:right">', '</div>') },
+    { label: '≡', title: 'Justify', action: () => insertAt('<div style="text-align:justify">', '</div>') },
     { label: '—', title: 'Separator', action: null },
     { label: '🔗', title: 'Link', action: promptLink },
     { label: '🖼', title: 'Image', action: () => fileRef.current?.click() },
