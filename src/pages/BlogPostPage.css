@@ -32,6 +32,17 @@
   gap: 1rem;
 }
 
+.blog-post__meta-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.blog-post__views {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
 .blog-post__back {
   color: var(--accent-primary);
   text-decoration: none;
@@ -39,6 +50,179 @@
   font-weight: 600;
 }
 .blog-post__back:hover { text-decoration: underline; }
+
+/* Actions bar (lang toggle + share) */
+.blog-post__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+/* Share button */
+.share-wrap {
+  position: relative;
+}
+
+.share-btn {
+  padding: 0.45rem 1rem;
+  border-radius: 20px;
+  border: 2px solid var(--accent-primary);
+  background: transparent;
+  color: var(--accent-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.share-btn:hover { background: var(--accent-primary); color: #fff; }
+
+.share-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  min-width: 180px;
+  z-index: 100;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.share-menu__item {
+  display: block;
+  padding: 0.7rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.share-menu__item:hover { background: var(--bg-tertiary, #f3f4f6); }
+
+/* Footer bar */
+.blog-post__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Comments section */
+.blog-comments {
+  margin-top: 3rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.blog-comments__title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.blog-comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+}
+
+.blog-comment-input,
+.blog-comment-ta {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.93rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.blog-comment-input:focus,
+.blog-comment-ta:focus { border-color: var(--accent-primary); }
+.blog-comment-ta { resize: vertical; min-height: 100px; }
+
+.blog-comment-form__row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.blog-comment-msg {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.blog-comment-submit {
+  padding: 0.55rem 1.25rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent-primary);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.blog-comment-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.blog-comment-submit:hover:not(:disabled) { opacity: 0.85; }
+
+.blog-comment-list { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.blog-comment-empty {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.blog-comment {
+  padding: 1.25rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.blog-comment__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.blog-comment__author {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.blog-comment__date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.blog-comment__text {
+  font-size: 0.93rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  margin: 0;
+  white-space: pre-wrap;
+}
 
 .blog-post__date {
   font-size: 0.82rem;

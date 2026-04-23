@@ -1,6 +1,6 @@
 import {
   collection, doc, addDoc, updateDoc, deleteDoc,
-  getDocs, getDoc, query, where, orderBy, serverTimestamp,
+  getDocs, getDoc, query, where, orderBy, serverTimestamp, increment,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase/config';
@@ -65,6 +65,34 @@ export async function uploadBlogImage(file) {
   const storageRef = ref(storage, name);
   const snap = await uploadBytes(storageRef, file);
   return getDownloadURL(snap.ref);
+}
+
+export async function incrementViewCount(postId) {
+  try {
+    await updateDoc(doc(db, COL, postId), { view_count: increment(1) });
+  } catch (_) { /* non-critical */ }
+}
+
+const COMMENTS = 'blog_comments';
+
+export async function getComments(slug) {
+  const q = query(collection(db, COMMENTS), where('post_slug', '==', slug));
+  const snap = await getDocs(q);
+  const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  return list.sort((a, b) => {
+    const ta = a.created_at?.toDate?.()?.getTime() || 0;
+    const tb = b.created_at?.toDate?.()?.getTime() || 0;
+    return ta - tb;
+  });
+}
+
+export async function addComment(slug, { author_name, content }) {
+  return addDoc(collection(db, COMMENTS), {
+    post_slug: slug,
+    author_name: author_name.trim(),
+    content: content.trim(),
+    created_at: serverTimestamp(),
+  });
 }
 
 export function generateSlug(title) {
