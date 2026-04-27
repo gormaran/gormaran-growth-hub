@@ -1,0 +1,23 @@
+{
+  "skill_name": "gormaran-blog-writer",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Escribe un post para el blog de gormaran.io sobre cómo usar el Keyword Research para posicionar tu negocio en Google. La keyword principal es 'investigación de palabras clave'. Audiencia: freelances y pequeños negocios. En español.",
+      "expected_output": "Artículo completo en markdown con: título SEO (50-60 chars con keyword), meta description (145-155 chars), slug, artículo ~1500 palabras con estructura Hook→Problema→Solución→Contenido (H2/H3)→FAQ→CTA, y sugerencias de links internos. Todo en español.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "Write a blog post for gormaran.io targeting agency owners. Topic: how agencies can save 10+ hours per week using the Client Proposal Generator and Client Report Generator. Primary keyword: 'AI tools for marketing agencies'. English.",
+      "expected_output": "Complete markdown article with: SEO title, meta description (145-155 chars), slug, ~1500 word article with Hook→Problem→Solution→Content→FAQ→CTA structure in English. Internal link suggestions included.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Quiero un artículo de presentación de gormaran.io para el blog: qué es, para quién es, qué herramientas tiene y por qué usarlo. Keyword: 'herramientas de IA para marketing'. Target: emprendedores y marketers. Español.",
+      "expected_output": "Artículo completo de marca (~1500 palabras) en markdown: título SEO, meta description, slug, estructura Hook→Problema→Solución→Contenido (overview de categorías y herramientas)→FAQ→CTA. En español con tono conversacional y autoridad.",
+      "files": []
+    }
+  ]
+}

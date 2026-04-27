@@ -1,0 +1,15 @@
+{
+  "expectations": [
+    {"text": "Output includes an SEO title between 50 and 65 characters", "passed": true, "evidence": "'Herramientas de IA para marketing: qué es gormaran.io' = 53 chars"},
+    {"text": "Output includes a meta description between 140 and 160 characters", "passed": true, "evidence": "'Descubre gormaran.io: más de 30 herramientas de IA para marketing, estrategia y contenidos. Para emprendedores y marketers que quieren resultados reales, rápido.' = 160 chars exactly"},
+    {"text": "Output includes a URL slug in lowercase with hyphens", "passed": true, "evidence": "herramientas-ia-marketing-gormaran"},
+    {"text": "Primary keyword 'herramientas de IA para marketing' or variant appears in the SEO title", "passed": true, "evidence": "Title: 'Herramientas de IA para marketing: qué es gormaran.io'"},
+    {"text": "Article body contains at least 4 H2 headings (## in markdown)", "passed": true, "evidence": "8 H2 headings found: El problema real, La solución, Qué herramientas tiene, Para quién es, Por qué usar, Planes, Preguntas frecuentes, Empieza gratis"},
+    {"text": "Article includes a FAQ section", "passed": true, "evidence": "## Preguntas frecuentes with 4 Q&A pairs"},
+    {"text": "Article includes a call to action referencing gormaran.io", "passed": true, "evidence": "'Crea tu cuenta gratuita y prueba el [Keyword Research en gormaran.io]'"},
+    {"text": "Article body is at least 900 words", "passed": true, "evidence": "Article is approximately 1,700 words"},
+    {"text": "Article mentions at least 4 different tool categories from gormaran.io", "passed": true, "evidence": "9 categories covered: Marketing, Estrategia, Contenido, Herramientas digitales, E-commerce, Agencias, Startup, Creative+Finanzas, n8n Automation"},
+    {"text": "The full article is written in Spanish", "passed": true, "evidence": "Entire article in Spanish (Spain register, no voseo)"},
+    {"text": "Output includes internal link suggestions", "passed": true, "evidence": "3 internal links: Keyword Research, Blog Post Writer, Google Ads Creator"}
+  ]
+}

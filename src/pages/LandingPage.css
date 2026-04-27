@@ -459,6 +459,12 @@
     font-size: 0.75rem;
     padding: 4px 10px;
   }
+  /* Allow hero rotating text to wrap on very small screens */
+  .landing__hero-rotating {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
 }
 
 .landing__hero-actions {
@@ -3317,6 +3323,10 @@
 @media (max-width: 1200px) {
   .landing__categories-grid { grid-template-columns: repeat(3, 1fr); }
 }
+@media (max-width: 768px) {
+  .landing__categories-grid { grid-template-columns: repeat(2, 1fr); }
+  .landing__problem-grid { grid-template-columns: 1fr; }
+}
 
 /* ========== SMART DASHBOARD ========== */
 .landing__smartdash { background: var(--bg-primary); }
@@ -3790,6 +3800,13 @@
   /* Stats: 2×2 grid on mobile */
   .landing__stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
   .landing__plans-grid { grid-template-columns: 1fr; max-width: 100%; }
+  /* Categories: 2 cols on mobile */
+  .landing__categories-grid { grid-template-columns: repeat(2, 1fr); }
+  /* Problem grid: stack on mobile */
+  .landing__problem-grid { grid-template-columns: 1fr; }
+  /* Add-on block: stack on mobile */
+  .landing__addon-block { flex-direction: column; align-items: flex-start; padding: 1.5rem; }
+  .landing__addon-right { align-items: flex-start !important; text-align: left !important; min-width: 0 !important; width: 100%; }
   /* How It Works – 1 col on mobile */
   .landing__how-steps { grid-template-columns: 1fr; max-width: 480px; margin-left: auto; margin-right: auto; }
   /* What You Get – 2 cols on mobile, taller flip cards */

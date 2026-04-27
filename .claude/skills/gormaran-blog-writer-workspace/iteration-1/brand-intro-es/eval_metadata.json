@@ -1,0 +1,51 @@
+{
+  "eval_id": 2,
+  "eval_name": "brand-intro-es",
+  "prompt": "Quiero un artículo de presentación de gormaran.io para el blog: qué es, para quién es, qué herramientas tiene y por qué usarlo. Keyword: 'herramientas de IA para marketing'. Target: emprendedores y marketers. Español.",
+  "assertions": [
+    {
+      "id": "has-seo-title",
+      "text": "Output includes an SEO title between 50 and 65 characters"
+    },
+    {
+      "id": "has-meta-description",
+      "text": "Output includes a meta description between 140 and 160 characters"
+    },
+    {
+      "id": "has-slug",
+      "text": "Output includes a URL slug in lowercase with hyphens"
+    },
+    {
+      "id": "keyword-in-title",
+      "text": "Primary keyword 'herramientas de IA para marketing' or variant appears in the SEO title"
+    },
+    {
+      "id": "has-h2-structure",
+      "text": "Article body contains at least 4 H2 headings (## in markdown)"
+    },
+    {
+      "id": "has-faq",
+      "text": "Article includes a FAQ section"
+    },
+    {
+      "id": "has-cta",
+      "text": "Article includes a call to action referencing gormaran.io"
+    },
+    {
+      "id": "min-word-count",
+      "text": "Article body is at least 900 words"
+    },
+    {
+      "id": "mentions-multiple-categories",
+      "text": "Article mentions at least 4 different tool categories from gormaran.io"
+    },
+    {
+      "id": "in-spanish",
+      "text": "The full article is written in Spanish"
+    },
+    {
+      "id": "has-internal-links",
+      "text": "Output includes internal link suggestions"
+    }
+  ]
+}
