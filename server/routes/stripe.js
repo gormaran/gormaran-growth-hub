@@ -208,6 +208,19 @@ router.post('/cancel-subscription', verifyToken, async (req, res) => {
       day: 'numeric', month: 'long', year: 'numeric',
     });
 
+    // Store expiry date in Firestore so the scheduled function can downgrade automatically
+    try {
+      const admin = require('firebase-admin');
+      if (admin.apps.length > 0) {
+        await admin.firestore().collection('users').doc(user.uid).update({
+          subscriptionCancelAt: admin.firestore.Timestamp.fromMillis(updated.cancel_at * 1000),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      console.error('[Stripe Cancel] Failed to store cancelAt in Firestore:', e.message);
+    }
+
     res.json({ success: true, cancelAt: updated.cancel_at, periodEnd });
   } catch (err) {
     console.error('[Stripe Cancel Error]', err.message);

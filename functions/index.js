@@ -8,6 +8,37 @@ const db = admin.firestore();
 
 const N8N_WEBHOOK_URL = 'https://gormaran.app.n8n.cloud/webhook/21087c94-9f6a-4311-8bd4-abccf5eb35af';
 
+// Runs daily at 03:00 UTC — downgrades users whose subscription period has ended
+exports.checkExpiredSubscriptions = functions.pubsub
+  .schedule('0 3 * * *')
+  .timeZone('UTC')
+  .onRun(async () => {
+    const now = admin.firestore.Timestamp.now();
+    const snapshot = await db.collection('users')
+      .where('subscriptionCancelAt', '<=', now)
+      .get();
+
+    if (snapshot.empty) return null;
+
+    const batch = db.batch();
+    let count = 0;
+    snapshot.forEach((doc) => {
+      const { subscription } = doc.data();
+      if (subscription === 'free' || subscription === 'admin') return;
+      batch.update(doc.ref, {
+        subscription: 'free',
+        stripeSubscriptionId: null,
+        subscriptionCancelAt: admin.firestore.FieldValue.delete(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      count++;
+    });
+
+    if (count > 0) await batch.commit();
+    console.log(`[checkExpiredSubscriptions] Downgraded ${count} users to free`);
+    return null;
+  });
+
 exports.createUserProfile = functions.auth.user().onCreate(async (user) => {
   const { uid, email, displayName, photoURL } = user;
 
