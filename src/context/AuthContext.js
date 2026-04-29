@@ -8,7 +8,7 @@ import {
   updateProfile,
   sendPasswordResetEmail,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { auth, db, googleProvider } from '../firebase/config';
 
 const AuthContext = createContext(null);
@@ -84,27 +84,37 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    let unsubscribeProfile = null;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
-      try {
-        if (user) {
-          // Only load the existing profile — never create here.
-          // Profile creation happens exclusively in register() and signInWithGoogle(),
-          // which have the correct displayName available. Creating here caused a race
-          // condition where onAuthStateChanged fired before signInWithGoogle's
-          // createUserProfile finished, resulting in a duplicate write with a
-          // potentially null displayName.
-          await refreshUserProfile(user.uid);
-        } else {
-          setUserProfile(null);
-        }
-      } catch (err) {
-        console.error('AuthContext error:', err);
-      } finally {
+
+      if (unsubscribeProfile) {
+        unsubscribeProfile();
+        unsubscribeProfile = null;
+      }
+
+      if (user) {
+        // Real-time listener — badge updates automatically when webhook changes Firestore
+        // (e.g. subscription cancelled at period end → Free badge appears without reload)
+        const userRef = doc(db, 'users', user.uid);
+        unsubscribeProfile = onSnapshot(userRef, (snap) => {
+          setUserProfile(snap.exists() ? snap.data() : null);
+          setLoading(false);
+        }, (err) => {
+          console.error('AuthContext profile listener error:', err);
+          setLoading(false);
+        });
+      } else {
+        setUserProfile(null);
         setLoading(false);
       }
     });
-    return unsubscribe;
+
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeProfile) unsubscribeProfile();
+    };
   }, []);
 
   const value = {

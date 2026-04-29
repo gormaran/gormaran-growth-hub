@@ -1,21 +1,16 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const https = require('https');
 
 admin.initializeApp();
 
 const db = admin.firestore();
 
-/**
- * onCreate trigger — fires whenever a new user is created in Firebase Auth,
- * whether via email/password, Google OAuth, or any other provider.
- *
- * Creates the Firestore user document so it always exists from the moment
- * of registration, independently of any client-side race conditions.
- */
+const N8N_WEBHOOK_URL = 'https://gormaran.app.n8n.cloud/webhook/21087c94-9f6a-4311-8bd4-abccf5eb35af';
+
 exports.createUserProfile = functions.auth.user().onCreate(async (user) => {
   const { uid, email, displayName, photoURL } = user;
 
-  // Skip if the document already exists (e.g. created by the client side first)
   const userRef = db.collection('users').doc(uid);
   const snap = await userRef.get();
 
@@ -38,5 +33,35 @@ exports.createUserProfile = functions.auth.user().onCreate(async (user) => {
 
   await userRef.set(profile);
   console.log(`[createUserProfile] Created profile for uid=${uid} (${email})`);
+
+  // Notify n8n webhook
+  try {
+    const payload = JSON.stringify({
+      uid,
+      email: email || '',
+      displayName: displayName || '',
+      firstname: displayName ? displayName.split(' ')[0] : '',
+      lastname: displayName ? displayName.split(' ').slice(1).join(' ') : '',
+    });
+
+    await new Promise((resolve, reject) => {
+      const req = https.request(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(payload),
+        },
+      }, (res) => {
+        console.log(`[createUserProfile] n8n webhook status: ${res.statusCode}`);
+        resolve();
+      });
+      req.on('error', reject);
+      req.write(payload);
+      req.end();
+    });
+  } catch (err) {
+    console.error('[createUserProfile] Failed to notify n8n webhook:', err);
+  }
+
   return null;
 });
