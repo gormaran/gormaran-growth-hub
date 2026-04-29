@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
-import gsap from 'gsap';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -9,14 +8,16 @@ import './LandingPage.css';
 import WhatsAppPopup from '../components/WhatsAppPopup';
 import NichePopup from '../components/NichePopup';
 
+/* ─────────────────────────────────────────────────────────────────
+   Animation helpers
+───────────────────────────────────────────────────────────────── */
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
 };
-
 const stagger = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.06 } },
+  visible: { transition: { staggerChildren: 0.07 } },
 };
 
 function AnimatedSection({ children, className, delay = 0 }) {
@@ -36,134 +37,192 @@ function AnimatedSection({ children, className, delay = 0 }) {
   );
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   AI Tool Types Data
+───────────────────────────────────────────────────────────────── */
+const AI_TOOLS = [
+  {
+    id: 'text',
+    emoji: '✍️',
+    titleKey: 'landing.tools.text.title',
+    defaultTitle: 'Text AI',
+    descKey: 'landing.tools.text.desc',
+    defaultDesc: 'Blog posts, emails, social captions, ad copy and press releases — structured and ready to publish.',
+    tools: ['Blog Posts & Articles', 'Email Campaigns', 'Social Media Captions', 'Ad Copy (Google / Meta)', 'Press Releases', 'SEO Content'],
+    models: ['Claude Sonnet 4', 'GPT-4o', 'Gemini 1.5 Pro'],
+  },
+  {
+    id: 'image',
+    emoji: '🎨',
+    titleKey: 'landing.tools.image.title',
+    defaultTitle: 'Image AI',
+    descKey: 'landing.tools.image.desc',
+    defaultDesc: 'Generate logos, banners, product shots and creative visuals from a simple text description.',
+    tools: ['Logo Design', 'Social Graphics', 'Product Photography', 'Ad Creatives', 'Brand Assets', 'Illustrations'],
+    models: ['DALL-E 3', 'Flux 1.1 Pro', 'Midjourney v6', 'Ideogram 2.0'],
+  },
+  {
+    id: 'video',
+    emoji: '🎬',
+    titleKey: 'landing.tools.video.title',
+    defaultTitle: 'Video AI',
+    descKey: 'landing.tools.video.desc',
+    defaultDesc: 'Create promotional clips, social reels and explainer videos — no editing skills needed.',
+    tools: ['Promo Videos', 'Social Reels & Stories', 'Explainer Videos', 'Product Demos', 'Video Ads', 'Talking-Head Videos'],
+    models: ['Sora', 'Runway Gen-3', 'Kling 2.0', 'Hailuo MiniMax'],
+  },
+  {
+    id: 'audio',
+    emoji: '🎵',
+    titleKey: 'landing.tools.audio.title',
+    defaultTitle: 'Audio AI',
+    descKey: 'landing.tools.audio.desc',
+    defaultDesc: 'Generate background music, professional voiceovers and brand jingles in seconds.',
+    tools: ['Background Music', 'Professional Voiceovers', 'Podcast Intros', 'Brand Jingles', 'Sound Effects', 'Audiobook Narration'],
+    models: ['Suno v4', 'ElevenLabs', 'Udio'],
+  },
+  {
+    id: 'design',
+    emoji: '🖌️',
+    titleKey: 'landing.tools.design.title',
+    defaultTitle: 'Design AI',
+    descKey: 'landing.tools.design.desc',
+    defaultDesc: 'Full brand identity systems, landing page mockups and marketing templates from your brief.',
+    tools: ['Brand Identity Systems', 'Landing Page Mockups', 'Presentation Templates', 'Social Media Templates', 'UI Mockups', 'Print Materials'],
+    models: ['Adobe Firefly', 'Leonardo AI', 'Canva AI'],
+  },
+];
 
-// ── Hero Prompt Box ───────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────
+   AI Models Data
+───────────────────────────────────────────────────────────────── */
+const AI_MODELS = [
+  { id: 'claude',      name: 'Claude Sonnet 4', company: 'Anthropic',     type: 'text',   initial: 'C', color: '#e54717' },
+  { id: 'gpt4o',       name: 'GPT-4o',          company: 'OpenAI',        type: 'text',   initial: 'G', color: '#10a37f' },
+  { id: 'gemini',      name: 'Gemini 1.5 Pro',  company: 'Google',        type: 'text',   initial: 'G', color: '#4285f4' },
+  { id: 'dalle3',      name: 'DALL-E 3',         company: 'OpenAI',        type: 'image',  initial: 'D', color: '#10a37f' },
+  { id: 'flux',        name: 'Flux 1.1 Pro',     company: 'Black Forest',  type: 'image',  initial: 'F', color: '#7c3aed' },
+  { id: 'midjourney',  name: 'Midjourney v6',    company: 'Midjourney',    type: 'image',  initial: 'M', color: '#334155' },
+  { id: 'ideogram',    name: 'Ideogram 2.0',     company: 'Ideogram',      type: 'image',  initial: 'I', color: '#0891b2' },
+  { id: 'sora',        name: 'Sora',             company: 'OpenAI',        type: 'video',  initial: 'S', color: '#10a37f' },
+  { id: 'runway',      name: 'Runway Gen-3',     company: 'Runway',        type: 'video',  initial: 'R', color: '#f59e0b' },
+  { id: 'kling',       name: 'Kling 2.0',        company: 'Kuaishou',      type: 'video',  initial: 'K', color: '#ef4444' },
+  { id: 'hailuo',      name: 'Hailuo MiniMax',   company: 'MiniMax',       type: 'video',  initial: 'H', color: '#3b82f6' },
+  { id: 'suno',        name: 'Suno v4',          company: 'Suno',          type: 'audio',  initial: 'S', color: '#8b5cf6' },
+  { id: 'elevenlabs',  name: 'ElevenLabs',       company: 'ElevenLabs',    type: 'audio',  initial: 'E', color: '#f59e0b' },
+  { id: 'udio',        name: 'Udio',             company: 'Udio',          type: 'audio',  initial: 'U', color: '#06b6d4' },
+  { id: 'firefly',     name: 'Adobe Firefly',    company: 'Adobe',         type: 'design', initial: 'A', color: '#ff4500' },
+  { id: 'leonardo',    name: 'Leonardo AI',      company: 'Leonardo',      type: 'design', initial: 'L', color: '#6d28d9' },
+];
+
+/* ─────────────────────────────────────────────────────────────────
+   FAQ Data
+───────────────────────────────────────────────────────────────── */
+const FAQ_ITEMS = [
+  {
+    questionKey: 'landing.faq.q1',
+    dQuestion: 'What is Gormaran AI?',
+    answerKey: 'landing.faq.a1',
+    dAnswer: "Gormaran is an all-in-one AI Growth Hub. Create text, images, video, audio and design assets from a single platform — powered by the world's best AI models.",
+  },
+  {
+    questionKey: 'landing.faq.q2',
+    dQuestion: 'Which AI models can I use?',
+    answerKey: 'landing.faq.a2',
+    dAnswer: 'Claude Sonnet, GPT-4o, Gemini for text; DALL-E 3, Flux, Midjourney for images; Sora, Runway, Kling for video; Suno, ElevenLabs for audio — all from one interface.',
+  },
+  {
+    questionKey: 'landing.faq.q3',
+    dQuestion: 'How does model selection work?',
+    answerKey: 'landing.faq.a3',
+    dAnswer: 'Each creation tool lets you pick the AI model that suits your needs. Switch between models and compare outputs to find what works best for your project.',
+  },
+  {
+    questionKey: 'landing.faq.q4',
+    dQuestion: 'Is there a free plan?',
+    answerKey: 'landing.faq.a4',
+    dAnswer: 'Yes — the free plan gives you access to all AI agents with 10 free generations per month. No credit card required. Upgrade anytime.',
+  },
+  {
+    questionKey: 'landing.faq.q5',
+    dQuestion: "What's the difference between the plans?",
+    answerKey: 'landing.faq.a5',
+    dAnswer: 'Grow unlocks unlimited generations and all tool categories. Scale adds agency, e-commerce and creative tools. Evolution adds advanced strategy, finance and startup AI.',
+  },
+  {
+    questionKey: 'landing.faq.q6',
+    dQuestion: 'Can I cancel anytime?',
+    answerKey: 'landing.faq.a6',
+    dAnswer: 'Yes — no lock-in, no cancellation fees. Your access continues until the end of your billing period.',
+  },
+  {
+    questionKey: 'landing.faq.q7',
+    dQuestion: 'Is my content private?',
+    answerKey: 'landing.faq.a7',
+    dAnswer: 'Absolutely. Everything you create is stored privately in your workspace and never shared with other users or used to train AI models.',
+  },
+  {
+    questionKey: 'landing.faq.q8',
+    dQuestion: 'Do I need technical skills?',
+    answerKey: 'landing.faq.a8',
+    dAnswer: 'Zero. Describe what you want in plain language. Gormaran handles all prompt engineering — just fill a simple form and get professional results in seconds.',
+  },
+];
+
+/* ─────────────────────────────────────────────────────────────────
+   Hero Prompt Box chips
+───────────────────────────────────────────────────────────────── */
 const HERO_CHIPS = [
   {
-    icon: '📋',
-    labelKey: 'landing.promptbox.chip1',
-    dLabel: 'Client Proposal',
+    icon: '📋', labelKey: 'landing.promptbox.chip1', dLabel: 'Client Proposal',
     fillKey: 'landing.promptbox.chip1.fill',
     dFill: 'Write a client proposal for a social media management service — €2,500/month retainer',
-    route: '/category/agency',
-    categoryId: 'agency',
-    toolId: 'client-proposal',
-    exampleInputs: {
-      agency_name: 'Pixel Growth Agency',
-      client_name: 'BlueSky Retail Co.',
-      service: 'Social Media Management + Content Creation',
-      client_goal: 'Increase brand awareness and grow Instagram from 2k to 20k followers',
-      budget: '$2,500/month',
-      duration: '6 months',
-    },
+    route: '/category/agency', categoryId: 'agency', toolId: 'client-proposal',
+    exampleInputs: { agency_name: 'Pixel Growth Agency', client_name: 'BlueSky Retail Co.', service: 'Social Media Management + Content Creation', client_goal: 'Increase brand awareness and grow Instagram from 2k to 20k followers', budget: '$2,500/month', duration: '6 months' },
   },
   {
-    icon: '🔍',
-    labelKey: 'landing.promptbox.chip2',
-    dLabel: 'B2B Outreach',
+    icon: '🔍', labelKey: 'landing.promptbox.chip2', dLabel: 'B2B Outreach',
     fillKey: 'landing.promptbox.chip2.fill',
     dFill: 'Write a 3-email cold outreach sequence to offer my B2B SaaS to marketing directors',
-    route: '/category/marketing',
-    categoryId: 'marketing',
-    toolId: 'seo-keyword-research',
-    exampleInputs: {
-      keyword: 'project management software',
-      industry: 'SaaS',
-      content_type: 'Blog Post',
-      audience: 'small business owners and startup founders',
-    },
+    route: '/category/marketing', categoryId: 'marketing', toolId: 'seo-keyword-research',
+    exampleInputs: { keyword: 'project management software', industry: 'SaaS', content_type: 'Blog Post', audience: 'small business owners and startup founders' },
   },
   {
-    icon: '📣',
-    labelKey: 'landing.promptbox.chip3',
-    dLabel: 'Meta Ads Campaign',
+    icon: '📣', labelKey: 'landing.promptbox.chip3', dLabel: 'Meta Ads',
     fillKey: 'landing.promptbox.chip3.fill',
     dFill: 'Create a Meta Ads campaign for my fashion e-commerce with a €500/month budget',
-    route: '/category/digital',
-    categoryId: 'digital',
-    toolId: 'meta-ads',
-    exampleInputs: {
-      product: 'AI-powered project management app for remote teams',
-      target_audience: 'Startup founders and team leads, 25-45, interested in productivity',
-      offer: 'Free 24-hour trial — no credit card required',
-      objective: 'Lead Generation',
-      budget: '$30-$100/day',
-      funnel_stage: 'Top of Funnel (Cold Traffic)',
-    },
+    route: '/category/digital', categoryId: 'digital', toolId: 'meta-ads',
+    exampleInputs: { product: 'AI-powered project management app for remote teams', target_audience: 'Startup founders and team leads, 25-45', offer: 'Free 24-hour trial — no credit card required', objective: 'Lead Generation', budget: '$30-$100/day', funnel_stage: 'Top of Funnel' },
   },
   {
-    icon: '✍️',
-    labelKey: 'landing.promptbox.chip4',
-    dLabel: 'SEO Blog Post',
+    icon: '✍️', labelKey: 'landing.promptbox.chip4', dLabel: 'SEO Blog Post',
     fillKey: 'landing.promptbox.chip4.fill',
     dFill: 'Write an SEO blog post about the best AI tools for small businesses in 2025',
-    route: '/category/content',
-    categoryId: 'content',
-    toolId: 'blog-post',
-    exampleInputs: {
-      topic: 'Best AI tools for small businesses in 2025',
-      keyword: 'ai tools small business',
-      audience: 'Freelancers and founders',
-      word_count: '800',
-      tone: 'Informative',
-    },
+    route: '/category/content', categoryId: 'content', toolId: 'blog-post',
+    exampleInputs: { topic: 'Best AI tools for small businesses in 2025', keyword: 'ai tools small business', audience: 'Freelancers and founders', word_count: '800', tone: 'Informative' },
   },
   {
-    icon: '📧',
-    labelKey: 'landing.promptbox.chip5',
-    dLabel: 'Email Campaign',
+    icon: '📧', labelKey: 'landing.promptbox.chip5', dLabel: 'Email Sequence',
     fillKey: 'landing.promptbox.chip5.fill',
     dFill: 'Create a 3-email welcome sequence for new subscribers of my project management SaaS',
-    route: '/category/marketing',
-    categoryId: 'marketing',
-    toolId: 'email-campaign',
-    exampleInputs: {
-      campaign_type: 'Welcome Sequence',
-      product: 'Project management SaaS for remote teams',
-      audience: 'New trial users',
-      goal: 'Convert trial users into paying subscribers',
-      tone: 'Friendly and professional',
-    },
+    route: '/category/marketing', categoryId: 'marketing', toolId: 'email-campaign',
+    exampleInputs: { campaign_type: 'Welcome Sequence', product: 'Project management SaaS for remote teams', audience: 'New trial users', goal: 'Convert trial users into paying subscribers', tone: 'Friendly and professional' },
   },
   {
-    icon: '🛒',
-    labelKey: 'landing.promptbox.chip6',
-    dLabel: 'Product Description',
-    fillKey: 'landing.promptbox.chip6.fill',
-    dFill: 'Write a persuasive product description for my premium wireless noise-cancelling headphones',
-    route: '/category/ecommerce',
-    categoryId: 'ecommerce',
-    toolId: 'product-description',
-    exampleInputs: {
-      product: 'Premium Wireless Noise-Cancelling Headphones',
-      features: '40h battery, ANC, Hi-Fi audio, foldable design',
-      audience: 'Remote workers and music lovers',
-      platform: 'Shopify',
-      price_tier: 'Premium (€149)',
-    },
-  },
-  {
-    icon: '🎯',
-    labelKey: 'landing.promptbox.chip7',
-    dLabel: 'SWOT Analysis',
+    icon: '🎯', labelKey: 'landing.promptbox.chip7', dLabel: 'SWOT Analysis',
     fillKey: 'landing.promptbox.chip7.fill',
-    dFill: 'Do a full SWOT analysis for my EdTech startup targeting B2B clients in the corporate training market',
-    route: '/category/strategy',
-    categoryId: 'strategy',
-    toolId: 'swot-analysis',
-    exampleInputs: {
-      company: 'LearnFlow EdTech',
-      description: 'B2B corporate training platform with AI-personalized learning paths',
-      goal: 'Reach €1M ARR and close 50 enterprise clients in 12 months',
-    },
+    dFill: 'Do a full SWOT analysis for my EdTech startup targeting B2B clients',
+    route: '/category/strategy', categoryId: 'strategy', toolId: 'swot-analysis',
+    exampleInputs: { company: 'LearnFlow EdTech', description: 'B2B corporate training platform with AI-personalized learning paths', goal: 'Reach €1M ARR and close 50 enterprise clients in 12 months' },
   },
 ];
 
 const DEMO_LIMIT = 3;
 const DEMO_KEY = 'gormaran_demo_count';
 
-const TOTAL_TOOLS = 30;
-
+/* ─────────────────────────────────────────────────────────────────
+   Hero Prompt Box
+───────────────────────────────────────────────────────────────── */
 function HeroPromptBox() {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
@@ -193,33 +252,17 @@ function HeroPromptBox() {
 
   const handleSubmit = useCallback(() => {
     if (!value.trim() || isStreaming) return;
-
-    // Chip selected → always navigate to the tool (ProtectedRoute gates non-auth users)
     if (activeChip !== null) {
       const chip = HERO_CHIPS[activeChip];
       if (chip.toolId && chip.exampleInputs) {
-        sessionStorage.setItem('gormaran_rerun', JSON.stringify({
-          toolId: chip.toolId,
-          inputs: chip.exampleInputs,
-        }));
+        sessionStorage.setItem('gormaran_rerun', JSON.stringify({ toolId: chip.toolId, inputs: chip.exampleInputs }));
       }
       navigate(chip.route);
       return;
     }
-
-    // No chip selected + authenticated → go to dashboard
-    if (currentUser) {
-      navigate('/dashboard');
-      return;
-    }
-
-    // No chip + anonymous → run demo (max 3 uses)
+    if (currentUser) { navigate('/dashboard'); return; }
     const used = parseInt(localStorage.getItem(DEMO_KEY) || '0', 10);
-    if (used >= DEMO_LIMIT) {
-      navigate('/auth?mode=register');
-      return;
-    }
-
+    if (used >= DEMO_LIMIT) { navigate('/auth?mode=register'); return; }
     const newUsed = used + 1;
     localStorage.setItem(DEMO_KEY, String(newUsed));
     setUsesLeft(Math.max(0, DEMO_LIMIT - newUsed));
@@ -227,10 +270,8 @@ function HeroPromptBox() {
     setIsStreaming(true);
     setSlowServer(false);
     slowTimerRef.current = setTimeout(() => setSlowServer(true), 3500);
-
     const controller = new AbortController();
     abortRef.current = controller;
-
     streamDemoResponse({
       prompt: value.trim(),
       signal: controller.signal,
@@ -246,12 +287,8 @@ function HeroPromptBox() {
   }, [value, isStreaming, currentUser, activeChip, navigate]);
 
   const handleKey = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); }
   };
-
   const isLimitReached = !currentUser && usesLeft === 0;
 
   return (
@@ -263,30 +300,17 @@ function HeroPromptBox() {
     >
       <AnimatePresence>
         {slowServer && !output && (
-          <motion.div
-            className="hero-promptbox__slow-msg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <motion.div className="hero-promptbox__slow-msg" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
             <span className="hero-promptbox__spinner" />
-            <span>{i18n.language?.startsWith('es') ? 'Conectando servidor AI… un momento' : 'Connecting AI server… one moment'}</span>
+            <span>{isEs ? 'Conectando servidor AI… un momento' : 'Connecting AI server… one moment'}</span>
           </motion.div>
         )}
         {output && (
-          <motion.div
-            ref={outputRef}
-            className="hero-promptbox__output"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
-          >
+          <motion.div ref={outputRef} className="hero-promptbox__output" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }}>
             <p className="hero-promptbox__output-text">{output}</p>
             {!isStreaming && usesLeft === 0 && (
               <Link to="/auth?mode=register" className="hero-promptbox__upgrade-cta">
-                {t('landing.promptbox.upgradeCta', { defaultValue: 'Sign up free to unlock all 30+ tools →' })}
+                {t('landing.promptbox.upgradeCta', { defaultValue: 'Sign up free to unlock all AI agents →' })}
               </Link>
             )}
           </motion.div>
@@ -302,11 +326,9 @@ function HeroPromptBox() {
           onKeyDown={handleKey}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder={
-            isLimitReached
-              ? t('landing.promptbox.limitReached', { defaultValue: 'Sign up free to keep going →' })
-              : t('landing.promptbox.placeholder', { defaultValue: 'What do you want to create today?' })
-          }
+          placeholder={isLimitReached
+            ? t('landing.promptbox.limitReached', { defaultValue: 'Sign up free to keep going →' })
+            : t('landing.promptbox.placeholder', { defaultValue: 'What do you want to create today?' })}
           disabled={isLimitReached}
           rows={1}
         />
@@ -340,15 +362,14 @@ function HeroPromptBox() {
             </button>
           ))}
           <span className="hero-promptbox__chip-more">
-            +{TOTAL_TOOLS - HERO_CHIPS.length} {isEs ? 'más' : 'more'}
+            +{30 - HERO_CHIPS.length} {isEs ? 'más' : 'more'}
           </span>
         </div>
         {!currentUser && (
           <span className={`hero-promptbox__counter${isLimitReached ? ' hero-promptbox__counter--done' : ''}`}>
             {isLimitReached
               ? t('landing.promptbox.limitDone', { defaultValue: '3/3 demos used' })
-              : t('landing.promptbox.remaining', { defaultValue: '{{n}} free left', n: usesLeft }).replace('{{n}}', usesLeft)
-            }
+              : t('landing.promptbox.remaining', { defaultValue: '{{n}} free left', n: usesLeft }).replace('{{n}}', usesLeft)}
           </span>
         )}
       </div>
@@ -356,7 +377,9 @@ function HeroPromptBox() {
   );
 }
 
-// ── Rotating Hero Text ────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────
+   Rotating Hero Text
+───────────────────────────────────────────────────────────────── */
 function RotatingText() {
   const { t, i18n } = useTranslation();
   const rotatingPhrases = useMemo(() => [
@@ -375,105 +398,58 @@ function RotatingText() {
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
   }, []);
-
-  // Reset typewriter when language changes
-  useEffect(() => {
-    setPhraseIndex(0);
-    setDisplayed('');
-    setIsDeleting(false);
-  }, [rotatingPhrases]);
-
+  useEffect(() => { setPhraseIndex(0); setDisplayed(''); setIsDeleting(false); }, [rotatingPhrases]);
   useEffect(() => {
     if (isMobile) return;
-
     const current = rotatingPhrases[phraseIndex];
-
     if (!isDeleting && displayed === current) {
-      const t = setTimeout(() => setIsDeleting(true), 1800);
-      return () => clearTimeout(t);
+      const timer = setTimeout(() => setIsDeleting(true), 1800);
+      return () => clearTimeout(timer);
     }
-
     if (isDeleting && displayed === '') {
       setIsDeleting(false);
       setPhraseIndex((i) => (i + 1) % rotatingPhrases.length);
       return;
     }
-
     const speed = isDeleting ? 35 : 65;
-    const t = setTimeout(() => {
-      setDisplayed(isDeleting
-        ? current.slice(0, displayed.length - 1)
-        : current.slice(0, displayed.length + 1)
-      );
+    const timer = setTimeout(() => {
+      setDisplayed(isDeleting ? current.slice(0, displayed.length - 1) : current.slice(0, displayed.length + 1));
     }, speed);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [displayed, isDeleting, phraseIndex, isMobile, rotatingPhrases]);
 
-  if (isMobile) {
-    return (
-      <span className="landing__hero-rotating">
-        {rotatingPhrases[0]}
-      </span>
-    );
-  }
-
-  return (
-    <span className="landing__hero-rotating">
-      {displayed}<span className="landing__hero-cursor" />
-    </span>
-  );
+  if (isMobile) return <span className="landing__hero-rotating">{rotatingPhrases[0]}</span>;
+  return <span className="landing__hero-rotating">{displayed}<span className="landing__hero-cursor" /></span>;
 }
 
-// ── Stats ─────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────
+   Stats
+───────────────────────────────────────────────────────────────── */
 const STATS = [
-  { value: '3h',  unit: '/day', labelKey: 'landing.stats.saved',   defaultLabel: 'saved per user' },
-  { value: '2',   unit: 'min',  labelKey: 'landing.stats.pertool', defaultLabel: 'avg. per tool' },
-  { value: '30',  unit: '+',    labelKey: 'landing.stats.tools',   defaultLabel: 'AI tools' },
-  { value: '0',   unit: '',     labelKey: 'landing.stats.prompts', defaultLabel: 'prompts needed' },
+  { value: '16', unit: '+', labelKey: 'landing.stats.models',  defaultLabel: 'AI models available' },
+  { value: '5',  unit: '',  labelKey: 'landing.stats.types',   defaultLabel: 'content types' },
+  { value: '30', unit: '+', labelKey: 'landing.stats.tools',   defaultLabel: 'AI tools' },
+  { value: '2',  unit: 'min', labelKey: 'landing.stats.pertool', defaultLabel: 'avg. per tool' },
 ];
 
-// ── How It Works (Step Cards) ─────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────
+   How It Works data & mockups
+───────────────────────────────────────────────────────────────── */
 const HOW_STEPS = [
-  {
-    num: '01',
-    titleKey: 'landing.how.step1.title',
-    descKey:  'landing.how.step1.desc',
-    defaultTitle: 'Choose Your Tool',
-    defaultDesc:  'Pick from 30+ specialized AI tools across 10 business categories — from marketing to finance.',
-  },
-  {
-    num: '02',
-    titleKey: 'landing.how.step2.title',
-    descKey:  'landing.how.step2.desc',
-    defaultTitle: 'Describe Your Goal',
-    defaultDesc:  'Fill in a few simple inputs. No complex prompts, no technical knowledge needed.',
-  },
-  {
-    num: '03',
-    titleKey: 'landing.how.step3.title',
-    descKey:  'landing.how.step3.desc',
-    defaultTitle: 'Get AI Results',
-    defaultDesc:  'Professional, ready-to-use content delivered in seconds. Copy, paste, done.',
-  },
-  {
-    num: '04',
-    titleKey: 'landing.how.step4.title',
-    descKey:  'landing.how.step4.desc',
-    defaultTitle: 'Review & Publish',
-    defaultDesc:  'Edit, refine, or copy your output directly. You stay in full control — AI handles the heavy lifting.',
-  },
+  { num: '01', titleKey: 'landing.how.step1.title', descKey: 'landing.how.step1.desc', defaultTitle: 'Choose Your Agent', defaultDesc: 'Pick from text, image, video, audio or design AI — then select the specific tool and AI model.' },
+  { num: '02', titleKey: 'landing.how.step2.title', descKey: 'landing.how.step2.desc', defaultTitle: 'Describe Your Goal', defaultDesc: 'Fill in a few simple fields. No complex prompts, no technical knowledge needed.' },
+  { num: '03', titleKey: 'landing.how.step3.title', descKey: 'landing.how.step3.desc', defaultTitle: 'Get AI Results', defaultDesc: 'Professional, ready-to-use content delivered in seconds. Copy, paste, done.' },
+  { num: '04', titleKey: 'landing.how.step4.title', descKey: 'landing.how.step4.desc', defaultTitle: 'Publish & Grow', defaultDesc: 'Edit, refine or copy your output directly. You stay in control — AI handles the heavy lifting.' },
 ];
 
-// ── How It Works — Mini Mockup Visuals ───────────────────────────
 const TOOL_TILES = [
-  { emoji: '📈', labelEs: 'Marketing',  labelEn: 'Marketing' },
-  { emoji: '✍️', labelEs: 'Contenido',  labelEn: 'Content',  active: true },
-  { emoji: '🛠️', labelEs: 'Digital',    labelEn: 'Digital' },
-  { emoji: '🎯', labelEs: 'Estrategia', labelEn: 'Strategy' },
-  { emoji: '🛒', labelEs: 'E-com',      labelEn: 'E-com' },
-  { emoji: '🏢', labelEs: 'Agencias',   labelEn: 'Agency' },
+  { emoji: '✍️', labelEs: 'Texto',   labelEn: 'Text' },
+  { emoji: '🎨', labelEs: 'Imagen',  labelEn: 'Image', active: true },
+  { emoji: '🎬', labelEs: 'Vídeo',   labelEn: 'Video' },
+  { emoji: '🎵', labelEs: 'Audio',   labelEn: 'Audio' },
+  { emoji: '🖌️', labelEs: 'Diseño', labelEn: 'Design' },
+  { emoji: '🤖', labelEs: 'Agente', labelEn: 'Agent' },
 ];
-
 const OUTPUT_LINES_WIDTHS = [72, 90, 65, 85, 55, 78, 60];
 
 function HiwMockup({ step, active, isEs }) {
@@ -495,7 +471,6 @@ function HiwMockup({ step, active, isEs }) {
       </div>
     </div>
   );
-
   if (step === 1) return (
     <div className="hiw-mock hiw-mock--form">
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
@@ -516,18 +491,12 @@ function HiwMockup({ step, active, isEs }) {
             </div>
           </div>
         ))}
-        <motion.div
-          className="hiw-mock__gen-btn"
-          initial={{ opacity: 0 }}
-          animate={active ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ delay: 0.9 }}
-        >
+        <motion.div className="hiw-mock__gen-btn" initial={{ opacity: 0 }} animate={active ? { opacity: 1 } : { opacity: 0 }} transition={{ delay: 0.9 }}>
           {isEs ? '⚡ Generar con IA' : '⚡ Generate with AI'}
         </motion.div>
       </div>
     </div>
   );
-
   if (step === 2) return (
     <div className="hiw-mock hiw-mock--output">
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
@@ -549,7 +518,6 @@ function HiwMockup({ step, active, isEs }) {
       </div>
     </div>
   );
-
   if (step === 3) return (
     <div className="hiw-mock hiw-mock--review">
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
@@ -557,9 +525,7 @@ function HiwMockup({ step, active, isEs }) {
         <div className="hiw-mock__review-done">✓ {isEs ? 'Listo · 680 palabras' : 'Done · 680 words'}</div>
       </div>
       <div className="hiw-mock__lines hiw-mock__lines--done">
-        {[80, 65, 90, 55].map((w, i) => (
-          <div key={i} className="hiw-mock__line" style={{ width: `${w}%` }} />
-        ))}
+        {[80, 65, 90, 55].map((w, i) => <div key={i} className="hiw-mock__line" style={{ width: `${w}%` }} />)}
       </div>
       <div className="hiw-mock__actions">
         <div className="hiw-mock__action-btn hiw-mock__action-btn--primary">{isEs ? 'Copiar ✓' : 'Copy ✓'}</div>
@@ -568,33 +534,19 @@ function HiwMockup({ step, active, isEs }) {
       </div>
     </div>
   );
-
   return null;
 }
 
-// ── How It Works 2x2 Grid (Tradvio style) ────────────────────────
 function HowItWorksGrid() {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [active, setActive] = useState(0);
   const timerRef = useRef(null);
-
   const startTimer = useCallback(() => {
     clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setActive(prev => (prev + 1) % HOW_STEPS.length);
-    }, 3800);
+    timerRef.current = setInterval(() => setActive((prev) => (prev + 1) % HOW_STEPS.length), 3800);
   }, []);
-
-  useEffect(() => {
-    startTimer();
-    return () => clearInterval(timerRef.current);
-  }, [startTimer]);
-
-  const handleClick = (i) => {
-    setActive(i);
-    startTimer();
-  };
+  useEffect(() => { startTimer(); return () => clearInterval(timerRef.current); }, [startTimer]);
 
   return (
     <div className="hiw-grid">
@@ -602,7 +554,7 @@ function HowItWorksGrid() {
         <motion.button
           key={i}
           className={`hiw-card${active === i ? ' hiw-card--active' : ''}`}
-          onClick={() => handleClick(i)}
+          onClick={() => { setActive(i); startTimer(); }}
           whileHover={{ scale: 1.015 }}
           transition={{ duration: 0.2 }}
         >
@@ -612,12 +564,8 @@ function HowItWorksGrid() {
           <div className="hiw-card__footer">
             <span className="hiw-card__num">{step.num}</span>
             <div className="hiw-card__text">
-              <div className="hiw-card__title">
-                {t(step.titleKey, { defaultValue: step.defaultTitle })}
-              </div>
-              <div className="hiw-card__desc">
-                {t(step.descKey, { defaultValue: step.defaultDesc })}
-              </div>
+              <div className="hiw-card__title">{t(step.titleKey, { defaultValue: step.defaultTitle })}</div>
+              <div className="hiw-card__desc">{t(step.descKey, { defaultValue: step.defaultDesc })}</div>
             </div>
           </div>
         </motion.button>
@@ -626,657 +574,223 @@ function HowItWorksGrid() {
   );
 }
 
-
-
-// ── Workflow Demo ──────────────────────────────────────────────────
-const DEMO_TOOLS = [
-  { emoji: '📈', catKey: 'cat.marketing.name', nameKey: 'tool.seo-keyword-research.name' },
-  { emoji: '✍️', catKey: 'cat.content.name',   nameKey: 'tool.blog-post.name', active: true },
-  { emoji: '✍️', catKey: 'cat.content.name',   nameKey: 'tool.newsletter.name' },
-  { emoji: '🛠️', catKey: 'cat.digital.name',   nameKey: 'tool.google-ads.name' },
-  { emoji: '🎯', catKey: 'cat.strategy.name',  nameKey: 'tool.swot-analysis.name' },
-];
-
-const DEMO_PHASES = [
-  { labelKey: 'landing.how.demo.phase1', dLabel: 'Select your tool' },
-  { labelKey: 'landing.how.demo.phase2', dLabel: 'Fill in your inputs' },
-  { labelKey: 'landing.how.demo.phase3', dLabel: 'Get your AI output' },
-];
-
-const DEMO_OUTPUT_LINES = [92, 78, 95, 65, 83, 55, 88, 72];
-
-function WorkflowDemo({ phase, setPhase }) {
+/* ─────────────────────────────────────────────────────────────────
+   Tools Section
+───────────────────────────────────────────────────────────────── */
+function ToolsSection() {
   const { t } = useTranslation();
-  const inViewRef = useRef(null);
-  const inView = useInView(inViewRef, { once: true, margin: '-60px' });
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <motion.div
-      ref={inViewRef}
-      id="workflow-demo"
-      className="wf-demo"
-      initial={{ opacity: 0, y: 32 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {/* ── Window chrome ── */}
-      <div className="wf-demo__chrome">
-        <div className="wf-demo__dots"><span /><span /><span /></div>
-        <span className="wf-demo__chrome-title">Gormaran AI Growth Hub</span>
-        <div className="wf-demo__phase-pills">
-          {DEMO_PHASES.map((dp, i) => (
+    <section className="landing__tools section">
+      <div className="container">
+        <AnimatedSection>
+          <span className="sx-pill">{t('landing.tools.pill', { defaultValue: 'AI Agents' })}</span>
+          <h2 className="sx-section-title">
+            {t('landing.tools.titlePre', { defaultValue: 'One platform.' })}{' '}
+            <span className="sx-accent-text">{t('landing.tools.titleHighlight', { defaultValue: 'Every AI tool.' })}</span>
+          </h2>
+          <p className="sx-section-subtitle">
+            {t('landing.tools.subtitle', { defaultValue: "Text, image, video, audio and design — powered by the world's best AI models." })}
+          </p>
+        </AnimatedSection>
+
+        <div className="sx-tools-tabs">
+          {AI_TOOLS.map((tool, i) => (
             <button
-              key={i}
-              className={`wf-demo__pill${phase === i ? ' active' : ''}`}
-              onClick={() => setPhase(i)}
+              key={tool.id}
+              className={`sx-tools-tab${activeTab === i ? ' sx-tools-tab--active' : ''}`}
+              onClick={() => setActiveTab(i)}
             >
-              <span className="wf-demo__pill-num">{i + 1}</span>
-              {t(dp.labelKey, { defaultValue: dp.dLabel })}
+              <span className="sx-tools-tab-emoji">{tool.emoji}</span>
+              {t(tool.titleKey, { defaultValue: tool.defaultTitle })}
             </button>
           ))}
         </div>
-      </div>
 
-      {/* ── Body ── */}
-      <div className="wf-demo__body">
-        {/* Sidebar */}
-        <div className="wf-demo__sidebar">
-          <div className="wf-demo__sidebar-label">
-            {t('landing.how.demo.tools', { defaultValue: 'AI Tools' })}
-          </div>
-          {DEMO_TOOLS.map((tool) => (
+        <AnimatePresence mode="wait">
+          {AI_TOOLS.map((tool, i) => activeTab === i && (
             <motion.div
-              key={tool.nameKey}
-              className={`wf-demo__tool${tool.active && phase >= 1 ? ' selected' : ''}${tool.active && phase === 0 ? ' highlight' : ''}`}
-              animate={tool.active && phase === 0 ? { x: [0, 4, 0] } : {}}
-              transition={{ duration: 0.5, delay: 0.8, repeat: 1 }}
+              key={tool.id}
+              className="sx-tools-card"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
             >
-              <span className="wf-demo__tool-cat">{tool.emoji} {t(tool.catKey)}</span>
-              <span className="wf-demo__tool-name">{t(tool.nameKey)}</span>
+              <div className="sx-tools-card-left">
+                <div className="sx-tools-card-icon">{tool.emoji}</div>
+                <h3 className="sx-tools-card-title">
+                  {t(tool.titleKey, { defaultValue: tool.defaultTitle })}
+                </h3>
+                <p className="sx-tools-card-desc">
+                  {t(tool.descKey, { defaultValue: tool.defaultDesc })}
+                </p>
+                <ul className="sx-tools-card-list">
+                  {tool.tools.map((name) => (
+                    <li key={name} className="sx-tools-card-item">
+                      <span className="sx-tools-card-check">✓</span>
+                      {name}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/auth?mode=register" className="sx-btn-primary">
+                  {t('landing.tools.cta', { defaultValue: 'Start creating →' })}
+                </Link>
+              </div>
+
+              <div className="sx-tools-card-right">
+                <div className="sx-tools-card-preview">
+                  <div className="sx-tools-card-preview-header">
+                    <div className="sx-dots"><span /><span /><span /></div>
+                    <span className="sx-tools-card-preview-label">
+                      {tool.emoji} {t(tool.titleKey, { defaultValue: tool.defaultTitle })}
+                    </span>
+                  </div>
+                  <div className="sx-tools-models">
+                    <div className="sx-tools-models-label">AI Models</div>
+                    <div className="sx-tools-models-list">
+                      {tool.models.map((m) => (
+                        <span key={m} className="sx-model-chip">{m}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="sx-tools-output-preview">
+                    {[90, 75, 95, 65, 82, 58].map((w, idx) => (
+                      <motion.div
+                        key={`${tool.id}-${idx}`}
+                        className={`sx-output-line${idx === 0 ? ' sx-output-line--heading' : ''}`}
+                        style={{ width: `${w}%` }}
+                        initial={{ scaleX: 0, opacity: 0 }}
+                        animate={{ scaleX: 1, opacity: 1 }}
+                        transition={{ duration: 0.4, delay: idx * 0.06 }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
             </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   AI Models Section
+───────────────────────────────────────────────────────────────── */
+const MODEL_FILTERS = [
+  { id: 'all',    label: 'All' },
+  { id: 'text',   label: '✍️ Text' },
+  { id: 'image',  label: '🎨 Image' },
+  { id: 'video',  label: '🎬 Video' },
+  { id: 'audio',  label: '🎵 Audio' },
+  { id: 'design', label: '🖌️ Design' },
+];
+
+function AIModelsSection() {
+  const { t } = useTranslation();
+  const [activeFilter, setActiveFilter] = useState('all');
+  const visible = activeFilter === 'all' ? AI_MODELS : AI_MODELS.filter((m) => m.type === activeFilter);
+
+  return (
+    <section className="landing__models section">
+      <div className="container">
+        <AnimatedSection>
+          <span className="sx-pill">{t('landing.models.pill', { defaultValue: 'AI Models' })}</span>
+          <h2 className="sx-section-title">
+            {t('landing.models.title', { defaultValue: 'Choose your AI.' })}{' '}
+            <span className="sx-accent-text">{t('landing.models.titleHighlight', { defaultValue: 'Any category.' })}</span>
+          </h2>
+          <p className="sx-section-subtitle">
+            {t('landing.models.subtitle', { defaultValue: 'Access 16+ leading AI models for every content type — all in one platform.' })}
+          </p>
+        </AnimatedSection>
+
+        <div className="sx-models-filters">
+          {MODEL_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              className={`sx-models-filter${activeFilter === f.id ? ' sx-models-filter--active' : ''}`}
+              onClick={() => setActiveFilter(f.id)}
+            >
+              {f.label}
+            </button>
           ))}
         </div>
 
-        {/* Main panel */}
-        <div className="wf-demo__main">
-          <AnimatePresence mode="wait">
-            {phase === 0 && (
+        <motion.div className="sx-models-grid" layout>
+          <AnimatePresence>
+            {visible.map((model) => (
               <motion.div
-                key="select"
-                className="wf-demo__panel"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
+                key={model.id}
+                className="sx-model-card"
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
               >
-                <div className="wf-demo__empty">
-                  <div className="wf-demo__empty-icon">✍️</div>
-                  <p className="wf-demo__empty-title">
-                    {t('landing.how.demo.selectHint', { defaultValue: 'Select a tool from the sidebar' })}
-                  </p>
-                  <motion.div
-                    className="wf-demo__arrow"
-                    animate={{ x: [-4, 0, -4] }}
-                    transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
-                  >←</motion.div>
-                </div>
-              </motion.div>
-            )}
-
-            {phase === 1 && (
-              <motion.div
-                key="form"
-                className="wf-demo__panel"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="wf-demo__tool-header">✍️ {t('tool.blog-post.name')}</div>
-                <div className="wf-demo__form">
-                  {[
-                    { label: t('landing.how.demo.field1', { defaultValue: 'Topic' }),    val: 'AI tools for small businesses in 2025' },
-                    { label: t('landing.how.demo.field2', { defaultValue: 'Audience' }), val: 'Freelancers & founders' },
-                    { label: t('landing.how.demo.field3', { defaultValue: 'Keyword' }),  val: 'ai tools small business' },
-                  ].map((field, i) => (
-                    <div key={i} className="wf-demo__field">
-                      <div className="wf-demo__field-label">{field.label}</div>
-                      <motion.div
-                        className="wf-demo__field-value"
-                        initial={{ width: 0 }}
-                        animate={{ width: '100%' }}
-                        transition={{ duration: 0.7, delay: i * 0.35, ease: 'easeOut' }}
-                      >
-                        <span>{field.val}</span>
-                        {i === 2 && <span className="how-visual__cursor" />}
-                      </motion.div>
-                    </div>
-                  ))}
-                  <motion.button
-                    className="wf-demo__generate-btn"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: 1.2 }}
-                  >
-                    <span className="preview-dot" />
-                    <span className="preview-dot" style={{ animationDelay: '0.18s' }} />
-                    <span className="preview-dot" style={{ animationDelay: '0.36s' }} />
-                    {t('ui.generateWithAI', { defaultValue: 'Generate with AI' })}
-                  </motion.button>
-                </div>
-              </motion.div>
-            )}
-
-            {phase === 2 && (
-              <motion.div
-                key="output"
-                className="wf-demo__panel"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="wf-demo__output-header">
-                  <span className="wf-demo__output-badge">✨ {t('ui.aiOutput', { defaultValue: 'AI Output' })}</span>
-                  <span className="wf-demo__word-count">~680 {t('ui.words', { defaultValue: 'words' })}</span>
-                </div>
-                <div className="wf-demo__output-lines">
-                  {DEMO_OUTPUT_LINES.map((w, i) => (
-                    <motion.div
-                      key={i}
-                      className={`wf-demo__output-line${i === 0 ? ' heading' : ''}`}
-                      style={{ width: i === 0 ? '70%' : `${w}%` }}
-                      initial={{ scaleX: 0, opacity: 0 }}
-                      animate={{ scaleX: 1, opacity: 1 }}
-                      transition={{ duration: 0.5, delay: i * 0.1, ease: 'easeOut' }}
-                    />
-                  ))}
-                </div>
-                <motion.div
-                  className="wf-demo__copy-row"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1.2 }}
+                <div
+                  className="sx-model-avatar"
+                  style={{ background: `${model.color}22`, border: `1px solid ${model.color}44`, color: model.color }}
                 >
-                  <button className="wf-demo__copy-btn">
-                    {t('ui.copy', { defaultValue: 'Copy' })} ✓
-                  </button>
-                </motion.div>
+                  {model.initial}
+                </div>
+                <div className="sx-model-info">
+                  <div className="sx-model-name">{model.name}</div>
+                  <div className="sx-model-company">{model.company}</div>
+                </div>
+                <span className={`sx-model-type sx-model-type--${model.type}`}>{model.type}</span>
               </motion.div>
-            )}
+            ))}
           </AnimatePresence>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// ── Animated output lines (loops) ────────────────────────────────
-const OUTPUT_WIDTHS = [90, 75, 95, 60, 82];
-
-function AnimatedOutputLines() {
-  const [key, setKey] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setKey((k) => k + 1), 2800);
-    return () => clearInterval(id);
-  }, []);
-  return (
-    <div className="landing__showcase-output">
-      {OUTPUT_WIDTHS.map((w, i) => (
-        <motion.div
-          key={`${key}-${i}`}
-          className="landing__showcase-line"
-          style={{ width: `${w}%` }}
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.55, delay: i * 0.1, ease: 'easeOut' }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ── Hero Showcase Cards ──────────────────────────────────────────
-function HeroShowcase() {
-  const { t } = useTranslation();
-  return (
-    <div className="landing__hero-showcase">
-      <div className="container">
-        <motion.div
-          className="landing__showcase-cards"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="landing__showcase-card">
-            <div className="landing__showcase-card-header">
-              <div className="landing__showcase-card-icon">🗂️</div>
-              <div>
-                <div className="landing__showcase-card-title">{t('landing.showcase.card1.title')}</div>
-                <div className="landing__showcase-card-sub">{t('landing.showcase.card1.sub')}</div>
-              </div>
-            </div>
-            <div className="landing__showcase-tags">
-              {['📈 Marketing', '✍️ Content', '🎯 Strategy', '🛒 E-com', '🚀 Startup'].map((tag) => (
-                <span key={tag} className="landing__showcase-tag">{tag}</span>
-              ))}
-            </div>
-          </div>
-
-          <div className="landing__showcase-card landing__showcase-card--featured">
-            <div className="landing__showcase-card-header">
-              <div className="landing__showcase-card-icon">⚡</div>
-              <div>
-                <div className="landing__showcase-card-title">{t('landing.showcase.card2.title')}</div>
-                <div className="landing__showcase-card-sub">{t('landing.showcase.card2.sub')}</div>
-              </div>
-            </div>
-            <AnimatedOutputLines />
-            <span className="landing__showcase-badge">{t('landing.showcase.card2.badge')}</span>
-          </div>
-
-          <div className="landing__showcase-card">
-            <div className="landing__showcase-card-header">
-              <div className="landing__showcase-card-icon">⚡</div>
-              <div>
-                <div className="landing__showcase-card-title">{t('landing.showcase.card3.title')}</div>
-                <div className="landing__showcase-card-sub">{t('landing.showcase.card3.sub')}</div>
-              </div>
-            </div>
-            <div className="landing__showcase-metrics">
-              <div className="landing__showcase-metric">
-                <span className="landing__showcase-metric-val">{t('landing.showcase.card3.metric1.val')}</span>
-                <span className="landing__showcase-metric-label">{t('landing.showcase.card3.metric1.label')}</span>
-              </div>
-              <div className="landing__showcase-metric">
-                <span className="landing__showcase-metric-val">{t('landing.showcase.card3.metric2.val')}</span>
-                <span className="landing__showcase-metric-label">{t('landing.showcase.card3.metric2.label')}</span>
-              </div>
-            </div>
-          </div>
         </motion.div>
       </div>
-    </div>
+    </section>
   );
 }
 
-// ── How It Works New (BotDesk layout) ────────────────────────────
-const PHASE_MAP = [0, 1, 2, 2]; // step index → WorkflowDemo phase
-const STEP_DURATION = 3.5;      // seconds per step auto-advance
-
-function HowItWorksNew() {
+/* ─────────────────────────────────────────────────────────────────
+   FAQ Section
+───────────────────────────────────────────────────────────────── */
+function FAQSection() {
   const { t } = useTranslation();
-  const [active, setActive] = useState(0);
-  const [demoPhase, setDemoPhase] = useState(0);
-  const progressRefs = useRef([]);
-  const numRefs = useRef([]);
-  const tlRef = useRef(null);
-
-  const goToStep = useCallback((i) => {
-    setActive(i);
-    setDemoPhase(PHASE_MAP[i]);
-  }, []);
-
-  useEffect(() => {
-    const mm = gsap.matchMedia();
-
-    mm.add({ reduceMotion: '(prefers-reduced-motion: reduce)' }, (context) => {
-      const { reduceMotion } = context.conditions;
-
-      tlRef.current?.kill();
-      progressRefs.current.forEach((el) => {
-        if (el) gsap.set(el, { scaleX: 0, transformOrigin: 'left center' });
-      });
-
-      if (reduceMotion) return;
-
-      // Bounce the active step number
-      const numEl = numRefs.current[active];
-      if (numEl) {
-        gsap.fromTo(numEl,
-          { scale: 1 },
-          { scale: 1.18, duration: 0.18, yoyo: true, repeat: 1, ease: 'back.out(2)' }
-        );
-      }
-
-      // Fill progress bar, then advance to next step
-      const progressEl = progressRefs.current[active];
-      if (!progressEl) return;
-
-      tlRef.current = gsap.to(progressEl, {
-        scaleX: 1,
-        duration: STEP_DURATION,
-        ease: 'none',
-        transformOrigin: 'left center',
-        onComplete: () => {
-          setActive((prev) => {
-            const next = (prev + 1) % HOW_STEPS.length;
-            setDemoPhase(PHASE_MAP[next]);
-            return next;
-          });
-        },
-      });
-    });
-
-    return () => mm.revert();
-  }, [active]);
-
-  const handleMouseEnter = () => tlRef.current?.pause();
-  const handleMouseLeave = () => tlRef.current?.resume();
+  const [openIdx, setOpenIdx] = useState(null);
 
   return (
-    <div
-      className="landing__how-layout"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div className="landing__how-steps-col">
-        {HOW_STEPS.map((step, i) => (
-          <button
-            key={step.num}
-            className={`landing__how-step-row${active === i ? ' active' : ''}`}
-            onClick={() => goToStep(i)}
-          >
-            <div
-              className="landing__how-step-row-num"
-              ref={(el) => (numRefs.current[i] = el)}
-            >
-              {step.num}
-            </div>
-            <div className="landing__how-step-row-content">
-              <div className="landing__how-step-row-title">
-                {t(step.titleKey, { defaultValue: step.defaultTitle })}
-              </div>
-              <div className="landing__how-step-progress">
-                <div
-                  className="landing__how-step-progress-bar"
-                  ref={(el) => (progressRefs.current[i] = el)}
-                />
-              </div>
+    <section className="landing__faq section">
+      <div className="container container-sm">
+        <AnimatedSection>
+          <span className="sx-pill">{t('landing.faq.pill', { defaultValue: 'FAQ' })}</span>
+          <h2 className="sx-section-title">
+            {t('landing.faq.title', { defaultValue: 'Frequently asked' })}{' '}
+            <span className="sx-accent-text">{t('landing.faq.titleHighlight', { defaultValue: 'questions' })}</span>
+          </h2>
+        </AnimatedSection>
+
+        <div className="sx-faq-list">
+          {FAQ_ITEMS.map((item, i) => (
+            <div key={i} className={`sx-faq-item${openIdx === i ? ' sx-faq-item--open' : ''}`}>
+              <button className="sx-faq-question" onClick={() => setOpenIdx(openIdx === i ? null : i)}>
+                {t(item.questionKey, { defaultValue: item.dQuestion })}
+                <span className="sx-faq-chevron">{openIdx === i ? '−' : '+'}</span>
+              </button>
               <AnimatePresence>
-                {active === i && (
+                {openIdx === i && (
                   <motion.div
-                    className="landing__how-step-row-desc"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
+                    className="sx-faq-answer"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {t(step.descKey, { defaultValue: step.defaultDesc })}
+                    <p>{t(item.answerKey, { defaultValue: item.dAnswer })}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
-          </button>
-        ))}
-      </div>
-      <div className="landing__how-visual-col">
-        <WorkflowDemo phase={demoPhase} setPhase={setDemoPhase} />
-      </div>
-    </div>
-  );
-}
-
-// ── Plan category / tool data ─────────────────────────────────────
-const GROW_CATS = [
-  {
-    nameKey: 'cat.marketing.name', emoji: '📈',
-    tools: ['tool.seo-keyword-research.name','tool.seo-meta-tags.name','tool.copywriting-headlines.name','tool.social-media-captions.name','tool.email-campaign.name','tool.press-release.name'],
-  },
-  {
-    nameKey: 'cat.content.name', emoji: '✍️',
-    tools: ['tool.blog-post.name','tool.newsletter.name','tool.video-script.name','tool.logo-generator.name'],
-  },
-  {
-    nameKey: 'cat.digital.name', emoji: '🛠️',
-    tools: ['tool.google-ads.name','tool.meta-ads.name','tool.landing-page.name'],
-  },
-  {
-    nameKey: 'cat.strategy.name', emoji: '🎯',
-    tools: ['tool.business-plan.name'],
-  },
-];
-
-const SCALE_EXTRA_CATS = [
-  {
-    nameKey: 'cat.ecommerce.name', emoji: '🛒',
-    tools: ['tool.amazon-listing.name','tool.product-description.name','tool.cro-audit.name'],
-  },
-  {
-    nameKey: 'cat.agency.name', emoji: '🏢',
-    tools: ['tool.client-proposal.name','tool.client-report.name','tool.case-study.name'],
-  },
-  {
-    nameKey: 'cat.creative.name', emoji: '🎨',
-    tools: ['tool.brand-identity.name','tool.photo-direction.name','tool.video-production.name'],
-  },
-];
-
-const EVO_EXTRA_CATS = [
-  {
-    nameKey: 'cat.strategy.name', emoji: '🎯',
-    tools: ['tool.market-analysis.name','tool.competitor-research.name','tool.swot-analysis.name'],
-  },
-  {
-    nameKey: 'cat.finance.name', emoji: '💰',
-    tools: ['tool.financial-forecast.name','tool.investment-analysis.name','tool.cash-flow-optimizer.name'],
-  },
-  {
-    nameKey: 'cat.startup.name', emoji: '🚀',
-    tools: ['tool.investor-pitch.name','tool.gtm-strategy.name','tool.user-stories.name'],
-  },
-];
-
-// ── Plans ─────────────────────────────────────────────────────────
-const PLANS = [
-  {
-    name: 'Grow', price: '€19', descKey: 'landing.plans.grow.desc', featured: false,
-    categories: GROW_CATS, includesKey: null,
-    benefitKeys: ['landing.plans.grow.benefit1', 'landing.plans.grow.benefit2', 'landing.plans.grow.benefit3'],
-    bDefaults: ['Rank higher on Google with precision keywords', 'Full email campaigns ready in under 2 minutes', 'Launch-ready ad copy for Google Search'],
-  },
-  {
-    name: 'Scale', price: '€49', descKey: 'landing.plans.scale.desc', featured: true,
-    categories: SCALE_EXTRA_CATS, includesKey: 'landing.plans.scale.includes',
-    benefitKeys: ['landing.plans.scale.benefit1', 'landing.plans.scale.benefit2', 'landing.plans.scale.benefit3'],
-    bDefaults: ['Win more clients with professional proposals', 'Investor-ready business plan in one click', 'Complete visual identity for your brand'],
-  },
-  {
-    name: 'Evolution', price: '€99', descKey: 'landing.plans.evo.desc', featured: false,
-    categories: EVO_EXTRA_CATS, includesKey: 'landing.plans.evo.includes',
-    benefitKeys: ['landing.plans.evo.benefit1', 'landing.plans.evo.benefit2', 'landing.plans.evo.benefit3'],
-    bDefaults: ['TAM/SAM/SOM and competitive intelligence', '12-month forecast with break-even analysis', 'VC-ready pitch deck with Q&A preparation'],
-  },
-];
-
-// ── Plan Flip Card ────────────────────────────────────────────────
-function PlanFlipCard({ plan }) {
-  const { t } = useTranslation();
-  const [flipped, setFlipped] = useState(false);
-  return (
-    <div
-      className={`landing__plan-flip${plan.featured ? ' landing__plan-flip--featured' : ''}${flipped ? ' is-flipped' : ''}`}
-      onClick={() => setFlipped((f) => !f)}
-    >
-      <div className="landing__plan-flip__inner">
-        {/* ── Front ── */}
-        <div className="landing__plan-flip__front">
-          <div className="landing__plan-name">{plan.name}</div>
-          <div className="landing__plan-price">
-            {plan.price}
-            <span className="landing__plan-period">{t('landing.plans.perMonth')}</span>
-          </div>
-          <p className="landing__plan-flip__desc">{t(plan.descKey)}</p>
-          <ul className="landing__plan-benefits">
-            {plan.benefitKeys.map((key, i) => (
-              <li key={key} className="landing__plan-benefit">
-                <span className="landing__plan-benefit-check">✓</span>
-                {t(key, { defaultValue: plan.bDefaults[i] })}
-              </li>
-            ))}
-          </ul>
-          <span className="landing__plan-flip__hint">
-            <span className="landing__plan-flip__hint-icon">↻</span>
-            {t('landing.plans.flip.hint', { defaultValue: 'Flip to see all tools' })}
-          </span>
-          <Link
-            to="/pricing"
-            className="btn btn-secondary landing__plan-cta"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {t('landing.plans.cta')}
-          </Link>
-        </div>
-
-        {/* ── Back ── */}
-        <div className="landing__plan-flip__back">
-          <div className="landing__plan-flip__back-title">
-            {t('landing.plans.backTitle', { defaultValue: 'Included Tools' })}
-          </div>
-          {plan.includesKey && (
-            <div className="landing__plan-flip__includes">
-              {t(plan.includesKey)}
-            </div>
-          )}
-          <div className="landing__plan-flip__categories">
-            {plan.categories.map((cat) => (
-              <div key={cat.nameKey} className="landing__plan-flip__cat">
-                <div className="landing__plan-flip__cat-name">
-                  {cat.emoji} {t(cat.nameKey)}
-                </div>
-                <div className="landing__plan-flip__tools">
-                  {cat.tools.map((toolKey) => (
-                    <span key={toolKey} className="landing__plan-flip__tool">
-                      {t(toolKey)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-          <Link
-            to="/pricing"
-            className="btn btn-primary landing__plan-flip__back-cta"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {t('landing.plans.cta')}
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Instagram Compact ─────────────────────────────────────────────
-const IG_ACTIONS = [
-  'landing.ig.action.0',
-  'landing.ig.action.1',
-  'landing.ig.action.2',
-];
-
-function InstagramCompact() {
-  const { t } = useTranslation();
-  return (
-    <section className="landing__ig-compact section">
-      <div className="container">
-        <div className="landing__ig-compact-inner">
-          <motion.div
-            className="landing__ig-compact-text"
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <span className="landing__ig-compact-badge">
-              {t('landing.ig.badge', { defaultValue: '📸 Free Tool' })}
-            </span>
-            <h2 className="landing__ig-compact-title">
-              {t('landing.ig.title', { defaultValue: 'Instagram Express Audit' })}
-            </h2>
-            <p className="landing__ig-compact-subtitle">
-              {t('landing.ig.subtitle', { defaultValue: 'Analyze your profile in 5 minutes and get 3 priority actions to grow faster.' })}
-            </p>
-            <Link to="/dashboard" className="btn btn-primary">
-              {t('landing.ig.cta', { defaultValue: 'Audit My Profile →' })}
-            </Link>
-          </motion.div>
-
-          <motion.div
-            className="landing__ig-compact-preview"
-            initial={{ opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <div className="landing__ig-score-ring">
-              <div className="landing__ig-score-inner">
-                <span className="landing__ig-score-num">72</span>
-                <span className="landing__ig-score-label">/100</span>
-              </div>
-            </div>
-            <div className="landing__ig-compact-actions">
-              {IG_ACTIONS.map((key, i) => (
-                <div key={i} className="landing__ig-action-item">
-                  <span className="landing__ig-action-num">{i + 1}</span>
-                  <span>{t(key, { defaultValue: ['Optimise bio with a keyword', 'Add a clear, strategic CTA link', 'Pin your best authority post'][i] })}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ── Client Logos ──────────────────────────────────────────────────
-const CLIENTS = [
-  {
-    name: 'Ormaran Paisajismo',
-    url: 'https://www.ormaran-paisajismo.com',
-    logo: null,
-  },
-  {
-    name: 'La Rioja Alta',
-    url: 'https://www.riojalta.com',
-    logo: 'https://www.riojalta.com/static/images/__logos/grupo-RA-desk.svg',
-  },
-  {
-    name: 'Grupo Agromotor',
-    url: 'https://www.grupoagromotor.com',
-    logo: null,
-  },
-  {
-    name: 'Just Drive',
-    url: 'https://www.just-drive.es',
-    logo: 'https://www.just-drive.es/wp-content/themes/just-drive/assets/images/logo-dark-n.png',
-  },
-];
-
-function ClientLogos() {
-  const { t } = useTranslation();
-  return (
-    <section className="landing__clients section">
-      <div className="container">
-        <p className="landing__clients-label">
-          {t('landing.clients.title', { defaultValue: 'Trusted by real businesses' })}
-        </p>
-        <div className="landing__clients-strip">
-          {CLIENTS.map((c) => (
-            <a
-              key={c.name}
-              href={c.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="landing__client-logo"
-              aria-label={c.name}
-            >
-              {c.logo ? (
-                <img src={c.logo} alt={c.name} />
-              ) : (
-                <span className="landing__client-name">{c.name}</span>
-              )}
-            </a>
           ))}
         </div>
       </div>
@@ -1284,369 +798,9 @@ function ClientLogos() {
   );
 }
 
-// ── What You Get ──────────────────────────────────────────────────
-const WHAT_CATS = [
-  { emoji: '📈', nameKey: 'cat.marketing.name', plan: 'grow',      toolKeys: ['tool.seo-keyword-research.name', 'tool.seo-meta-tags.name', 'tool.copywriting-headlines.name', 'tool.social-media-captions.name', 'tool.email-campaign.name', 'tool.press-release.name'] },
-  { emoji: '✍️', nameKey: 'cat.content.name',   plan: 'grow',      toolKeys: ['tool.blog-post.name', 'tool.newsletter.name', 'tool.video-script.name', 'tool.logo-generator.name', 'tool.social-media-strategy.name'] },
-  { emoji: '🛠️', nameKey: 'cat.digital.name',   plan: 'grow',      toolKeys: ['tool.google-ads.name', 'tool.meta-ads.name', 'tool.landing-page.name'] },
-  { emoji: '🛒', nameKey: 'cat.ecommerce.name', plan: 'scale',     toolKeys: ['tool.amazon-listing.name', 'tool.product-description.name', 'tool.cro-audit.name'] },
-  { emoji: '🏢', nameKey: 'cat.agency.name',    plan: 'scale',     toolKeys: ['tool.client-proposal.name', 'tool.client-report.name', 'tool.case-study.name'] },
-  { emoji: '🎨', nameKey: 'cat.creative.name',  plan: 'scale',     toolKeys: ['tool.brand-identity.name', 'tool.photo-direction.name', 'tool.video-production.name'] },
-  { emoji: '🎯', nameKey: 'cat.strategy.name',  plan: 'evolution', toolKeys: ['tool.business-plan.name', 'tool.market-analysis.name', 'tool.competitor-research.name', 'tool.swot-analysis.name', 'tool.business-strategy-developer.name'] },
-  { emoji: '🚀', nameKey: 'cat.startup.name',   plan: 'evolution', toolKeys: ['tool.investor-pitch.name', 'tool.gtm-strategy.name', 'tool.user-stories.name'] },
-  { emoji: '💰', nameKey: 'cat.finance.name',   plan: 'evolution', toolKeys: ['tool.financial-forecast.name', 'tool.investment-analysis.name', 'tool.cash-flow-optimizer.name'] },
-  { emoji: '⚡', nameKey: 'cat.automation.name', plan: 'addon',    toolKeys: ['tool.n8n-workflow.name'], isAddon: true },
-];
-
-function WygFlipCard({ cat }) {
-  const { t } = useTranslation();
-  const [flipped, setFlipped] = useState(false);
-  const planLabel = { grow: 'Grow', scale: 'Scale', evolution: 'Evolution', addon: 'Add-on' }[cat.plan];
-  return (
-    <div
-      className={`wyg-flip wyg-flip--${cat.plan}${flipped ? ' is-flipped' : ''}`}
-      onClick={() => setFlipped((f) => !f)}
-    >
-      <div className="wyg-flip__inner">
-        <div className="wyg-flip__front">
-          <div className="wyg-flip__emoji">{cat.emoji}</div>
-          <div className="wyg-flip__name">{t(cat.nameKey)}</div>
-          <span className={`wyg-flip__badge wyg-flip__badge--${cat.plan}`}>{planLabel}</span>
-          <div className="wyg-flip__count">{cat.toolKeys.length} {t('landing.wyg.toolsLabel', { defaultValue: 'tools' })}</div>
-          <span className="wyg-flip__hint">↻ {t('landing.wyg.tap', { defaultValue: 'Tap to see tools' })}</span>
-        </div>
-        <div className="wyg-flip__back">
-          <div className="wyg-flip__back-header">{cat.emoji} {t(cat.nameKey)}</div>
-          <div className="wyg-flip__back-tools">
-            {cat.toolKeys.map((k) => (
-              <span key={k} className="wyg-flip__back-tool">✓ {t(k)}</span>
-            ))}
-            {cat.isAddon && <span className="wyg-flip__back-tool wyg-flip__back-tool--note">€10 / 10 workflows</span>}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function WhatYouGet() {
-  const { t } = useTranslation();
-  return (
-    <section className="landing__wyg section">
-      <div className="container">
-        <AnimatedSection>
-          <span className="section-pill">{t('landing.wyg.pill', { defaultValue: 'Tools' })}</span>
-          <h2 className="section-title">
-            {t('landing.wyg.titlePre', { defaultValue: 'Everything in' })}{' '}
-            <span className="gradient-text">{t('landing.wyg.titleHighlight', { defaultValue: 'one hub' })}</span>
-          </h2>
-          <p className="section-subtitle">
-            {t('landing.wyg.subtitle', { defaultValue: '30+ specialized AI tools across 10 business categories — structured outputs you can use immediately.' })}
-          </p>
-        </AnimatedSection>
-        <motion.div
-          className="landing__wyg-grid"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-20px' }}
-          variants={stagger}
-        >
-          {WHAT_CATS.map((cat) => (
-            <motion.div key={cat.nameKey} variants={fadeUp}>
-              <WygFlipCard cat={cat} />
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-// ── Workflow Chain Section ────────────────────────────────────────
-const WORKFLOW_CHAIN = [
-  { step: '01', toolKey: 'tool.seo-keyword-research.name', catEmoji: '📈', catKey: 'cat.marketing.name', time: '2 min', outputEn: '20 ranked keywords', outputEs: '20 palabras clave' },
-  { step: '02', toolKey: 'tool.blog-post.name',            catEmoji: '✍️', catKey: 'cat.content.name',   time: '2 min', outputEn: '800-word post',       outputEs: 'Post de 800 palabras' },
-  { step: '03', toolKey: 'tool.social-media-captions.name',catEmoji: '📈', catKey: 'cat.marketing.name', time: '1 min', outputEn: '5 ready captions',    outputEs: '5 captions listos' },
-  { step: '04', toolKey: 'tool.email-campaign.name',       catEmoji: '📈', catKey: 'cat.marketing.name', time: '2 min', outputEn: 'Full email copy',      outputEs: 'Email copy completo' },
-];
-
-function WorkflowChain() {
-  const { t, i18n } = useTranslation();
-  const isEs = i18n.language?.startsWith('es');
-  return (
-    <section className="landing__workflow section">
-      <div className="container">
-        <AnimatedSection>
-          <span className="section-pill">{t('landing.workflow.pill', { defaultValue: 'Complete Workflow' })}</span>
-          <h2 className="section-title">
-            {t('landing.workflow.titlePre', { defaultValue: 'A full marketing workflow' })}{' '}
-            <span className="gradient-text">{t('landing.workflow.titleHighlight', { defaultValue: 'in 10 minutes' })}</span>
-          </h2>
-          <p className="section-subtitle">
-            {t('landing.workflow.subtitle', { defaultValue: 'Chain multiple tools together. Each output feeds the next — no copy-pasting, no switching apps.' })}
-          </p>
-        </AnimatedSection>
-        <motion.div
-          className="landing__workflow-chain"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-20px' }}
-          variants={stagger}
-        >
-          {WORKFLOW_CHAIN.map((item, i) => (
-            <motion.div key={item.step} className="landing__workflow-item" variants={fadeUp}>
-              <div className="landing__workflow-step">{item.step}</div>
-              <div className="landing__workflow-card">
-                <div className="landing__workflow-cat">{item.catEmoji} {t(item.catKey)}</div>
-                <div className="landing__workflow-tool">{t(item.toolKey)}</div>
-                <div className="landing__workflow-meta">
-                  <span className="landing__workflow-time">⏱ {item.time}</span>
-                  <span className="landing__workflow-output">→ {isEs ? item.outputEs : item.outputEn}</span>
-                </div>
-              </div>
-              {i < WORKFLOW_CHAIN.length - 1 && (
-                <div className="landing__workflow-arrow">→</div>
-              )}
-            </motion.div>
-          ))}
-        </motion.div>
-        <motion.div
-          className="landing__workflow-total"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.5 }}
-        >
-          <span className="landing__workflow-total-label">{isEs ? 'Tiempo total:' : 'Total time:'}</span>
-          <span className="landing__workflow-total-value gradient-text">{isEs ? '~7 minutos' : '~7 minutes'}</span>
-          <span className="landing__workflow-total-vs">{isEs ? 'vs. 3+ horas manualmente' : 'vs. 3+ hours manually'}</span>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-// ── Automation Section ────────────────────────────────────────────
-function AutomationSection() {
-  const { t, i18n } = useTranslation();
-  const isEs = i18n.language?.startsWith('es');
-  return (
-    <section className="landing__automation section">
-      <div className="container">
-        <div className="landing__automation-inner">
-          <motion.div
-            className="landing__automation-text"
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <span className="section-pill">{t('landing.automation.pill', { defaultValue: 'Automation' })}</span>
-            <h2 className="landing__automation-title">
-              {t('landing.automation.titlePre', { defaultValue: "Don't just generate content." })}<br />
-              <span className="gradient-text">{t('landing.automation.titleHighlight', { defaultValue: 'Automate your entire workflow.' })}</span>
-            </h2>
-            <p className="landing__automation-desc">
-              {t('landing.automation.desc', { defaultValue: 'Connect Gormaran with n8n to build full marketing pipelines that run on autopilot — from research to publishing, without touching a screen.' })}
-            </p>
-            <ul className="landing__automation-list">
-              {[
-                t('landing.automation.feat1', { defaultValue: 'Trigger workflows from any event' }),
-                t('landing.automation.feat2', { defaultValue: 'Connect to 400+ apps (Notion, Slack, Gmail…)' }),
-                t('landing.automation.feat3', { defaultValue: 'Schedule & repeat any AI task automatically' }),
-              ].map((feat, i) => (
-                <li key={i} className="landing__automation-feat">
-                  <span className="landing__trust-check">✓</span> {feat}
-                </li>
-              ))}
-            </ul>
-            <Link to="/pricing" className="btn btn-primary">
-              {t('landing.automation.cta', { defaultValue: 'Add Automation — €10 →' })}
-            </Link>
-          </motion.div>
-          <motion.div
-            className="landing__automation-visual"
-            initial={{ opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <div className="landing__automation-card">
-              <div className="landing__automation-card-header">
-                <span className="landing__automation-card-dot landing__automation-card-dot--green" />
-                <span className="landing__automation-card-label">⚡ n8n Workflow — {isEs ? 'Activo' : 'Active'}</span>
-              </div>
-              {[
-                { icon: '🔍', label: isEs ? 'Keyword Research' : 'Keyword Research', status: isEs ? '✓ Hecho' : '✓ Done' },
-                { icon: '✍️', label: isEs ? 'Blog Post Writer' : 'Blog Post Writer', status: isEs ? '✓ Hecho' : '✓ Done' },
-                { icon: '📱', label: isEs ? 'Social Captions' : 'Social Captions', status: isEs ? '↻ En curso…' : '↻ Running…' },
-                { icon: '📧', label: isEs ? 'Email Campaign' : 'Email Campaign', status: isEs ? '⏳ En cola' : '⏳ Queued' },
-              ].map((node, i) => (
-                <motion.div
-                  key={i}
-                  className={`landing__automation-node${node.status.includes('Running') ? ' running' : ''}`}
-                  initial={{ opacity: 0, x: 12 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: 0.3 + i * 0.1 }}
-                >
-                  <span className="landing__automation-node-icon">{node.icon}</span>
-                  <span className="landing__automation-node-label">{node.label}</span>
-                  <span className="landing__automation-node-status">{node.status}</span>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ── Why Not ChatGPT ───────────────────────────────────────────────
-const CHATGPT_VS = [
-  { genericKey: 'landing.whychatgpt.vs.0.generic', gormaranKey: 'landing.whychatgpt.vs.0.gormaran', gDefault: 'Open-ended answers', rDefault: 'Execution frameworks by category' },
-  { genericKey: 'landing.whychatgpt.vs.1.generic', gormaranKey: 'landing.whychatgpt.vs.1.gormaran', gDefault: 'Trial-and-error prompting', rDefault: 'Guided inputs, zero guesswork' },
-  { genericKey: 'landing.whychatgpt.vs.2.generic', gormaranKey: 'landing.whychatgpt.vs.2.gormaran', gDefault: 'Same tool for everything', rDefault: 'Specialized tools per category' },
-  { genericKey: 'landing.whychatgpt.vs.3.generic', gormaranKey: 'landing.whychatgpt.vs.3.gormaran', gDefault: 'Raw text you need to edit', rDefault: 'Structured outputs, ready to publish' },
-];
-
-function WhyNotChatGPT() {
-  const { t, i18n } = useTranslation();
-  const isEs = i18n.language?.startsWith('es');
-  return (
-    <section className="landing__whychatgpt section">
-      <div className="container">
-        <AnimatedSection>
-          <span className="section-pill">{t('landing.whychatgpt.pill', { defaultValue: 'Why Gormaran' })}</span>
-          <h2 className="section-title">
-            {t('landing.whychatgpt.title', { defaultValue: 'Why not just use ChatGPT, Gemini or Claude?' })}
-          </h2>
-          <p className="section-subtitle">
-            {t('landing.whychatgpt.body', { defaultValue: 'Those tools give you answers. Gormaran gives you execution frameworks — specialized tools by category with structured outputs you can publish and use immediately, without trial-and-error.' })}
-          </p>
-        </AnimatedSection>
-
-        <motion.div
-          className="landing__whychatgpt-table"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="landing__whychatgpt-col landing__whychatgpt-col--generic">
-            <div className="landing__whychatgpt-col-header">
-              <span className="landing__whychatgpt-col-label">
-                {t('landing.whychatgpt.col1', { defaultValue: 'Generic AI' })}
-              </span>
-            </div>
-            {CHATGPT_VS.map((row, i) => (
-              <div key={i} className="landing__whychatgpt-row">
-                <span className="landing__whychatgpt-icon">✗</span>
-                {t(row.genericKey, { defaultValue: row.gDefault })}
-              </div>
-            ))}
-          </div>
-          <div className="landing__whychatgpt-col landing__whychatgpt-col--gormaran">
-            <div className="landing__whychatgpt-col-header">
-              <span className="landing__whychatgpt-col-label gradient-text">Gormaran</span>
-            </div>
-            {CHATGPT_VS.map((row, i) => (
-              <div key={i} className="landing__whychatgpt-row">
-                <span className="landing__whychatgpt-icon landing__whychatgpt-icon--yes">✓</span>
-                {t(row.gormaranKey, { defaultValue: row.rDefault })}
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.blockquote
-          className="landing__quote"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.45, delay: 0.2 }}
-        >
-          <p className="landing__quote-text">
-            {isEs
-              ? '"Pasé de dedicar 3 horas semanales al contenido del blog a menos de 20 minutos. Los resultados son estructurados y están listos para publicar — sin edición."'
-              : '"I went from spending 3 hours a week on blog content to under 20 minutes. The outputs are structured and ready to publish — no editing needed."'}
-          </p>
-          <footer className="landing__quote-author">
-            <strong>Laura M.</strong>
-            <span>{isEs ? 'Marketing Manager' : 'Marketing Manager'}</span>
-          </footer>
-        </motion.blockquote>
-      </div>
-    </section>
-  );
-}
-
-// ── Support / Atención Section ────────────────────────────────────
-const SUPPORT_ITEMS = [
-  {
-    icon: '💬',
-    titleKey: 'landing.support.wa.title',
-    descKey:  'landing.support.wa.desc',
-    tDefault: 'WhatsApp Community',
-    dDefault: 'Weekly marketing tips, AI strategies and direct access to the Gormaran team. Free, no spam.',
-  },
-  {
-    icon: '📧',
-    titleKey: 'landing.support.email.title',
-    descKey:  'landing.support.email.desc',
-    tDefault: 'Priority Email Support',
-    dDefault: 'Get a real answer within 24 hours — not a bot. Available on Grow, Scale and Evolution plans.',
-  },
-  {
-    icon: '👤',
-    titleKey: 'landing.support.manager.title',
-    descKey:  'landing.support.manager.desc',
-    tDefault: 'Dedicated Account Manager',
-    dDefault: 'Personalised onboarding and strategy sessions. Exclusive to Evolution plan subscribers.',
-  },
-];
-
-function SupportSection() {
-  const { t } = useTranslation();
-  return (
-    <section className="landing__support section">
-      <div className="container">
-        <AnimatedSection>
-          <span className="section-pill">{t('landing.support.pill', { defaultValue: 'Support' })}</span>
-          <h2 className="section-title">
-            {t('landing.support.titlePre', { defaultValue: 'You are never' })}{' '}
-            <span className="gradient-text">{t('landing.support.titleHighlight', { defaultValue: 'alone' })}</span>
-          </h2>
-          <p className="section-subtitle">
-            {t('landing.support.subtitle', { defaultValue: 'Behind every plan there is a team ready to help you get results — not just a subscription.' })}
-          </p>
-        </AnimatedSection>
-        <motion.div
-          className="landing__support-grid"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-20px' }}
-          variants={stagger}
-        >
-          {SUPPORT_ITEMS.map((item) => (
-            <motion.div key={item.titleKey} className="landing__support-card" variants={fadeUp}>
-              <div className="landing__support-icon">{item.icon}</div>
-              <h3 className="landing__support-title">
-                {t(item.titleKey, { defaultValue: item.tDefault })}
-              </h3>
-              <p className="landing__support-desc">
-                {t(item.descKey, { defaultValue: item.dDefault })}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-// ── Main Component ───────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────
+   Main Landing Page
+───────────────────────────────────────────────────────────────── */
 export default function LandingPage() {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
@@ -1659,9 +813,9 @@ export default function LandingPage() {
   return (
     <div className="landing">
 
-      {/* ── SECTION 1: Hero ── */}
+      {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="landing__hero">
-        <div className="landing__hero-bg">
+        <div className="landing__hero-bg" aria-hidden="true">
           <div className="landing__orb landing__orb-1" />
           <div className="landing__orb landing__orb-2" />
           <div className="landing__orb landing__orb-3" />
@@ -1669,66 +823,56 @@ export default function LandingPage() {
         </div>
 
         <div className="container">
-          <motion.div
-            className="landing__hero-content"
-            initial="hidden"
-            animate="visible"
-            variants={stagger}
-          >
+          <motion.div className="landing__hero-content" initial="hidden" animate="visible" variants={stagger}>
+
             <motion.div variants={fadeUp} transition={{ duration: 0.3 }}>
-              <span className="landing__hero-badge">
+              <span className="sx-hero-badge">
                 {t('landing.hero.badge', { defaultValue: '⚡ AI-Powered Platform' })}
               </span>
             </motion.div>
 
-            <motion.h1 className="landing__hero-title" variants={fadeUp} transition={{ duration: 0.35, delay: 0.05 }}>
+            <motion.h1 className="sx-hero-title" variants={fadeUp} transition={{ duration: 0.35, delay: 0.05 }}>
               <RotatingText />
-              <span className="gradient-text">{t('landing.hero.title2')}</span>
+              <span className="sx-accent-text">{t('landing.hero.title2')}</span>
             </motion.h1>
 
-            <motion.p className="landing__hero-subtitle" variants={fadeUp} transition={{ duration: 0.35, delay: 0.1 }}>
-              {t('landing.hero.subtitleLine1', { defaultValue: '30+ AI tools for marketing, content & business growth.' })}
+            <motion.p className="sx-hero-subtitle" variants={fadeUp} transition={{ duration: 0.35, delay: 0.1 }}>
+              {t('landing.hero.subtitleLine1', { defaultValue: 'Text · Image · Video · Audio · Design' })}
               <br />
-              {t('landing.hero.subtitleLine2', { defaultValue: 'No generic prompts.' })}
+              {t('landing.hero.subtitleLine2', { defaultValue: 'All AI models. One platform.' })}
             </motion.p>
 
             <HeroPromptBox />
 
-            <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.35, delay: 0.15 }}>
-              <Link to="/auth?mode=register" className="btn btn-primary btn-lg landing__cta-btn">
+            <motion.div className="sx-hero-actions" variants={fadeUp} transition={{ duration: 0.35, delay: 0.15 }}>
+              <Link to="/auth?mode=register" className="sx-btn-primary sx-btn-lg">
                 {t('landing.hero.cta')}
-                <span className="landing__cta-arrow">→</span>
+                <span>→</span>
               </Link>
               <button
-                className="btn btn-secondary btn-lg"
+                className="sx-btn-secondary sx-btn-lg"
                 onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 {t('landing.hero.getDemo', { defaultValue: 'How it works ↓' })}
               </button>
             </motion.div>
 
-            <motion.div className="landing__hero-trust" variants={fadeUp} transition={{ duration: 0.35, delay: 0.2 }}>
-              <span className="landing__trust-item">
-                <span className="landing__trust-check">✓</span>
-                {t('landing.hero.trust1', { defaultValue: 'No credit card required' })}
-              </span>
-              <span className="landing__trust-divider">·</span>
-              <span className="landing__trust-item">
-                <span className="landing__trust-check">✓</span>
-                {t('landing.hero.trust2', { defaultValue: '24-hour free trial' })}
-              </span>
-              <span className="landing__trust-divider">·</span>
-              <span className="landing__trust-item">
-                <span className="landing__trust-check">✓</span>
-                {t('landing.hero.trust3', { defaultValue: 'Cancel anytime' })}
-              </span>
+            <motion.div className="sx-hero-trust" variants={fadeUp} transition={{ duration: 0.35, delay: 0.2 }}>
+              {[
+                t('landing.hero.trust1', { defaultValue: 'No credit card required' }),
+                t('landing.hero.trust2', { defaultValue: '24-hour free trial' }),
+                t('landing.hero.trust3', { defaultValue: 'Cancel anytime' }),
+              ].map((item, i) => (
+                <span key={i} className="sx-trust-item">
+                  <span className="sx-trust-check">✓</span>{item}
+                  {i < 2 && <span className="landing__trust-divider" style={{ margin: '0 0.25rem', opacity: 0.3 }}>·</span>}
+                </span>
+              ))}
             </motion.div>
 
             <motion.div className="landing__hero-social-proof" variants={fadeUp} transition={{ duration: 0.35, delay: 0.25 }}>
               <div className="landing__avatars">
-                {['A','B','C','D','E'].map((l) => (
-                  <div key={l} className="landing__avatar">{l}</div>
-                ))}
+                {['A','B','C','D','E'].map((l) => <div key={l} className="landing__avatar">{l}</div>)}
               </div>
               <span>
                 {t('landing.hero.joinPre', { defaultValue: 'Join' })}{' '}
@@ -1737,168 +881,184 @@ export default function LandingPage() {
               </span>
             </motion.div>
           </motion.div>
-
         </div>
-        <HeroShowcase />
+
+        {/* Tool type pills */}
+        <div className="sx-hero-tool-pills">
+          {AI_TOOLS.map((tool) => (
+            <Link key={tool.id} to="/auth?mode=register" className="sx-tool-pill">
+              <span>{tool.emoji}</span>
+              {t(tool.titleKey, { defaultValue: tool.defaultTitle })}
+            </Link>
+          ))}
+        </div>
       </section>
 
-      {/* ── 2: How It Works ── */}
+      {/* ── AI TOOLS SECTION ────────────────────────────────────── */}
+      <ToolsSection />
+
+      {/* ── AI MODELS ───────────────────────────────────────────── */}
+      <AIModelsSection />
+
+      {/* ── HOW IT WORKS ────────────────────────────────────────── */}
       <section id="how-it-works" className="landing__how section">
         <div className="container">
           <AnimatedSection>
-            <span className="section-pill">{t('landing.how.pill', { defaultValue: 'How It Works' })}</span>
-            <h2 className="section-title">
-              {t('landing.how.title')}
-            </h2>
+            <span className="sx-pill">{t('landing.how.pill', { defaultValue: 'How It Works' })}</span>
+            <h2 className="sx-section-title">{t('landing.how.title')}</h2>
           </AnimatedSection>
           <HowItWorksGrid />
         </div>
       </section>
 
-      {/* ── 3: Stats ── */}
+      {/* ── STATS ───────────────────────────────────────────────── */}
       <section className="landing__stats">
         <div className="container">
           <motion.div
-            className="landing__stats-grid"
+            className="sx-stats-grid"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={stagger}
           >
             {STATS.map((stat) => (
-              <motion.div key={stat.labelKey} className="landing__stat-item" variants={fadeUp}>
-                <div className="landing__stat-value">
-                  <span className="gradient-text">{stat.value}{stat.unit}</span>
+              <motion.div key={stat.labelKey} className="sx-stat-item" variants={fadeUp}>
+                <div className="sx-stat-value">
+                  {stat.value}<span className="sx-accent-text">{stat.unit}</span>
                 </div>
-                <div className="landing__stat-label">{t(stat.labelKey, { defaultValue: stat.defaultLabel })}</div>
+                <div className="sx-stat-label">{t(stat.labelKey, { defaultValue: stat.defaultLabel })}</div>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ── 4: Why Not ChatGPT + Testimonial ── */}
-      <WhyNotChatGPT />
-
-      {/* ── 5: What You Get (tools) ── */}
-      <WhatYouGet />
-
-      {/* ── 6: Workflow Chain ── */}
-      <WorkflowChain />
-
-      {/* ── 7: Instagram Compact (free tool — no-risk entry) ── */}
-      <InstagramCompact />
-
-      {/* ── 8: Automation (upsell before pricing) ── */}
-      <AutomationSection />
-
-      {/* ── 9: Client Logos (social proof before price) ── */}
-      <ClientLogos />
-
-      {/* ── 10: Plans ── */}
+      {/* ── PRICING ─────────────────────────────────────────────── */}
       <section className="landing__plans section">
         <div className="container">
           <AnimatedSection>
-            <span className="section-pill">{t('landing.plans.pill', { defaultValue: isEs ? 'Precios' : 'Pricing' })}</span>
-            <h2 className="section-title">
+            <span className="sx-pill">{t('landing.plans.pill', { defaultValue: isEs ? 'Precios' : 'Pricing' })}</span>
+            <h2 className="sx-section-title">
               {t('landing.plans.title2', { defaultValue: isEs ? 'Empieza gratis. Escala sin límites.' : 'Start free. Scale without limits.' })}
             </h2>
           </AnimatedSection>
           <motion.div
-            className="landing__plans2"
+            className="sx-plans-grid"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-20px' }}
+            viewport={{ once: true }}
             variants={stagger}
           >
             {/* FREE */}
-            <motion.div className="landing__plan2 landing__plan2--free" variants={fadeUp}>
-              <h3 className="landing__plan2-name">Free</h3>
-              <div className="landing__plan2-price">€0 <span>{isEs ? '/mes' : '/mo'}</span></div>
-              <ul className="landing__plan2-features">
-                <li>✓ {isEs ? '10 automatizaciones al mes' : '10 automations per month'}</li>
-                <li>✓ {isEs ? 'Todas las herramientas de IA (30+)' : 'All AI tools (30+)'}</li>
-                <li>✓ {isEs ? '1 workspace' : '1 workspace'}</li>
-                <li className="landing__plan2-locked">✗ {isEs ? 'Automatizaciones ilimitadas' : 'Unlimited automations'}</li>
+            <motion.div className="sx-plan" variants={fadeUp}>
+              <h3 className="sx-plan-name">Free</h3>
+              <div className="sx-plan-price">€0 <span>/{isEs ? 'mes' : 'mo'}</span></div>
+              <ul className="sx-plan-features">
+                <li>✓ 10 {isEs ? 'generaciones/mes' : 'generations/month'}</li>
+                <li>✓ {isEs ? 'Todos los agentes IA (texto, imagen, vídeo…)' : 'All AI agents (text, image, video…)'}</li>
+                <li>✓ 1 workspace</li>
+                <li className="sx-plan-locked">✗ {isEs ? 'Generaciones ilimitadas' : 'Unlimited generations'}</li>
               </ul>
-              <Link to="/auth?mode=register" className="btn btn-secondary landing__plan2-cta">
+              <Link to="/auth?mode=register" className="sx-btn-secondary sx-plan-cta">
                 {isEs ? 'Empezar gratis' : 'Start free'}
               </Link>
             </motion.div>
 
             {/* GROW */}
-            <motion.div className="landing__plan2 landing__plan2--pro" variants={fadeUp}>
-              <div className="landing__plan2-badge">⭐ {isEs ? 'Más Popular' : 'Most Popular'}</div>
-              <h3 className="landing__plan2-name">Grow</h3>
-              <div className="landing__plan2-price">
-                €15 <span>/{isEs ? 'mes (anual)' : 'mo (annual)'}</span>
-              </div>
-              <p className="landing__plan2-annual">{isEs ? 'o €19/mes mensual' : 'or €19/mo monthly'}</p>
-              <ul className="landing__plan2-features">
-                <li>✓ <strong>{isEs ? 'Automatizaciones ilimitadas' : 'Unlimited automations'}</strong></li>
-                <li>✓ {isEs ? 'Todas las herramientas de IA (30+)' : 'All AI tools (30+)'}</li>
-                <li>✓ {isEs ? '3 workspaces con perfil de marca' : '3 workspaces with brand profile'}</li>
+            <motion.div className="sx-plan sx-plan--featured" variants={fadeUp}>
+              <div className="sx-plan-badge">⭐ {isEs ? 'Más Popular' : 'Most Popular'}</div>
+              <h3 className="sx-plan-name">Grow</h3>
+              <div className="sx-plan-price">€15 <span>/{isEs ? 'mes (anual)' : 'mo (annual)'}</span></div>
+              <p className="sx-plan-alt">{isEs ? 'o €19/mes mensual' : 'or €19/mo monthly'}</p>
+              <ul className="sx-plan-features">
+                <li>✓ <strong>{isEs ? 'Generaciones ilimitadas' : 'Unlimited generations'}</strong></li>
+                <li>✓ {isEs ? 'Todos los agentes IA + modelos' : 'All AI agents & models'}</li>
+                <li>✓ {isEs ? '3 workspaces con perfil de marca' : '3 workspaces + brand profile'}</li>
                 <li>✓ {isEs ? 'Templates optimizados por nicho' : 'Niche-optimized templates'}</li>
-                <li>✓ {isEs ? 'Gestión de equipo' : 'Team management'}</li>
+                <li>✓ {isEs ? 'Soporte prioritario' : 'Priority support'}</li>
               </ul>
-              <Link to="/pricing" className="btn btn-primary landing__plan2-cta">
+              <Link to="/pricing" className="sx-btn-primary sx-plan-cta">
                 {isEs ? 'Ver Plan Grow →' : 'See Grow Plan →'}
               </Link>
-              <p className="landing__plan2-guarantee">
+              <p className="sx-plan-guarantee">
                 🔒 {isEs ? 'Garantía 7 días · Sin permanencia' : '7-day guarantee · No lock-in'}
               </p>
             </motion.div>
+
+            {/* SCALE */}
+            <motion.div className="sx-plan" variants={fadeUp}>
+              <h3 className="sx-plan-name">Scale</h3>
+              <div className="sx-plan-price">€39 <span>/{isEs ? 'mes (anual)' : 'mo (annual)'}</span></div>
+              <p className="sx-plan-alt">{isEs ? 'o €49/mes mensual' : 'or €49/mo monthly'}</p>
+              <ul className="sx-plan-features">
+                <li>✓ {isEs ? 'Todo en Grow' : 'Everything in Grow'}</li>
+                <li>✓ {isEs ? 'Herramientas de agencia' : 'Agency tools'}</li>
+                <li>✓ {isEs ? 'E-commerce & Creative AI' : 'E-commerce & Creative AI'}</li>
+                <li>✓ {isEs ? 'Gestión de equipo' : 'Team management'}</li>
+                <li>✓ {isEs ? 'Soporte dedicado' : 'Dedicated support'}</li>
+              </ul>
+              <Link to="/pricing" className="sx-btn-secondary sx-plan-cta">
+                {isEs ? 'Ver Scale →' : 'See Scale →'}
+              </Link>
+            </motion.div>
           </motion.div>
-          <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-            <Link to="/pricing" className="btn btn-secondary btn-sm">
-              {isEs ? 'Ver todos los planes (Scale, Evolution) →' : 'See all plans (Scale, Evolution) →'}
+
+          <div className="sx-plans-footer">
+            <Link to="/pricing" className="sx-btn-ghost">
+              {isEs ? 'Ver todos los planes (Evolution, Add-ons) →' : 'See all plans (Evolution, Add-ons) →'}
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── 11: Support (remove last objections) ── */}
-      <SupportSection />
+      {/* ── FAQ ─────────────────────────────────────────────────── */}
+      <FAQSection />
 
-      {/* ── SECTION 10: Stop Wasting Time ── */}
+      {/* ── FINAL CTA ───────────────────────────────────────────── */}
       <section className="landing__cta-full section">
         <div className="container">
           <AnimatedSection>
-            <div className="landing__cta-full-card">
-              <div className="landing__cta-orb" />
-              <span className="landing__cta-full-badge">
+            <div className="sx-cta-card">
+              <div className="sx-cta-orbs" aria-hidden="true">
+                <div className="sx-cta-orb sx-cta-orb--1" />
+                <div className="sx-cta-orb sx-cta-orb--2" />
+              </div>
+              <span className="sx-hero-badge" style={{ position: 'relative', zIndex: 1 }}>
                 {t('landing.cta.badge', { defaultValue: 'Get Started Today' })}
               </span>
-              <h2 className="landing__cta-full-title">
+              <h2 className="sx-cta-title">
                 {t('landing.cta.title', { defaultValue: 'Stop wasting time on manual work.' })}
                 <br />
-                <span className="gradient-text">
+                <span className="sx-accent-text">
                   {t('landing.cta.titleHighlight', { defaultValue: 'Let AI handle it.' })}
                 </span>
               </h2>
-              <p className="landing__cta-full-subtitle">
-                {t('landing.cta.subtitle')}
-                <br />
-                {t('landing.cta.subtitleNote')}
+              <p className="sx-cta-subtitle">
+                {t('landing.cta.subtitle', { defaultValue: 'Text, images, video, audio, design — all AI models in one platform.' })}
               </p>
-              <div className="landing__cta-actions">
-                <Link to="/auth?mode=register" className="btn btn-primary btn-lg landing__cta-btn">
+              <div className="sx-cta-actions">
+                <Link to="/auth?mode=register" className="sx-btn-primary sx-btn-lg" style={{ position: 'relative', zIndex: 1 }}>
                   {t('landing.cta.startFree', { defaultValue: 'Start Free Now →' })}
-                  <span className="landing__cta-arrow">→</span>
                 </Link>
                 <button
-                  className="btn btn-secondary btn-lg"
+                  className="sx-btn-secondary sx-btn-lg"
+                  style={{ position: 'relative', zIndex: 1 }}
                   onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                  {t('landing.cta.getDemo', { defaultValue: 'How it works ↓' })}
+                  {t('landing.hero.getDemo', { defaultValue: 'How it works ↓' })}
                 </button>
               </div>
-              <div className="landing__cta-trust">
-                <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust1', { defaultValue: 'No credit card required' })}</span>
-                <span className="landing__trust-divider">·</span>
-                <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust2', { defaultValue: '24-hour free trial' })}</span>
-                <span className="landing__trust-divider">·</span>
-                <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust3', { defaultValue: 'Cancel anytime' })}</span>
+              <div className="sx-hero-trust" style={{ position: 'relative', zIndex: 1 }}>
+                {[
+                  t('landing.hero.trust1', { defaultValue: 'No credit card required' }),
+                  t('landing.hero.trust2', { defaultValue: '24-hour free trial' }),
+                  t('landing.hero.trust3', { defaultValue: 'Cancel anytime' }),
+                ].map((item, i) => (
+                  <span key={i} className="sx-trust-item">
+                    <span className="sx-trust-check">✓</span>{item}
+                    {i < 2 && <span style={{ margin: '0 0.25rem', opacity: 0.3 }}>·</span>}
+                  </span>
+                ))}
               </div>
             </div>
           </AnimatedSection>
