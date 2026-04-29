@@ -691,7 +691,7 @@ export default function LandingPage() {
 
             <motion.div variants={fadeUp} transition={{ duration: 0.3 }}>
               <span className="landing__hero-badge">
-                {t('landing.hero.badge', { defaultValue: '30 purpose-built AI agents' })}
+                {t('landing.hero.badge', { defaultValue: '⚡ One subscription' })}
               </span>
             </motion.div>
 
@@ -701,9 +701,9 @@ export default function LandingPage() {
             </motion.h1>
 
             <motion.p className="landing__hero-subtitle" variants={fadeUp} transition={{ duration: 0.35, delay: 0.1 }}>
-              {t('landing.hero.subtitleLine1', { defaultValue: 'Structured AI output for strategy, content, finance, brand and operations.' })}
+              {t('landing.hero.subtitleLine1', { defaultValue: 'Unlimited access to top AI tools.' })}
               <br />
-              {t('landing.hero.subtitleLine2', { defaultValue: 'No prompting required.' })}
+              {t('landing.hero.subtitleLine2', { defaultValue: '30+ specialized agents. No prompting required.' })}
             </motion.p>
 
             <HeroPromptBox />
@@ -870,7 +870,7 @@ export default function LandingPage() {
               </p>
               <div className="landing__cta-actions">
                 <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
-                  {t('landing.cta.startFree', { defaultValue: 'Start for free →' })}
+                  {t('landing.cta.startFree', { defaultValue: 'Start Creating Free →' })}
                 </Link>
                 <button className="btn btn-secondary btn-lg"
                   onClick={() => document.getElementById('agents')?.scrollIntoView({ behavior: 'smooth' })}>
