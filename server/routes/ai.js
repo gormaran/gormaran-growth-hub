@@ -227,6 +227,91 @@ router.post('/demo', demoLimiter, async (req, res) => {
   }
 });
 
+// POST /api/ai/chat — general streaming chat, auth required
+router.post('/chat', aiLimiter, verifyToken, async (req, res) => {
+  const { message, history = [], tab = 'text' } = req.body;
+  if (!message) return res.status(400).json({ error: 'Message is required' });
+
+  const SYSTEM_PROMPTS = {
+    text: `You are a sharp, versatile AI assistant on Gormaran — an AI creation platform. Help users create content, strategies, copy, analyses and more. Be direct and genuinely useful. Format with markdown (bold, bullets, code blocks) when it improves clarity. Never pad responses.`,
+    design: `You are a creative director AI on Gormaran. Help users craft detailed, effective image generation prompts. Describe composition, style, lighting, mood and technical parameters clearly. Suggest improvements to their visual concepts.`,
+    video: `You are a video production AI on Gormaran. Help users write video scripts, shot lists, storyboards and creative briefs for video content. Be specific about visuals, pacing and narrative structure.`,
+    audio: `You are a music and audio AI on Gormaran. Help users create prompts for music generation, write song lyrics, craft podcast scripts and design soundscapes. Be creative and specific about mood, tempo and style.`,
+    toolkit: `You are a strategic AI assistant on Gormaran. Help users with business analysis, market research, financial planning and operational tasks. Be precise, data-oriented and actionable.`,
+  };
+
+  const systemPrompt = SYSTEM_PROMPTS[tab] || SYSTEM_PROMPTS.text;
+
+  // Build messages from history
+  const messages = [
+    ...history.map(m => ({ role: m.role, content: m.content })),
+    { role: 'user', content: message },
+  ];
+
+  // Usage tracking for free users
+  const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const isAdmin = adminUids.includes(req.user?.uid);
+
+  if (!isAdmin) {
+    try {
+      const adminSdk = require('firebase-admin');
+      const fsDb = adminSdk.firestore();
+      const userRef = fsDb.collection('users').doc(req.user.uid);
+      const userDoc = await userRef.get();
+      const data = userDoc.exists ? userDoc.data() : {};
+      const planAliases = { grow: 'pro', scale: 'pro', evolution: 'enterprise' };
+      const sub = planAliases[data.subscription] || data.subscription || 'free';
+      const FREE_LIMIT = 10;
+
+      if (sub === 'free') {
+        const now = Date.now();
+        const resetMs = data.usageResetDate?.toMillis?.() || 0;
+        const count = resetMs > now ? (data.usageCount || 0) : 0;
+        if (count >= FREE_LIMIT) {
+          return res.status(403).json({ error: 'Monthly limit reached. Upgrade to continue.' });
+        }
+        const nextReset = new Date(now);
+        nextReset.setMonth(nextReset.getMonth() + 1);
+        nextReset.setDate(1);
+        nextReset.setHours(0, 0, 0, 0);
+        await userRef.set({
+          usageCount: count + 1,
+          usageResetDate: adminSdk.firestore.Timestamp.fromMillis(resetMs > now ? resetMs : nextReset.getTime()),
+        }, { merge: true });
+      }
+    } catch (err) {
+      console.error('[Chat] Firestore error:', err.message);
+    }
+  }
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  try {
+    const stream = client.messages.stream({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4096,
+      system: systemPrompt,
+      messages,
+    });
+
+    stream.on('text', (text) => res.write(`data: ${JSON.stringify({ text })}\n\n`));
+    stream.on('error', (err) => {
+      res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+      res.end();
+    });
+    stream.on('end', () => { res.write('data: [DONE]\n\n'); res.end(); });
+    req.on('close', () => stream.abort());
+  } catch (err) {
+    if (!res.headersSent) return res.status(500).json({ error: 'Chat failed' });
+    res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+    res.end();
+  }
+});
+
 // POST /api/ai/translate — translate text using Claude
 router.post('/translate', verifyToken, async (req, res) => {
   const { text, from = 'es', to = 'en' } = req.body;

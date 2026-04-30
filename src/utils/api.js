@@ -110,6 +110,44 @@ export async function streamDemoResponse({ prompt, onChunk, onDone, onError, sig
   }
 }
 
+// Stream authenticated chat response
+export async function streamChat({ message, history = [], tab = 'text', signal, onChunk, onDone, onError }) {
+  try {
+    const authHeaders = await getAuthHeader();
+    const response = await fetch(`${API_URL}/api/ai/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
+      body: JSON.stringify({ message, history, tab }),
+      signal,
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({ error: 'Request failed' }));
+      throw new Error(err.error || `HTTP ${response.status}`);
+    }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      for (const line of chunk.split('\n')) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') { onDone?.(); return; }
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.text) onChunk(parsed.text);
+          if (parsed.error) { onError?.(parsed.error); return; }
+        } catch {}
+      }
+    }
+    onDone?.();
+  } catch (err) {
+    if (err.name === 'AbortError') return;
+    onError?.(err.message || 'Chat failed');
+  }
+}
+
 // Validate a Stripe promotion code
 export async function validatePromoCode(code) {
   const authHeaders = await getAuthHeader();
