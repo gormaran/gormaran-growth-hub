@@ -87,6 +87,16 @@ function sessionIcon(tab) {
 ───────────────────────────────────────────────────────────────── */
 function Spinner() { return <span className="dash__spinner" />; }
 
+function ThinkingDots() {
+  return (
+    <span className="dash__thinking">
+      <span className="dash__thinking-dot" />
+      <span className="dash__thinking-dot" />
+      <span className="dash__thinking-dot" />
+    </span>
+  );
+}
+
 /* ─────────────────────────────────────────────────────────────────
    Welcome / empty state
 ───────────────────────────────────────────────────────────────── */
@@ -254,7 +264,7 @@ function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount,
                 <div className="dash__message-text">
                   {streamText
                     ? <><ReactMarkdown remarkPlugins={[remarkGfm]}>{streamText}</ReactMarkdown><span className="dash__cursor" /></>
-                    : <Spinner />
+                    : <ThinkingDots />
                   }
                 </div>
               </div>

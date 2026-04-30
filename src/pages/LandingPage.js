@@ -389,94 +389,131 @@ const STATS = [
    How It Works mockups
 ───────────────────────────────────────────────────────────────── */
 const HOW_STEPS = [
-  { num: '01', titleKey: 'landing.how.step1.title', descKey: 'landing.how.step1.desc', defaultTitle: 'Pick your agent', defaultDesc: 'Choose from 10 capability areas — strategy, content, finance, creative and more.' },
-  { num: '02', titleKey: 'landing.how.step2.title', descKey: 'landing.how.step2.desc', defaultTitle: 'Fill in your brief', defaultDesc: 'Answer a few focused fields. No prompting required — the agent handles the rest.' },
-  { num: '03', titleKey: 'landing.how.step3.title', descKey: 'landing.how.step3.desc', defaultTitle: 'Get structured output', defaultDesc: 'Professional output delivered in seconds — formatted, reasoned and ready to use.' },
-  { num: '04', titleKey: 'landing.how.step4.title', descKey: 'landing.how.step4.desc', defaultTitle: 'Copy, refine, ship', defaultDesc: 'Edit inline, regenerate, or copy directly to your workflow. Full control, zero friction.' },
+  { num: '01', titleKey: 'landing.how.step1.title', descKey: 'landing.how.step1.desc', defaultTitle: 'Choose your AI model', defaultDesc: 'Select from ChatGPT, Claude, Gemini, Grok and more — each optimised for different tasks.' },
+  { num: '02', titleKey: 'landing.how.step2.title', descKey: 'landing.how.step2.desc', defaultTitle: 'Describe what you need', defaultDesc: 'Type your request in plain language. No prompting knowledge required.' },
+  { num: '03', titleKey: 'landing.how.step3.title', descKey: 'landing.how.step3.desc', defaultTitle: 'Get AI output instantly', defaultDesc: 'Watch the response stream in real time — text, strategy, code, or images.' },
+  { num: '04', titleKey: 'landing.how.step4.title', descKey: 'landing.how.step4.desc', defaultTitle: 'Copy, refine, iterate', defaultDesc: 'Copy in one click, ask follow-ups, or generate images — all in the same conversation.' },
 ];
 
-const TOOL_TILES = [
-  { emoji: '🎯', labelEs: 'Estrategia', labelEn: 'Strategy', active: true },
-  { emoji: '✍️', labelEs: 'Contenido',  labelEn: 'Content' },
-  { emoji: '📈', labelEs: 'Marketing',  labelEn: 'Marketing' },
-  { emoji: '🎨', labelEs: 'Creative',   labelEn: 'Creative' },
-  { emoji: '💰', labelEs: 'Finanzas',   labelEn: 'Finance' },
-  { emoji: '🚀', labelEs: 'Startup',    labelEn: 'Startup' },
+/* Chat-style models for HiwMockup */
+const HIW_MODELS = [
+  { letter: 'G', name: 'ChatGPT',  color: '#10a37f', active: true },
+  { letter: 'C', name: 'Claude',   color: '#e54717' },
+  { letter: 'G', name: 'Gemini',   color: '#4285f4' },
+  { letter: 'X', name: 'Grok',     color: '#e0e0e0' },
+  { letter: 'D', name: 'Deepseek', color: '#1677ff' },
 ];
-const OUTPUT_LINES_WIDTHS = [72, 90, 65, 85, 55, 78, 60];
+const HIW_OUTPUT_LINES = [78, 92, 68, 85, 55, 80, 62];
 
 function HiwMockup({ step, active, isEs }) {
+  /* Step 0 — Model selection panel */
   if (step === 0) return (
-    <div className="hiw-mock">
+    <div className="hiw-mock" style={{ width: '100%' }}>
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
         <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
-        <div className="hiw-mock__chrome-label">Gormaran AI</div>
+        <div className="hiw-mock__chrome-label">{isEs ? 'Selección de modelo' : 'Model selection'}</div>
       </div>
-      <div className="hiw-mock__tile-grid">
-        {TOOL_TILES.map((tile) => (
-          <div key={tile.emoji} className={`hiw-mock__tile${tile.active ? ' hiw-mock__tile--active' : ''}`}>
-            <span className="hiw-mock__tile-emoji">{tile.emoji}</span>
-            <span className="hiw-mock__tile-label">{isEs ? tile.labelEs : tile.labelEn}</span>
-            <div className="hiw-mock__tile-bar" />
-            <div className="hiw-mock__tile-bar hiw-mock__tile-bar--sm" />
+      <div style={{ padding: '0.5rem 0.6rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+        {HIW_MODELS.map((m, i) => (
+          <div key={m.name} style={{
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+            padding: '0.35rem 0.5rem', borderRadius: '7px',
+            background: m.active ? 'rgba(99,102,241,0.07)' : 'transparent',
+            border: `1px solid ${m.active ? 'rgba(99,102,241,0.2)' : 'transparent'}`,
+          }}>
+            <div style={{ width: 22, height: 22, borderRadius: 6, background: `${m.color}22`, color: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 800, flexShrink: 0 }}>{m.letter}</div>
+            <span style={{ fontSize: '0.72rem', color: m.active ? 'var(--color-primary-light)' : 'var(--text-muted)', fontWeight: m.active ? 600 : 400 }}>{m.name}</span>
+            {m.active && <div style={{ marginLeft: 'auto', width: 10, height: 10, borderRadius: '50%', border: '2px solid var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-primary)' }} /></div>}
           </div>
         ))}
       </div>
     </div>
   );
+
+  /* Step 1 — Typing a message */
   if (step === 1) return (
-    <div className="hiw-mock">
+    <div className="hiw-mock" style={{ width: '100%' }}>
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
         <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
-        <div className="hiw-mock__chrome-label">🎯 {isEs ? 'Análisis de Mercado' : 'Market Analysis'}</div>
+        <div className="hiw-mock__chrome-label">Gormaran · ChatGPT</div>
       </div>
-      <div className="hiw-mock__form-fields">
-        {(isEs ? ['Mercado / Industria', 'Geografía', 'Segmento objetivo'] : ['Market / Industry', 'Geography', 'Target Segment']).map((label, i) => (
-          <div key={i} className="hiw-mock__field">
-            <div className="hiw-mock__field-label">{label}</div>
-            <div className="hiw-mock__field-input">
-              <motion.div className="hiw-mock__field-fill" initial={{ width: 0 }} animate={active ? { width: ['40%', '75%', '88%'][i] } : { width: 0 }} transition={{ duration: 0.7, delay: i * 0.25, ease: 'easeOut' }} />
-            </div>
-          </div>
-        ))}
-        <motion.div className="hiw-mock__gen-btn" initial={{ opacity: 0 }} animate={active ? { opacity: 1 } : { opacity: 0 }} transition={{ delay: 0.9 }}>
-          {isEs ? '⚡ Analizar con IA' : '⚡ Analyse with AI'}
-        </motion.div>
+      <div style={{ padding: '0.75rem 0.6rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div style={{ height: 32, background: 'var(--bg-surface-2)', borderRadius: 8, border: '1px solid rgba(99,102,241,0.35)', boxShadow: '0 0 0 2px rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', padding: '0 0.6rem', gap: '0.4rem' }}>
+          <motion.div style={{ height: 7, background: 'rgba(99,102,241,0.3)', borderRadius: 3 }}
+            initial={{ width: 0 }}
+            animate={active ? { width: '70%' } : { width: 0 }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+          />
+          <motion.span style={{ fontSize: '0.6rem', background: 'var(--color-primary)', color: '#fff', width: 14, height: 14, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 'auto', flexShrink: 0 }}
+            initial={{ opacity: 0 }} animate={active ? { opacity: 1 } : { opacity: 0 }} transition={{ delay: 1.2 }}>↑</motion.span>
+        </div>
+        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', textAlign: 'right' }}>
+          {isEs ? 'Intro para enviar' : 'Enter to send'}
+        </div>
       </div>
     </div>
   );
+
+  /* Step 2 — Streaming response */
   if (step === 2) return (
-    <div className="hiw-mock">
+    <div className="hiw-mock" style={{ width: '100%' }}>
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
         <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
-        <div className="hiw-mock__output-badge">✨ {isEs ? 'Análisis listo' : 'Analysis ready'}</div>
-        <div className="hiw-mock__word-count">~720 {isEs ? 'palabras' : 'words'}</div>
+        <div className="hiw-mock__chrome-label">ChatGPT</div>
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+          {[0,1,2].map(i => (
+            <motion.div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-primary-light)' }}
+              animate={active ? { opacity: [0.3,1,0.3], scale: [0.8,1.1,0.8] } : { opacity: 0.3 }}
+              transition={{ duration: 1.4, delay: i * 0.2, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          ))}
+        </div>
       </div>
-      <div className="hiw-mock__lines">
-        {OUTPUT_LINES_WIDTHS.map((w, i) => (
-          <motion.div key={i} className={`hiw-mock__line${i === 0 ? ' hiw-mock__line--title' : ''}`} style={{ width: `${w}%` }}
-            initial={{ scaleX: 0 }} animate={active ? { scaleX: 1 } : { scaleX: 0 }}
-            transition={{ duration: 0.4, delay: i * 0.07, ease: 'easeOut' }} />
+      <div style={{ padding: '0.6rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+        {HIW_OUTPUT_LINES.map((w, i) => (
+          <motion.div key={i}
+            style={{ height: i === 0 ? 9 : 6, borderRadius: 3,
+              background: i === 0 ? 'linear-gradient(90deg,rgba(99,102,241,0.4),rgba(139,92,246,0.15))' : 'var(--bg-elevated, var(--bg-surface-3))',
+              transformOrigin: 'left' }}
+            initial={{ scaleX: 0, opacity: 0 }}
+            animate={active ? { scaleX: w / 100, opacity: 1 } : { scaleX: 0, opacity: 0 }}
+            transition={{ duration: 0.5, delay: i * 0.09, ease: 'easeOut' }}
+          />
         ))}
       </div>
     </div>
   );
+
+  /* Step 3 — Completed, copy button */
   if (step === 3) return (
-    <div className="hiw-mock">
+    <div className="hiw-mock" style={{ width: '100%' }}>
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
         <span className="hiw-mock__dot" /><span className="hiw-mock__dot" /><span className="hiw-mock__dot" />
-        <div className="hiw-mock__review-done">✓ {isEs ? 'Listo · 720 palabras' : 'Done · 720 words'}</div>
+        <div className="hiw-mock__review-done">✓ {isEs ? 'Respuesta lista' : 'Response ready'}</div>
       </div>
-      <div className="hiw-mock__lines hiw-mock__lines--done">
-        {[80, 65, 90, 55].map((w, i) => <div key={i} className="hiw-mock__line" style={{ width: `${w}%` }} />)}
-      </div>
-      <div className="hiw-mock__actions">
-        <div className="hiw-mock__action-btn hiw-mock__action-btn--primary">{isEs ? 'Copiar ✓' : 'Copy ✓'}</div>
-        <div className="hiw-mock__action-btn">{isEs ? 'Descargar' : 'Download'}</div>
-        <div className="hiw-mock__action-btn">{isEs ? 'Editar' : 'Refine'}</div>
+      <div style={{ padding: '0.6rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+        {[80, 65, 90, 55, 75].map((w, i) => (
+          <div key={i} style={{ height: 6, borderRadius: 3, width: `${w}%`, background: 'rgba(52,211,153,0.18)' }} />
+        ))}
+        <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.3rem' }}>
+          {[
+            { label: isEs ? 'Copiar ✓' : 'Copy ✓', primary: true },
+            { label: isEs ? 'Seguir' : 'Follow-up' },
+            { label: isEs ? 'Imagen' : 'Image' },
+          ].map(btn => (
+            <div key={btn.label} style={{
+              flex: 1, textAlign: 'center', padding: '0.28rem 0',
+              borderRadius: 5, fontSize: '0.6rem',
+              background: btn.primary ? 'rgba(99,102,241,0.12)' : 'var(--bg-card,rgba(255,255,255,0.04))',
+              border: `1px solid ${btn.primary ? 'rgba(99,102,241,0.25)' : 'var(--border-color,rgba(255,255,255,0.08))'}`,
+              color: btn.primary ? '#a5b4fc' : 'var(--text-muted)',
+            }}>{btn.label}</div>
+          ))}
+        </div>
       </div>
     </div>
   );
+
   return null;
 }
 
