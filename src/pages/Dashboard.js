@@ -148,6 +148,14 @@ function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount,
 
   useEffect(() => { scrollToBottom(); }, [messages.length, streamText, scrollToBottom]);
 
+  // Auto-resize textarea
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 180) + 'px';
+  }, [input]);
+
   const handleSubmit = useCallback(async () => {
     const text = input.trim();
     if (!text || isLoading) return;
@@ -189,7 +197,8 @@ function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount,
         abortRef.current = null;
       },
       onError: (err) => {
-        const errMsg = { role: 'assistant', content: `_Error: ${err}_`, ts: Date.now(), error: true };
+        const friendly = err?.includes('limit') ? err : (isEs ? 'Algo salió mal. Inténtalo de nuevo.' : 'Something went wrong. Please try again.');
+        const errMsg = { role: 'assistant', content: `⚠️ ${friendly}`, ts: Date.now(), error: true };
         onMessagesUpdate([...nextMessages, errMsg]);
         setStreamText('');
         setIsLoading(false);
@@ -318,7 +327,7 @@ function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount,
 /* ─────────────────────────────────────────────────────────────────
    Design / Image Generation Area
 ───────────────────────────────────────────────────────────────── */
-function DesignArea({ subscription, usageCount, freeLimit }) {
+function DesignArea({ model, subscription, usageCount, freeLimit }) {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [prompt, setPrompt]     = useState('');
@@ -354,7 +363,7 @@ function DesignArea({ subscription, usageCount, freeLimit }) {
       <div className="dash__image-area">
         {images.length === 0 && !isLoading && (
           <WelcomeState
-            model={MODELS.find(m => m.id === 'chatgpt')}
+            model={model}
             tab="design"
             onSuggestion={(text) => setPrompt(text)}
           />
@@ -616,16 +625,20 @@ export default function Dashboard() {
     setSessions(prev => prev.map(s => s.id === id ? { ...s, title } : s));
   }, []);
 
-  // Auto-create session for current tab if none exists
+  // pendingSessionRef prevents duplicate session creation in the same event tick
+  const pendingSessionRef = useRef(null);
+  useEffect(() => { if (currentId) pendingSessionRef.current = null; }, [currentId]);
+
   const getOrCreateSession = useCallback(() => {
     if (currentSession) return currentSession;
+    if (pendingSessionRef.current) return pendingSessionRef.current;
     const s = makeSession(activeTab, selectedModel);
+    pendingSessionRef.current = s;
     setSessions(prev => [s, ...prev]);
     setCurrentId(s.id);
     return s;
   }, [currentSession, activeTab, selectedModel]);
 
-  // Wrap handlers to always have a session
   const handleMessagesUpdate = useCallback((messages) => {
     const s = getOrCreateSession();
     updateMessages(s.id, messages);
@@ -721,6 +734,7 @@ export default function Dashboard() {
               )}
               {activeTab === 'design' && (
                 <DesignArea
+                  model={activeModel}
                   subscription={subscription}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}

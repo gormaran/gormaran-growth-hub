@@ -110,7 +110,7 @@ export async function streamDemoResponse({ prompt, onChunk, onDone, onError, sig
   }
 }
 
-// Stream authenticated chat response
+// Stream authenticated chat response (falls back to demo if endpoint not yet deployed)
 export async function streamChat({ message, history = [], tab = 'text', signal, onChunk, onDone, onError }) {
   try {
     const authHeaders = await getAuthHeader();
@@ -120,10 +120,22 @@ export async function streamChat({ message, history = [], tab = 'text', signal, 
       body: JSON.stringify({ message, history, tab }),
       signal,
     });
+
+    // Fallback to demo endpoint if /api/ai/chat isn't deployed yet
+    if (response.status === 404) {
+      return streamDemoResponse({ prompt: message, signal, onChunk, onDone, onError });
+    }
+
+    if (response.status === 403) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || 'Monthly limit reached. Upgrade to continue.');
+    }
+
     if (!response.ok) {
       const err = await response.json().catch(() => ({ error: 'Request failed' }));
-      throw new Error(err.error || `HTTP ${response.status}`);
+      throw new Error(err.error || `Server error (${response.status})`);
     }
+
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     while (true) {
@@ -144,7 +156,7 @@ export async function streamChat({ message, history = [], tab = 'text', signal, 
     onDone?.();
   } catch (err) {
     if (err.name === 'AbortError') return;
-    onError?.(err.message || 'Chat failed');
+    onError?.(err.message || 'Chat failed. Please try again.');
   }
 }
 
