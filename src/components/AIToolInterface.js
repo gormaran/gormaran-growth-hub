@@ -302,7 +302,7 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
           },
           onDone: () => {
             setIsStreaming(false);
-            trackUsage();
+            trackUsage(2);
             saveToHistory(capturedInputs, finalOutputRef.current);
             setConversationHistory([{ role: 'assistant', content: finalOutputRef.current }]);
           },
@@ -339,7 +339,7 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
       },
       onDone: () => {
         setIsStreaming(false);
-        trackUsage();
+        trackUsage(2);
         saveToHistory(capturedInputs, finalOutputRef.current);
         setConversationHistory([{ role: 'assistant', content: finalOutputRef.current }]);
       },
@@ -377,7 +377,7 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
       onDone: () => {
         setIsStreaming(false);
         setIsRefining(false);
-        trackUsage();
+        trackUsage(2);
         setConversationHistory([...newHistory, { role: 'assistant', content: finalOutputRef.current }]);
       },
       onError: (msg) => {

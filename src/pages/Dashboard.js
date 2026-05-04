@@ -18,18 +18,22 @@ import {
   pollMusicStatus,
 } from '../utils/api';
 import OnboardingModal from '../components/OnboardingModal';
+import ProductTour, { shouldShowTour } from '../components/ProductTour';
+import TemplateDetail from '../components/TemplateDetail';
+import { TEMPLATES as TEMPLATES_DATA, NODE_TYPES } from '../data/templates';
 import './Dashboard.css';
 
 /* ─────────────────────────────────────────────────────────────────
    Constants
 ───────────────────────────────────────────────────────────────── */
 const TABS = [
-  { id: 'text',    label: 'Text',      icon: '✍️' },
-  { id: 'design',  label: 'Design',    icon: '🎨' },
-  { id: 'video',   label: 'Video',     icon: '🎬' },
-  { id: 'audio',   label: 'Audio',     icon: '🎵' },
-  { id: 'agents',  label: 'AI Agents', icon: '🤖' },
-  { id: 'toolkit', label: 'Tool-kit',  icon: '🛠️' },
+  { id: 'text',      label: 'Text',       icon: '✍️' },
+  { id: 'design',    label: 'Design',     icon: '🎨' },
+  { id: 'video',     label: 'Video',      icon: '🎬' },
+  { id: 'audio',     label: 'Audio',      icon: '🎵' },
+  { id: 'agents',    label: 'AI Agents',  icon: '🤖' },
+  { id: 'toolkit',   label: 'Tool-kit',   icon: '🛠️' },
+  { id: 'templates', label: 'Templates',  icon: '⚡', isNew: true },
 ];
 
 const MODELS = [
@@ -82,6 +86,56 @@ const MODEL_VERSIONS = {
   perplexity: ['Sonar Pro', 'Sonar', 'Sonar Reasoning'],
   qwen:       ['Qwen2.5-Max', 'Qwen2.5-72B', 'Qwen-VL'],
 };
+
+const NEW_VERSIONS = new Set([
+  'GPT-4.1', 'Claude Sonnet 4.5', 'Gemini 2.5 Pro', 'Grok-3', 'DeepSeek-V3',
+]);
+
+const TEMPLATES = [
+  /* ── Marketing ── */
+  { id: 'cold-email',       icon: '📧', name: 'Cold Email Sequence',   category: 'Marketing', tab: 'text',   creditCost: 1,
+    desc: '5-email B2B outreach sequence with subject lines and CTAs',
+    prompt: 'Write a 5-email cold email sequence for a B2B SaaS targeting [describe your ICP]. Include subject lines, preview text, and body copy for each email. Use pain-point → social proof → CTA structure. Keep each email under 150 words.' },
+  { id: 'ad-copy',          icon: '🎯', name: 'Ad Copy Variations',    category: 'Marketing', tab: 'text',   creditCost: 1,
+    desc: '10 headline + body variations for Google & Meta ads',
+    prompt: 'Generate 10 ad copy variations for [product/service]. For each: headline (max 30 chars), description (max 90 chars), and CTA. Use different angles: urgency, FOMO, benefit, social proof, curiosity. Format as a numbered list.' },
+  { id: 'social-calendar',  icon: '📅', name: '30-Day Social Calendar', category: 'Marketing', tab: 'text',   creditCost: 1,
+    desc: 'Full month content plan for LinkedIn, Instagram & X',
+    prompt: 'Create a 30-day social media content calendar for [brand/product] targeting [audience]. Include post ideas for LinkedIn, Instagram, and X/Twitter. Mix: 40% educational, 30% behind-the-scenes, 20% promotional, 10% engagement. Add caption length guidance per platform.' },
+  { id: 'seo-outline',      icon: '🔍', name: 'SEO Blog Outline',       category: 'Marketing', tab: 'text',   creditCost: 1,
+    desc: 'Full H1–H3 structure, meta description, and FAQs',
+    prompt: 'Create a comprehensive SEO blog post outline for the keyword "[target keyword]". Include: H1, H2s, H3s, meta title (60 chars), meta description (155 chars), intro hook, key point per section, conclusion, 5 FAQs, and suggested internal link anchors.' },
+  /* ── Content ── */
+  { id: 'landing-copy',     icon: '🏠', name: 'Landing Page Copy',      category: 'Content',   tab: 'text',   creditCost: 1,
+    desc: 'Hero, features, social proof, FAQ, CTA — full page',
+    prompt: 'Write complete landing page copy for [product/service]. Sections: hero headline + subheadline, 3 feature blocks (benefit-led), social proof section (testimonials + stats), FAQ (5 Q&As), and closing CTA. Conversion-focused. Avoid jargon.' },
+  { id: 'newsletter',       icon: '✉️', name: 'Newsletter Draft',        category: 'Content',   tab: 'text',   creditCost: 1,
+    desc: 'Engaging weekly newsletter under 400 words',
+    prompt: 'Write an engaging weekly newsletter about [topic] for [audience]. Structure: compelling subject line, story hook (2 sentences), 3 insights with actionable takeaways, one recommended resource, and a soft CTA. Conversational tone, under 400 words.' },
+  { id: 'video-script',     icon: '🎬', name: 'Video Script',            category: 'Content',   tab: 'text',   creditCost: 1,
+    desc: '60-second script with timestamps and speaker notes',
+    prompt: 'Write a 60-second video script for [product/service]. Structure: [0-5s] hook, [5-15s] problem, [15-35s] solution demo, [35-50s] key features, [50-60s] CTA. Include speaker notes and visual direction cues in brackets.' },
+  /* ── Strategy ── */
+  { id: 'gtm-strategy',     icon: '🚀', name: 'Go-to-Market Strategy',   category: 'Strategy',  tab: 'text',   creditCost: 1,
+    desc: 'ICP, channels, pricing, timeline, and 90-day plan',
+    prompt: 'Create a go-to-market strategy for [product/service]. Cover: ICP definition, positioning statement, pricing model, top 3 acquisition channels with tactics, launch timeline (weeks 1-12), success KPIs, and first 90-day action plan. Be specific and actionable.' },
+  { id: 'competitor-brief', icon: '🔬', name: 'Competitor Brief',        category: 'Strategy',  tab: 'text',   creditCost: 1,
+    desc: 'Feature, pricing, and positioning comparison table',
+    prompt: 'Perform a structured competitor analysis: [your product] vs [competitor 1] vs [competitor 2]. Compare across: core features, pricing, target segment, positioning, UX strengths, weaknesses, and differentiation gaps. Output as a comparison table + summary of your best attack angles.' },
+  { id: 'pricing-strategy', icon: '💰', name: 'Pricing Strategy',        category: 'Strategy',  tab: 'text',   creditCost: 1,
+    desc: 'Tier structure, anchoring, and psychological pricing',
+    prompt: 'Design a pricing strategy for [product/service]. Include: recommended tier structure (free/pro/enterprise), price anchoring rationale, feature allocation per tier, monthly vs annual pricing (with discount logic), trial strategy, and key psychological pricing principles applied.' },
+  /* ── Design ── */
+  { id: 'product-hero',     icon: '🖼️', name: 'Product Hero Image',      category: 'Design',    tab: 'design', creditCost: 4,
+    desc: 'Studio-quality product shot on clean background',
+    prompt: 'Professional product photography of [describe your product], studio lighting, clean white background, commercial quality, sharp focus, minimalist composition, photorealistic, 4K resolution' },
+  { id: 'social-visual',    icon: '📱', name: 'Social Media Visual',      category: 'Design',    tab: 'design', creditCost: 4,
+    desc: 'Bold, scroll-stopping graphic for Instagram/LinkedIn',
+    prompt: 'Bold social media graphic for [brand/campaign], modern design, vibrant complementary colors, large impactful typography, eye-catching geometric composition, professional marketing aesthetic, Instagram-ready format' },
+  { id: 'brand-illustration', icon: '✨', name: 'Brand Illustration',    category: 'Design',    tab: 'design', creditCost: 4,
+    desc: 'Custom illustration in your brand style',
+    prompt: 'Custom flat design illustration for [topic/concept], modern brand illustration style, [primary color] and [accent color] palette, clean lines, professional business context, suitable for website hero or presentation slide' },
+];
 
 const VIDEO_MODELS = [
   { id: 'kling',     label: 'KLING 3.0',     by: 'Kuaishou'  },
@@ -171,10 +225,10 @@ function WelcomeState({ model, tab, onSuggestion }) {
 /* ─────────────────────────────────────────────────────────────────
    Text Chat Area
 ───────────────────────────────────────────────────────────────── */
-function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageCount, freeLimit, subscription }) {
+function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageCount, freeLimit, subscription, defaultPrompt }) {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
-  const [input, setInput]         = useState('');
+  const [input, setInput]         = useState(defaultPrompt || '');
   const [isLoading, setIsLoading] = useState(false);
   const [streamText, setStreamText] = useState('');
   const abortRef      = useRef(null);
@@ -375,10 +429,10 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
 /* ─────────────────────────────────────────────────────────────────
    Design / Image Generation Area
 ───────────────────────────────────────────────────────────────── */
-function DesignArea({ model, subscription, usageCount, freeLimit }) {
+function DesignArea({ model, subscription, usageCount, freeLimit, defaultPrompt }) {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
-  const [prompt, setPrompt]     = useState('');
+  const [prompt, setPrompt]     = useState(defaultPrompt || '');
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages]     = useState([]);
   const [error, setError]       = useState(null);
@@ -1080,6 +1134,147 @@ function ToolkitArea() {
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   Templates Area — Pletor-style marketplace
+───────────────────────────────────────────────────────────────── */
+const TEMPLATE_CATEGORIES = ['All', 'Marketing', 'Content', 'Strategy', 'Design'];
+
+function TemplateThumbnail({ tpl }) {
+  const nodes = tpl.nodes || [];
+  return (
+    <div style={{
+      height: 140, background: tpl.thumbnail?.gradient || 'linear-gradient(135deg,#fff7ed,#fed7aa)',
+      position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      gap: 6, overflow: 'hidden',
+    }}>
+      {/* Mini flow */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+        {nodes.slice(0, 4).map((id, i) => {
+          const n = NODE_TYPES[id] || NODE_TYPES.text;
+          return (
+            <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{
+                width: 34, height: 34, borderRadius: 9,
+                background: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '0.8rem', fontWeight: 800, color: n.color,
+                border: `1.5px solid ${n.color}30`,
+              }}>
+                {n.icon}
+              </div>
+              {i < nodes.slice(0, 4).length - 1 && (
+                <div style={{ color: '#94a3b8', fontSize: '0.85rem', padding: '0 3px' }}>→</div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {/* Category pill */}
+      <div style={{
+        position: 'absolute', top: 10, right: 10,
+        background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(4px)',
+        borderRadius: 6, padding: '3px 8px',
+        fontSize: '0.6rem', fontWeight: 700, color: '#475569',
+        border: '1px solid rgba(0,0,0,0.06)',
+      }}>
+        {tpl.category}
+      </div>
+    </div>
+  );
+}
+
+function TemplateCard({ tpl, onOpen }) {
+  return (
+    <button
+      className="mkt-tpl-card"
+      onClick={() => onOpen(tpl)}
+    >
+      <TemplateThumbnail tpl={tpl} />
+      <div className="mkt-tpl-body">
+        <div className="mkt-tpl-name">{tpl.name}</div>
+        <div className="mkt-tpl-desc">{tpl.tagline || tpl.desc}</div>
+        <div className="mkt-tpl-footer">
+          <div className="mkt-tpl-nodes">
+            {(tpl.nodes || []).slice(0, 3).map((id, i) => {
+              const n = NODE_TYPES[id] || NODE_TYPES.text;
+              return (
+                <div key={i} className="mkt-tpl-node-dot" style={{ background: n.bg, color: n.color }}>
+                  {n.icon}
+                </div>
+              );
+            })}
+            {(tpl.nodes || []).length > 3 && (
+              <span className="mkt-tpl-more">+{(tpl.nodes || []).length - 3}</span>
+            )}
+          </div>
+          <span className="mkt-tpl-credits">⚡ {tpl.creditCost} {tpl.creditCost === 1 ? 'credit' : 'credits'}</span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function TemplatesArea({ onSelectTemplate }) {
+  const { i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [detailTemplate, setDetailTemplate] = useState(null);
+
+  const filtered = activeCategory === 'All'
+    ? TEMPLATES_DATA
+    : TEMPLATES_DATA.filter(t => t.category === activeCategory);
+
+  const handleUseTemplate = (tpl) => {
+    setDetailTemplate(null);
+    onSelectTemplate(tpl);
+  };
+
+  return (
+    <>
+      <div className="dash__templates">
+        <div className="dash__templates-header">
+          <div className="dash__templates-title-row">
+            <h2 className="dash__templates-title">
+              {isEs ? 'Plantillas' : 'Templates'}
+            </h2>
+            <span className="dash__new-badge">NEW</span>
+          </div>
+          <p className="dash__templates-sub">
+            {isEs
+              ? 'Prompts y flujos probados para tareas concretas. Haz clic para ver los detalles.'
+              : 'Proven prompts and workflows for real tasks. Click to see how each one works.'}
+          </p>
+          <div className="dash__templates-filters">
+            {TEMPLATE_CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                className={`dash__templates-filter${activeCategory === cat ? ' dash__templates-filter--active' : ''}`}
+                onClick={() => setActiveCategory(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mkt-tpl-grid">
+          {filtered.map(tpl => (
+            <TemplateCard key={tpl.id} tpl={tpl} onOpen={setDetailTemplate} />
+          ))}
+        </div>
+      </div>
+
+      {detailTemplate && (
+        <TemplateDetail
+          template={detailTemplate}
+          onClose={() => setDetailTemplate(null)}
+          onUse={handleUseTemplate}
+        />
+      )}
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
    Coming Soon placeholder (unused — kept for future tabs)
 ───────────────────────────────────────────────────────────────── */
 function ComingSoon({ tab }) {
@@ -1154,15 +1349,17 @@ function ModelPanel({ selectedId, selectedVersion, onSelect, onSelectVersion, sy
       {/* Model version selector */}
       <div className="dash__mp-section">
         <div className="dash__mp-label">Model</div>
-        <div className="dash__mp-select-wrap">
-          <select
-            className="dash__mp-select"
-            value={selectedVersion}
-            onChange={e => onSelectVersion(e.target.value)}
-          >
-            {versions.map(v => <option key={v} value={v}>{v}</option>)}
-          </select>
-          <span className="dash__mp-select-arr">▼</span>
+        <div className="dash__mp-version-list">
+          {versions.map(v => (
+            <button
+              key={v}
+              className={`dash__mp-version-item${selectedVersion === v ? ' dash__mp-version-item--active' : ''}`}
+              onClick={() => onSelectVersion(v)}
+            >
+              <span className="dash__mp-version-name">{v}</span>
+              {NEW_VERSIONS.has(v) && <span className="dash__new-badge dash__new-badge--sm">NEW</span>}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -1261,8 +1458,8 @@ function Sidebar({ sessions, activeId, onNew, onSelect, onDelete, subscription, 
       {subscription === 'free' && (
         <div className="dash__sidebar-footer">
           <div className="dash__usage-row">
-            <span>{usageCount}/{freeLimit} {t('dashboard.usedThisMonth', { defaultValue: 'used' })}</span>
-            <span>{freeLimit - usageCount} left</span>
+            <span>⚡ {freeLimit - usageCount} {t('dashboard.creditsLeft', { defaultValue: 'credits left' })}</span>
+            <span className="dash__usage-fraction">{usageCount}/{freeLimit}</span>
           </div>
           <div className="dash__usage-track">
             <div className="dash__usage-fill" style={{ width: `${usagePct}%` }} />
@@ -1292,8 +1489,17 @@ export default function Dashboard() {
   const [sessions, setSessions]               = useState(loadSessions);
   const [currentId, setCurrentId]             = useState(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [defaultPrompt, setDefaultPrompt]     = useState('');
+  const [showTour, setShowTour]               = useState(false);
   const sidebarListRef = useRef(null);
   const showOnboarding = userProfile && !userProfile.onboardingCompleted;
+
+  useEffect(() => {
+    if (userProfile?.onboardingCompleted && shouldShowTour()) {
+      const timer = setTimeout(() => setShowTour(true), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [userProfile?.onboardingCompleted]); // eslint-disable-line
 
   const paymentStatus = searchParams.get('payment');
   const planChip = { free: 'free', grow: 'grow', scale: 'scale', evolution: 'evolution' }[subscription] || 'free';
@@ -1333,6 +1539,11 @@ export default function Dashboard() {
     setCurrentId(null);
   }, []);
 
+  const handleTemplateSelect = useCallback((template) => {
+    setDefaultPrompt(template.prompt);
+    handleTabChange(template.tab);
+  }, [handleTabChange]);
+
   const updateMessages = useCallback((id, messages) => {
     setSessions(prev => prev.map(s => s.id === id ? { ...s, messages } : s));
   }, []);
@@ -1368,7 +1579,13 @@ export default function Dashboard() {
 
   return (
     <div className="dash">
-      {showOnboarding && <OnboardingModal onComplete={() => refreshUserProfile(currentUser.uid)} />}
+      {showOnboarding && (
+        <OnboardingModal onComplete={() => {
+          refreshUserProfile(currentUser.uid);
+          setTimeout(() => setShowTour(true), 600);
+        }} />
+      )}
+      {showTour && !showOnboarding && <ProductTour onClose={() => setShowTour(false)} />}
 
       {/* Banners */}
       {paymentStatus === 'success' && !bannerDismissed && (
@@ -1394,6 +1611,7 @@ export default function Dashboard() {
             >
               {tab.label}
               {tab.comingSoon && <span className="dash__soon-badge">Soon</span>}
+              {tab.isNew && <span className="dash__new-badge dash__new-badge--tab">NEW</span>}
             </button>
           ))}
         </div>
@@ -1445,6 +1663,7 @@ export default function Dashboard() {
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
                   subscription={subscription}
+                  defaultPrompt={defaultPrompt}
                 />
               )}
               {activeTab === 'design' && (
@@ -1453,6 +1672,7 @@ export default function Dashboard() {
                   subscription={subscription}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
+                  defaultPrompt={defaultPrompt}
                 />
               )}
               {activeTab === 'video' && (
@@ -1481,6 +1701,9 @@ export default function Dashboard() {
               )}
               {activeTab === 'toolkit' && (
                 <ToolkitArea />
+              )}
+              {activeTab === 'templates' && (
+                <TemplatesArea onSelectTemplate={handleTemplateSelect} />
               )}
             </motion.div>
           </AnimatePresence>

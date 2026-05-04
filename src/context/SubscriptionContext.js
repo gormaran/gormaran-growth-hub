@@ -9,7 +9,16 @@ export function useSubscription() {
   return useContext(SubscriptionContext);
 }
 
-export const FREE_MONTHLY_LIMIT = 10;
+export const FREE_MONTHLY_LIMIT = 50;
+
+export const CREDIT_COSTS = {
+  text:    1,
+  design:  4,
+  video:   10,
+  audio:   3,
+  agents:  1,
+  toolkit: 2,
+};
 
 export const PLAN_CATEGORIES = {
   free:      ['marketing', 'content'],
@@ -128,12 +137,12 @@ export function SubscriptionProvider({ children }) {
     return usageCount < FREE_MONTHLY_LIMIT;
   }
 
-  async function trackUsage() {
+  async function trackUsage(cost = 1) {
     if (!currentUser) return;
     try {
       const userRef = doc(db, 'users', currentUser.uid);
-      await updateDoc(userRef, { usageCount: increment(1) });
-      setUsageCount((prev) => prev + 1);
+      await updateDoc(userRef, { usageCount: increment(cost) });
+      setUsageCount((prev) => prev + cost);
     } catch (err) {
       console.error('Error tracking usage:', err);
     }
@@ -157,6 +166,7 @@ export function SubscriptionProvider({ children }) {
     getPlanLimits,
     PLANS,
     FREE_MONTHLY_LIMIT,
+    CREDIT_COSTS,
     PLAN_CATEGORIES,
     refreshUserProfile,
   };
