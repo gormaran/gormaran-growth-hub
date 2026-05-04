@@ -749,6 +749,72 @@
   letter-spacing: 0.02em;
 }
 
+/* ── Translate button + picker ── */
+.ai-tool__translate-wrap { position: relative; }
+.ai-tool__translate-picker {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 60;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 150px;
+  box-shadow: var(--shadow-md);
+  animation: tool-fade-in 0.12s ease;
+}
+@keyframes tool-fade-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.ai-tool__translate-lang {
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+.ai-tool__translate-lang:hover { background: rgba(99,102,241,0.1); color: var(--color-primary-light); }
+
+/* ── Translated output panel ── */
+.ai-tool__translated-panel {
+  margin-top: 1rem;
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(99,102,241,0.03);
+}
+.ai-tool__translated-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.6rem 1rem;
+  background: rgba(99,102,241,0.07);
+  border-bottom: 1px solid rgba(99,102,241,0.15);
+  font-size: 0.82rem; font-weight: 600;
+  color: var(--color-primary-light);
+}
+.ai-tool__translated-close {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted); font-size: 1.1rem; line-height: 1; padding: 0;
+}
+.ai-tool__translated-close:hover { color: var(--text-primary); }
+.ai-tool__translated-body {
+  padding: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+.ai-tool__translated-copy {
+  display: flex; gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
 /* ── Refine section ── */
 .ai-tool__refine {
   margin-top: 1.25rem;

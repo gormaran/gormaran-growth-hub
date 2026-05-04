@@ -16,6 +16,7 @@ import {
   generateSpeech,
   startMusicGeneration,
   pollMusicStatus,
+  translateText,
 } from '../utils/api';
 import OnboardingModal from '../components/OnboardingModal';
 import ProductTour, { shouldShowTour } from '../components/ProductTour';
@@ -198,6 +199,113 @@ function ThinkingDots() {
   );
 }
 
+const MSG_LANGS = [
+  { code: 'es', label: '🇪🇸 Spanish' },
+  { code: 'en', label: '🇺🇸 English' },
+  { code: 'fr', label: '🇫🇷 French' },
+  { code: 'de', label: '🇩🇪 German' },
+  { code: 'pt', label: '🇧🇷 Portuguese' },
+  { code: 'it', label: '🇮🇹 Italian' },
+  { code: 'zh', label: '🇨🇳 Chinese' },
+  { code: 'ja', label: '🇯🇵 Japanese' },
+];
+
+function MessageActions({ content, isEs }) {
+  const [copied, setCopied] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [showLangs, setShowLangs] = useState(false);
+  const [translating, setTranslating] = useState(false);
+  const [translated, setTranslated] = useState(null);
+  const pickerRef = useRef(null);
+
+  useEffect(() => {
+    if (!showLangs) return;
+    function handleClick(e) { if (pickerRef.current && !pickerRef.current.contains(e.target)) setShowLangs(false); }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showLangs]);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSave = () => {
+    try {
+      const list = JSON.parse(localStorage.getItem('gormaran_saved_v1') || '[]');
+      list.unshift({ id: Date.now(), content, preview: content.slice(0, 90), savedAt: Date.now() });
+      localStorage.setItem('gormaran_saved_v1', JSON.stringify(list.slice(0, 50)));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch {}
+  };
+
+  const handleExport = () => {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gormaran-output-${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleTranslate = async (langCode, langLabel) => {
+    setShowLangs(false);
+    setTranslating(true);
+    try {
+      const result = await translateText(content, 'auto', langCode);
+      setTranslated({ lang: langLabel, text: result });
+    } catch {}
+    finally { setTranslating(false); }
+  };
+
+  return (
+    <div className="dash__msg-actions">
+      <div className="dash__msg-action-row">
+        <button className="dash__msg-action-btn" onClick={handleCopy} title="Copy">
+          {copied ? '✅' : '📋'} {isEs ? 'Copiar' : 'Copy'}
+        </button>
+        <div className="dash__msg-action-group" ref={pickerRef}>
+          <button className="dash__msg-action-btn" onClick={() => setShowLangs(p => !p)} title="Translate" disabled={translating}>
+            {translating ? '⏳' : '🌐'} {isEs ? 'Traducir' : 'Translate'}
+          </button>
+          {showLangs && (
+            <div className="dash__lang-picker">
+              {MSG_LANGS.map(l => (
+                <button key={l.code} className="dash__lang-option" onClick={() => handleTranslate(l.code, l.label)}>
+                  {l.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <button className="dash__msg-action-btn" onClick={handleSave} title="Save">
+          {saved ? '✅' : '💾'} {isEs ? 'Guardar' : 'Save'}
+        </button>
+        <button className="dash__msg-action-btn" onClick={handleExport} title="Export TXT">
+          ⬇️ {isEs ? 'Exportar' : 'Export'}
+        </button>
+      </div>
+      {translated && (
+        <div className="dash__translated">
+          <div className="dash__translated-bar">
+            <span>🌐 {translated.lang}</span>
+            <button className="dash__translated-close" onClick={() => setTranslated(null)}>✕</button>
+          </div>
+          <div className="dash__translated-text">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{translated.text}</ReactMarkdown>
+          </div>
+          <button className="dash__msg-action-btn" style={{ marginTop: '0.5rem' }} onClick={async () => { await navigator.clipboard.writeText(translated.text); }}>
+            📋 {isEs ? 'Copiar traducción' : 'Copy translation'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─────────────────────────────────────────────────────────────────
    Welcome / empty state
 ───────────────────────────────────────────────────────────────── */
@@ -369,6 +477,9 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
                     {msg.content}
                   </ReactMarkdown>
                 </div>
+                {msg.role === 'assistant' && !msg.error && (
+                  <MessageActions content={msg.content} isEs={isEs} />
+                )}
               </div>
             </div>
           ))}

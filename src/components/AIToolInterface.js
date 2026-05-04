@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { streamAIResponse, generateLogoImage, generateImage } from '../utils/api';
+import { streamAIResponse, generateLogoImage, generateImage, translateText } from '../utils/api';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
 import { useWorkspace } from '../context/WorkspaceContext';
@@ -152,6 +152,11 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
   const [outputMode, setOutputMode] = useState('image'); // 'image' | 'prompt'
   const [refImage, setRefImage] = useState(null); // { dataUrl, b64, mime, name }
   const refImageInputRef = useRef(null);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translatedOutput, setTranslatedOutput] = useState('');
+  const [translatePicker, setTranslatePicker] = useState(false);
+  const [translateLangLabel, setTranslateLangLabel] = useState('');
+  const translatePickerRef = useRef(null);
 
   const { currentUser } = useAuth();
   const { brandProfile, currentWorkspaceId } = useWorkspace();
@@ -480,6 +485,34 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
     await navigator.clipboard.writeText(stripMarkdown(output));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  const TRANSLATE_LANGS = [
+    { code: 'es', label: '🇪🇸 Spanish' },
+    { code: 'en', label: '🇺🇸 English' },
+    { code: 'fr', label: '🇫🇷 French' },
+    { code: 'de', label: '🇩🇪 German' },
+    { code: 'pt', label: '🇧🇷 Portuguese' },
+    { code: 'it', label: '🇮🇹 Italian' },
+    { code: 'zh', label: '🇨🇳 Chinese' },
+    { code: 'ja', label: '🇯🇵 Japanese' },
+    { code: 'ar', label: '🇸🇦 Arabic' },
+  ];
+
+  async function handleTranslate(langCode, langLabel) {
+    if (!output) return;
+    setTranslatePicker(false);
+    setIsTranslating(true);
+    setTranslateLangLabel(langLabel);
+    setTranslatedOutput('');
+    try {
+      const result = await translateText(output, 'auto', langCode);
+      setTranslatedOutput(result);
+    } catch (e) {
+      setTranslatedOutput(`⚠️ Translation failed. ${e.message}`);
+    } finally {
+      setIsTranslating(false);
+    }
   }
 
   function handleClear() {
@@ -892,6 +925,28 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
                     >
                       ⬇️ {t('ui.downloadTxt', { defaultValue: 'TXT' })}
                     </button>
+                    <div className="ai-tool__translate-wrap" ref={translatePickerRef}>
+                      <button
+                        className={`btn btn-secondary btn-sm${isTranslating ? ' ai-tool__btn--loading' : ''}`}
+                        onClick={() => setTranslatePicker(p => !p)}
+                        disabled={isTranslating}
+                      >
+                        {isTranslating ? '⏳' : '🌐'} {t('ui.translate', { defaultValue: 'Translate' })}
+                      </button>
+                      {translatePicker && (
+                        <div className="ai-tool__translate-picker">
+                          {TRANSLATE_LANGS.map(l => (
+                            <button
+                              key={l.code}
+                              className="ai-tool__translate-lang"
+                              onClick={() => handleTranslate(l.code, l.label)}
+                            >
+                              {l.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </>
                 )}
                 {!isStreaming && extractJson(output) && (
@@ -1052,6 +1107,34 @@ export default function AIToolInterface({ tool, categoryId, rerunInputs, onRerun
                     </motion.div>
                   )}
                 </AnimatePresence>
+
+                {/* ── Translation panel ── */}
+                {translatedOutput && !isStreaming && (
+                  <motion.div
+                    className="ai-tool__translated-panel"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <div className="ai-tool__translated-header">
+                      <span>🌐 {translateLangLabel} translation</span>
+                      <button className="ai-tool__translated-close" onClick={() => setTranslatedOutput('')}>✕</button>
+                    </div>
+                    <div className="ai-tool__translated-body markdown-output">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{translatedOutput}</ReactMarkdown>
+                    </div>
+                    <div className="ai-tool__translated-copy">
+                      <button className="btn btn-ghost btn-sm" onClick={async () => { await navigator.clipboard.writeText(translatedOutput); }}>
+                        📋 Copy translation
+                      </button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => {
+                        const blob = new Blob([translatedOutput], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a'); a.href = url; a.download = `translation-${translateLangLabel.replace(/[^a-z]/gi,'').toLowerCase()}.txt`; a.click(); URL.revokeObjectURL(url);
+                      }}>⬇️ Export TXT</button>
+                    </div>
+                  </motion.div>
+                )}
 
                 {/* ── Refine section ── */}
                 {output && !isStreaming && (
