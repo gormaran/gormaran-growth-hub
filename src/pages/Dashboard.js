@@ -343,6 +343,10 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
   const [slowServer, setSlowServer] = useState(false);
   const abortRef       = useRef(null);
   const slowTimerRef   = useRef(null);
+  const [attachedFile, setAttachedFile] = useState(null);
+  const [listening, setListening] = useState(false);
+  const fileInputRef   = useRef(null);
+  const recRef         = useRef(null);
   const messagesRef   = useRef(null);
   const textareaRef   = useRef(null);
   const messages      = session?.messages || [];
@@ -371,7 +375,7 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
 
   const handleSubmit = useCallback(async () => {
     const text = input.trim();
-    if (!text || isLoading) return;
+    if ((!text && !attachedFile) || isLoading) return;
 
     if (subscription === 'free' && usageCount >= freeLimit) {
       return;
@@ -381,8 +385,13 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
     setStreamText('');
     setSlowServer(false);
     setIsLoading(true);
+    const imageAttach = attachedFile?.type === 'image' ? { data: attachedFile.data, mimeType: attachedFile.mimeType } : null;
+    const finalText = attachedFile?.type === 'text'
+      ? `${text}\n\n[Attached file: ${attachedFile.name}]\n\`\`\`\n${attachedFile.textContent}\n\`\`\``
+      : text;
+    setAttachedFile(null);
 
-    const userMsg = { role: 'user', content: text, ts: Date.now() };
+    const userMsg = { role: 'user', content: finalText, ts: Date.now() };
     const nextMessages = [...messages, userMsg];
     const autoTitle = (!session.title || session.title === 'New chat')
       ? text.slice(0, 48) + (text.length > 48 ? '…' : '')
@@ -396,7 +405,8 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
 
     let accumulated = '';
     streamChat({
-      message: text,
+      message: finalText,
+      attachedImage: imageAttach,
       history: messages.map(m => ({ role: m.role, content: m.content })),
       systemPrompt: systemPrompt || undefined,
       modelId: modelVersion || undefined,
@@ -429,6 +439,46 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
 
   const handleKey = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target.result;
+        setAttachedFile({ type: 'image', data: dataUrl.split(',')[1], mimeType: file.type, name: file.name, preview: dataUrl });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setAttachedFile({ type: 'text', textContent: (ev.target.result || '').slice(0, 12000), name: file.name });
+      };
+      reader.readAsText(file);
+    }
+    e.target.value = '';
+  };
+
+  const handleVoice = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    if (listening) { recRef.current?.stop(); return; }
+    const rec = new SR();
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.lang = isEs ? 'es-ES' : 'en-US';
+    rec.onresult = (e) => {
+      const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+      setInput(prev => prev ? prev + ' ' + transcript : transcript);
+      textareaRef.current?.focus();
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    rec.start();
+    recRef.current = rec;
+    setListening(true);
   };
 
   const handleStop = () => {
@@ -511,7 +561,26 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
 
       <div className="dash__input-bar">
         <div className="dash__input-wrap">
+          {attachedFile && (
+            <div className="dash__attach-preview">
+              {attachedFile.type === 'image' ? (
+                <img src={attachedFile.preview} className="dash__attach-thumb" alt={attachedFile.name} />
+              ) : (
+                <span className="dash__attach-file">📄 {attachedFile.name}</span>
+              )}
+              <button className="dash__attach-remove" onClick={() => setAttachedFile(null)}>✕</button>
+            </div>
+          )}
+          <input ref={fileInputRef} type="file" accept="image/*,.txt,.md,.csv,.json" style={{ display: 'none' }} onChange={handleFileChange} />
           <div className="dash__input-row">
+            <button
+              className="dash__attach-btn"
+              onClick={() => fileInputRef.current?.click()}
+              type="button"
+              title={isEs ? 'Adjuntar imagen o archivo' : 'Attach image or file'}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </button>
             <textarea
               ref={textareaRef}
               className="dash__textarea"
@@ -522,6 +591,16 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
               disabled={limitReached}
               rows={1}
             />
+            {(window.SpeechRecognition || window.webkitSpeechRecognition) && (
+              <button
+                className={`dash__voice-btn${listening ? ' dash__voice-btn--active' : ''}`}
+                onClick={handleVoice}
+                type="button"
+                title={isEs ? 'Entrada por voz' : 'Voice input'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+              </button>
+            )}
             <button
               className={`dash__send${input.trim() && !limitReached ? ' dash__send--active' : ''}${isLoading ? ' dash__send--loading' : ''}`}
               onClick={isLoading ? handleStop : handleSubmit}
@@ -534,10 +613,12 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
             </button>
           </div>
           <div className="dash__input-footer">
-            {isLoading
-              ? <button className="dash__stop-btn" onClick={handleStop}>■ Stop</button>
-              : <span />
-            }
+            {isLoading ? (
+              <span className="dash__generating-label">
+                <ThinkingDots /> {isEs ? 'Generando…' : 'Generating…'}
+                <button className="dash__stop-btn" style={{ marginLeft: '0.5rem' }} onClick={handleStop}>■ Stop</button>
+              </span>
+            ) : <span />}
             <span className="dash__input-hint">
               {limitReached
                 ? <Link to="/pricing" style={{ color: 'var(--color-primary-light)', fontWeight: 600 }}>Upgrade →</Link>
@@ -686,7 +767,7 @@ function VideoArea({ model, subscription, usageCount, freeLimit }) {
     setStatus('generating');
     setProgress('');
     try {
-      const { taskId } = await startVideoGeneration({ prompt: prompt.trim(), aspect_ratio: '16:9' });
+      const { taskId } = await startVideoGeneration({ prompt: prompt.trim(), aspect_ratio: '16:9', model: videoModel });
       setStatus('polling');
       setPrompt('');
       pollRef.current = setInterval(async () => {

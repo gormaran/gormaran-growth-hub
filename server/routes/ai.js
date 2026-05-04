@@ -230,8 +230,8 @@ router.post('/demo', demoLimiter, async (req, res) => {
 
 // POST /api/ai/chat — general streaming chat, auth required
 router.post('/chat', aiLimiter, verifyToken, async (req, res) => {
-  const { message, history = [], tab = 'text', systemPrompt: customSystem, modelId } = req.body;
-  if (!message) return res.status(400).json({ error: 'Message is required' });
+  const { message, history = [], tab = 'text', systemPrompt: customSystem, modelId, attachedImage } = req.body;
+  if (!message && !attachedImage) return res.status(400).json({ error: 'Message is required' });
 
   const CLAUDE_MODEL_MAP = {
     'Claude Sonnet 4.6':  'claude-sonnet-4-6',
@@ -251,12 +251,50 @@ router.post('/chat', aiLimiter, verifyToken, async (req, res) => {
   };
 
   const basePrompt = SYSTEM_PROMPTS[tab] || SYSTEM_PROMPTS.text;
-  const systemPrompt = customSystem?.trim() ? customSystem.trim() : basePrompt;
+
+  // Fetch URLs found in message
+  let webContext = '';
+  const urlMatches = (message || '').match(/https?:\/\/[^\s<>"']+/g) || [];
+  if (urlMatches.length > 0) {
+    const fetches = urlMatches.slice(0, 3).map(async url => {
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 6000);
+        const r = await fetch(url, { signal: ctrl.signal, headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GormaranBot/1.0; +https://gormaran.io)' } });
+        clearTimeout(timer);
+        if (!r.ok) return null;
+        const html = await r.text();
+        const text = html
+          .replace(/<script[\s\S]*?<\/script>/gi, '')
+          .replace(/<style[\s\S]*?<\/style>/gi, '')
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 4000);
+        return `[Fetched content from ${url}]:\n${text}`;
+      } catch { return null; }
+    });
+    const results = (await Promise.all(fetches)).filter(Boolean);
+    if (results.length) webContext = `\n\nThe user's message contains URLs. Here is their fetched content:\n${results.join('\n\n')}`;
+  }
+
+  const systemPrompt = (customSystem?.trim() ? customSystem.trim() : basePrompt) + webContext;
+
+  // Build user message — support image attachments for Claude vision
+  let userContent;
+  if (attachedImage?.data && attachedImage?.mimeType) {
+    userContent = [
+      { type: 'image', source: { type: 'base64', media_type: attachedImage.mimeType, data: attachedImage.data } },
+      { type: 'text', text: message || 'What do you see in this image?' },
+    ];
+  } else {
+    userContent = message || '';
+  }
 
   // Build messages from history
   const messages = [
     ...history.map(m => ({ role: m.role, content: m.content })),
-    { role: 'user', content: message },
+    { role: 'user', content: userContent },
   ];
 
   // Usage tracking for free users
