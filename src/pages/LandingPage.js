@@ -8,9 +8,6 @@ import './LandingPage.css';
 import WhatsAppPopup from '../components/WhatsAppPopup';
 import NichePopup from '../components/NichePopup';
 
-/* ─────────────────────────────────────────────────────────────────
-   Animation helpers
-───────────────────────────────────────────────────────────────── */
 const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.07 } } };
 
@@ -28,168 +25,122 @@ function AnimatedSection({ children, className, delay = 0 }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   Tool categories — mirrors the dashboard exactly
+   Popular Agents — Pletor-style cards
 ───────────────────────────────────────────────────────────────── */
-const TOOL_CATEGORIES = [
+const POPULAR_AGENTS = [
   {
-    id: 'marketing',
-    emoji: '📈',
-    name: 'Marketing & Growth',
-    plan: 'free',
-    color: '#7c3aed',
-    tools: ['Keyword Research', 'Headline Generator', 'Social Captions', 'Email Campaign', 'Press Release'],
-    count: 6,
-  },
-  {
-    id: 'content',
+    id: 'blog-post',
     emoji: '✍️',
-    name: 'Content Creation',
+    name: 'Blog Post Writer',
+    desc: 'Full SEO-optimized blog posts from a brief. H1, headings, body — ready to publish.',
+    category: 'Content',
     plan: 'free',
     color: '#6366f1',
-    tools: ['Blog Post Writer', 'Video Script', 'Newsletter', 'Logo Generator'],
-    count: 5,
+    route: '/category/content',
   },
   {
-    id: 'strategy',
-    emoji: '🎯',
-    name: 'Business Strategy',
+    id: 'market-analysis',
+    emoji: '📊',
+    name: 'Market Analysis',
+    desc: 'Landscape, sizing, competition and opportunity assessment in structured format.',
+    category: 'Strategy',
     plan: 'grow',
     color: '#0891b2',
-    tools: ['Business Plan', 'Market Analysis', 'Competitor Research', 'SWOT Analysis'],
-    count: 6,
+    route: '/category/strategy',
   },
   {
-    id: 'digital',
-    emoji: '🛠️',
-    name: 'Digital Marketing',
+    id: 'google-ads',
+    emoji: '🎯',
+    name: 'Google Ads Creator',
+    desc: 'Campaign-ready headlines, descriptions and ad groups from your product brief.',
+    category: 'Digital',
     plan: 'grow',
     color: '#059669',
-    tools: ['Google Ads Creator', 'Meta Ads', 'Landing Page Copy'],
-    count: 3,
+    route: '/category/digital',
   },
   {
-    id: 'ecommerce',
-    emoji: '🛒',
-    name: 'E-commerce Growth',
-    plan: 'scale',
-    color: '#d97706',
-    tools: ['Amazon Listing', 'Product Description', 'CRO Optimizer'],
-    count: 3,
-  },
-  {
-    id: 'agency',
-    emoji: '🏢',
-    name: 'Agency Tools',
-    plan: 'scale',
-    color: '#7c3aed',
-    tools: ['Client Proposal', 'Client Report', 'Case Study'],
-    count: 3,
-  },
-  {
-    id: 'creative',
+    id: 'brand-identity',
     emoji: '🎨',
-    name: 'Creative Studio',
+    name: 'Brand Identity Guide',
+    desc: 'Voice, palette, typography and usage rules for any brand — in minutes.',
+    category: 'Creative',
     plan: 'scale',
     color: '#be185d',
-    tools: ['Brand Identity Guide', 'AI Image Studio', 'Video Production Plan', 'Kling Video Prompts'],
-    count: 5,
+    route: '/category/creative',
   },
   {
-    id: 'startup',
+    id: 'investor-pitch',
     emoji: '🚀',
-    name: 'Startup Launchpad',
+    name: 'Investor Pitch Deck',
+    desc: 'Slide-by-slide narrative, financials and investor-ready positioning.',
+    category: 'Startup',
     plan: 'evolution',
     color: '#ea580c',
-    tools: ['Investor Pitch Deck', 'Go-to-Market Strategy', 'User Story Generator'],
-    count: 3,
+    route: '/category/startup',
   },
   {
-    id: 'finance',
+    id: 'financial-forecast',
     emoji: '💰',
-    name: 'Finance & Investment',
+    name: 'Financial Forecast',
+    desc: '12-month P&L, MRR projections and scenario analysis from your assumptions.',
+    category: 'Finance',
     plan: 'evolution',
     color: '#16a34a',
-    tools: ['Financial Forecast', 'Investment Analysis', 'Cash Flow Optimiser'],
-    count: 3,
-  },
-  {
-    id: 'automation',
-    emoji: '⚡',
-    name: 'n8n Automation',
-    plan: 'addon',
-    color: '#0891b2',
-    tools: ['n8n Workflow Designer'],
-    count: 1,
-    isAddon: true,
+    route: '/category/finance',
   },
 ];
 
+const PLAN_COLORS = {
+  free: { bg: 'rgba(99,102,241,0.12)', text: '#a5b4fc' },
+  grow: { bg: 'rgba(16,185,129,0.12)', text: '#34d399' },
+  scale: { bg: 'rgba(251,191,36,0.12)', text: '#fbbf24' },
+  evolution: { bg: 'rgba(239,68,68,0.1)', text: '#f87171' },
+  addon: { bg: 'rgba(6,182,212,0.12)', text: '#22d3ee' },
+};
 const PLAN_LABELS = { free: 'Free', grow: 'Grow', scale: 'Scale', evolution: 'Evolution', addon: 'Add-on' };
 
 /* ─────────────────────────────────────────────────────────────────
-   AI models powering the platform
+   All tool categories — mirrors the dashboard
 ───────────────────────────────────────────────────────────────── */
-const AI_MODELS = [
-  { name: 'Claude Sonnet 4',  dot: '#e54717', by: 'Anthropic' },
-  { name: 'GPT-4o',           dot: '#10a37f', by: 'OpenAI' },
-  { name: 'Gemini 1.5 Pro',   dot: '#4285f4', by: 'Google' },
-  { name: 'DALL·E 3',         dot: '#10a37f', by: 'OpenAI' },
-  { name: 'Flux 1.1 Pro',     dot: '#7c3aed', by: 'Black Forest' },
-  { name: 'Kling 3.0',        dot: '#ef4444', by: 'Kuaishou' },
+const TOOL_CATEGORIES = [
+  { id: 'marketing', emoji: '📈', name: 'Marketing & Growth', plan: 'free', color: '#7c3aed', tools: ['Keyword Research', 'Headline Generator', 'Social Captions', 'Email Campaign', 'Press Release'], count: 6 },
+  { id: 'content', emoji: '✍️', name: 'Content Creation', plan: 'free', color: '#6366f1', tools: ['Blog Post Writer', 'Video Script', 'Newsletter', 'Logo Generator'], count: 5 },
+  { id: 'strategy', emoji: '🎯', name: 'Business Strategy', plan: 'grow', color: '#0891b2', tools: ['Business Plan', 'Market Analysis', 'Competitor Research', 'SWOT Analysis'], count: 6 },
+  { id: 'digital', emoji: '🛠️', name: 'Digital Marketing', plan: 'grow', color: '#059669', tools: ['Google Ads Creator', 'Meta Ads', 'Landing Page Copy'], count: 3 },
+  { id: 'ecommerce', emoji: '🛒', name: 'E-commerce Growth', plan: 'scale', color: '#d97706', tools: ['Amazon Listing', 'Product Description', 'CRO Optimizer'], count: 3 },
+  { id: 'agency', emoji: '🏢', name: 'Agency Tools', plan: 'scale', color: '#7c3aed', tools: ['Client Proposal', 'Client Report', 'Case Study'], count: 3 },
+  { id: 'creative', emoji: '🎨', name: 'Creative Studio', plan: 'scale', color: '#be185d', tools: ['Brand Identity Guide', 'AI Image Studio', 'Video Production Plan', 'Kling Video Prompts'], count: 5 },
+  { id: 'startup', emoji: '🚀', name: 'Startup Launchpad', plan: 'evolution', color: '#ea580c', tools: ['Investor Pitch Deck', 'Go-to-Market Strategy', 'User Story Generator'], count: 3 },
+  { id: 'finance', emoji: '💰', name: 'Finance & Investment', plan: 'evolution', color: '#16a34a', tools: ['Financial Forecast', 'Investment Analysis', 'Cash Flow Optimiser'], count: 3 },
+  { id: 'automation', emoji: '⚡', name: 'n8n Automation', plan: 'addon', color: '#0891b2', tools: ['n8n Workflow Designer'], count: 1, isAddon: true },
 ];
 
 /* ─────────────────────────────────────────────────────────────────
-   Hero prompt box chips — real dashboard tools
+   AI models marquee
+───────────────────────────────────────────────────────────────── */
+const MARQUEE_MODELS = [
+  { name: 'Claude Sonnet 4', dot: '#e54717' },
+  { name: 'GPT-4o', dot: '#10a37f' },
+  { name: 'Gemini 1.5 Pro', dot: '#4285f4' },
+  { name: 'DALL·E 3', dot: '#10a37f' },
+  { name: 'Flux 1.1 Pro', dot: '#7c3aed' },
+  { name: 'Kling 3.0', dot: '#ef4444' },
+  { name: 'Grok 2', dot: '#e2e8f0' },
+  { name: 'Mistral Large', dot: '#f97316' },
+  { name: 'Deepseek R1', dot: '#1677ff' },
+  { name: 'ElevenLabs', dot: '#f59e0b' },
+];
+
+/* ─────────────────────────────────────────────────────────────────
+   Hero prompt chips
 ───────────────────────────────────────────────────────────────── */
 const HERO_CHIPS = [
-  {
-    icon: '📊',
-    labelKey: 'landing.promptbox.chip.mktg', dLabel: 'Market Analysis',
-    fillKey: 'landing.promptbox.chip.mktg.fill',
-    dFill: 'Analyse the market opportunity for an AI writing tool targeting mid-size marketing teams in Europe',
-    route: '/category/strategy', categoryId: 'strategy', toolId: 'market-analysis',
-    exampleInputs: { market: 'AI writing tools', geography: 'Europe', customer_segment: 'Mid-size marketing teams' },
-  },
-  {
-    icon: '🏗️',
-    labelKey: 'landing.promptbox.chip.biz', dLabel: 'Business Plan',
-    fillKey: 'landing.promptbox.chip.biz.fill',
-    dFill: 'Write a business plan for a B2B SaaS project management tool targeting remote-first startups',
-    route: '/category/strategy', categoryId: 'strategy', toolId: 'business-plan',
-    exampleInputs: { business_name: 'FlowDesk', industry: 'B2B SaaS', product: 'Project management for remote-first startups', stage: 'Early Stage (< $100k ARR)' },
-  },
-  {
-    icon: '✍️',
-    labelKey: 'landing.promptbox.chip4', dLabel: 'Blog Post',
-    fillKey: 'landing.promptbox.chip4.fill',
-    dFill: 'Write an SEO blog post about the best AI tools for small businesses in 2025',
-    route: '/category/content', categoryId: 'content', toolId: 'blog-post',
-    exampleInputs: { topic: 'Best AI tools for small businesses in 2025', keyword: 'ai tools small business', audience: 'Founders and operators', word_count: '800', tone: 'Informative' },
-  },
-  {
-    icon: '💰',
-    labelKey: 'landing.promptbox.chip.fin', dLabel: 'Financial Forecast',
-    fillKey: 'landing.promptbox.chip.fin.fill',
-    dFill: 'Build a 12-month financial forecast for a SaaS product with a freemium model — 500 signups/month, 4% paid conversion',
-    route: '/category/finance', categoryId: 'finance', toolId: 'financial-forecast',
-    exampleInputs: { business: 'SaaS product', model: 'Freemium', monthly_signups: '500', conversion: '4%', avg_revenue: '$29/month' },
-  },
-  {
-    icon: '🚀',
-    labelKey: 'landing.promptbox.chip.pitch', dLabel: 'Investor Pitch',
-    fillKey: 'landing.promptbox.chip.pitch.fill',
-    dFill: 'Create an investor pitch deck for a climate tech startup raising a $2M pre-seed round',
-    route: '/category/startup', categoryId: 'startup', toolId: 'investor-pitch',
-    exampleInputs: { company: 'GreenSync', description: 'AI-powered energy optimisation for SMBs', round: 'Pre-seed $2M', traction: '12 pilots, €40k ARR' },
-  },
-  {
-    icon: '🎨',
-    labelKey: 'landing.promptbox.chip.brand', dLabel: 'Brand Identity',
-    fillKey: 'landing.promptbox.chip.brand.fill',
-    dFill: 'Create a brand identity guide for a premium D2C wellness supplement brand targeting health-conscious millennials',
-    route: '/category/creative', categoryId: 'creative', toolId: 'brand-identity',
-    exampleInputs: { brand_name: 'Aura Wellness', industry: 'D2C wellness supplements', target: 'Health-conscious millennials, 25–38', tone: 'Premium, clean, science-backed' },
-  },
+  { icon: '📊', labelKey: 'landing.promptbox.chip.mktg', dLabel: 'Market Analysis', fillKey: 'landing.promptbox.chip.mktg.fill', dFill: 'Analyse the market opportunity for an AI writing tool targeting mid-size marketing teams in Europe', route: '/category/strategy', categoryId: 'strategy', toolId: 'market-analysis', exampleInputs: { market: 'AI writing tools', geography: 'Europe', customer_segment: 'Mid-size marketing teams' } },
+  { icon: '🏗️', labelKey: 'landing.promptbox.chip.biz', dLabel: 'Business Plan', fillKey: 'landing.promptbox.chip.biz.fill', dFill: 'Write a business plan for a B2B SaaS project management tool targeting remote-first startups', route: '/category/strategy', categoryId: 'strategy', toolId: 'business-plan', exampleInputs: { business_name: 'FlowDesk', industry: 'B2B SaaS', product: 'Project management for remote-first startups', stage: 'Early Stage (< $100k ARR)' } },
+  { icon: '✍️', labelKey: 'landing.promptbox.chip4', dLabel: 'Blog Post', fillKey: 'landing.promptbox.chip4.fill', dFill: 'Write an SEO blog post about the best AI tools for small businesses in 2025', route: '/category/content', categoryId: 'content', toolId: 'blog-post', exampleInputs: { topic: 'Best AI tools for small businesses in 2025', keyword: 'ai tools small business', audience: 'Founders and operators', word_count: '800', tone: 'Informative' } },
+  { icon: '💰', labelKey: 'landing.promptbox.chip.fin', dLabel: 'Financial Forecast', fillKey: 'landing.promptbox.chip.fin.fill', dFill: 'Build a 12-month financial forecast for a SaaS product with a freemium model — 500 signups/month, 4% paid conversion', route: '/category/finance', categoryId: 'finance', toolId: 'financial-forecast', exampleInputs: { business: 'SaaS product', model: 'Freemium', monthly_signups: '500', conversion: '4%', avg_revenue: '$29/month' } },
+  { icon: '🚀', labelKey: 'landing.promptbox.chip.pitch', dLabel: 'Investor Pitch', fillKey: 'landing.promptbox.chip.pitch.fill', dFill: 'Create an investor pitch deck for a climate tech startup raising a $2M pre-seed round', route: '/category/startup', categoryId: 'startup', toolId: 'investor-pitch', exampleInputs: { company: 'GreenSync', description: 'AI-powered energy optimisation for SMBs', round: 'Pre-seed $2M', traction: '12 pilots, €40k ARR' } },
+  { icon: '🎨', labelKey: 'landing.promptbox.chip.brand', dLabel: 'Brand Identity', fillKey: 'landing.promptbox.chip.brand.fill', dFill: 'Create a brand identity guide for a premium D2C wellness supplement brand targeting health-conscious millennials', route: '/category/creative', categoryId: 'creative', toolId: 'brand-identity', exampleInputs: { brand_name: 'Aura Wellness', industry: 'D2C wellness supplements', target: 'Health-conscious millennials, 25–38', tone: 'Premium, clean, science-backed' } },
 ];
 
 const DEMO_LIMIT = 3;
@@ -376,26 +327,284 @@ function RotatingText() {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   Stats
+   Animated Models Marquee (Pletor-style)
 ───────────────────────────────────────────────────────────────── */
-const STATS = [
-  { value: '30', unit: '+',   labelKey: 'landing.stats.tools',   defaultLabel: 'specialized agents' },
-  { value: '10', unit: '',    labelKey: 'landing.stats.cats',    defaultLabel: 'capability areas' },
-  { value: '3',  unit: '',    labelKey: 'landing.stats.models',  defaultLabel: 'AI models (Claude, GPT-4o, Gemini)' },
-  { value: '2',  unit: 'min', labelKey: 'landing.stats.pertool', defaultLabel: 'avg. per output' },
-];
+function ModelsMarquee() {
+  const { t } = useTranslation();
+  const doubled = [...MARQUEE_MODELS, ...MARQUEE_MODELS];
+  return (
+    <div className="landing__marquee-section">
+      <div className="landing__marquee-label">
+        {t('landing.models.label', { defaultValue: 'Access the best AI models in one platform' })}
+      </div>
+      <div className="landing__marquee-wrapper" aria-hidden="true">
+        <div className="landing__marquee-track">
+          {doubled.map((m, i) => (
+            <span key={i} className="landing__marquee-chip">
+              <span className="landing__marquee-dot" style={{ background: m.dot }} />
+              {m.name}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ─────────────────────────────────────────────────────────────────
-   How It Works mockups
+   Feature highlights (Pletor "Built for marketers" style)
+───────────────────────────────────────────────────────────────── */
+function FeatureMockup({ type }) {
+  if (type === 'agents') return (
+    <div className="feat-mock">
+      <div className="feat-mock__chrome">
+        <span className="feat-mock__dot" /><span className="feat-mock__dot" /><span className="feat-mock__dot" />
+        <span className="feat-mock__title">Gormaran — Agent Hub</span>
+      </div>
+      <div className="feat-mock__body">
+        <div className="feat-mock__sidebar">
+          {['📈 Marketing', '✍️ Content', '🎯 Strategy', '🛠️ Digital', '🎨 Creative'].map((item, i) => (
+            <div key={i} className={`feat-mock__sidebar-item${i === 1 ? ' feat-mock__sidebar-item--active' : ''}`}>{item}</div>
+          ))}
+        </div>
+        <div className="feat-mock__main">
+          <div className="feat-mock__agent-card">
+            <div className="feat-mock__agent-icon">✍️</div>
+            <div className="feat-mock__agent-info">
+              <div className="feat-mock__agent-name">Blog Post Writer</div>
+              <div className="feat-mock__agent-desc">SEO-optimised content in 2 min</div>
+            </div>
+            <div className="feat-mock__agent-btn">Run →</div>
+          </div>
+          <div className="feat-mock__agent-card">
+            <div className="feat-mock__agent-icon">🎬</div>
+            <div className="feat-mock__agent-info">
+              <div className="feat-mock__agent-name">Video Script</div>
+              <div className="feat-mock__agent-desc">Hook, body, CTA — structured</div>
+            </div>
+            <div className="feat-mock__agent-btn">Run →</div>
+          </div>
+          <div className="feat-mock__agent-card feat-mock__agent-card--faded">
+            <div className="feat-mock__agent-icon">📧</div>
+            <div className="feat-mock__agent-info">
+              <div className="feat-mock__agent-name">Newsletter</div>
+              <div className="feat-mock__agent-desc">Segments, subject line, body</div>
+            </div>
+            <div className="feat-mock__agent-btn">Run →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (type === 'output') return (
+    <div className="feat-mock">
+      <div className="feat-mock__chrome">
+        <span className="feat-mock__dot" /><span className="feat-mock__dot" /><span className="feat-mock__dot" />
+        <span className="feat-mock__title">Market Analysis · Claude Sonnet 4</span>
+        <span className="feat-mock__badge">✓ Done</span>
+      </div>
+      <div className="feat-mock__output">
+        <div className="feat-mock__output-line feat-mock__output-line--heading" style={{ width: '62%' }} />
+        {[90, 78, 85, 55, 70, 88, 45].map((w, i) => (
+          <div key={i} className="feat-mock__output-line" style={{ width: `${w}%`, animationDelay: `${i * 0.06}s` }} />
+        ))}
+        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
+          {['Copy ✓', 'Refine', 'Translate', 'Export'].map((label, i) => (
+            <div key={i} className={`feat-mock__output-btn${i === 0 ? ' feat-mock__output-btn--primary' : ''}`}>{label}</div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (type === 'models') return (
+    <div className="feat-mock">
+      <div className="feat-mock__chrome">
+        <span className="feat-mock__dot" /><span className="feat-mock__dot" /><span className="feat-mock__dot" />
+        <span className="feat-mock__title">Select AI model</span>
+      </div>
+      <div style={{ padding: '0.75rem' }}>
+        {[
+          { letter: 'C', name: 'Claude Sonnet 4', dot: '#e54717', active: true },
+          { letter: 'G', name: 'GPT-4o', dot: '#10a37f' },
+          { letter: 'G', name: 'Gemini 1.5 Pro', dot: '#4285f4' },
+          { letter: 'X', name: 'Grok 2', dot: '#e2e8f0' },
+          { letter: 'D', name: 'Deepseek R1', dot: '#1677ff' },
+        ].map((m, i) => (
+          <div key={i} style={{
+            display: 'flex', alignItems: 'center', gap: '0.6rem',
+            padding: '0.4rem 0.5rem', borderRadius: '8px', marginBottom: '0.3rem',
+            background: m.active ? 'rgba(99,102,241,0.08)' : 'transparent',
+            border: `1px solid ${m.active ? 'rgba(99,102,241,0.25)' : 'transparent'}`,
+          }}>
+            <div style={{ width: 24, height: 24, borderRadius: 7, background: `${m.dot}22`, color: m.dot, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.68rem', fontWeight: 800, flexShrink: 0 }}>{m.letter}</div>
+            <span style={{ fontSize: '0.78rem', color: m.active ? 'var(--color-primary-light)' : 'var(--text-secondary)', fontWeight: m.active ? 600 : 400 }}>{m.name}</span>
+            {m.active && <div style={{ marginLeft: 'auto', width: 10, height: 10, borderRadius: '50%', border: '2px solid var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-primary)' }} /></div>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  return null;
+}
+
+const FEATURE_ROWS = [
+  {
+    pill: 'The Agents',
+    title: 'Agents that think',
+    highlight: 'like marketers',
+    desc: 'Every agent is purpose-built for one task. Structured inputs, professional outputs — no prompting knowledge required. Just fill in a brief and ship.',
+    bullets: ['30 specialized agents across 10 areas', 'Structured brief → professional output', 'From strategy to creative to finance'],
+    mockupType: 'agents',
+    reverse: false,
+  },
+  {
+    pill: 'The Output',
+    title: 'Professional output',
+    highlight: 'ready to use',
+    desc: 'Every agent delivers formatted, structured output designed for direct use — not a draft to clean up. Copy in one click, translate, refine, or export.',
+    bullets: ['Copy in one click', 'Follow-up, refine, iterate in context', 'Multi-language output built in'],
+    mockupType: 'output',
+    reverse: true,
+  },
+  {
+    pill: 'The Models',
+    title: 'Best AI models',
+    highlight: 'in one place',
+    desc: 'Stop platform hopping. Access Claude, GPT-4o, Gemini and more from one workspace — each agent automatically uses the best model for its task.',
+    bullets: ['Claude Sonnet 4, GPT-4o, Gemini 1.5', 'DALL·E 3, Flux 1.1, Kling 3.0 for creative', 'One subscription, all models'],
+    mockupType: 'models',
+    reverse: false,
+  },
+];
+
+function FeatureHighlightsSection() {
+  return (
+    <section className="landing__features section">
+      <div className="container">
+        {FEATURE_ROWS.map((row, i) => (
+          <AnimatedSection key={i} className={`landing__feature-row${row.reverse ? ' landing__feature-row--reverse' : ''}`} delay={0}>
+            <div className="landing__feature-copy">
+              <span className="section-pill">{row.pill}</span>
+              <h2 className="landing__feature-title">
+                {row.title}<br />
+                <span className="gradient-text">{row.highlight}</span>
+              </h2>
+              <p className="landing__feature-desc">{row.desc}</p>
+              <ul className="landing__feature-bullets">
+                {row.bullets.map((b, j) => (
+                  <li key={j}><span className="landing__feature-check">✓</span>{b}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="landing__feature-visual">
+              <FeatureMockup type={row.mockupType} />
+            </div>
+          </AnimatedSection>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Popular Agents (Pletor-style cards)
+───────────────────────────────────────────────────────────────── */
+function PopularAgentsSection() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const handleTryAgent = (route) => {
+    if (currentUser) { navigate(route); } else { navigate('/auth?mode=register'); }
+  };
+  return (
+    <section id="agents" className="landing__agents section">
+      <div className="container">
+        <AnimatedSection>
+          <span className="section-pill">Popular Agents</span>
+          <h2 className="section-title">
+            Start with proven{' '}
+            <span className="gradient-text">AI agents</span>
+          </h2>
+          <p className="section-subtitle">
+            {t('landing.cats.subtitle', { defaultValue: 'Each agent is purpose-built for one task. Structured inputs, professional outputs — ready to use.' })}
+          </p>
+        </AnimatedSection>
+
+        <motion.div
+          className="landing__agent-cards"
+          initial="hidden" whileInView="visible"
+          viewport={{ once: true, margin: '-20px' }}
+          variants={stagger}
+        >
+          {POPULAR_AGENTS.map((agent) => (
+            <motion.div key={agent.id} variants={fadeUp} className="landing__agent-card" style={{ '--agent-color': agent.color }}>
+              <div className="landing__agent-card-top">
+                <div className="landing__agent-emoji" style={{ background: `${agent.color}18` }}>{agent.emoji}</div>
+                <span className="landing__agent-plan-badge" style={{ background: PLAN_COLORS[agent.plan].bg, color: PLAN_COLORS[agent.plan].text }}>
+                  {PLAN_LABELS[agent.plan]}
+                </span>
+              </div>
+              <div className="landing__agent-name">{agent.name}</div>
+              <div className="landing__agent-desc">{agent.desc}</div>
+              <div className="landing__agent-footer">
+                <span className="landing__agent-cat">{agent.category}</span>
+                <button className="landing__agent-try-btn" onClick={() => handleTryAgent(agent.route)}>
+                  Try Agent →
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <div className="landing__agents-footer">
+          <Link to="/auth?mode=register" className="btn btn-secondary">
+            See all 30 agents →
+          </Link>
+        </div>
+
+        {/* All categories compact grid */}
+        <motion.div
+          className="landing__cats-grid"
+          initial="hidden" whileInView="visible"
+          viewport={{ once: true, margin: '-20px' }}
+          variants={stagger}
+          style={{ marginTop: '3rem' }}
+        >
+          {TOOL_CATEGORIES.map((cat) => (
+            <motion.div key={cat.id} variants={fadeUp}>
+              <Link to={`/category/${cat.id}`} className="landing__cat-card" style={{ '--cat-color': cat.color }}>
+                <div className="landing__cat-header">
+                  <span className="landing__cat-icon">{cat.emoji}</span>
+                  <span className={`landing__cat-badge landing__cat-badge--${cat.plan}`}>{PLAN_LABELS[cat.plan]}</span>
+                </div>
+                <div className="landing__cat-name">{cat.name}</div>
+                <div className="landing__cat-tools-list">
+                  {cat.tools.slice(0, 3).map((name) => <span key={name}>{name}</span>)}
+                  {cat.count > 3 && <span>+{cat.count - 3} more</span>}
+                </div>
+                <div className="landing__cat-count">{cat.count} agent{cat.count !== 1 ? 's' : ''} →</div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   How It Works
 ───────────────────────────────────────────────────────────────── */
 const HOW_STEPS = [
-  { num: '01', titleKey: 'landing.how.step1.title', descKey: 'landing.how.step1.desc', defaultTitle: 'Choose your AI model', defaultDesc: 'Select from ChatGPT, Claude, Gemini, Grok and more — each optimised for different tasks.' },
+  { num: '01', titleKey: 'landing.how.step1.title', descKey: 'landing.how.step1.desc', defaultTitle: 'Choose your AI model', defaultDesc: 'Select from Claude, GPT-4o, Gemini and more — each optimised for different tasks.' },
   { num: '02', titleKey: 'landing.how.step2.title', descKey: 'landing.how.step2.desc', defaultTitle: 'Describe what you need', defaultDesc: 'Type your request in plain language. No prompting knowledge required.' },
   { num: '03', titleKey: 'landing.how.step3.title', descKey: 'landing.how.step3.desc', defaultTitle: 'Get AI output instantly', defaultDesc: 'Watch the response stream in real time — text, strategy, code, or images.' },
   { num: '04', titleKey: 'landing.how.step4.title', descKey: 'landing.how.step4.desc', defaultTitle: 'Copy, refine, iterate', defaultDesc: 'Copy in one click, ask follow-ups, or generate images — all in the same conversation.' },
 ];
 
-/* Chat-style models for HiwMockup */
 const HIW_MODELS = [
   { letter: 'G', name: 'ChatGPT',  color: '#10a37f', active: true },
   { letter: 'C', name: 'Claude',   color: '#e54717' },
@@ -406,7 +615,6 @@ const HIW_MODELS = [
 const HIW_OUTPUT_LINES = [78, 92, 68, 85, 55, 80, 62];
 
 function HiwMockup({ step, active, isEs }) {
-  /* Step 0 — Model selection panel */
   if (step === 0) return (
     <div className="hiw-mock" style={{ width: '100%' }}>
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
@@ -414,13 +622,8 @@ function HiwMockup({ step, active, isEs }) {
         <div className="hiw-mock__chrome-label">{isEs ? 'Selección de modelo' : 'Model selection'}</div>
       </div>
       <div style={{ padding: '0.5rem 0.6rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-        {HIW_MODELS.map((m, i) => (
-          <div key={m.name} style={{
-            display: 'flex', alignItems: 'center', gap: '0.5rem',
-            padding: '0.35rem 0.5rem', borderRadius: '7px',
-            background: m.active ? 'rgba(99,102,241,0.07)' : 'transparent',
-            border: `1px solid ${m.active ? 'rgba(99,102,241,0.2)' : 'transparent'}`,
-          }}>
+        {HIW_MODELS.map((m) => (
+          <div key={m.name} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.5rem', borderRadius: '7px', background: m.active ? 'rgba(99,102,241,0.07)' : 'transparent', border: `1px solid ${m.active ? 'rgba(99,102,241,0.2)' : 'transparent'}` }}>
             <div style={{ width: 22, height: 22, borderRadius: 6, background: `${m.color}22`, color: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 800, flexShrink: 0 }}>{m.letter}</div>
             <span style={{ fontSize: '0.72rem', color: m.active ? 'var(--color-primary-light)' : 'var(--text-muted)', fontWeight: m.active ? 600 : 400 }}>{m.name}</span>
             {m.active && <div style={{ marginLeft: 'auto', width: 10, height: 10, borderRadius: '50%', border: '2px solid var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-primary)' }} /></div>}
@@ -429,8 +632,6 @@ function HiwMockup({ step, active, isEs }) {
       </div>
     </div>
   );
-
-  /* Step 1 — Typing a message */
   if (step === 1) return (
     <div className="hiw-mock" style={{ width: '100%' }}>
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
@@ -439,22 +640,13 @@ function HiwMockup({ step, active, isEs }) {
       </div>
       <div style={{ padding: '0.75rem 0.6rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <div style={{ height: 32, background: 'var(--bg-surface-2)', borderRadius: 8, border: '1px solid rgba(99,102,241,0.35)', boxShadow: '0 0 0 2px rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', padding: '0 0.6rem', gap: '0.4rem' }}>
-          <motion.div style={{ height: 7, background: 'rgba(99,102,241,0.3)', borderRadius: 3 }}
-            initial={{ width: 0 }}
-            animate={active ? { width: '70%' } : { width: 0 }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
-          />
-          <motion.span style={{ fontSize: '0.6rem', background: 'var(--color-primary)', color: '#fff', width: 14, height: 14, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 'auto', flexShrink: 0 }}
-            initial={{ opacity: 0 }} animate={active ? { opacity: 1 } : { opacity: 0 }} transition={{ delay: 1.2 }}>↑</motion.span>
+          <motion.div style={{ height: 7, background: 'rgba(99,102,241,0.3)', borderRadius: 3 }} initial={{ width: 0 }} animate={active ? { width: '70%' } : { width: 0 }} transition={{ duration: 1.2, ease: 'easeOut' }} />
+          <motion.span style={{ fontSize: '0.6rem', background: 'var(--color-primary)', color: '#fff', width: 14, height: 14, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 'auto', flexShrink: 0 }} initial={{ opacity: 0 }} animate={active ? { opacity: 1 } : { opacity: 0 }} transition={{ delay: 1.2 }}>↑</motion.span>
         </div>
-        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', textAlign: 'right' }}>
-          {isEs ? 'Intro para enviar' : 'Enter to send'}
-        </div>
+        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', textAlign: 'right' }}>{isEs ? 'Intro para enviar' : 'Enter to send'}</div>
       </div>
     </div>
   );
-
-  /* Step 2 — Streaming response */
   if (step === 2) return (
     <div className="hiw-mock" style={{ width: '100%' }}>
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
@@ -471,10 +663,7 @@ function HiwMockup({ step, active, isEs }) {
       </div>
       <div style={{ padding: '0.6rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
         {HIW_OUTPUT_LINES.map((w, i) => (
-          <motion.div key={i}
-            style={{ height: i === 0 ? 9 : 6, borderRadius: 3,
-              background: i === 0 ? 'linear-gradient(90deg,rgba(99,102,241,0.4),rgba(139,92,246,0.15))' : 'var(--bg-elevated, var(--bg-surface-3))',
-              transformOrigin: 'left' }}
+          <motion.div key={i} style={{ height: i === 0 ? 9 : 6, borderRadius: 3, background: i === 0 ? 'linear-gradient(90deg,rgba(99,102,241,0.4),rgba(139,92,246,0.15))' : 'var(--bg-elevated, var(--bg-surface-3))', transformOrigin: 'left' }}
             initial={{ scaleX: 0, opacity: 0 }}
             animate={active ? { scaleX: w / 100, opacity: 1 } : { scaleX: 0, opacity: 0 }}
             transition={{ duration: 0.5, delay: i * 0.09, ease: 'easeOut' }}
@@ -483,8 +672,6 @@ function HiwMockup({ step, active, isEs }) {
       </div>
     </div>
   );
-
-  /* Step 3 — Completed, copy button */
   if (step === 3) return (
     <div className="hiw-mock" style={{ width: '100%' }}>
       <div className="hiw-mock__bar-row hiw-mock__chrome-mini">
@@ -496,24 +683,13 @@ function HiwMockup({ step, active, isEs }) {
           <div key={i} style={{ height: 6, borderRadius: 3, width: `${w}%`, background: 'rgba(52,211,153,0.18)' }} />
         ))}
         <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.3rem' }}>
-          {[
-            { label: isEs ? 'Copiar ✓' : 'Copy ✓', primary: true },
-            { label: isEs ? 'Seguir' : 'Follow-up' },
-            { label: isEs ? 'Imagen' : 'Image' },
-          ].map(btn => (
-            <div key={btn.label} style={{
-              flex: 1, textAlign: 'center', padding: '0.28rem 0',
-              borderRadius: 5, fontSize: '0.6rem',
-              background: btn.primary ? 'rgba(99,102,241,0.12)' : 'var(--bg-card,rgba(255,255,255,0.04))',
-              border: `1px solid ${btn.primary ? 'rgba(99,102,241,0.25)' : 'var(--border-color,rgba(255,255,255,0.08))'}`,
-              color: btn.primary ? '#a5b4fc' : 'var(--text-muted)',
-            }}>{btn.label}</div>
+          {[{ label: isEs ? 'Copiar ✓' : 'Copy ✓', primary: true }, { label: isEs ? 'Seguir' : 'Follow-up' }, { label: isEs ? 'Imagen' : 'Image' }].map(btn => (
+            <div key={btn.label} style={{ flex: 1, textAlign: 'center', padding: '0.28rem 0', borderRadius: 5, fontSize: '0.6rem', background: btn.primary ? 'rgba(99,102,241,0.12)' : 'var(--bg-card,rgba(255,255,255,0.04))', border: `1px solid ${btn.primary ? 'rgba(99,102,241,0.25)' : 'var(--border-color,rgba(255,255,255,0.08))'}`, color: btn.primary ? '#a5b4fc' : 'var(--text-muted)' }}>{btn.label}</div>
           ))}
         </div>
       </div>
     </div>
   );
-
   return null;
 }
 
@@ -549,41 +725,72 @@ function HowItWorksGrid() {
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   Stats
+───────────────────────────────────────────────────────────────── */
+const STATS = [
+  { value: '30', unit: '+', labelKey: 'landing.stats.tools', defaultLabel: 'specialized agents' },
+  { value: '10', unit: '', labelKey: 'landing.stats.cats', defaultLabel: 'capability areas' },
+  { value: '6', unit: '', labelKey: 'landing.stats.models', defaultLabel: 'AI models built in' },
+  { value: '2', unit: 'min', labelKey: 'landing.stats.pertool', defaultLabel: 'avg. output time' },
+];
+
+/* ─────────────────────────────────────────────────────────────────
+   Testimonials
+───────────────────────────────────────────────────────────────── */
+const TESTIMONIALS = [
+  { name: 'Marco T.', role: 'Founder, B2B SaaS', quote: 'I shipped my investor deck, market analysis and go-to-market plan in one afternoon. Used to take me two weeks.', avatar: 'M' },
+  { name: 'Sofia R.', role: 'Marketing Manager', quote: 'My team now runs 40% more campaigns with the same headcount. The Google Ads and social agents are incredible.', avatar: 'S' },
+  { name: 'James K.', role: 'Agency Owner', quote: "Client proposals that used to take 3 hours now take 20 minutes. The output quality is genuinely better than what I wrote.", avatar: 'J' },
+  { name: 'Ana M.', role: 'E-commerce Director', quote: 'Product descriptions, Amazon listings, landing copy — all done. I just fill in the brief and the agent handles the rest.', avatar: 'A' },
+];
+
+function TestimonialsSection() {
+  return (
+    <section className="landing__testimonials section">
+      <div className="container">
+        <AnimatedSection>
+          <span className="section-pill">What users say</span>
+          <h2 className="section-title">
+            Built for{' '}
+            <span className="gradient-text">results</span>
+          </h2>
+        </AnimatedSection>
+        <motion.div
+          className="landing__testimonials-grid"
+          initial="hidden" whileInView="visible"
+          viewport={{ once: true, margin: '-20px' }}
+          variants={stagger}
+        >
+          {TESTIMONIALS.map((t, i) => (
+            <motion.div key={i} variants={fadeUp} className="landing__testimonial-card">
+              <p className="landing__testimonial-quote">"{t.quote}"</p>
+              <div className="landing__testimonial-author">
+                <div className="landing__testimonial-avatar">{t.avatar}</div>
+                <div>
+                  <div className="landing__testimonial-name">{t.name}</div>
+                  <div className="landing__testimonial-role">{t.role}</div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
    FAQ
 ───────────────────────────────────────────────────────────────── */
 const FAQ_ITEMS = [
-  {
-    q: 'What is Gormaran, exactly?',
-    a: 'Gormaran is a workspace of 30 purpose-built AI agents — each one trained for a specific business task across strategy, content, marketing, finance, creative and more. You fill in a structured brief; it delivers professional output.',
-  },
-  {
-    q: 'How is it different from ChatGPT or Claude?',
-    a: 'General AI gives you answers. Gormaran gives you structured, domain-specific deliverables. No prompting, no iteration loops — each agent knows its task, asks the right questions, and formats the output for direct use.',
-  },
-  {
-    q: 'Which AI models does it use?',
-    a: 'The platform runs on Claude Sonnet 4, GPT-4o and Gemini 1.5 Pro for text agents. Creative Studio uses DALL·E 3, Flux 1.1 and Kling 3.0 for image and video prompts.',
-  },
-  {
-    q: 'Who uses Gormaran?',
-    a: 'Founders building their first pitch. Strategists running market analysis. Content teams shipping at scale. Agency owners writing client proposals. Finance leads modelling forecasts. Anyone who needs professional output fast.',
-  },
-  {
-    q: 'Do I need to know how to prompt AI?',
-    a: 'No. The prompting is built into each agent. You answer focused fields in plain language — topic, audience, goal — and the agent handles everything else.',
-  },
-  {
-    q: 'What are the plan differences?',
-    a: 'The free plan gives access to Marketing and Content agents (10 uses/month). Grow adds Digital Marketing and unlimited generations. Scale adds Strategy, E-commerce, Agency and Creative. Evolution unlocks Finance and Startup. Automation is a separate add-on.',
-  },
-  {
-    q: 'Is my data private?',
-    a: "Yes. Your inputs and outputs are stored privately in your workspace. They're never shared with other users or used to train any AI model.",
-  },
-  {
-    q: 'Can I cancel at any time?',
-    a: 'Yes — no lock-in, no cancellation fees. Your access continues until the end of the billing period.',
-  },
+  { q: 'What is Gormaran, exactly?', a: 'Gormaran is a workspace of 30 purpose-built AI agents — each one trained for a specific business task across strategy, content, marketing, finance, creative and more. You fill in a structured brief; it delivers professional output.' },
+  { q: 'How is it different from ChatGPT or Claude?', a: 'General AI gives you answers. Gormaran gives you structured, domain-specific deliverables. No prompting, no iteration loops — each agent knows its task, asks the right questions, and formats the output for direct use.' },
+  { q: 'Which AI models does it use?', a: 'The platform runs on Claude Sonnet 4, GPT-4o and Gemini 1.5 Pro for text agents. Creative Studio uses DALL·E 3, Flux 1.1 and Kling 3.0 for image and video prompts.' },
+  { q: 'Who uses Gormaran?', a: 'Founders building their first pitch. Strategists running market analysis. Content teams shipping at scale. Agency owners writing client proposals. Finance leads modelling forecasts. Anyone who needs professional output fast.' },
+  { q: 'Do I need to know how to prompt AI?', a: 'No. The prompting is built into each agent. You answer focused fields in plain language — topic, audience, goal — and the agent handles everything else.' },
+  { q: 'What are the plan differences?', a: 'The free plan gives access to Marketing and Content agents (10 uses/month). Grow adds Digital Marketing and unlimited generations. Scale adds Strategy, E-commerce, Agency and Creative. Evolution unlocks Finance and Startup. Automation is a separate add-on.' },
+  { q: 'Is my data private?', a: "Yes. Your inputs and outputs are stored privately in your workspace. They're never shared with other users or used to train any AI model." },
+  { q: 'Can I cancel at any time?', a: 'Yes — no lock-in, no cancellation fees. Your access continues until the end of the billing period.' },
 ];
 
 function FAQSection() {
@@ -621,85 +828,6 @@ function FAQSection() {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   Tool Categories Section
-───────────────────────────────────────────────────────────────── */
-function ToolCategoriesSection() {
-  const { t } = useTranslation();
-  return (
-    <section className="landing__cats section">
-      <div className="container">
-        <AnimatedSection>
-          <span className="section-pill">{t('landing.cats.pill', { defaultValue: 'The Agents' })}</span>
-          <h2 className="section-title">
-            {t('landing.cats.titlePre', { defaultValue: '30 agents.' })}{' '}
-            <span className="gradient-text">{t('landing.cats.titleHighlight', { defaultValue: '10 capability areas.' })}</span>
-          </h2>
-          <p className="section-subtitle">
-            {t('landing.cats.subtitle', { defaultValue: 'Each agent is purpose-built for one task. Structured inputs, professional outputs — ready to use.' })}
-          </p>
-        </AnimatedSection>
-
-        <motion.div
-          className="landing__cats-grid"
-          initial="hidden" whileInView="visible"
-          viewport={{ once: true, margin: '-20px' }}
-          variants={stagger}
-        >
-          {TOOL_CATEGORIES.map((cat) => (
-            <motion.div key={cat.id} variants={fadeUp}>
-              <Link
-                to={`/category/${cat.id}`}
-                className="landing__cat-card"
-                style={{ '--cat-color': cat.color }}
-              >
-                <div className="landing__cat-header">
-                  <span className="landing__cat-icon">{cat.emoji}</span>
-                  <span className={`landing__cat-badge landing__cat-badge--${cat.plan}`}>
-                    {PLAN_LABELS[cat.plan]}
-                  </span>
-                </div>
-                <div className="landing__cat-name">{cat.name}</div>
-                <div className="landing__cat-tools-list">
-                  {cat.tools.slice(0, 3).map((name) => (
-                    <span key={name}>{name}</span>
-                  ))}
-                  {cat.count > 3 && <span>+{cat.count - 3} more</span>}
-                </div>
-                <div className="landing__cat-count">{cat.count} agent{cat.count !== 1 ? 's' : ''} →</div>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   Powered by AI
-───────────────────────────────────────────────────────────────── */
-function PoweredBySection() {
-  const { t } = useTranslation();
-  return (
-    <div className="landing__powered-by">
-      <div className="container">
-        <span className="landing__powered-label">
-          {t('landing.models.label', { defaultValue: 'Powered by' })}
-        </span>
-        <div className="landing__models-row">
-          {AI_MODELS.map((m) => (
-            <span key={m.name} className="landing__model-chip">
-              <span className="landing__model-dot" style={{ background: m.dot }} />
-              {m.name}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────
    Main Landing Page
 ───────────────────────────────────────────────────────────────── */
 export default function LandingPage() {
@@ -728,7 +856,7 @@ export default function LandingPage() {
 
             <motion.div variants={fadeUp} transition={{ duration: 0.3 }}>
               <span className="landing__hero-badge">
-                {t('landing.hero.badge', { defaultValue: '⚡ One subscription' })}
+                {t('landing.hero.badge', { defaultValue: '⚡ 30 AI agents. One subscription.' })}
               </span>
             </motion.div>
 
@@ -738,16 +866,16 @@ export default function LandingPage() {
             </motion.h1>
 
             <motion.p className="landing__hero-subtitle" variants={fadeUp} transition={{ duration: 0.35, delay: 0.1 }}>
-              {t('landing.hero.subtitleLine1', { defaultValue: 'Unlimited access to top AI tools.' })}
+              {t('landing.hero.subtitleLine1', { defaultValue: 'Purpose-built AI agents for marketing, strategy, content, and more.' })}
               <br />
-              {t('landing.hero.subtitleLine2', { defaultValue: '30+ specialized agents. No prompting required.' })}
+              {t('landing.hero.subtitleLine2', { defaultValue: 'Structured inputs. Professional outputs. No prompting required.' })}
             </motion.p>
 
             <HeroPromptBox />
 
             <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.35, delay: 0.15 }}>
               <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
-                {t('landing.hero.cta')}
+                {t('landing.hero.cta', { defaultValue: 'Try Gormaran free' })}
                 <span className="landing__cta-arrow">→</span>
               </Link>
               <button className="btn btn-secondary btn-lg"
@@ -778,20 +906,21 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── POWERED BY ─────────────────────────────────────── */}
-      <PoweredBySection />
+      {/* ── MODELS MARQUEE ─────────────────────────────────── */}
+      <ModelsMarquee />
 
-      {/* ── TOOL CATEGORIES ────────────────────────────────── */}
-      <div id="agents">
-        <ToolCategoriesSection />
-      </div>
+      {/* ── FEATURE HIGHLIGHTS ─────────────────────────────── */}
+      <FeatureHighlightsSection />
+
+      {/* ── POPULAR AGENTS + ALL CATEGORIES ───────────────── */}
+      <PopularAgentsSection />
 
       {/* ── HOW IT WORKS ───────────────────────────────────── */}
       <section id="how-it-works" className="landing__how section">
         <div className="container">
           <AnimatedSection>
             <span className="section-pill">{t('landing.how.pill', { defaultValue: 'How It Works' })}</span>
-            <h2 className="section-title">{t('landing.how.title')}</h2>
+            <h2 className="section-title">{t('landing.how.title', { defaultValue: 'From brief to output in minutes' })}</h2>
           </AnimatedSection>
           <HowItWorksGrid />
         </div>
@@ -813,6 +942,9 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── TESTIMONIALS ───────────────────────────────────── */}
+      <TestimonialsSection />
+
       {/* ── PRICING ────────────────────────────────────────── */}
       <section className="landing__plans section">
         <div className="container">
@@ -824,7 +956,6 @@ export default function LandingPage() {
           </AnimatedSection>
           <motion.div className="landing__plans2" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
 
-            {/* FREE */}
             <motion.div className="landing__plan2" variants={fadeUp}>
               <h3 className="landing__plan2-name">Free</h3>
               <div className="landing__plan2-price">€0 <span>/{isEs ? 'mes' : 'mo'}</span></div>
@@ -839,7 +970,6 @@ export default function LandingPage() {
               </Link>
             </motion.div>
 
-            {/* GROW */}
             <motion.div className="landing__plan2 landing__plan2--pro" variants={fadeUp}>
               <div className="landing__plan2-badge">⭐ {isEs ? 'Más Popular' : 'Most Popular'}</div>
               <h3 className="landing__plan2-name">Grow</h3>
@@ -859,7 +989,6 @@ export default function LandingPage() {
               </p>
             </motion.div>
 
-            {/* SCALE */}
             <motion.div className="landing__plan2" variants={fadeUp}>
               <h3 className="landing__plan2-name">Scale</h3>
               <div className="landing__plan2-price">€39 <span>/{isEs ? 'mes (anual)' : 'mo (annual)'}</span></div>
@@ -896,10 +1025,10 @@ export default function LandingPage() {
                 {t('landing.cta.badge', { defaultValue: 'Get started — it\'s free' })}
               </span>
               <h2 className="landing__cta-full-title">
-                {t('landing.cta.title', { defaultValue: 'Build faster.' })}
+                {isEs ? 'Escala tu output.' : 'Scale your output.'}
                 <br />
                 <span className="gradient-text">
-                  {t('landing.cta.titleHighlight', { defaultValue: 'Ship better work.' })}
+                  {isEs ? 'Sin límites.' : 'Without limits.'}
                 </span>
               </h2>
               <p className="landing__cta-full-subtitle">
@@ -907,11 +1036,11 @@ export default function LandingPage() {
               </p>
               <div className="landing__cta-actions">
                 <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
-                  {t('landing.cta.startFree', { defaultValue: 'Start Creating Free →' })}
+                  {isEs ? 'Empezar gratis →' : 'Try Gormaran free →'}
                 </Link>
                 <button className="btn btn-secondary btn-lg"
                   onClick={() => document.getElementById('agents')?.scrollIntoView({ behavior: 'smooth' })}>
-                  {t('landing.cta.explore', { defaultValue: 'Explore agents ↓' })}
+                  {isEs ? 'Ver los agentes ↓' : 'Explore agents ↓'}
                 </button>
               </div>
               <div className="landing__cta-trust">
