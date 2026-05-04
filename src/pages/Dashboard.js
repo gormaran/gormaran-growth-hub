@@ -68,7 +68,7 @@ function ModelLogo({ modelId, size = 24 }) {
   const src = MODEL_LOGOS[modelId];
   const m   = MODELS.find(x => x.id === modelId);
   if (!src) return <span style={{ fontWeight: 800, fontSize: size * 0.55 }}>{m?.letter}</span>;
-  return <img src={src} alt={m?.name || modelId} width={size} height={size} style={{ borderRadius: 4, objectFit: 'contain', display: 'block' }} />;
+  return <img src={src} alt={m?.name || modelId} style={{ width: size, height: size, objectFit: 'contain', display: 'block' }} />;
 }
 
 const MODEL_VERSIONS = {
@@ -152,7 +152,7 @@ function WelcomeState({ model, tab, onSuggestion }) {
         className="dash__welcome-avatar"
         style={{ background: `${model.color}18`, borderColor: `${model.color}45` }}
       >
-        <ModelLogo modelId={model.id} size={36} />
+        <ModelLogo modelId={model.id} size={56} />
       </div>
       <div className="dash__welcome-name">{model.name}</div>
       <p className="dash__welcome-desc">{model.desc}</p>
@@ -297,7 +297,7 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
                   ? { background: `${model.color}18`, border: `1px solid ${model.color}35` }
                   : {}}
               >
-                {msg.role === 'assistant' ? <ModelLogo modelId={model.id} size={18} /> : '👤'}
+                {msg.role === 'assistant' ? <ModelLogo modelId={model.id} size={24} /> : '👤'}
               </div>
               <div className="dash__message-body">
                 {msg.role === 'assistant' && (
@@ -318,7 +318,7 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
                 className="dash__message-avatar"
                 style={{ background: `${model.color}18`, border: `1px solid ${model.color}35` }}
               >
-                <ModelLogo modelId={model.id} size={18} />
+                <ModelLogo modelId={model.id} size={24} />
               </div>
               <div className="dash__message-body">
                 <div className="dash__message-role">{model.name}</div>
