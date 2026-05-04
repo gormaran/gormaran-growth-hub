@@ -23,11 +23,12 @@ import './Dashboard.css';
    Constants
 ───────────────────────────────────────────────────────────────── */
 const TABS = [
-  { id: 'text',    label: 'Text',     icon: '✍️' },
-  { id: 'design',  label: 'Design',   icon: '🎨' },
-  { id: 'video',   label: 'Video',    icon: '🎬', comingSoon: true },
-  { id: 'audio',   label: 'Audio',    icon: '🎵', comingSoon: true },
-  { id: 'toolkit', label: 'Tool-kit', icon: '🛠️', comingSoon: true },
+  { id: 'text',    label: 'Text',      icon: '✍️' },
+  { id: 'design',  label: 'Design',    icon: '🎨' },
+  { id: 'video',   label: 'Video',     icon: '🎬' },
+  { id: 'audio',   label: 'Audio',     icon: '🎵' },
+  { id: 'agents',  label: 'AI Agents', icon: '🤖' },
+  { id: 'toolkit', label: 'Tool-kit',  icon: '🛠️', comingSoon: true },
 ];
 
 const MODELS = [
@@ -148,12 +149,6 @@ function WelcomeState({ model, tab, onSuggestion }) {
   const suggestions = TAB_SUGGESTIONS[tab] || TAB_SUGGESTIONS.text;
   return (
     <div className="dash__welcome">
-      <div
-        className="dash__welcome-avatar"
-        style={{ background: `${model.color}18`, borderColor: `${model.color}45`, color: model.color }}
-      >
-        {model.letter}
-      </div>
       <div className="dash__welcome-name">{model.name}</div>
       <p className="dash__welcome-desc">{model.desc}</p>
       <div className="dash__welcome-caps-label">Key capabilities</div>
@@ -775,6 +770,200 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   AI Agents Area
+───────────────────────────────────────────────────────────────── */
+const AGENTS_KEY = 'gormaran_agents_v1';
+function loadAgents() { try { return JSON.parse(localStorage.getItem(AGENTS_KEY) || '[]'); } catch { return []; } }
+function saveAgents(a) { try { localStorage.setItem(AGENTS_KEY, JSON.stringify(a)); } catch {} }
+
+function AgentsArea({ model, subscription, usageCount, freeLimit }) {
+  const { i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
+  const [agents, setAgents]       = useState(loadAgents);
+  const [activeAgent, setActiveAgent] = useState(null);
+  const [creating, setCreating]   = useState(false);
+  const [form, setForm]           = useState({ name: '', desc: '', prompt: '' });
+  const [messages, setMessages]   = useState([]);
+  const [input, setInput]         = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [streamText, setStreamText] = useState('');
+  const abortRef   = useRef(null);
+  const messagesRef = useRef(null);
+  const textareaRef = useRef(null);
+  const limitReached = subscription === 'free' && usageCount >= freeLimit;
+
+  useEffect(() => { saveAgents(agents); }, [agents]);
+  useEffect(() => {
+    if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+  }, [messages.length, streamText]);
+
+  const handleCreateAgent = () => {
+    if (!form.name.trim()) return;
+    const agent = { id: crypto.randomUUID(), name: form.name.trim(), desc: form.desc.trim(), prompt: form.prompt.trim(), model: model.id, createdAt: Date.now() };
+    const next = [agent, ...agents];
+    setAgents(next);
+    setCreating(false);
+    setForm({ name: '', desc: '', prompt: '' });
+    setActiveAgent(agent);
+    setMessages([]);
+  };
+
+  const handleDeleteAgent = (id) => {
+    setAgents(prev => prev.filter(a => a.id !== id));
+    if (activeAgent?.id === id) { setActiveAgent(null); setMessages([]); }
+  };
+
+  const handleSend = useCallback(async () => {
+    const text = input.trim();
+    if (!text || isLoading || limitReached || !activeAgent) return;
+    setInput('');
+    setStreamText('');
+    setIsLoading(true);
+    const userMsg = { role: 'user', content: text, ts: Date.now() };
+    const nextMsgs = [...messages, userMsg];
+    setMessages(nextMsgs);
+    const controller = new AbortController();
+    abortRef.current = controller;
+    let acc = '';
+    streamChat({
+      message: text,
+      history: messages.map(m => ({ role: m.role, content: m.content })),
+      tab: 'text',
+      systemPrompt: activeAgent.prompt || undefined,
+      signal: controller.signal,
+      onChunk: (c) => { acc += c; setStreamText(acc); },
+      onDone: () => {
+        setMessages([...nextMsgs, { role: 'assistant', content: acc, ts: Date.now() }]);
+        setStreamText(''); setIsLoading(false); abortRef.current = null;
+      },
+      onError: (err) => {
+        setMessages([...nextMsgs, { role: 'assistant', content: `⚠️ ${err}`, ts: Date.now(), error: true }]);
+        setStreamText(''); setIsLoading(false); abortRef.current = null;
+      },
+    });
+  }, [input, isLoading, messages, activeAgent, limitReached]);
+
+  return (
+    <div className="dash__agents">
+      {/* Agent list sidebar */}
+      <div className="dash__agents-sidebar">
+        <div className="dash__agents-sidebar-hd">
+          <span className="dash__agents-title">{isEs ? 'Mis Agentes' : 'My Agents'}</span>
+          <button className="dash__agents-new-btn" onClick={() => { setCreating(true); setActiveAgent(null); }}>+</button>
+        </div>
+        <div className="dash__agents-list">
+          {agents.length === 0 && !creating && (
+            <div className="dash__agents-empty">{isEs ? 'Sin agentes aún. Crea uno.' : 'No agents yet. Create one.'}</div>
+          )}
+          {agents.map(a => (
+            <div key={a.id} className={`dash__agents-item${activeAgent?.id === a.id ? ' dash__agents-item--active' : ''}`}
+              onClick={() => { setActiveAgent(a); setMessages([]); setCreating(false); }}>
+              <div className="dash__agents-item-icon">🤖</div>
+              <div className="dash__agents-item-body">
+                <div className="dash__agents-item-name">{a.name}</div>
+                {a.desc && <div className="dash__agents-item-desc">{a.desc}</div>}
+              </div>
+              <button className="dash__agents-item-del" onClick={e => { e.stopPropagation(); handleDeleteAgent(a.id); }}>✕</button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main area */}
+      <div className="dash__agents-main">
+        {creating && (
+          <div className="dash__agents-form">
+            <h3 className="dash__agents-form-title">{isEs ? 'Crear agente' : 'Create agent'}</h3>
+            <label className="dash__agents-label">{isEs ? 'Nombre *' : 'Name *'}</label>
+            <input className="dash__agents-input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder={isEs ? 'Mi agente de marketing' : 'My marketing agent'} />
+            <label className="dash__agents-label">{isEs ? 'Descripción' : 'Description'}</label>
+            <input className="dash__agents-input" value={form.desc} onChange={e => setForm(f => ({ ...f, desc: e.target.value }))} placeholder={isEs ? 'Para qué sirve este agente' : 'What this agent does'} />
+            <label className="dash__agents-label">System Prompt</label>
+            <textarea className="dash__agents-textarea" rows={6} value={form.prompt}
+              onChange={e => setForm(f => ({ ...f, prompt: e.target.value }))}
+              placeholder={isEs ? 'Eres un experto en marketing B2B. Responde siempre con datos y ejemplos concretos...' : 'You are a B2B marketing expert. Always respond with data and concrete examples...'}
+            />
+            <div className="dash__agents-form-actions">
+              <button className="dash__agents-cancel-btn" onClick={() => setCreating(false)}>{isEs ? 'Cancelar' : 'Cancel'}</button>
+              <button className="dash__agents-create-btn" onClick={handleCreateAgent} disabled={!form.name.trim()}>{isEs ? 'Crear agente' : 'Create agent'}</button>
+            </div>
+          </div>
+        )}
+
+        {!creating && !activeAgent && (
+          <div className="dash__agents-placeholder">
+            <div className="dash__agents-placeholder-icon">🤖</div>
+            <div className="dash__agents-placeholder-title">{isEs ? 'Agentes de IA' : 'AI Agents'}</div>
+            <p className="dash__agents-placeholder-sub">
+              {isEs ? 'Crea agentes con instrucciones personalizadas, especializados en tareas concretas.' : 'Create agents with custom instructions, specialized for specific tasks.'}
+            </p>
+            <button className="dash__agents-create-btn" onClick={() => setCreating(true)}>{isEs ? '+ Crear primer agente' : '+ Create first agent'}</button>
+          </div>
+        )}
+
+        {!creating && activeAgent && (
+          <>
+            <div className="dash__agents-chat-hd">
+              <div className="dash__agents-chat-name">🤖 {activeAgent.name}</div>
+              {activeAgent.desc && <div className="dash__agents-chat-desc">{activeAgent.desc}</div>}
+            </div>
+            <div className="dash__messages" ref={messagesRef} style={{ flex: 1 }}>
+              {messages.length === 0 && (
+                <div style={{ padding: '2rem', color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
+                  {isEs ? `Habla con ${activeAgent.name}` : `Start talking to ${activeAgent.name}`}
+                </div>
+              )}
+              {messages.map((msg, i) => (
+                <div key={i} className={`dash__message dash__message--${msg.role}`}>
+                  <div className="dash__message-avatar" style={msg.role === 'assistant' ? { background: `${model.color}18`, border: `1px solid ${model.color}35` } : {}}>
+                    {msg.role === 'assistant' ? '🤖' : '👤'}
+                  </div>
+                  <div className="dash__message-body">
+                    {msg.role === 'assistant' && <div className="dash__message-role">{activeAgent.name}</div>}
+                    <div className="dash__message-text"><ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown></div>
+                  </div>
+                </div>
+              ))}
+              {isLoading && (
+                <div className="dash__message dash__message--assistant">
+                  <div className="dash__message-avatar" style={{ background: `${model.color}18`, border: `1px solid ${model.color}35` }}>🤖</div>
+                  <div className="dash__message-body">
+                    <div className="dash__message-role">{activeAgent.name}</div>
+                    <div className="dash__message-text">
+                      {streamText ? <><ReactMarkdown remarkPlugins={[remarkGfm]}>{streamText}</ReactMarkdown><span className="dash__cursor" /></> : <ThinkingDots />}
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div />
+            </div>
+            <div className="dash__input-bar">
+              <div className="dash__input-wrap">
+                <div className="dash__input-row">
+                  <textarea ref={textareaRef} className="dash__textarea" value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                    placeholder={limitReached ? 'Upgrade to continue' : (isEs ? `Escribe a ${activeAgent.name}…` : `Message ${activeAgent.name}…`)}
+                    disabled={limitReached} rows={1}
+                  />
+                  <button className={`dash__send${input.trim() && !limitReached ? ' dash__send--active' : ''}`}
+                    onClick={isLoading ? () => { abortRef.current?.abort(); setIsLoading(false); setStreamText(''); } : handleSend}>
+                    {isLoading
+                      ? <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+                      : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>}
+                  </button>
+                </div>
+                <div className="dash__input-footer"><span /><span className="dash__input-hint">{isEs ? 'Intro para enviar' : 'Enter to send'}</span></div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
    Coming Soon placeholder
 ───────────────────────────────────────────────────────────────── */
 function ComingSoon({ tab }) {
@@ -1150,8 +1339,32 @@ export default function Dashboard() {
                   freeLimit={FREE_MONTHLY_LIMIT}
                 />
               )}
-              {(activeTab === 'video' || activeTab === 'audio' || activeTab === 'toolkit') && (
-                <ComingSoon tab={activeTab} />
+              {activeTab === 'video' && (
+                <VideoArea
+                  model={activeModel}
+                  subscription={subscription}
+                  usageCount={usageCount}
+                  freeLimit={FREE_MONTHLY_LIMIT}
+                />
+              )}
+              {activeTab === 'audio' && (
+                <AudioArea
+                  model={activeModel}
+                  subscription={subscription}
+                  usageCount={usageCount}
+                  freeLimit={FREE_MONTHLY_LIMIT}
+                />
+              )}
+              {activeTab === 'agents' && (
+                <AgentsArea
+                  model={activeModel}
+                  subscription={subscription}
+                  usageCount={usageCount}
+                  freeLimit={FREE_MONTHLY_LIMIT}
+                />
+              )}
+              {activeTab === 'toolkit' && (
+                <ComingSoon tab="toolkit" />
               )}
             </motion.div>
           </AnimatePresence>
