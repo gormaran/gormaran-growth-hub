@@ -534,18 +534,51 @@ function VideoArea({ model, subscription, usageCount, freeLimit }) {
 
   useEffect(() => () => stopPoll(), []);
 
+  const isApiError = error?.includes('API_TOKEN') || error?.includes('not configured');
+
   return (
-    <>
-      <div className="dash__image-area">
-        {!status && videos.length === 0 && (
-          <WelcomeState model={model} tab="video" onSuggestion={t => setPrompt(t)} />
+    <div className="dash__media-layout">
+      {/* Content area */}
+      <div className="dash__media-content">
+        {!status && videos.length === 0 && !error && (
+          <div className="dash__media-empty">
+            <div className="dash__media-empty-icon">🎬</div>
+            <h3 className="dash__media-empty-title">{isEs ? 'Genera vídeos con IA' : 'Generate AI Videos'}</h3>
+            <p className="dash__media-empty-sub">{isEs ? 'Convierte texto en vídeos cinematográficos' : 'Turn text into cinematic videos with state-of-the-art AI'}</p>
+            <div className="dash__media-suggestions">
+              {VIDEO_SUGGESTIONS.map((s, i) => (
+                <button key={i} className="dash__media-suggestion" onClick={() => setPrompt(s.text)}>
+                  <span className="dash__media-suggestion-icon">{s.icon}</span>
+                  <span>{s.text}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         )}
+
+        {isApiError && (
+          <div className="dash__api-setup">
+            <div className="dash__api-setup-icon">🔑</div>
+            <h3 className="dash__api-setup-title">{isEs ? 'Configuración requerida' : 'Setup required'}</h3>
+            <p className="dash__api-setup-sub">{isEs ? 'Añade tu API key de Replicate para generar vídeos' : 'Add your Replicate API key to enable video generation'}</p>
+            <ol className="dash__api-setup-steps">
+              <li>Go to <strong>dashboard.render.com</strong> → your service → <strong>Environment</strong></li>
+              <li>Add variable: <code>REPLICATE_API_TOKEN</code></li>
+              <li>Get your key at <strong>replicate.com/account/api-tokens</strong></li>
+              <li>Save and redeploy</li>
+            </ol>
+            <button className="dash__api-setup-dismiss" onClick={() => setError(null)}>Dismiss</button>
+          </div>
+        )}
+
+        {error && !isApiError && (
+          <div className="dash__gen-error">⚠️ {error} <button onClick={() => setError(null)} style={{ marginLeft: '0.5rem', opacity: 0.6, background: 'none', border: 'none', color: 'inherit', cursor: 'pointer' }}>✕</button></div>
+        )}
+
         {status && (
           <div className="dash__gen-progress">
             <div className="dash__gen-progress-icon">🎬</div>
-            <div className="dash__gen-progress-title">
-              {isEs ? 'Generando vídeo…' : 'Generating video…'}
-            </div>
+            <div className="dash__gen-progress-title">{isEs ? 'Generando vídeo…' : 'Generating video…'}</div>
             <div className="dash__gen-progress-sub">
               {isEs ? 'Esto puede tardar 1–3 minutos.' : 'This may take 1–3 minutes.'}
               {progress && <div className="dash__gen-progress-log">{progress.slice(-120)}</div>}
@@ -553,7 +586,7 @@ function VideoArea({ model, subscription, usageCount, freeLimit }) {
             <div className="dash__thinking"><span className="dash__thinking-dot"/><span className="dash__thinking-dot"/><span className="dash__thinking-dot"/></div>
           </div>
         )}
-        {error && <div className="dash__gen-error">⚠️ {error}</div>}
+
         {videos.map(v => (
           <div key={v.ts} className="dash__image-card">
             <video src={v.url} controls style={{ width: '100%', display: 'block', borderRadius: '12px 12px 0 0' }} />
@@ -566,45 +599,44 @@ function VideoArea({ model, subscription, usageCount, freeLimit }) {
           </div>
         ))}
       </div>
-      <div className="dash__input-bar">
+
+      {/* Input + model bar */}
+      <div className="dash__media-input-area">
         <div className="dash__video-model-row">
           <span className="dash__audio-voice-label">{isEs ? 'Modelo:' : 'Model:'}</span>
           <div className="dash__video-model-list">
             {VIDEO_MODELS.map(vm => (
-              <button
-                key={vm.id}
+              <button key={vm.id}
                 className={`dash__video-model-chip${videoModel === vm.id ? ' dash__video-model-chip--active' : ''}`}
-                onClick={() => setVideoModel(vm.id)}
-                disabled={!!status}
-              >
+                onClick={() => setVideoModel(vm.id)} disabled={!!status}>
                 {vm.label}
                 <span className="dash__video-model-by">{vm.by}</span>
               </button>
             ))}
           </div>
         </div>
-        <div className="dash__input-wrap">
-          <div className="dash__input-row">
-            <textarea className="dash__textarea" value={prompt}
-              onChange={e => setPrompt(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleGenerate(); } }}
-              placeholder={limitReached ? 'Upgrade to generate videos' : (isEs ? 'Describe el vídeo que quieres crear…' : 'Describe the video you want to create…')}
-              disabled={!!status || limitReached} rows={1}
-            />
-            <button className={`dash__send${prompt.trim() && !status ? ' dash__send--active' : ''}`}
-              onClick={handleGenerate} disabled={!prompt.trim() || !!status || limitReached}>
-              {status ? <span className="dash__spinner" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>}
-            </button>
-          </div>
-          <div className="dash__input-footer">
-            <span />
-            <span className="dash__input-hint">
-              {VIDEO_MODELS.find(v => v.id === videoModel)?.label} · {VIDEO_MODELS.find(v => v.id === videoModel)?.by}
-            </span>
+        <div className="dash__input-bar" style={{ borderTop: 'none' }}>
+          <div className="dash__input-wrap">
+            <div className="dash__input-row">
+              <textarea className="dash__textarea" value={prompt}
+                onChange={e => setPrompt(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleGenerate(); } }}
+                placeholder={limitReached ? 'Upgrade to generate videos' : (isEs ? 'Describe el vídeo que quieres crear…' : 'Describe the video you want to create…')}
+                disabled={!!status || limitReached} rows={1}
+              />
+              <button className={`dash__send${prompt.trim() && !status ? ' dash__send--active' : ''}`}
+                onClick={handleGenerate} disabled={!prompt.trim() || !!status || limitReached}>
+                {status ? <span className="dash__spinner" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>}
+              </button>
+            </div>
+            <div className="dash__input-footer">
+              <span />
+              <span className="dash__input-hint">{VIDEO_MODELS.find(v => v.id === videoModel)?.label} · {VIDEO_MODELS.find(v => v.id === videoModel)?.by}</span>
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -675,9 +707,12 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
     } catch (err) { setMusicStatus(null); setError(err.message); }
   };
 
+  const isApiError = (err) => err?.includes('API_TOKEN') || err?.includes('not configured') || err?.includes('API_KEY');
+
   return (
-    <>
-      <div className="dash__image-area">
+    <div className="dash__media-layout">
+      {/* Content area */}
+      <div className="dash__media-content">
         {/* Mode toggle */}
         <div className="dash__audio-mode-toggle">
           <button className={`dash__audio-mode-btn${mode === 'speech' ? ' active' : ''}`} onClick={() => setMode('speech')}>
@@ -688,9 +723,50 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
           </button>
         </div>
 
-        {mode === 'music' && !musicStatus && audioItems.filter(a => a.mode === 'music').length === 0 && (
-          <WelcomeState model={model} tab="audio" onSuggestion={t => setMusicPrompt(t)} />
+        {/* Speech empty state */}
+        {mode === 'speech' && !isLoading && audioItems.filter(a => a.mode === 'speech').length === 0 && (
+          <div className="dash__media-empty">
+            <div className="dash__media-empty-icon">🎙️</div>
+            <h3 className="dash__media-empty-title">{isEs ? 'Texto a voz' : 'Text to Speech'}</h3>
+            <p className="dash__media-empty-sub">{isEs ? 'Convierte cualquier texto en audio natural con voces de IA' : 'Convert any text into natural-sounding audio with AI voices'}</p>
+          </div>
         )}
+
+        {/* Music empty state */}
+        {mode === 'music' && !musicStatus && audioItems.filter(a => a.mode === 'music').length === 0 && (
+          <div className="dash__media-empty">
+            <div className="dash__media-empty-icon">🎵</div>
+            <h3 className="dash__media-empty-title">{isEs ? 'Genera música con IA' : 'Generate AI Music'}</h3>
+            <p className="dash__media-empty-sub">{isEs ? 'Crea música original a partir de una descripción' : 'Create original music from a text description'}</p>
+            <div className="dash__media-suggestions">
+              {MUSIC_SUGGESTIONS.map((s, i) => (
+                <button key={i} className="dash__media-suggestion" onClick={() => setMusicPrompt(s.text)}>
+                  <span className="dash__media-suggestion-icon">{s.icon}</span>
+                  <span>{s.text}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {error && isApiError(error) && (
+          <div className="dash__api-setup">
+            <div className="dash__api-setup-icon">🔑</div>
+            <h3 className="dash__api-setup-title">{isEs ? 'Configuración requerida' : 'Setup required'}</h3>
+            <p className="dash__api-setup-sub">{isEs ? 'Añade tu API key de ElevenLabs para generar audio' : 'Add your ElevenLabs API key to enable audio generation'}</p>
+            <ol className="dash__api-setup-steps">
+              <li>Go to <strong>dashboard.render.com</strong> → your service → <strong>Environment</strong></li>
+              <li>Add: <code>ELEVENLABS_API_KEY</code> (speech) and/or <code>REPLICATE_API_TOKEN</code> (music)</li>
+              <li>Get ElevenLabs key at <strong>elevenlabs.io</strong></li>
+              <li>Save and redeploy</li>
+            </ol>
+            <button className="dash__api-setup-dismiss" onClick={() => setError(null)}>Dismiss</button>
+          </div>
+        )}
+        {error && !isApiError(error) && (
+          <div className="dash__gen-error">⚠️ {error} <button onClick={() => setError(null)} style={{ marginLeft: '0.5rem', opacity: 0.6, background: 'none', border: 'none', color: 'inherit', cursor: 'pointer' }}>✕</button></div>
+        )}
+
         {musicStatus && (
           <div className="dash__gen-progress">
             <div className="dash__gen-progress-icon">🎵</div>
@@ -699,13 +775,11 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
             <div className="dash__thinking"><span className="dash__thinking-dot"/><span className="dash__thinking-dot"/><span className="dash__thinking-dot"/></div>
           </div>
         )}
-        {error && <div className="dash__gen-error">⚠️ {error}</div>}
+        {isLoading && <div className="dash__gen-progress"><div className="dash__gen-progress-icon">🎙️</div><div className="dash__gen-progress-title">{isEs ? 'Generando audio…' : 'Generating audio…'}</div><div className="dash__thinking"><span className="dash__thinking-dot"/><span className="dash__thinking-dot"/><span className="dash__thinking-dot"/></div></div>}
 
-        {audioItems.map(item => (
+        {audioItems.filter(a => a.mode === mode).map(item => (
           <div key={item.ts} className="dash__audio-card">
-            <div className="dash__audio-card-label">
-              {item.mode === 'speech' ? '🎙️' : '🎵'} {item.label}
-            </div>
+            <div className="dash__audio-card-label">{item.mode === 'speech' ? '🎙️' : '🎵'} {item.label}</div>
             <audio controls src={item.url} style={{ width: '100%', marginTop: '0.5rem' }} />
             <div className="dash__image-actions">
               <a href={item.url} download={`audio-${item.ts}.mp3`} className="btn btn-secondary btn-sm">
@@ -717,55 +791,56 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
       </div>
 
       {/* Input area */}
-      {mode === 'speech' ? (
-        <div className="dash__input-bar">
-          <div className="dash__audio-voice-row">
-            <label className="dash__audio-voice-label">{isEs ? 'Voz:' : 'Voice:'}</label>
-            <select className="dash__audio-voice-select" value={voice} onChange={e => setVoice(e.target.value)}>
-              {AUDIO_VOICES.map(v => <option key={v.id} value={v.id}>{v.label}</option>)}
-            </select>
-          </div>
-          <div className="dash__input-wrap">
-            <div className="dash__input-row">
-              <textarea className="dash__textarea" value={text}
-                onChange={e => setText(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) { e.preventDefault(); handleSpeech(); } }}
-                placeholder={isEs ? 'Escribe el texto para convertir a voz…' : 'Type the text to convert to speech…'}
-                disabled={isLoading || limitReached} rows={2}
-              />
-              <button className={`dash__send${text.trim() && !isLoading ? ' dash__send--active' : ''}`}
-                onClick={handleSpeech} disabled={!text.trim() || isLoading || limitReached}>
-                {isLoading ? <span className="dash__spinner" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>}
-              </button>
+      <div className="dash__media-input-area">
+        {mode === 'speech' ? (
+          <div className="dash__input-bar">
+            <div className="dash__audio-voice-row">
+              <label className="dash__audio-voice-label">{isEs ? 'Voz:' : 'Voice:'}</label>
+              <select className="dash__audio-voice-select" value={voice} onChange={e => setVoice(e.target.value)}>
+                {AUDIO_VOICES.map(v => <option key={v.id} value={v.id}>{v.label}</option>)}
+              </select>
             </div>
-            <div className="dash__input-footer"><span /><span className="dash__input-hint">Powered by ElevenLabs</span></div>
-          </div>
-        </div>
-      ) : (
-        <div className="dash__input-bar">
-          <div className="dash__audio-duration-row">
-            <label className="dash__audio-voice-label">{isEs ? `Duración: ${duration}s` : `Duration: ${duration}s`}</label>
-            <input type="range" min={5} max={30} step={5} value={duration} onChange={e => setDuration(+e.target.value)}
-              className="dash__audio-duration-slider" />
-          </div>
-          <div className="dash__input-wrap">
-            <div className="dash__input-row">
-              <textarea className="dash__textarea" value={musicPrompt}
-                onChange={e => setMusicPrompt(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleMusic(); } }}
-                placeholder={isEs ? 'Describe la música que quieres generar…' : 'Describe the music you want to generate…'}
-                disabled={!!musicStatus || limitReached} rows={1}
-              />
-              <button className={`dash__send${musicPrompt.trim() && !musicStatus ? ' dash__send--active' : ''}`}
-                onClick={handleMusic} disabled={!musicPrompt.trim() || !!musicStatus || limitReached}>
-                {musicStatus ? <span className="dash__spinner" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>}
-              </button>
+            <div className="dash__input-wrap">
+              <div className="dash__input-row">
+                <textarea className="dash__textarea" value={text}
+                  onChange={e => setText(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) { e.preventDefault(); handleSpeech(); } }}
+                  placeholder={isEs ? 'Escribe el texto para convertir a voz…' : 'Type the text to convert to speech…'}
+                  disabled={isLoading || limitReached} rows={2}
+                />
+                <button className={`dash__send${text.trim() && !isLoading ? ' dash__send--active' : ''}`}
+                  onClick={handleSpeech} disabled={!text.trim() || isLoading || limitReached}>
+                  {isLoading ? <span className="dash__spinner" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>}
+                </button>
+              </div>
+              <div className="dash__input-footer"><span /><span className="dash__input-hint">Powered by ElevenLabs</span></div>
             </div>
-            <div className="dash__input-footer"><span /><span className="dash__input-hint">Powered by Meta MusicGen via Replicate</span></div>
           </div>
-        </div>
-      )}
-    </>
+        ) : (
+          <div className="dash__input-bar">
+            <div className="dash__audio-duration-row">
+              <label className="dash__audio-voice-label">{isEs ? `Duración: ${duration}s` : `Duration: ${duration}s`}</label>
+              <input type="range" min={5} max={30} step={5} value={duration} onChange={e => setDuration(+e.target.value)} className="dash__audio-duration-slider" />
+            </div>
+            <div className="dash__input-wrap">
+              <div className="dash__input-row">
+                <textarea className="dash__textarea" value={musicPrompt}
+                  onChange={e => setMusicPrompt(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleMusic(); } }}
+                  placeholder={isEs ? 'Describe la música que quieres generar…' : 'Describe the music you want to generate…'}
+                  disabled={!!musicStatus || limitReached} rows={1}
+                />
+                <button className={`dash__send${musicPrompt.trim() && !musicStatus ? ' dash__send--active' : ''}`}
+                  onClick={handleMusic} disabled={!musicPrompt.trim() || !!musicStatus || limitReached}>
+                  {musicStatus ? <span className="dash__spinner" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>}
+                </button>
+              </div>
+              <div className="dash__input-footer"><span /><span className="dash__input-hint">Powered by Meta MusicGen via Replicate</span></div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

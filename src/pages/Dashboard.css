@@ -605,6 +605,64 @@
   .dash__suggestions { grid-template-columns: 1fr; }
 }
 
+/* ── Media layout (Video + Audio) ───────────────────────────────── */
+.dash__media-layout {
+  display: flex; flex-direction: column; flex: 1; overflow: hidden; height: 100%;
+}
+.dash__media-content {
+  flex: 1; overflow-y: auto; padding: 1.5rem 2rem; display: flex; flex-direction: column;
+  gap: 1.25rem; scrollbar-width: thin;
+}
+.dash__media-input-area {
+  flex-shrink: 0; border-top: 1px solid var(--border-color);
+}
+.dash__media-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: 1; gap: 0.65rem; padding: 2rem 1rem; text-align: center;
+}
+.dash__media-empty-icon { font-size: 2.5rem; line-height: 1; }
+.dash__media-empty-title { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.dash__media-empty-sub { font-size: 0.85rem; color: var(--text-muted); max-width: 400px; line-height: 1.6; margin: 0; }
+.dash__media-suggestions {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem;
+  width: 100%; max-width: 600px; margin-top: 0.5rem;
+}
+.dash__media-suggestion {
+  display: flex; align-items: flex-start; gap: 0.55rem;
+  padding: 0.75rem 0.9rem; border-radius: 10px;
+  border: 1px solid var(--border-color); background: var(--bg-surface);
+  color: var(--text-secondary); cursor: pointer; text-align: left;
+  font-family: inherit; font-size: 0.8rem; line-height: 1.4; transition: all 0.15s;
+}
+.dash__media-suggestion:hover { border-color: rgba(99,102,241,0.35); color: var(--text-primary); background: rgba(99,102,241,0.04); }
+.dash__media-suggestion-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
+
+/* API setup card */
+.dash__api-setup {
+  display: flex; flex-direction: column; align-items: center; gap: 0.65rem;
+  max-width: 480px; width: 100%; margin: 1rem auto; padding: 1.5rem 1.75rem;
+  background: rgba(251,191,36,0.05); border: 1px solid rgba(251,191,36,0.2);
+  border-radius: 14px; text-align: center;
+}
+.dash__api-setup-icon { font-size: 2rem; }
+.dash__api-setup-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.dash__api-setup-sub { font-size: 0.82rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+.dash__api-setup-steps {
+  text-align: left; width: 100%; padding-left: 1.25rem; margin: 0.25rem 0;
+  display: flex; flex-direction: column; gap: 0.35rem;
+  font-size: 0.8rem; color: var(--text-secondary); line-height: 1.55;
+}
+.dash__api-setup-steps code {
+  background: rgba(99,102,241,0.1); color: #a5b4fc;
+  padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.78rem;
+}
+.dash__api-setup-dismiss {
+  background: none; border: 1px solid var(--border-color); color: var(--text-muted);
+  padding: 0.35rem 0.85rem; border-radius: 6px; cursor: pointer;
+  font-family: inherit; font-size: 0.78rem; transition: all 0.15s; margin-top: 0.25rem;
+}
+.dash__api-setup-dismiss:hover { color: var(--text-primary); border-color: var(--text-muted); }
+
 /* ── AI Agents ──────────────────────────────────────────────────── */
 .dash__agents {
   display: grid; grid-template-columns: 240px 1fr;
