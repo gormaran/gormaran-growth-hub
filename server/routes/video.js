@@ -62,9 +62,10 @@ router.post('/generate', videoLimiter, verifyToken, async (req, res) => {
 
   // Model routing
   const modelVersions = {
-    minimax:  { path: '/models/minimax/video-01/predictions',      input: { prompt, prompt_optimizer: true } },
-    kling:    { path: '/models/klingai/kling-video/predictions',   input: { prompt, aspect_ratio, duration } },
-    wan:      { path: '/models/wavespeedai/wan-2.1-1.3b/predictions', input: { prompt, aspect_ratio } },
+    minimax:    { path: '/models/minimax/video-01/predictions',               input: { prompt, prompt_optimizer: true } },
+    kling:      { path: '/models/klingai/kling-video/predictions',            input: { prompt, aspect_ratio, duration } },
+    wan:        { path: '/models/wavespeedai/wan-2.1-1.3b/predictions',       input: { prompt, aspect_ratio } },
+    higgsfield: { path: '/models/higgsfield-ai/higgsfield-movie/predictions', input: { prompt, aspect_ratio } },
   };
 
   const cfg = modelVersions[model] || modelVersions.minimax;

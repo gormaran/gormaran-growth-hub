@@ -78,8 +78,8 @@ function ModelLogo({ modelId, size = 24 }) {
 }
 
 const MODEL_VERSIONS = {
-  chatgpt:    ['GPT-4.1', 'GPT-4o', 'GPT-4o mini', 'o1-preview', 'o3-mini'],
-  claude:     ['Claude Sonnet 4.5', 'Claude Haiku 4.5', 'Claude Opus 4'],
+  chatgpt:    ['GPT-4.1', 'o3', 'o4-mini', 'GPT-4o', 'GPT-4o mini'],
+  claude:     ['Claude Sonnet 4.6', 'Claude Opus 4.7', 'Claude Haiku 4.5'],
   gemini:     ['Gemini 2.5 Pro', 'Gemini 2.0 Flash', 'Gemini 1.5 Pro'],
   grok:       ['Grok-3', 'Grok-3 mini', 'Grok-2'],
   deepseek:   ['DeepSeek-V3', 'DeepSeek-R1', 'DeepSeek Coder'],
@@ -88,7 +88,7 @@ const MODEL_VERSIONS = {
 };
 
 const NEW_VERSIONS = new Set([
-  'GPT-4.1', 'Claude Sonnet 4.5', 'Gemini 2.5 Pro', 'Grok-3', 'DeepSeek-V3',
+  'GPT-4.1', 'o3', 'o4-mini', 'Claude Sonnet 4.6', 'Claude Opus 4.7', 'Gemini 2.5 Pro', 'Grok-3', 'DeepSeek-V3',
 ]);
 
 const TEMPLATES = [
@@ -138,12 +138,13 @@ const TEMPLATES = [
 ];
 
 const VIDEO_MODELS = [
-  { id: 'kling',     label: 'KLING 3.0',     by: 'Kuaishou'  },
-  { id: 'sora',      label: 'Sora 2',         by: 'OpenAI'    },
-  { id: 'veo',       label: 'Veo 3.1',        by: 'Google'    },
-  { id: 'seedance',  label: 'Seedance 2.0',   by: 'ByteDance' },
-  { id: 'wan',       label: 'WAN 2.6',        by: 'Alibaba'   },
-  { id: 'minimax',   label: 'Minimax Video',  by: 'MiniMax'   },
+  { id: 'kling',       label: 'KLING 3.0',      by: 'Kuaishou'      },
+  { id: 'higgsfield',  label: 'Higgsfield',      by: 'Higgsfield AI' },
+  { id: 'sora',        label: 'Sora 2',          by: 'OpenAI'        },
+  { id: 'veo',         label: 'Veo 3.1',         by: 'Google'        },
+  { id: 'seedance',    label: 'Seedance 2.0',    by: 'ByteDance'     },
+  { id: 'wan',         label: 'WAN 2.6',         by: 'Alibaba'       },
+  { id: 'minimax',     label: 'Minimax Video',   by: 'MiniMax'       },
 ];
 
 const TAB_SUGGESTIONS = {
@@ -231,7 +232,9 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
   const [input, setInput]         = useState(defaultPrompt || '');
   const [isLoading, setIsLoading] = useState(false);
   const [streamText, setStreamText] = useState('');
-  const abortRef      = useRef(null);
+  const [slowServer, setSlowServer] = useState(false);
+  const abortRef       = useRef(null);
+  const slowTimerRef   = useRef(null);
   const messagesRef   = useRef(null);
   const textareaRef   = useRef(null);
   const messages      = session?.messages || [];
@@ -268,6 +271,7 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
 
     setInput('');
     setStreamText('');
+    setSlowServer(false);
     setIsLoading(true);
 
     const userMsg = { role: 'user', content: text, ts: Date.now() };
@@ -276,6 +280,8 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
       ? text.slice(0, 48) + (text.length > 48 ? '…' : '')
       : undefined;
     onUpdate({ messages: nextMessages, title: autoTitle });
+
+    slowTimerRef.current = setTimeout(() => setSlowServer(true), 3500);
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -289,10 +295,12 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
       tab: session.tab,
       signal: controller.signal,
       onChunk: (chunk) => {
+        clearTimeout(slowTimerRef.current); setSlowServer(false);
         accumulated += chunk;
         setStreamText(accumulated);
       },
       onDone: () => {
+        clearTimeout(slowTimerRef.current); setSlowServer(false);
         const aiMsg = { role: 'assistant', content: accumulated, ts: Date.now() };
         onUpdate({ messages: [...nextMessages, aiMsg] });
         setStreamText('');
@@ -300,6 +308,7 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
         abortRef.current = null;
       },
       onError: (err) => {
+        clearTimeout(slowTimerRef.current); setSlowServer(false);
         const friendly = err?.includes('limit') ? err : (isEs ? 'Algo salió mal. Inténtalo de nuevo.' : 'Something went wrong. Please try again.');
         const errMsg = { role: 'assistant', content: `⚠️ ${friendly}`, ts: Date.now(), error: true };
         onUpdate({ messages: [...nextMessages, errMsg] });
@@ -315,6 +324,8 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
   };
 
   const handleStop = () => {
+    clearTimeout(slowTimerRef.current);
+    setSlowServer(false);
     abortRef.current?.abort();
     abortRef.current = null;
     if (streamText) {
@@ -375,7 +386,9 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
                 <div className="dash__message-text">
                   {streamText
                     ? <><ReactMarkdown remarkPlugins={[remarkGfm]}>{streamText}</ReactMarkdown><span className="dash__cursor" /></>
-                    : <ThinkingDots />
+                    : slowServer
+                      ? <span className="dash__slow-server"><span className="dash__spinner" style={{ width: 14, height: 14, marginRight: 6 }} />{isEs ? 'Conectando servidor AI… un momento' : 'Connecting AI server… one moment'}</span>
+                      : <ThinkingDots />
                   }
                 </div>
               </div>

@@ -232,6 +232,15 @@ router.post('/chat', aiLimiter, verifyToken, async (req, res) => {
   const { message, history = [], tab = 'text', systemPrompt: customSystem, modelId } = req.body;
   if (!message) return res.status(400).json({ error: 'Message is required' });
 
+  const CLAUDE_MODEL_MAP = {
+    'Claude Sonnet 4.6':  'claude-sonnet-4-6',
+    'Claude Opus 4.7':    'claude-opus-4-7',
+    'Claude Haiku 4.5':   'claude-haiku-4-5-20251001',
+    'Claude Sonnet 4.5':  'claude-sonnet-4-5-20251001',
+    'Claude Opus 4':      'claude-opus-4-5',
+  };
+  const resolvedModel = CLAUDE_MODEL_MAP[modelId] || 'claude-sonnet-4-6';
+
   const SYSTEM_PROMPTS = {
     text: `You are a sharp, versatile AI assistant on Gormaran — an AI creation platform. Help users create content, strategies, copy, analyses and more. Be direct and genuinely useful. Format with markdown (bold, bullets, code blocks) when it improves clarity. Never pad responses.`,
     design: `You are a creative director AI on Gormaran. Help users craft detailed, effective image generation prompts. Describe composition, style, lighting, mood and technical parameters clearly. Suggest improvements to their visual concepts.`,
@@ -293,7 +302,7 @@ router.post('/chat', aiLimiter, verifyToken, async (req, res) => {
 
   try {
     const stream = client.messages.stream({
-      model: 'claude-sonnet-4-6',
+      model: resolvedModel,
       max_tokens: 4096,
       system: systemPrompt,
       messages,
