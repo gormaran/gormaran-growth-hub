@@ -150,9 +150,9 @@ function WelcomeState({ model, tab, onSuggestion }) {
     <div className="dash__welcome">
       <div
         className="dash__welcome-avatar"
-        style={{ background: `${model.color}18`, borderColor: `${model.color}45` }}
+        style={{ background: `${model.color}18`, borderColor: `${model.color}45`, color: model.color }}
       >
-        <ModelLogo modelId={model.id} size={56} />
+        {model.letter}
       </div>
       <div className="dash__welcome-name">{model.name}</div>
       <p className="dash__welcome-desc">{model.desc}</p>
