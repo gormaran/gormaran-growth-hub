@@ -272,23 +272,32 @@ export default function NodeFlowBuilder({ preloadTemplate, subscription, usageCo
           updateNode(nodeId, { output: inputValue || '(no input)', isDone: true, isRunning: false });
 
         } else if (type === 'image') {
-          const imagePrompt = prompt ? context + prompt : context || 'Generate a professional image';
-          const result = await generateImage({ prompt: imagePrompt.slice(0, 1000) });
-          updateNode(nodeId, { output: result.url || result, isDone: true, isRunning: false });
+          const imagePrompt = prompt ? context + prompt : context || 'A professional high-quality image';
+          const result = await generateImage({
+            subject: imagePrompt.slice(0, 900),
+            style: 'photorealistic',
+            aspect_ratio: '16:9 — Landscape',
+            mood: 'professional',
+            lighting: 'natural light',
+          });
+          updateNode(nodeId, { output: result.imageUrl || null, isDone: true, isRunning: false });
 
         } else {
           // text, chat, persona, research, format — all use LLM
           const systemMsg = prompt || `You are an expert assistant. Process the input and produce high-quality output.`;
           let acc = '';
+          const userMessage = context
+            ? `${context}${prompt ? `\nInstructions: ${prompt}` : 'Continue based on the above context.'}`
+            : (prompt || 'Generate relevant output.');
           await new Promise((resolve, reject) => {
             streamChat({
-              message: context + (type === 'context' ? inputValue : 'Process and continue the flow.'),
+              message: userMessage,
               history: [],
               tab: 'text',
               systemPrompt: systemMsg,
               onChunk: (c) => { acc += c; updateNode(nodeId, { output: acc }); },
               onDone: resolve,
-              onError: reject,
+              onError: (err) => reject(new Error(err)),
             });
           });
           updateNode(nodeId, { isDone: true, isRunning: false });

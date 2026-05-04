@@ -650,7 +650,7 @@ function DesignArea({ model, subscription, usageCount, freeLimit, defaultPrompt 
     setIsLoading(true);
     setError(null);
     try {
-      const result = await generateImage({ prompt: prompt.trim(), style: 'vivid', quality: 'standard' });
+      const result = await generateImage({ subject: prompt.trim(), style: 'photorealistic', aspect_ratio: '16:9 — Landscape', mood: 'professional', lighting: 'natural light' });
       if (result.imageUrl) {
         setImages(prev => [{ url: result.imageUrl, prompt: prompt.trim(), ts: Date.now() }, ...prev]);
         setPrompt('');
