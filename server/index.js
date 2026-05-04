@@ -14,6 +14,8 @@ admin.initializeApp({
 const aiRoutes = require("./routes/ai");
 const stripeRoutes = require("./routes/stripe");
 const imageRoutes = require("./routes/imageGeneration");
+const videoRoutes = require("./routes/video");
+const audioRoutes = require("./routes/audio");
 const oauthRoutes = require("./routes/oauth");
 const instagramWebhook = require("./routes/instagramWebhook");
 const emailTrackingRoutes = require("./routes/emailTracking");
@@ -83,6 +85,8 @@ app.get("/health", (req, res) => {
 app.use("/api/ai", aiRoutes);
 app.use("/api/stripe", stripeRoutes);
 app.use("/api/image", imageRoutes);
+app.use("/api/video", videoRoutes);
+app.use("/api/audio", audioRoutes);
 app.use("/api/oauth", oauthRoutes);
 app.use("/api/webhooks/instagram", instagramWebhook);
 app.use("/api/email", emailTrackingRoutes);

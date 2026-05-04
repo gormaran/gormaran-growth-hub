@@ -11,6 +11,12 @@
       "sourceType": "github",
       "computedHash": "2fa9adb27f7cfc4635decebea65222cd56e36b5de34781f7862be888504c04f4"
     },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
+    },
     "firebase-ai-logic": {
       "source": "firebase/agent-skills",
       "sourceType": "github",
@@ -60,6 +66,31 @@
       "source": "greensock/gsap-skills",
       "sourceType": "github",
       "computedHash": "863842ac2d7aee53fd4f0025c960173d7ad3e658a5715b89b2211fa280213c1f"
+    },
+    "research": {
+      "source": "Weizhena/Deep-Research-skills",
+      "sourceType": "github",
+      "computedHash": "390404def54fc5c024c31f71390b64bca75b63b7698c996841d252d6ad2c85fd"
+    },
+    "research-add-fields": {
+      "source": "Weizhena/Deep-Research-skills",
+      "sourceType": "github",
+      "computedHash": "aa96326dd4bec03c602d2dc2e41c08c57dca0f08e927be2261b6de0b08a8cbb4"
+    },
+    "research-add-items": {
+      "source": "Weizhena/Deep-Research-skills",
+      "sourceType": "github",
+      "computedHash": "d8c2724157f077bf1fce2b9b2e42cde2c083ff9964bc0c5ab254df6dbf101bb1"
+    },
+    "research-deep": {
+      "source": "Weizhena/Deep-Research-skills",
+      "sourceType": "github",
+      "computedHash": "e92ef8915e8a48f8165c7779f9d0ddb4fd0ec34d538cb519e2f2dea8b44e93b3"
+    },
+    "research-report": {
+      "source": "Weizhena/Deep-Research-skills",
+      "sourceType": "github",
+      "computedHash": "180e1a3874368143627dcff05123b3601ce79fc0758c3bf651e7f428eab7745e"
     }
   }
 }

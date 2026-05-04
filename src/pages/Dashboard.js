@@ -7,7 +7,15 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { pushEvent } from '../utils/analytics';
-import { streamChat, generateImage } from '../utils/api';
+import {
+  streamChat,
+  generateImage,
+  startVideoGeneration,
+  pollVideoStatus,
+  generateSpeech,
+  startMusicGeneration,
+  pollMusicStatus,
+} from '../utils/api';
 import OnboardingModal from '../components/OnboardingModal';
 import './Dashboard.css';
 
@@ -131,22 +139,30 @@ function WelcomeState({ model, tab, onSuggestion }) {
 /* ─────────────────────────────────────────────────────────────────
    Text Chat Area
 ───────────────────────────────────────────────────────────────── */
-function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount, freeLimit, subscription }) {
+function ChatArea({ session, model, onUpdate, usageCount, freeLimit, subscription }) {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [input, setInput]         = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [streamText, setStreamText] = useState('');
-  const abortRef   = useRef(null);
-  const bottomRef  = useRef(null);
-  const textareaRef = useRef(null);
-  const messages   = session?.messages || [];
+  const abortRef      = useRef(null);
+  const messagesRef   = useRef(null);
+  const textareaRef   = useRef(null);
+  const messages      = session?.messages || [];
 
   const scrollToBottom = useCallback(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, []);
 
   useEffect(() => { scrollToBottom(); }, [messages.length, streamText, scrollToBottom]);
+
+  // Auto-focus on mount for new chats (preventScroll avoids page jump)
+  useEffect(() => {
+    if (messages.length === 0) {
+      textareaRef.current?.focus({ preventScroll: true });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-resize textarea
   useEffect(() => {
@@ -170,11 +186,10 @@ function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount,
 
     const userMsg = { role: 'user', content: text, ts: Date.now() };
     const nextMessages = [...messages, userMsg];
-    onMessagesUpdate(nextMessages);
-
-    if (!session.title || session.title === 'New chat') {
-      onTitleUpdate(text.slice(0, 45) + (text.length > 45 ? '…' : ''));
-    }
+    const autoTitle = (!session.title || session.title === 'New chat')
+      ? text.slice(0, 48) + (text.length > 48 ? '…' : '')
+      : undefined;
+    onUpdate({ messages: nextMessages, title: autoTitle });
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -191,7 +206,7 @@ function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount,
       },
       onDone: () => {
         const aiMsg = { role: 'assistant', content: accumulated, ts: Date.now() };
-        onMessagesUpdate([...nextMessages, aiMsg]);
+        onUpdate({ messages: [...nextMessages, aiMsg] });
         setStreamText('');
         setIsLoading(false);
         abortRef.current = null;
@@ -199,13 +214,13 @@ function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount,
       onError: (err) => {
         const friendly = err?.includes('limit') ? err : (isEs ? 'Algo salió mal. Inténtalo de nuevo.' : 'Something went wrong. Please try again.');
         const errMsg = { role: 'assistant', content: `⚠️ ${friendly}`, ts: Date.now(), error: true };
-        onMessagesUpdate([...nextMessages, errMsg]);
+        onUpdate({ messages: [...nextMessages, errMsg] });
         setStreamText('');
         setIsLoading(false);
         abortRef.current = null;
       },
     });
-  }, [input, isLoading, messages, session, subscription, usageCount, freeLimit, onMessagesUpdate, onTitleUpdate]);
+  }, [input, isLoading, messages, session, subscription, usageCount, freeLimit, onUpdate]);
 
   const handleKey = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); }
@@ -215,8 +230,7 @@ function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount,
     abortRef.current?.abort();
     abortRef.current = null;
     if (streamText) {
-      const aiMsg = { role: 'assistant', content: streamText, ts: Date.now() };
-      onMessagesUpdate([...messages, aiMsg]);
+      onUpdate({ messages: [...messages, { role: 'assistant', content: streamText, ts: Date.now() }] });
     }
     setStreamText('');
     setIsLoading(false);
@@ -236,7 +250,7 @@ function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount,
           onSuggestion={(text) => { setInput(text); textareaRef.current?.focus(); }}
         />
       ) : (
-        <div className="dash__messages">
+        <div className="dash__messages" ref={messagesRef}>
           {messages.map((msg, i) => (
             <div key={i} className={`dash__message dash__message--${msg.role}`}>
               <div
@@ -279,7 +293,7 @@ function ChatArea({ session, model, onMessagesUpdate, onTitleUpdate, usageCount,
               </div>
             </div>
           )}
-          <div ref={bottomRef} />
+          <div />
         </div>
       )}
 
@@ -430,6 +444,280 @@ function DesignArea({ model, subscription, usageCount, freeLimit }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   Video Generation Area (Replicate)
+───────────────────────────────────────────────────────────────── */
+const VIDEO_SUGGESTIONS = [
+  { icon: '🌊', text: 'Cinematic ocean waves crashing at sunset, slow motion' },
+  { icon: '🏙️', text: 'Futuristic city at night with neon lights and flying cars' },
+  { icon: '🌿', text: 'Time-lapse of a flower blooming in a misty forest' },
+  { icon: '🚀', text: 'Rocket launching through clouds into a starry sky' },
+];
+
+function VideoArea({ model, subscription, usageCount, freeLimit }) {
+  const { i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
+  const [prompt, setPrompt]       = useState('');
+  const [videos, setVideos]       = useState([]);
+  const [status, setStatus]       = useState(null); // null | 'generating' | 'polling'
+  const [progress, setProgress]   = useState('');
+  const [error, setError]         = useState(null);
+  const pollRef                   = useRef(null);
+
+  const limitReached = subscription === 'free' && usageCount >= freeLimit;
+
+  const stopPoll = () => { clearInterval(pollRef.current); pollRef.current = null; };
+
+  const handleGenerate = async () => {
+    if (!prompt.trim() || status || limitReached) return;
+    setError(null);
+    setStatus('generating');
+    setProgress('');
+    try {
+      const { taskId } = await startVideoGeneration({ prompt: prompt.trim(), aspect_ratio: '16:9' });
+      setStatus('polling');
+      setPrompt('');
+      pollRef.current = setInterval(async () => {
+        try {
+          const res = await pollVideoStatus(taskId);
+          if (res.status === 'done') {
+            stopPoll();
+            setVideos(prev => [{ url: res.videoUrl, prompt: prompt.trim() || 'video', ts: Date.now() }, ...prev]);
+            setStatus(null);
+          } else if (res.status === 'failed') {
+            stopPoll();
+            setError(res.error || 'Video generation failed');
+            setStatus(null);
+          } else {
+            setProgress(res.progress || '');
+          }
+        } catch (e) { stopPoll(); setError(e.message); setStatus(null); }
+      }, 4000);
+    } catch (err) {
+      setError(err.message);
+      setStatus(null);
+    }
+  };
+
+  useEffect(() => () => stopPoll(), []);
+
+  return (
+    <>
+      <div className="dash__image-area">
+        {!status && videos.length === 0 && (
+          <WelcomeState model={model} tab="video" onSuggestion={t => setPrompt(t)} />
+        )}
+        {status && (
+          <div className="dash__gen-progress">
+            <div className="dash__gen-progress-icon">🎬</div>
+            <div className="dash__gen-progress-title">
+              {isEs ? 'Generando vídeo…' : 'Generating video…'}
+            </div>
+            <div className="dash__gen-progress-sub">
+              {isEs ? 'Esto puede tardar 1–3 minutos.' : 'This may take 1–3 minutes.'}
+              {progress && <div className="dash__gen-progress-log">{progress.slice(-120)}</div>}
+            </div>
+            <div className="dash__thinking"><span className="dash__thinking-dot"/><span className="dash__thinking-dot"/><span className="dash__thinking-dot"/></div>
+          </div>
+        )}
+        {error && <div className="dash__gen-error">⚠️ {error}</div>}
+        {videos.map(v => (
+          <div key={v.ts} className="dash__image-card">
+            <video src={v.url} controls style={{ width: '100%', display: 'block', borderRadius: '12px 12px 0 0' }} />
+            <div className="dash__image-prompt">"{v.prompt}"</div>
+            <div className="dash__image-actions">
+              <a href={v.url} download={`video-${v.ts}.mp4`} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
+                ↓ {isEs ? 'Descargar' : 'Download'}
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="dash__input-bar">
+        <div className="dash__input-wrap">
+          <div className="dash__input-row">
+            <textarea className="dash__textarea" value={prompt}
+              onChange={e => setPrompt(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleGenerate(); } }}
+              placeholder={limitReached ? 'Upgrade to generate videos' : (isEs ? 'Describe el vídeo que quieres crear…' : 'Describe the video you want to create…')}
+              disabled={!!status || limitReached} rows={1}
+            />
+            <button className={`dash__send${prompt.trim() && !status ? ' dash__send--active' : ''}`}
+              onClick={handleGenerate} disabled={!prompt.trim() || !!status || limitReached}>
+              {status ? <span className="dash__spinner" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>}
+            </button>
+          </div>
+          <div className="dash__input-footer">
+            <span />
+            <span className="dash__input-hint">Powered by Replicate · Minimax Video</span>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Audio Area (ElevenLabs TTS + MusicGen)
+───────────────────────────────────────────────────────────────── */
+const AUDIO_VOICES = [
+  { id: 'rachel', label: 'Rachel — Female, calm' },
+  { id: 'josh', label: 'Josh — Male, deep' },
+  { id: 'bella', label: 'Bella — Female, warm' },
+  { id: 'adam', label: 'Adam — Male, natural' },
+  { id: 'elli', label: 'Elli — Female, young' },
+  { id: 'callum', label: 'Callum — Male, Scottish' },
+];
+const MUSIC_SUGGESTIONS = [
+  { icon: '🎵', text: 'Upbeat electronic music for a product demo, 120 BPM' },
+  { icon: '🎹', text: 'Calm piano background music for focus and productivity' },
+  { icon: '🎸', text: 'Epic cinematic orchestral score for an action trailer' },
+  { icon: '🌊', text: 'Relaxing ambient music with nature sounds and soft synths' },
+];
+
+function AudioArea({ model, subscription, usageCount, freeLimit }) {
+  const { i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
+  const [mode, setMode]         = useState('speech'); // 'speech' | 'music'
+  const [text, setText]         = useState('');
+  const [voice, setVoice]       = useState('rachel');
+  const [musicPrompt, setMusicPrompt] = useState('');
+  const [duration, setDuration] = useState(15);
+  const [isLoading, setIsLoading] = useState(false);
+  const [audioItems, setAudioItems] = useState([]);
+  const [error, setError]       = useState(null);
+  const [musicStatus, setMusicStatus] = useState(null);
+  const pollRef = useRef(null);
+
+  const limitReached = subscription === 'free' && usageCount >= freeLimit;
+  const stopPoll = () => { clearInterval(pollRef.current); pollRef.current = null; };
+  useEffect(() => () => stopPoll(), []);
+
+  const handleSpeech = async () => {
+    if (!text.trim() || isLoading || limitReached) return;
+    setError(null); setIsLoading(true);
+    try {
+      const audioUrl = await generateSpeech({ text: text.trim(), voice });
+      setAudioItems(prev => [{ url: audioUrl, label: text.slice(0, 50), mode: 'speech', ts: Date.now() }, ...prev]);
+      setText('');
+    } catch (err) { setError(err.message); }
+    finally { setIsLoading(false); }
+  };
+
+  const handleMusic = async () => {
+    if (!musicPrompt.trim() || musicStatus || limitReached) return;
+    setError(null); setMusicStatus('generating');
+    try {
+      const { taskId } = await startMusicGeneration({ prompt: musicPrompt.trim(), duration });
+      setMusicPrompt('');
+      pollRef.current = setInterval(async () => {
+        try {
+          const res = await pollMusicStatus(taskId);
+          if (res.status === 'done') {
+            stopPoll(); setMusicStatus(null);
+            setAudioItems(prev => [{ url: res.audioUrl, label: musicPrompt.slice(0, 50), mode: 'music', ts: Date.now() }, ...prev]);
+          } else if (res.status === 'failed') {
+            stopPoll(); setMusicStatus(null); setError(res.error || 'Music generation failed');
+          }
+        } catch (e) { stopPoll(); setMusicStatus(null); setError(e.message); }
+      }, 4000);
+    } catch (err) { setMusicStatus(null); setError(err.message); }
+  };
+
+  return (
+    <>
+      <div className="dash__image-area">
+        {/* Mode toggle */}
+        <div className="dash__audio-mode-toggle">
+          <button className={`dash__audio-mode-btn${mode === 'speech' ? ' active' : ''}`} onClick={() => setMode('speech')}>
+            🎙️ {isEs ? 'Voz (TTS)' : 'Voice (TTS)'}
+          </button>
+          <button className={`dash__audio-mode-btn${mode === 'music' ? ' active' : ''}`} onClick={() => setMode('music')}>
+            🎵 {isEs ? 'Música' : 'Music'}
+          </button>
+        </div>
+
+        {mode === 'music' && !musicStatus && audioItems.filter(a => a.mode === 'music').length === 0 && (
+          <WelcomeState model={model} tab="audio" onSuggestion={t => setMusicPrompt(t)} />
+        )}
+        {musicStatus && (
+          <div className="dash__gen-progress">
+            <div className="dash__gen-progress-icon">🎵</div>
+            <div className="dash__gen-progress-title">{isEs ? 'Generando música…' : 'Generating music…'}</div>
+            <div className="dash__gen-progress-sub">{isEs ? 'Esto puede tardar 30–60 segundos.' : 'This may take 30–60 seconds.'}</div>
+            <div className="dash__thinking"><span className="dash__thinking-dot"/><span className="dash__thinking-dot"/><span className="dash__thinking-dot"/></div>
+          </div>
+        )}
+        {error && <div className="dash__gen-error">⚠️ {error}</div>}
+
+        {audioItems.map(item => (
+          <div key={item.ts} className="dash__audio-card">
+            <div className="dash__audio-card-label">
+              {item.mode === 'speech' ? '🎙️' : '🎵'} {item.label}
+            </div>
+            <audio controls src={item.url} style={{ width: '100%', marginTop: '0.5rem' }} />
+            <div className="dash__image-actions">
+              <a href={item.url} download={`audio-${item.ts}.mp3`} className="btn btn-secondary btn-sm">
+                ↓ {isEs ? 'Descargar' : 'Download'}
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Input area */}
+      {mode === 'speech' ? (
+        <div className="dash__input-bar">
+          <div className="dash__audio-voice-row">
+            <label className="dash__audio-voice-label">{isEs ? 'Voz:' : 'Voice:'}</label>
+            <select className="dash__audio-voice-select" value={voice} onChange={e => setVoice(e.target.value)}>
+              {AUDIO_VOICES.map(v => <option key={v.id} value={v.id}>{v.label}</option>)}
+            </select>
+          </div>
+          <div className="dash__input-wrap">
+            <div className="dash__input-row">
+              <textarea className="dash__textarea" value={text}
+                onChange={e => setText(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) { e.preventDefault(); handleSpeech(); } }}
+                placeholder={isEs ? 'Escribe el texto para convertir a voz…' : 'Type the text to convert to speech…'}
+                disabled={isLoading || limitReached} rows={2}
+              />
+              <button className={`dash__send${text.trim() && !isLoading ? ' dash__send--active' : ''}`}
+                onClick={handleSpeech} disabled={!text.trim() || isLoading || limitReached}>
+                {isLoading ? <span className="dash__spinner" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>}
+              </button>
+            </div>
+            <div className="dash__input-footer"><span /><span className="dash__input-hint">Powered by ElevenLabs</span></div>
+          </div>
+        </div>
+      ) : (
+        <div className="dash__input-bar">
+          <div className="dash__audio-duration-row">
+            <label className="dash__audio-voice-label">{isEs ? `Duración: ${duration}s` : `Duration: ${duration}s`}</label>
+            <input type="range" min={5} max={30} step={5} value={duration} onChange={e => setDuration(+e.target.value)}
+              className="dash__audio-duration-slider" />
+          </div>
+          <div className="dash__input-wrap">
+            <div className="dash__input-row">
+              <textarea className="dash__textarea" value={musicPrompt}
+                onChange={e => setMusicPrompt(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleMusic(); } }}
+                placeholder={isEs ? 'Describe la música que quieres generar…' : 'Describe the music you want to generate…'}
+                disabled={!!musicStatus || limitReached} rows={1}
+              />
+              <button className={`dash__send${musicPrompt.trim() && !musicStatus ? ' dash__send--active' : ''}`}
+                onClick={handleMusic} disabled={!musicPrompt.trim() || !!musicStatus || limitReached}>
+                {musicStatus ? <span className="dash__spinner" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>}
+              </button>
+            </div>
+            <div className="dash__input-footer"><span /><span className="dash__input-hint">Powered by Meta MusicGen via Replicate</span></div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
    Coming Soon placeholder
 ───────────────────────────────────────────────────────────────── */
 function ComingSoon({ tab }) {
@@ -496,7 +784,7 @@ function ModelPanel({ selectedId, onSelect, onClose }) {
 /* ─────────────────────────────────────────────────────────────────
    Left Sidebar
 ───────────────────────────────────────────────────────────────── */
-function Sidebar({ sessions, activeId, onNew, onSelect, onDelete, subscription, usageCount, freeLimit }) {
+function Sidebar({ sessions, activeId, onNew, onSelect, onDelete, subscription, usageCount, freeLimit, sessionListRef }) {
   const [navTab, setNavTab] = useState('chats');
   const { t } = useTranslation();
 
@@ -528,7 +816,7 @@ function Sidebar({ sessions, activeId, onNew, onSelect, onDelete, subscription, 
         <button className={`dash__nav-tab${navTab === 'projects' ? ' dash__nav-tab--active' : ''}`} onClick={() => setNavTab('projects')}>Projects</button>
       </div>
 
-      <div className="dash__session-list">
+      <div className="dash__session-list" ref={sessionListRef}>
         {displaySessions.length === 0 ? (
           <div className="dash__session-empty">
             {navTab === 'chats'
@@ -582,6 +870,7 @@ export default function Dashboard() {
   const [sessions, setSessions]           = useState(loadSessions);
   const [currentId, setCurrentId]         = useState(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const sidebarListRef = useRef(null);
   const showOnboarding = userProfile && !userProfile.onboardingCompleted;
 
   const paymentStatus = searchParams.get('payment');
@@ -603,16 +892,21 @@ export default function Dashboard() {
 
   const handleNew = useCallback(() => {
     const s = makeSession(activeTab, selectedModel);
+    currentIdRef.current = s.id; // sync before setState so first message goes to correct session
     setSessions(prev => [s, ...prev]);
     setCurrentId(s.id);
+    requestAnimationFrame(() => {
+      sidebarListRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+    });
   }, [activeTab, selectedModel]);
 
   const handleSelectSession = useCallback((id) => {
     const s = sessions.find(s => s.id === id);
-    if (s) { setCurrentId(id); setActiveTab(s.tab); }
+    if (s) { currentIdRef.current = id; setCurrentId(id); setActiveTab(s.tab); }
   }, [sessions]);
 
   const handleTabChange = useCallback((tabId) => {
+    currentIdRef.current = null;
     setActiveTab(tabId);
     setCurrentId(null);
   }, []);
@@ -625,29 +919,26 @@ export default function Dashboard() {
     setSessions(prev => prev.map(s => s.id === id ? { ...s, title } : s));
   }, []);
 
-  // pendingSessionRef prevents duplicate session creation in the same event tick
-  const pendingSessionRef = useRef(null);
-  useEffect(() => { if (currentId) pendingSessionRef.current = null; }, [currentId]);
+  // Atomic session update — creates session on first call if needed
+  const currentIdRef = useRef(null);
+  useEffect(() => { currentIdRef.current = currentId; }, [currentId]);
 
-  const getOrCreateSession = useCallback(() => {
-    if (currentSession) return currentSession;
-    if (pendingSessionRef.current) return pendingSessionRef.current;
-    const s = makeSession(activeTab, selectedModel);
-    pendingSessionRef.current = s;
-    setSessions(prev => [s, ...prev]);
-    setCurrentId(s.id);
-    return s;
-  }, [currentSession, activeTab, selectedModel]);
-
-  const handleMessagesUpdate = useCallback((messages) => {
-    const s = getOrCreateSession();
-    updateMessages(s.id, messages);
-  }, [getOrCreateSession, updateMessages]);
-
-  const handleTitleUpdate = useCallback((title) => {
-    const s = getOrCreateSession();
-    updateTitle(s.id, title);
-  }, [getOrCreateSession, updateTitle]);
+  const handleChatUpdate = useCallback(({ messages, title }) => {
+    setSessions(prev => {
+      const id = currentIdRef.current;
+      if (id) {
+        return prev.map(s => s.id === id
+          ? { ...s, messages, ...(title ? { title } : {}) }
+          : s
+        );
+      }
+      // Create new session atomically — title + messages in one shot
+      const s = makeSession(activeTab, selectedModel);
+      currentIdRef.current = s.id;
+      setCurrentId(s.id);
+      return [{ ...s, messages, ...(title ? { title } : {}) }, ...prev];
+    });
+  }, [activeTab, selectedModel]);
 
   const session = currentSession || { id: null, tab: activeTab, model: selectedModel, messages: [], title: 'New chat' };
 
@@ -708,6 +999,7 @@ export default function Dashboard() {
           subscription={subscription}
           usageCount={usageCount}
           freeLimit={FREE_MONTHLY_LIMIT}
+          sessionListRef={sidebarListRef}
         />
 
         <main className="dash__main">
@@ -725,8 +1017,7 @@ export default function Dashboard() {
                   key={session.id || 'new'}
                   session={session}
                   model={activeModel}
-                  onMessagesUpdate={handleMessagesUpdate}
-                  onTitleUpdate={handleTitleUpdate}
+                  onUpdate={handleChatUpdate}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
                   subscription={subscription}

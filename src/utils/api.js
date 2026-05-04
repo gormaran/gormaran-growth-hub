@@ -226,6 +226,60 @@ export async function cancelSubscription() {
   return response.json();
 }
 
+// ── Video generation (Replicate) ──────────────────────────────────────────────
+
+export async function startVideoGeneration({ prompt, aspect_ratio = '16:9', duration = 5, model = 'minimax' }) {
+  const authHeaders = await getAuthHeader();
+  const res = await fetch(`${API_URL}/api/video/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders },
+    body: JSON.stringify({ prompt, aspect_ratio, duration, model }),
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Failed to start video generation'); }
+  return res.json(); // { taskId, status: 'processing' }
+}
+
+export async function pollVideoStatus(taskId) {
+  const authHeaders = await getAuthHeader();
+  const res = await fetch(`${API_URL}/api/video/status/${taskId}`, { headers: authHeaders });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Failed to poll video'); }
+  return res.json(); // { status: 'processing'|'done'|'failed', videoUrl? }
+}
+
+// ── Audio — Text-to-Speech (ElevenLabs) ──────────────────────────────────────
+
+export async function generateSpeech({ text, voice = 'rachel', model_id = 'eleven_multilingual_v2' }) {
+  const authHeaders = await getAuthHeader();
+  const res = await fetch(`${API_URL}/api/audio/speech`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders },
+    body: JSON.stringify({ text, voice, model_id }),
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Speech generation failed'); }
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);  // local audio URL
+}
+
+// ── Audio — Music generation (Replicate MusicGen) ────────────────────────────
+
+export async function startMusicGeneration({ prompt, duration = 15 }) {
+  const authHeaders = await getAuthHeader();
+  const res = await fetch(`${API_URL}/api/audio/music`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders },
+    body: JSON.stringify({ prompt, duration }),
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Failed to start music generation'); }
+  return res.json(); // { taskId, status: 'processing' }
+}
+
+export async function pollMusicStatus(taskId) {
+  const authHeaders = await getAuthHeader();
+  const res = await fetch(`${API_URL}/api/audio/music/status/${taskId}`, { headers: authHeaders });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Failed to poll music'); }
+  return res.json(); // { status: 'processing'|'done'|'failed', audioUrl? }
+}
+
 // Generate logo image via DALL-E 3
 export async function generateLogoImage(inputs) {
   const authHeaders = await getAuthHeader();
