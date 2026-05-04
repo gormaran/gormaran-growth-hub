@@ -21,6 +21,7 @@ import {
 import OnboardingModal from '../components/OnboardingModal';
 import ProductTour, { shouldShowTour } from '../components/ProductTour';
 import TemplateDetail from '../components/TemplateDetail';
+import NodeFlowBuilder from '../components/NodeFlowBuilder';
 import { TEMPLATES as TEMPLATES_DATA, NODE_TYPES } from '../data/templates';
 import './Dashboard.css';
 
@@ -1696,6 +1697,7 @@ export default function Dashboard() {
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [defaultPrompt, setDefaultPrompt]     = useState('');
   const [showTour, setShowTour]               = useState(false);
+  const [activeFlowTemplate, setActiveFlowTemplate] = useState(null);
   const sidebarListRef = useRef(null);
   const showOnboarding = userProfile && !userProfile.onboardingCompleted;
 
@@ -1745,8 +1747,14 @@ export default function Dashboard() {
   }, []);
 
   const handleTemplateSelect = useCallback((template) => {
-    setDefaultPrompt(template.prompt);
-    handleTabChange(template.tab);
+    // Templates with nodes → open visual flow builder in Agents tab
+    if (template.nodes && template.nodes.length > 0) {
+      setActiveFlowTemplate(template);
+      handleTabChange('agents');
+    } else {
+      setDefaultPrompt(template.prompt);
+      handleTabChange(template.tab);
+    }
   }, [handleTabChange]);
 
   const updateMessages = useCallback((id, messages) => {
@@ -1897,8 +1905,8 @@ export default function Dashboard() {
                 />
               )}
               {activeTab === 'agents' && (
-                <AgentsArea
-                  model={activeModel}
+                <NodeFlowBuilder
+                  preloadTemplate={activeFlowTemplate}
                   subscription={subscription}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
