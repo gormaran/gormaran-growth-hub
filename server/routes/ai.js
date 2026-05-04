@@ -229,7 +229,7 @@ router.post('/demo', demoLimiter, async (req, res) => {
 
 // POST /api/ai/chat — general streaming chat, auth required
 router.post('/chat', aiLimiter, verifyToken, async (req, res) => {
-  const { message, history = [], tab = 'text' } = req.body;
+  const { message, history = [], tab = 'text', systemPrompt: customSystem, modelId } = req.body;
   if (!message) return res.status(400).json({ error: 'Message is required' });
 
   const SYSTEM_PROMPTS = {
@@ -240,7 +240,8 @@ router.post('/chat', aiLimiter, verifyToken, async (req, res) => {
     toolkit: `You are a strategic AI assistant on Gormaran. Help users with business analysis, market research, financial planning and operational tasks. Be precise, data-oriented and actionable.`,
   };
 
-  const systemPrompt = SYSTEM_PROMPTS[tab] || SYSTEM_PROMPTS.text;
+  const basePrompt = SYSTEM_PROMPTS[tab] || SYSTEM_PROMPTS.text;
+  const systemPrompt = customSystem?.trim() ? customSystem.trim() : basePrompt;
 
   // Build messages from history
   const messages = [

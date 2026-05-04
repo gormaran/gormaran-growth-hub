@@ -54,6 +54,25 @@ const MODELS = [
     caps: ['Multilingual', 'Long context', 'Code generation', 'Efficient'] },
 ];
 
+const MODEL_VERSIONS = {
+  chatgpt:    ['GPT-4.1', 'GPT-4o', 'GPT-4o mini', 'o1-preview', 'o3-mini'],
+  claude:     ['Claude Sonnet 4.5', 'Claude Haiku 4.5', 'Claude Opus 4'],
+  gemini:     ['Gemini 2.5 Pro', 'Gemini 2.0 Flash', 'Gemini 1.5 Pro'],
+  grok:       ['Grok-3', 'Grok-3 mini', 'Grok-2'],
+  deepseek:   ['DeepSeek-V3', 'DeepSeek-R1', 'DeepSeek Coder'],
+  perplexity: ['Sonar Pro', 'Sonar', 'Sonar Reasoning'],
+  qwen:       ['Qwen2.5-Max', 'Qwen2.5-72B', 'Qwen-VL'],
+};
+
+const VIDEO_MODELS = [
+  { id: 'kling',     label: 'KLING 3.0',     by: 'Kuaishou'  },
+  { id: 'sora',      label: 'Sora 2',         by: 'OpenAI'    },
+  { id: 'veo',       label: 'Veo 3.1',        by: 'Google'    },
+  { id: 'seedance',  label: 'Seedance 2.0',   by: 'ByteDance' },
+  { id: 'wan',       label: 'WAN 2.6',        by: 'Alibaba'   },
+  { id: 'minimax',   label: 'Minimax Video',  by: 'MiniMax'   },
+];
+
 const TAB_SUGGESTIONS = {
   text: [
     { icon: '📊', text: 'Analyse the market opportunity for my SaaS product' },
@@ -139,7 +158,7 @@ function WelcomeState({ model, tab, onSuggestion }) {
 /* ─────────────────────────────────────────────────────────────────
    Text Chat Area
 ───────────────────────────────────────────────────────────────── */
-function ChatArea({ session, model, onUpdate, usageCount, freeLimit, subscription }) {
+function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageCount, freeLimit, subscription }) {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [input, setInput]         = useState('');
@@ -198,6 +217,8 @@ function ChatArea({ session, model, onUpdate, usageCount, freeLimit, subscriptio
     streamChat({
       message: text,
       history: messages.map(m => ({ role: m.role, content: m.content })),
+      systemPrompt: systemPrompt || undefined,
+      modelId: modelVersion || undefined,
       tab: session.tab,
       signal: controller.signal,
       onChunk: (chunk) => {
@@ -456,12 +477,13 @@ const VIDEO_SUGGESTIONS = [
 function VideoArea({ model, subscription, usageCount, freeLimit }) {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
-  const [prompt, setPrompt]       = useState('');
-  const [videos, setVideos]       = useState([]);
-  const [status, setStatus]       = useState(null); // null | 'generating' | 'polling'
-  const [progress, setProgress]   = useState('');
-  const [error, setError]         = useState(null);
-  const pollRef                   = useRef(null);
+  const [prompt, setPrompt]         = useState('');
+  const [videos, setVideos]         = useState([]);
+  const [status, setStatus]         = useState(null); // null | 'generating' | 'polling'
+  const [progress, setProgress]     = useState('');
+  const [error, setError]           = useState(null);
+  const [videoModel, setVideoModel] = useState(VIDEO_MODELS[0].id);
+  const pollRef                     = useRef(null);
 
   const limitReached = subscription === 'free' && usageCount >= freeLimit;
 
@@ -533,6 +555,22 @@ function VideoArea({ model, subscription, usageCount, freeLimit }) {
         ))}
       </div>
       <div className="dash__input-bar">
+        <div className="dash__video-model-row">
+          <span className="dash__audio-voice-label">{isEs ? 'Modelo:' : 'Model:'}</span>
+          <div className="dash__video-model-list">
+            {VIDEO_MODELS.map(vm => (
+              <button
+                key={vm.id}
+                className={`dash__video-model-chip${videoModel === vm.id ? ' dash__video-model-chip--active' : ''}`}
+                onClick={() => setVideoModel(vm.id)}
+                disabled={!!status}
+              >
+                {vm.label}
+                <span className="dash__video-model-by">{vm.by}</span>
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="dash__input-wrap">
           <div className="dash__input-row">
             <textarea className="dash__textarea" value={prompt}
@@ -548,7 +586,9 @@ function VideoArea({ model, subscription, usageCount, freeLimit }) {
           </div>
           <div className="dash__input-footer">
             <span />
-            <span className="dash__input-hint">Powered by Replicate · Minimax Video</span>
+            <span className="dash__input-hint">
+              {VIDEO_MODELS.find(v => v.id === videoModel)?.label} · {VIDEO_MODELS.find(v => v.id === videoModel)?.by}
+            </span>
           </div>
         </div>
       </div>
@@ -738,44 +778,100 @@ function ComingSoon({ tab }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   Model Panel
+   Model Panel — syntx.ai style: provider + version + system prompt
 ───────────────────────────────────────────────────────────────── */
-function ModelPanel({ selectedId, onSelect, onClose }) {
+function ModelPanel({ selectedId, selectedVersion, onSelect, onSelectVersion, systemPrompt, onSystemPrompt, onClose }) {
+  const [providerOpen, setProviderOpen] = useState(false);
+  const [systemOpen, setSystemOpen]     = useState(false);
   const selected = MODELS.find(m => m.id === selectedId) || MODELS[0];
+  const versions = MODEL_VERSIONS[selectedId] || [];
+
   return (
     <aside className="dash__model-panel">
       <div className="dash__model-panel-hd">
         <span className="dash__model-panel-title">Model selection</span>
         <button className="dash__model-panel-x" onClick={onClose}>✕</button>
       </div>
-      <div className="dash__model-selected">
-        <div className="dash__model-sel-av" style={{ background: `${selected.color}20`, color: selected.color }}>
-          {selected.letter}
-        </div>
-        <div>
-          <div className="dash__model-sel-name">{selected.name}</div>
-          <div className="dash__model-sel-by">{selected.by}</div>
-        </div>
-        <span className="dash__model-sel-arr">▾</span>
+
+      {/* AI provider selector */}
+      <div className="dash__mp-section">
+        <div className="dash__mp-label">AI</div>
+        <button className="dash__mp-dropdown" onClick={() => setProviderOpen(v => !v)}>
+          <div className="dash__model-av dash__model-av--sm" style={{ background: `${selected.color}20`, color: selected.color }}>
+            {selected.letter}
+          </div>
+          <span className="dash__mp-dropdown-name">{selected.name}</span>
+          <span className="dash__mp-dropdown-arr">{providerOpen ? '▲' : '▼'}</span>
+        </button>
+        {providerOpen && (
+          <div className="dash__mp-provider-list">
+            {MODELS.map(m => (
+              <button
+                key={m.id}
+                className={`dash__mp-provider-item${selectedId === m.id ? ' dash__mp-provider-item--active' : ''}`}
+                onClick={() => {
+                  onSelect(m.id);
+                  onSelectVersion(MODEL_VERSIONS[m.id]?.[0] || '');
+                  setProviderOpen(false);
+                }}
+              >
+                <div className="dash__model-av dash__model-av--sm" style={{ background: `${m.color}20`, color: m.color }}>{m.letter}</div>
+                <div className="dash__model-info">
+                  <div className="dash__model-name">{m.name}</div>
+                  <div className="dash__model-by">{m.by}</div>
+                </div>
+                {selectedId === m.id && <span className="dash__mp-check">✓</span>}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-      <div className="dash__model-list">
-        {MODELS.map(m => (
-          <button
-            key={m.id}
-            className={`dash__model-item${selectedId === m.id ? ' dash__model-item--active' : ''}`}
-            onClick={() => onSelect(m.id)}
+
+      {/* Model version selector */}
+      <div className="dash__mp-section">
+        <div className="dash__mp-label">Model</div>
+        <div className="dash__mp-select-wrap">
+          <select
+            className="dash__mp-select"
+            value={selectedVersion}
+            onChange={e => onSelectVersion(e.target.value)}
           >
-            <div className="dash__model-av" style={{ background: `${m.color}18`, color: m.color }}>{m.letter}</div>
-            <div className="dash__model-info">
-              <div className="dash__model-name">{m.name}</div>
-              <div className="dash__model-by">{m.by}</div>
-            </div>
-            <div className="dash__model-radio" />
-          </button>
-        ))}
+            {versions.map(v => <option key={v} value={v}>{v}</option>)}
+          </select>
+          <span className="dash__mp-select-arr">▼</span>
+        </div>
       </div>
-      <div className="dash__model-note">
-        Model selection affects response style. All text generation is powered by Claude Sonnet on the backend.
+
+      <div className="dash__mp-info">
+        Here you can choose the AI and its model.
+      </div>
+
+      <div className="dash__mp-divider" />
+
+      {/* System Prompt */}
+      <div className="dash__mp-section dash__mp-section--system">
+        <button className="dash__mp-system-hd" onClick={() => setSystemOpen(v => !v)}>
+          <span>⚙ System Prompt</span>
+          <span>{systemOpen ? '▲' : '▼'}</span>
+        </button>
+        {systemOpen && (
+          <textarea
+            className="dash__mp-system-input"
+            value={systemPrompt}
+            onChange={e => onSystemPrompt(e.target.value)}
+            placeholder="You are a helpful assistant…"
+            rows={5}
+          />
+        )}
+      </div>
+
+      <div className="dash__mp-footer">
+        <button className="dash__mp-footer-btn" onClick={() => { onSystemPrompt(''); setSystemOpen(false); }}>
+          ↺ Reset all
+        </button>
+        <button className="dash__mp-footer-btn" onClick={() => setSystemOpen(v => !v)}>
+          {systemOpen ? '▲ Close all' : '▼ Open all'}
+        </button>
       </div>
     </aside>
   );
@@ -864,11 +960,13 @@ export default function Dashboard() {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
 
-  const [activeTab, setActiveTab]         = useState('text');
-  const [selectedModel, setSelectedModel] = useState('chatgpt');
-  const [modelPanelOpen, setModelPanelOpen] = useState(true);
-  const [sessions, setSessions]           = useState(loadSessions);
-  const [currentId, setCurrentId]         = useState(null);
+  const [activeTab, setActiveTab]             = useState('text');
+  const [selectedModel, setSelectedModel]     = useState('chatgpt');
+  const [selectedVersion, setSelectedVersion] = useState(MODEL_VERSIONS.chatgpt[0]);
+  const [systemPrompt, setSystemPrompt]       = useState('');
+  const [modelPanelOpen, setModelPanelOpen]   = useState(true);
+  const [sessions, setSessions]               = useState(loadSessions);
+  const [currentId, setCurrentId]             = useState(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const sidebarListRef = useRef(null);
   const showOnboarding = userProfile && !userProfile.onboardingCompleted;
@@ -1017,6 +1115,8 @@ export default function Dashboard() {
                   key={session.id || 'new'}
                   session={session}
                   model={activeModel}
+                  modelVersion={selectedVersion}
+                  systemPrompt={systemPrompt}
                   onUpdate={handleChatUpdate}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
@@ -1041,7 +1141,11 @@ export default function Dashboard() {
         {modelPanelOpen && (
           <ModelPanel
             selectedId={selectedModel}
+            selectedVersion={selectedVersion}
             onSelect={setSelectedModel}
+            onSelectVersion={setSelectedVersion}
+            systemPrompt={systemPrompt}
+            onSystemPrompt={setSystemPrompt}
             onClose={() => setModelPanelOpen(false)}
           />
         )}

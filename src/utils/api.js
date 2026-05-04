@@ -111,13 +111,13 @@ export async function streamDemoResponse({ prompt, onChunk, onDone, onError, sig
 }
 
 // Stream authenticated chat response (falls back to demo if endpoint not yet deployed)
-export async function streamChat({ message, history = [], tab = 'text', signal, onChunk, onDone, onError }) {
+export async function streamChat({ message, history = [], tab = 'text', systemPrompt, modelId, signal, onChunk, onDone, onError }) {
   try {
     const authHeaders = await getAuthHeader();
     const response = await fetch(`${API_URL}/api/ai/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeaders },
-      body: JSON.stringify({ message, history, tab }),
+      body: JSON.stringify({ message, history, tab, systemPrompt, modelId }),
       signal,
     });
 
