@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { CATEGORIES } from '../data/categories';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -28,7 +29,7 @@ const TABS = [
   { id: 'video',   label: 'Video',     icon: '🎬' },
   { id: 'audio',   label: 'Audio',     icon: '🎵' },
   { id: 'agents',  label: 'AI Agents', icon: '🤖' },
-  { id: 'toolkit', label: 'Tool-kit',  icon: '🛠️', comingSoon: true },
+  { id: 'toolkit', label: 'Tool-kit',  icon: '🛠️' },
 ];
 
 const MODELS = [
@@ -1039,7 +1040,47 @@ function AgentsArea({ model, subscription, usageCount, freeLimit }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   Coming Soon placeholder
+   Toolkit — structured form-based AI tools hub
+───────────────────────────────────────────────────────────────── */
+function ToolkitArea() {
+  const navigate = useNavigate();
+  const { i18n } = useTranslation();
+  const isEs = i18n.language?.startsWith('es');
+
+  return (
+    <div className="dash__toolkit">
+      <div className="dash__toolkit-header">
+        <h2 className="dash__toolkit-title">{isEs ? 'Herramientas IA' : 'AI Toolkit'}</h2>
+        <p className="dash__toolkit-sub">
+          {isEs
+            ? 'Resultados estructurados para tareas concretas. Rellena el formulario, obtén la salida perfecta.'
+            : 'Structured output for specific tasks. Fill a form, get professional results instantly.'}
+        </p>
+      </div>
+      <div className="dash__toolkit-grid">
+        {CATEGORIES.map(cat => (
+          <button
+            key={cat.id}
+            className="dash__toolkit-card"
+            onClick={() => navigate(`/category/${cat.id}`)}
+          >
+            <div className="dash__toolkit-card-icon">{cat.icon}</div>
+            <div className="dash__toolkit-card-body">
+              <div className="dash__toolkit-card-name">{cat.name}</div>
+              <div className="dash__toolkit-card-desc">{cat.description}</div>
+            </div>
+            <div className="dash__toolkit-card-count">
+              {cat.tools?.length || 0} {isEs ? 'herramientas' : 'tools'} →
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Coming Soon placeholder (unused — kept for future tabs)
 ───────────────────────────────────────────────────────────────── */
 function ComingSoon({ tab }) {
   const cfg = {
@@ -1439,7 +1480,7 @@ export default function Dashboard() {
                 />
               )}
               {activeTab === 'toolkit' && (
-                <ComingSoon tab="toolkit" />
+                <ToolkitArea />
               )}
             </motion.div>
           </AnimatePresence>
