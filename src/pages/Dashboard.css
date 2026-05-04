@@ -173,8 +173,7 @@
 .dash__welcome-avatar {
   width: 72px; height: 72px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 2rem; font-weight: 800; border: 2px solid;
-  margin-bottom: 0.25rem;
+  border: 2px solid; margin-bottom: 0.25rem; overflow: hidden;
 }
 .dash__welcome-name {
   font-size: 2.2rem; font-weight: 800; letter-spacing: -0.04em; color: var(--text-primary);
@@ -414,7 +413,7 @@
 .dash__model-panel {
   border-left: 1px solid var(--border-color);
   background: var(--bg-surface);
-  display: flex; flex-direction: column; overflow: hidden;
+  display: flex; flex-direction: column; overflow: visible; /* allow absolute dropdown */
 }
 .dash__model-panel-hd {
   display: flex; align-items: center; justify-content: space-between;
@@ -485,10 +484,11 @@
 /* ── Model Panel v2 — syntx.ai style ───────────────────────────── */
 .dash__model-av--sm {
   width: 24px; height: 24px; border-radius: 5px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
 .dash__mp-section {
   padding: 0.65rem 1rem 0.5rem; border-bottom: 1px solid var(--border-color);
+  position: relative; /* for absolute dropdown */
 }
 .dash__mp-section--system { border-bottom: none; flex: 1; }
 .dash__mp-label {
@@ -505,8 +505,10 @@
 .dash__mp-dropdown-name { flex: 1; font-size: 0.83rem; font-weight: 600; }
 .dash__mp-dropdown-arr  { font-size: 0.6rem; color: var(--text-muted); }
 .dash__mp-provider-list {
-  margin-top: 0.35rem; border: 1px solid var(--border-color); border-radius: 10px;
-  background: var(--bg-base); overflow: hidden;
+  position: absolute; top: calc(100% - 0.15rem); left: 0.75rem; right: 0.75rem; z-index: 100;
+  border: 1px solid var(--border-color); border-radius: 10px;
+  background: var(--bg-surface); box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  overflow: hidden;
 }
 .dash__mp-provider-item {
   display: flex; align-items: center; gap: 0.5rem; width: 100%;

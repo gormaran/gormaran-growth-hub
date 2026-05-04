@@ -54,6 +54,23 @@ const MODELS = [
     caps: ['Multilingual', 'Long context', 'Code generation', 'Efficient'] },
 ];
 
+const MODEL_LOGOS = {
+  chatgpt:    'https://www.google.com/s2/favicons?domain=chat.openai.com&sz=64',
+  claude:     'https://www.google.com/s2/favicons?domain=claude.ai&sz=64',
+  gemini:     'https://www.google.com/s2/favicons?domain=gemini.google.com&sz=64',
+  grok:       'https://www.google.com/s2/favicons?domain=x.ai&sz=64',
+  deepseek:   'https://www.google.com/s2/favicons?domain=deepseek.com&sz=64',
+  perplexity: 'https://www.google.com/s2/favicons?domain=perplexity.ai&sz=64',
+  qwen:       'https://www.google.com/s2/favicons?domain=chat.qwenlm.ai&sz=64',
+};
+
+function ModelLogo({ modelId, size = 24 }) {
+  const src = MODEL_LOGOS[modelId];
+  const m   = MODELS.find(x => x.id === modelId);
+  if (!src) return <span style={{ fontWeight: 800, fontSize: size * 0.55 }}>{m?.letter}</span>;
+  return <img src={src} alt={m?.name || modelId} width={size} height={size} style={{ borderRadius: 4, objectFit: 'contain', display: 'block' }} />;
+}
+
 const MODEL_VERSIONS = {
   chatgpt:    ['GPT-4.1', 'GPT-4o', 'GPT-4o mini', 'o1-preview', 'o3-mini'],
   claude:     ['Claude Sonnet 4.5', 'Claude Haiku 4.5', 'Claude Opus 4'],
@@ -133,9 +150,9 @@ function WelcomeState({ model, tab, onSuggestion }) {
     <div className="dash__welcome">
       <div
         className="dash__welcome-avatar"
-        style={{ background: `${model.color}18`, borderColor: `${model.color}45`, color: model.color }}
+        style={{ background: `${model.color}18`, borderColor: `${model.color}45` }}
       >
-        {model.letter}
+        <ModelLogo modelId={model.id} size={36} />
       </div>
       <div className="dash__welcome-name">{model.name}</div>
       <p className="dash__welcome-desc">{model.desc}</p>
@@ -277,10 +294,10 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
               <div
                 className="dash__message-avatar"
                 style={msg.role === 'assistant'
-                  ? { background: `${model.color}18`, color: model.color, border: `1px solid ${model.color}35` }
+                  ? { background: `${model.color}18`, border: `1px solid ${model.color}35` }
                   : {}}
               >
-                {msg.role === 'assistant' ? model.letter : '👤'}
+                {msg.role === 'assistant' ? <ModelLogo modelId={model.id} size={18} /> : '👤'}
               </div>
               <div className="dash__message-body">
                 {msg.role === 'assistant' && (
@@ -299,9 +316,9 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
             <div className="dash__message dash__message--assistant">
               <div
                 className="dash__message-avatar"
-                style={{ background: `${model.color}18`, color: model.color, border: `1px solid ${model.color}35` }}
+                style={{ background: `${model.color}18`, border: `1px solid ${model.color}35` }}
               >
-                {model.letter}
+                <ModelLogo modelId={model.id} size={18} />
               </div>
               <div className="dash__message-body">
                 <div className="dash__message-role">{model.name}</div>
@@ -797,8 +814,8 @@ function ModelPanel({ selectedId, selectedVersion, onSelect, onSelectVersion, sy
       <div className="dash__mp-section">
         <div className="dash__mp-label">AI</div>
         <button className="dash__mp-dropdown" onClick={() => setProviderOpen(v => !v)}>
-          <div className="dash__model-av dash__model-av--sm" style={{ background: `${selected.color}20`, color: selected.color }}>
-            {selected.letter}
+          <div className="dash__model-av dash__model-av--sm">
+            <ModelLogo modelId={selected.id} size={20} />
           </div>
           <span className="dash__mp-dropdown-name">{selected.name}</span>
           <span className="dash__mp-dropdown-arr">{providerOpen ? '▲' : '▼'}</span>
@@ -815,7 +832,9 @@ function ModelPanel({ selectedId, selectedVersion, onSelect, onSelectVersion, sy
                   setProviderOpen(false);
                 }}
               >
-                <div className="dash__model-av dash__model-av--sm" style={{ background: `${m.color}20`, color: m.color }}>{m.letter}</div>
+                <div className="dash__model-av dash__model-av--sm">
+                  <ModelLogo modelId={m.id} size={20} />
+                </div>
                 <div className="dash__model-info">
                   <div className="dash__model-name">{m.name}</div>
                   <div className="dash__model-by">{m.by}</div>
