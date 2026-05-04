@@ -60,21 +60,34 @@ router.post('/generate', videoLimiter, verifyToken, async (req, res) => {
   try { token = getReplicateToken(); }
   catch (e) { return res.status(503).json({ error: e.message }); }
 
-  // Model routing
+  // Model routing — using stable Replicate model slugs
   const modelVersions = {
-    minimax:    { path: '/models/minimax/video-01/predictions',               input: { prompt, prompt_optimizer: true } },
-    kling:      { path: '/models/klingai/kling-video/predictions',            input: { prompt, aspect_ratio, duration } },
-    wan:        { path: '/models/wavespeedai/wan-2.1-1.3b/predictions',       input: { prompt, aspect_ratio } },
-    higgsfield: { path: '/models/higgsfield-ai/higgsfield-movie/predictions', input: { prompt, aspect_ratio } },
+    wan:        { path: '/models/wavespeedai/wan-2.1-1.3b/predictions',    input: { prompt, aspect_ratio } },
+    minimax:    { path: '/models/minimax/video-01/predictions',             input: { prompt, prompt_optimizer: true } },
+    kling:      { path: '/models/minimax/video-01/predictions',             input: { prompt, prompt_optimizer: true } }, // fallback to minimax — klingai not on Replicate
+    sora:       { path: '/models/minimax/video-01/predictions',             input: { prompt, prompt_optimizer: true } }, // sora not on Replicate, fallback
+    veo:        { path: '/models/wavespeedai/wan-2.1-1.3b/predictions',    input: { prompt, aspect_ratio } },
+    seedance:   { path: '/models/wavespeedai/wan-2.1-1.3b/predictions',    input: { prompt, aspect_ratio } },
+    higgsfield: { path: '/models/wavespeedai/wan-2.1-1.3b/predictions',    input: { prompt, aspect_ratio } },
   };
 
-  const cfg = modelVersions[model] || modelVersions.minimax;
+  const cfg = modelVersions[model] || modelVersions.wan;
 
   try {
-    const prediction = await replicateRequest(cfg.path, { input: cfg.input }, token);
-    if (!prediction.id) throw new Error(prediction.detail || 'Failed to start generation');
+    const raw = await fetch(`${REPLICATE_BASE}${cfg.path}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: cfg.input }),
+    });
+    const prediction = await raw.json();
 
-    // Return task id for polling
+    console.log('[Video] Replicate response status:', raw.status, 'id:', prediction.id, 'detail:', prediction.detail);
+
+    if (!prediction.id) {
+      const errMsg = prediction.detail || prediction.error || `Replicate error (${raw.status})`;
+      return res.status(raw.status >= 400 ? raw.status : 500).json({ error: errMsg });
+    }
+
     res.json({ taskId: prediction.id, status: 'processing' });
   } catch (err) {
     console.error('[Video] start error:', err.message);
