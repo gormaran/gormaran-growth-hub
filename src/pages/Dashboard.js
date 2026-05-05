@@ -23,6 +23,7 @@ import OnboardingModal from '../components/OnboardingModal';
 import ProductTour, { shouldShowTour } from '../components/ProductTour';
 import TemplateDetail from '../components/TemplateDetail';
 import NodeFlowBuilder from '../components/NodeFlowBuilder';
+import AppBuilder from '../components/AppBuilder';
 import { TEMPLATES as TEMPLATES_DATA, NODE_TYPES } from '../data/templates';
 import './Dashboard.css';
 
@@ -1837,6 +1838,7 @@ export default function Dashboard() {
   const paymentStatus = searchParams.get('payment');
   const planChip = { free: 'free', grow: 'grow', scale: 'scale', evolution: 'evolution' }[subscription] || 'free';
   const planLabel = { free: 'Free', grow: '⭐ Grow', scale: '💎 Scale', evolution: '🚀 Evolution' }[subscription] || 'Free';
+  const [agentMode, setAgentMode] = useState('builder'); // 'builder' | 'flow'
 
   useEffect(() => {
     if (paymentStatus === 'success' && currentUser) {
@@ -2061,15 +2063,37 @@ export default function Dashboard() {
                 />
               )}
               {activeTab === 'agents' && (
-                <NodeFlowBuilder
-                  key={currentId || 'new-agents'}
-                  preloadTemplate={activeFlowTemplate}
-                  session={currentSession}
-                  onUpdate={(data, title) => handleMediaUpdate('agents', data, title)}
-                  subscription={subscription}
-                  usageCount={usageCount}
-                  freeLimit={FREE_MONTHLY_LIMIT}
-                />
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+                  {/* Mode toggle */}
+                  <div className="dash__agent-mode-bar">
+                    <button className={`dash__agent-mode-btn${agentMode === 'builder' ? ' active' : ''}`} onClick={() => setAgentMode('builder')}>
+                      ⚡ App Builder
+                    </button>
+                    <button className={`dash__agent-mode-btn${agentMode === 'flow' ? ' active' : ''}`} onClick={() => setAgentMode('flow')}>
+                      ⬡ Flow Builder
+                    </button>
+                  </div>
+                  {agentMode === 'builder' ? (
+                    <AppBuilder
+                      key={currentId || 'new-app'}
+                      session={currentSession}
+                      onUpdate={(data, title) => handleMediaUpdate('agents', data, title)}
+                      subscription={subscription}
+                      usageCount={usageCount}
+                      freeLimit={FREE_MONTHLY_LIMIT}
+                    />
+                  ) : (
+                    <NodeFlowBuilder
+                      key={currentId || 'new-flow'}
+                      preloadTemplate={activeFlowTemplate}
+                      session={currentSession}
+                      onUpdate={(data, title) => handleMediaUpdate('agents', data, title)}
+                      subscription={subscription}
+                      usageCount={usageCount}
+                      freeLimit={FREE_MONTHLY_LIMIT}
+                    />
+                  )}
+                </div>
               )}
               {activeTab === 'toolkit' && (
                 <ToolkitArea />

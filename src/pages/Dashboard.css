@@ -1109,3 +1109,19 @@
 .dash__audio-toggle:last-child { border-right: none; }
 .dash__audio-toggle:hover { background: rgba(99,102,241,0.07); color: var(--text-primary); }
 .dash__audio-toggle.active { background: rgba(99,102,241,0.14); color: #a5b4fc; font-weight: 600; }
+
+/* ── Agent mode toggle bar ── */
+.dash__agent-mode-bar {
+  display: flex; gap: 0; flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-surface);
+}
+.dash__agent-mode-btn {
+  flex: 1; padding: 0.5rem 1rem;
+  border: none; border-bottom: 2px solid transparent;
+  background: transparent; color: var(--text-muted);
+  font-size: 0.82rem; font-weight: 500; font-family: inherit;
+  cursor: pointer; transition: all 0.15s;
+}
+.dash__agent-mode-btn:hover { color: var(--text-secondary); }
+.dash__agent-mode-btn.active { color: var(--text-primary); border-bottom-color: var(--color-primary); font-weight: 600; }
