@@ -10,56 +10,51 @@ import {
   Handle,
   Position,
 } from '@xyflow/react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import '@xyflow/react/dist/style.css';
 import { streamChat, generateImage } from '../utils/api';
 import { NODE_TYPES } from '../data/templates';
 import './NodeFlowBuilder.css';
 
 /* ─────────────────────────────────────────────────────────────────
-   Extended node palette with pre-built system prompts
+   Palette with pre-built prompts
 ───────────────────────────────────────────────────────────────── */
 const PALETTE = [
-  // BASICS
   { type: 'context',   icon: '◈', label: 'Context input',   color: '#64748b', group: 'BASICS',
     defaultPrompt: '' },
   { type: 'text',      icon: 'T',  label: 'Generate text',   color: '#7c3aed', group: 'BASICS',
-    defaultPrompt: 'Write clear, engaging content based on the context. Be specific and professional. No filler.' },
+    defaultPrompt: 'Write clear, engaging content based on the context. Be specific and professional.' },
   { type: 'image',     icon: '⬡',  label: 'AI image',        color: '#f97316', group: 'BASICS',
-    defaultPrompt: 'Professional, high-quality visual with clean composition and modern aesthetic' },
+    defaultPrompt: 'Professional, high-quality visual with clean composition' },
   { type: 'chat',      icon: '◉',  label: 'AI assistant',    color: '#6366f1', group: 'BASICS',
     defaultPrompt: 'Analyze the input and provide a detailed, expert response with actionable insights.' },
   { type: 'summarize', icon: '📝', label: 'Summarize',        color: '#475569', group: 'BASICS',
-    defaultPrompt: 'Create a concise executive summary. Extract key points, decisions, and action items. Max 200 words.' },
+    defaultPrompt: 'Create a concise executive summary. Extract key points and action items. Max 200 words.' },
   { type: 'format',    icon: '≡',  label: 'Format output',   color: '#94a3b8', group: 'BASICS',
-    defaultPrompt: 'Structure and format the content with clear headings (##), bullet points, and tables where appropriate.' },
-
-  // CONTENT
+    defaultPrompt: 'Structure and format the content with clear headings (##), bullet points, and tables.' },
   { type: 'persona',   icon: '◎',  label: 'Buyer persona',   color: '#be185d', group: 'CONTENT',
     defaultPrompt: 'Create a detailed buyer persona. Include: name, age, job title, goals, pain points, objections, preferred channels, and buying triggers. Use a structured table format.' },
   { type: 'seo',       icon: '🔍', label: 'SEO optimize',    color: '#10b981', group: 'CONTENT',
-    defaultPrompt: 'Optimize for SEO. Output: primary keyword, 5 LSI keywords, H1 tag, meta title (60 chars), meta description (155 chars), H2 outline, and 3 internal link suggestions.' },
+    defaultPrompt: 'Optimize for SEO. Output: primary keyword, 5 LSI keywords, H1 tag, meta title (60 chars), meta description (155 chars), H2 outline, 3 internal link suggestions.' },
   { type: 'social',    icon: '📱', label: 'Social post',     color: '#ec4899', group: 'CONTENT',
-    defaultPrompt: 'Write platform-native posts for LinkedIn (professional, 150 words), Instagram (casual, emojis, 30 hashtags), and X/Twitter (punchy, under 280 chars, no hashtags).' },
+    defaultPrompt: 'Write platform-native posts: LinkedIn (professional, 150 words), Instagram (casual + 30 hashtags), X/Twitter (punchy, under 280 chars).' },
   { type: 'email',     icon: '✉',  label: 'Email',           color: '#6366f1', group: 'CONTENT',
-    defaultPrompt: 'Write a conversion-focused email. Output: subject line, preheader, opening hook, body (150 words max), CTA, and PS line. Use a direct, human tone.' },
+    defaultPrompt: 'Write a conversion-focused email: subject line, preheader, opening hook, body (max 150 words), CTA, PS line.' },
   { type: 'script',    icon: '🎬', label: 'Video script',    color: '#0284c7', group: 'CONTENT',
-    defaultPrompt: 'Write a 60-second video script. Structure: [0-5s] hook, [5-15s] problem, [15-40s] solution, [40-55s] proof, [55-60s] CTA. Include speaker notes in brackets.' },
+    defaultPrompt: 'Write a 60-second video script. [0-5s] hook, [5-15s] problem, [15-40s] solution, [40-55s] proof, [55-60s] CTA. Include speaker notes in brackets.' },
   { type: 'ads',       icon: '🎯', label: 'Ad copy',         color: '#ef4444', group: 'CONTENT',
-    defaultPrompt: 'Generate 5 ad variations. Each: headline (max 30 chars), description (max 90 chars), CTA. Use different angles: urgency, curiosity, social proof, benefit, fear of missing out.' },
-
-  // STRATEGY
+    defaultPrompt: 'Generate 5 ad variations. Each: headline (max 30 chars), description (max 90 chars), CTA. Use urgency, curiosity, social proof, benefit, FOMO angles.' },
   { type: 'research',  icon: '◇',  label: 'Research',        color: '#0891b2', group: 'STRATEGY',
-    defaultPrompt: 'Research the topic. Output: market size, 5 key trends, top 3 competitors with positioning, customer pain points, and 3 strategic opportunities. Use tables for comparisons.' },
+    defaultPrompt: 'Research the topic. Output: market size, 5 key trends, top 3 competitors with positioning, customer pain points, 3 strategic opportunities. Use tables for comparisons.' },
   { type: 'brand',     icon: '⚡', label: 'Brand voice',     color: '#f59e0b', group: 'STRATEGY',
-    defaultPrompt: 'Apply brand voice: confident, clear, and human. Rewrite the content maintaining the message but elevating the language to match a premium, trusted brand.' },
+    defaultPrompt: 'Apply brand voice: confident, clear, and human. Rewrite maintaining the message but elevating language to match a premium, trusted brand.' },
   { type: 'translate', icon: '🌐', label: 'Translate',       color: '#8b5cf6', group: 'STRATEGY',
-    defaultPrompt: 'Translate to Spanish. Maintain the original tone, style, and formatting exactly. Use natural, local expressions, not literal translations.' },
+    defaultPrompt: 'Translate to Spanish. Maintain the original tone, style, and formatting exactly.' },
   { type: 'analyze',   icon: '📊', label: 'Analyze',         color: '#64748b', group: 'STRATEGY',
     defaultPrompt: 'Perform a detailed analysis. Include SWOT, key metrics, trends, risks, and 3 data-driven recommendations.' },
   { type: 'code',      icon: '<>', label: 'Generate code',   color: '#10b981', group: 'STRATEGY',
-    defaultPrompt: 'Write clean, production-ready code following best practices. Include inline comments for complex logic. Use modern syntax.' },
-
-  // VIDEO / AUDIO
+    defaultPrompt: 'Write clean, production-ready code following best practices. Include comments for complex logic.' },
   { type: 'video',     icon: '▶',  label: 'AI video',        color: '#0284c7', group: 'GENERATE',
     defaultPrompt: 'Cinematic, professional video with dynamic motion and high production value' },
   { type: 'audio',     icon: '♪',  label: 'AI audio',        color: '#059669', group: 'GENERATE',
@@ -74,26 +69,35 @@ function groupBy(arr, key) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   Custom Flow Node Component
+   Flow node card — shows instructions only, not output
 ───────────────────────────────────────────────────────────────── */
-function FlowNodeComp({ id, data }) {
-  const { type, label, icon, color, inputValue, prompt, output, isRunning, isDone, error, onChange, onDelete } = data;
+function FlowNodeComp({ id, data, selected }) {
+  const { type, label, icon, color, inputValue, prompt, output, isRunning, isDone, error, onChange, onDelete, onSelect } = data;
+
+  const statusDot = isRunning ? 'running' : isDone ? 'done' : error ? 'error' : 'idle';
 
   return (
-    <div className={`fnc${isDone ? ' fnc--done' : ''}${isRunning ? ' fnc--running' : ''}${error ? ' fnc--error' : ''}`}
-      style={{ '--node-color': color }}>
-      <Handle type="target" position={Position.Left} className="fnc__handle fnc__handle--target" />
+    <div
+      className={`fnc fnc--${statusDot}${selected ? ' fnc--selected' : ''}`}
+      style={{ '--node-color': color }}
+      onClick={() => onSelect?.(id)}
+    >
+      <Handle type="target" position={Position.Left} className="fnc__handle fnc__handle--t" />
 
       <div className="fnc__header">
         <span className="fnc__icon" style={{ color }}>{icon}</span>
         <span className="fnc__label">{label}</span>
-        <div className="fnc__status">
+        <div className="fnc__status-row">
           {isRunning && <span className="fnc__spinner" />}
-          {isDone && !isRunning && <span className="fnc__check">✓</span>}
-          {error && <span className="fnc__err-icon" title={error}>!</span>}
+          {isDone && !isRunning && <span className="fnc__badge fnc__badge--done">✓ Done</span>}
+          {error && <span className="fnc__badge fnc__badge--error" title={error}>!</span>}
+          <button
+            className="fnc__delete"
+            onClick={e => { e.stopPropagation(); onDelete?.(id); }}
+            title="Remove"
+            onMouseDown={e => e.stopPropagation()}
+          >✕</button>
         </div>
-        <button className="fnc__delete-btn" onClick={() => onDelete?.(id)} title="Remove node"
-          onMouseDown={e => e.stopPropagation()}>✕</button>
       </div>
 
       {type === 'context' ? (
@@ -101,8 +105,8 @@ function FlowNodeComp({ id, data }) {
           className="fnc__textarea"
           value={inputValue || ''}
           onChange={e => onChange?.(id, 'inputValue', e.target.value)}
-          placeholder="Your context, brief, or input data…"
-          rows={4}
+          placeholder="Enter context, brand brief, or input data…"
+          rows={3}
           onMouseDown={e => e.stopPropagation()}
         />
       ) : (
@@ -110,27 +114,23 @@ function FlowNodeComp({ id, data }) {
           className="fnc__textarea fnc__textarea--prompt"
           value={prompt || ''}
           onChange={e => onChange?.(id, 'prompt', e.target.value)}
-          placeholder={`${label} instructions…`}
+          placeholder="Instructions for this step…"
           rows={3}
           onMouseDown={e => e.stopPropagation()}
         />
       )}
 
-      {output && (
-        <div className="fnc__output">
-          {type === 'image' ? (
-            <img src={output} alt="AI generated" className="fnc__output-img" />
-          ) : (
-            <div className="fnc__output-text">
-              {output.slice(0, 300)}{output.length > 300 ? '…' : ''}
-            </div>
-          )}
-          <button className="fnc__copy-btn" onClick={() => navigator.clipboard.writeText(output)} title="Copy output"
-            onMouseDown={e => e.stopPropagation()}>📋</button>
+      {/* Compact output preview — first 60 chars only */}
+      {output && !isRunning && (
+        <div className="fnc__preview" onClick={e => { e.stopPropagation(); onSelect?.(id); }}>
+          {type === 'image'
+            ? <span className="fnc__preview-img-badge">🖼 Image ready — click to view</span>
+            : <span className="fnc__preview-text">{typeof output === 'string' ? output.replace(/#+\s/g, '').slice(0, 70) + (output.length > 70 ? '…' : '') : ''}</span>
+          }
         </div>
       )}
 
-      <Handle type="source" position={Position.Right} className="fnc__handle fnc__handle--source" />
+      <Handle type="source" position={Position.Right} className="fnc__handle fnc__handle--s" />
     </div>
   );
 }
@@ -142,24 +142,16 @@ const nodeTypes = { flowNode: FlowNodeComp };
 ───────────────────────────────────────────────────────────────── */
 function buildFromTemplate(templateNodes) {
   const nodes = templateNodes.map((typeKey, i) => {
-    const palItem = PALETTE.find(p => p.type === typeKey) || PALETTE[0];
+    const pal = PALETTE.find(p => p.type === typeKey) || PALETTE[1];
     return {
       id: `n${i}`,
       type: 'flowNode',
-      position: { x: 60 + i * 360, y: 140 },
+      position: { x: 80 + i * 340, y: 100 },
       data: {
-        type: typeKey,
-        label: palItem.label,
-        icon: palItem.icon,
-        color: palItem.color,
-        inputValue: '',
-        prompt: palItem.defaultPrompt,
-        output: null,
-        isRunning: false,
-        isDone: false,
-        error: null,
-        onChange: null,
-        onDelete: null,
+        type: typeKey, label: pal.label, icon: pal.icon, color: pal.color,
+        inputValue: '', prompt: pal.defaultPrompt,
+        output: null, isRunning: false, isDone: false, error: null,
+        onChange: null, onDelete: null, onSelect: null,
       },
     };
   });
@@ -174,6 +166,69 @@ function buildFromTemplate(templateNodes) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   Output Panel — shows full output of selected/last node
+───────────────────────────────────────────────────────────────── */
+function OutputPanel({ nodes, selectedNodeId, onClose }) {
+  const [copiedId, setCopiedId] = useState(null);
+
+  const doneNodes = nodes.filter(n => n.data.isDone && n.data.output);
+  const active = doneNodes.find(n => n.id === selectedNodeId) || doneNodes[doneNodes.length - 1];
+
+  if (!active) return null;
+
+  const handleCopy = async (nodeId, text) => {
+    await navigator.clipboard.writeText(text);
+    setCopiedId(nodeId);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleExport = (text) => {
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `flow-output-${Date.now()}.txt`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="nfb__output-panel">
+      <div className="nfb__output-panel-header">
+        <div className="nfb__output-tabs">
+          {doneNodes.map(n => (
+            <button
+              key={n.id}
+              className={`nfb__output-tab${active.id === n.id ? ' nfb__output-tab--active' : ''}`}
+              onClick={() => active.id !== n.id && onClose(n.id)}
+              style={{ '--tc': n.data.color }}
+            >
+              <span style={{ color: n.data.color }}>{n.data.icon}</span>
+              {n.data.label}
+            </button>
+          ))}
+        </div>
+        <div className="nfb__output-actions">
+          <button className="nfb__output-action-btn" onClick={() => handleCopy(active.id, active.data.output)}>
+            {copiedId === active.id ? '✅ Copied' : '📋 Copy'}
+          </button>
+          <button className="nfb__output-action-btn" onClick={() => handleExport(active.data.output)}>
+            ⬇️ Export
+          </button>
+          <button className="nfb__output-close" onClick={() => onClose(null)}>✕</button>
+        </div>
+      </div>
+      <div className="nfb__output-body">
+        {active.data.type === 'image' && active.data.output ? (
+          <img src={active.data.output} alt="Generated" className="nfb__output-img" />
+        ) : (
+          <div className="nfb__output-md">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{active.data.output || ''}</ReactMarkdown>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
    Main NodeFlowBuilder
 ───────────────────────────────────────────────────────────────── */
 export default function NodeFlowBuilder({ preloadTemplate, subscription, usageCount, freeLimit }) {
@@ -182,38 +237,40 @@ export default function NodeFlowBuilder({ preloadTemplate, subscription, usageCo
   const [running, setRunning] = useState(false);
   const [flowName, setFlowName] = useState('Untitled flow');
   const [search, setSearch] = useState('');
+  const [selectedNodeId, setSelectedNodeId] = useState(null);
+  const [showOutput, setShowOutput] = useState(false);
   const nodeIdRef = useRef(100);
-
   const limitReached = subscription === 'free' && usageCount >= freeLimit;
 
-  /* onChange for node data */
+  /* Callbacks */
   const handleNodeChange = useCallback((nodeId, field, value) => {
-    setNodes(prev => prev.map(n =>
-      n.id === nodeId ? { ...n, data: { ...n.data, [field]: value } } : n
-    ));
+    setNodes(prev => prev.map(n => n.id === nodeId ? { ...n, data: { ...n.data, [field]: value } } : n));
   }, [setNodes]);
 
-  /* onDelete for nodes */
   const handleNodeDelete = useCallback((nodeId) => {
     setNodes(prev => prev.filter(n => n.id !== nodeId));
     setEdges(prev => prev.filter(e => e.source !== nodeId && e.target !== nodeId));
   }, [setNodes, setEdges]);
 
-  /* Inject callbacks whenever nodes change */
-  const injectCallbacks = useCallback((nodeList) =>
-    nodeList.map(n => ({ ...n, data: { ...n.data, onChange: handleNodeChange, onDelete: handleNodeDelete } })),
-  [handleNodeChange, handleNodeDelete]);
+  const handleNodeSelect = useCallback((nodeId) => {
+    setSelectedNodeId(nodeId);
+    setShowOutput(true);
+  }, []);
 
-  /* Load template */
+  const injectCallbacks = useCallback((nodeList) =>
+    nodeList.map(n => ({ ...n, data: { ...n.data, onChange: handleNodeChange, onDelete: handleNodeDelete, onSelect: handleNodeSelect } })),
+  [handleNodeChange, handleNodeDelete, handleNodeSelect]);
+
   useEffect(() => {
     if (!preloadTemplate?.nodes?.length) return;
-    const { nodes: newNodes, edges: newEdges } = buildFromTemplate(preloadTemplate.nodes);
+    const { nodes: n, edges: e } = buildFromTemplate(preloadTemplate.nodes);
     setFlowName(preloadTemplate.name);
-    setNodes(injectCallbacks(newNodes));
-    setEdges(newEdges);
+    setNodes(injectCallbacks(n));
+    setEdges(e);
+    setShowOutput(false);
+    setSelectedNodeId(null);
   }, [preloadTemplate?.id]); // eslint-disable-line
 
-  /* Keep callbacks fresh */
   useEffect(() => {
     setNodes(prev => injectCallbacks(prev));
   }, [injectCallbacks]); // eslint-disable-line
@@ -222,151 +279,127 @@ export default function NodeFlowBuilder({ preloadTemplate, subscription, usageCo
     setEdges(eds => addEdge({ ...params, type: 'smoothstep', style: { stroke: '#475569', strokeWidth: 2 } }, eds));
   }, [setEdges]);
 
-  /* Add node */
-  const addNode = useCallback((palItem) => {
+  const addNode = useCallback((pal) => {
     const id = `n${++nodeIdRef.current}`;
     setNodes(prev => injectCallbacks([...prev, {
-      id,
-      type: 'flowNode',
-      position: { x: 80 + prev.length * 360, y: 140 },
+      id, type: 'flowNode',
+      position: { x: 80 + prev.length * 340, y: 100 },
       data: {
-        type: palItem.type,
-        label: palItem.label,
-        icon: palItem.icon,
-        color: palItem.color,
-        inputValue: '',
-        prompt: palItem.defaultPrompt,
-        output: null,
-        isRunning: false,
-        isDone: false,
-        error: null,
-        onChange: handleNodeChange,
-        onDelete: handleNodeDelete,
+        type: pal.type, label: pal.label, icon: pal.icon, color: pal.color,
+        inputValue: '', prompt: pal.defaultPrompt,
+        output: null, isRunning: false, isDone: false, error: null,
+        onChange: handleNodeChange, onDelete: handleNodeDelete, onSelect: handleNodeSelect,
       },
     }]));
-  }, [setNodes, injectCallbacks, handleNodeChange, handleNodeDelete]);
+  }, [setNodes, injectCallbacks, handleNodeChange, handleNodeDelete, handleNodeSelect]);
 
-  /* Auto-fill: fill all empty prompts with defaults */
   const handleAutoFill = useCallback(() => {
     setNodes(prev => prev.map(n => {
       if (n.data.type === 'context' || n.data.prompt) return n;
-      const palItem = PALETTE.find(p => p.type === n.data.type);
-      if (!palItem?.defaultPrompt) return n;
-      return { ...n, data: { ...n.data, prompt: palItem.defaultPrompt } };
+      const pal = PALETTE.find(p => p.type === n.data.type);
+      return pal?.defaultPrompt ? { ...n, data: { ...n.data, prompt: pal.defaultPrompt } } : n;
     }));
   }, [setNodes]);
 
-  /* Topological sort */
-  function getExecutionOrder(nodeList, edgeList) {
+  /* Topology */
+  function topoSort(nodeList, edgeList) {
     const inDeg = {}; const adj = {};
     nodeList.forEach(n => { inDeg[n.id] = 0; adj[n.id] = []; });
     edgeList.forEach(e => { inDeg[e.target] = (inDeg[e.target] || 0) + 1; adj[e.source].push(e.target); });
-    const queue = nodeList.filter(n => inDeg[n.id] === 0).map(n => n.id);
+    const q = nodeList.filter(n => inDeg[n.id] === 0).map(n => n.id);
     const order = [];
-    while (queue.length) {
-      const cur = queue.shift();
-      order.push(cur);
-      adj[cur].forEach(next => { inDeg[next]--; if (inDeg[next] === 0) queue.push(next); });
-    }
+    while (q.length) { const c = q.shift(); order.push(c); adj[c].forEach(nx => { inDeg[nx]--; if (!inDeg[nx]) q.push(nx); }); }
     return order;
   }
 
-  function getUpstream(nodeId, nodeMap, edgeList) {
+  function upstreamOf(nodeId, nodeMap, edgeList) {
     const e = edgeList.find(e => e.target === nodeId);
     return e ? nodeMap[e.source]?.data?.output || null : null;
   }
 
-  /* Run flow */
+  /* Run */
   const handleRunFlow = useCallback(async () => {
-    if (running || limitReached || nodes.length === 0) return;
+    if (running || limitReached || !nodes.length) return;
     setRunning(true);
-    const order = getExecutionOrder(nodes, edges);
-    const nodeMap = Object.fromEntries(nodes.map(n => [n.id, n]));
+    setShowOutput(false);
 
-    const updateNode = (id, patch) => {
+    const order = topoSort(nodes, edges);
+    const nodeMap = Object.fromEntries(nodes.map(n => [n.id, { ...n }]));
+
+    const upd = (id, patch) => {
       setNodes(prev => prev.map(n => n.id === id ? { ...n, data: { ...n.data, ...patch } } : n));
       if (nodeMap[id]) nodeMap[id] = { ...nodeMap[id], data: { ...nodeMap[id].data, ...patch } };
     };
 
-    order.forEach(id => updateNode(id, { output: null, isDone: false, error: null, isRunning: false }));
+    order.forEach(id => upd(id, { output: null, isDone: false, error: null, isRunning: false }));
     await new Promise(r => setTimeout(r, 60));
+
+    let lastDoneId = null;
 
     for (const nodeId of order) {
       const node = nodeMap[nodeId];
       if (!node) continue;
       const { type, inputValue, prompt } = node.data;
-      updateNode(nodeId, { isRunning: true, output: null, error: null, isDone: false });
+      upd(nodeId, { isRunning: true });
 
-      const upstream = getUpstream(nodeId, nodeMap, edges);
+      const upstream = upstreamOf(nodeId, nodeMap, edges);
       const ctx = upstream ? `Context from previous step:\n${upstream}\n\n` : '';
 
       try {
         if (type === 'context') {
-          updateNode(nodeId, { output: inputValue || '(no input provided)', isDone: true, isRunning: false });
+          upd(nodeId, { output: inputValue || '(no input)', isDone: true, isRunning: false });
 
         } else if (type === 'image') {
-          const subject = prompt ? `${ctx}${prompt}` : ctx || 'Professional high-quality image';
-          const result = await generateImage({
-            subject: subject.slice(0, 900),
-            style: 'photorealistic',
-            aspect_ratio: '16:9 — Landscape',
-            mood: 'professional',
-            lighting: 'natural light',
-          });
-          updateNode(nodeId, { output: result.imageUrl || null, isDone: !!result.imageUrl, error: result.imageUrl ? null : 'Image generation failed', isRunning: false });
+          const subj = (ctx + (prompt || 'Professional high-quality image')).slice(0, 900);
+          const result = await generateImage({ subject: subj, style: 'photorealistic', aspect_ratio: '16:9 — Landscape', mood: 'professional', lighting: 'natural light' });
+          upd(nodeId, { output: result.imageUrl || null, isDone: !!result.imageUrl, isRunning: false, error: result.imageUrl ? null : 'Image failed' });
 
         } else {
-          const sysPrompt = prompt || 'Process the input and produce high-quality, expert-level output.';
-          const userMsg = ctx ? `${ctx}${prompt ? `\nTask: ${prompt}` : 'Continue based on the context above.'}` : (prompt || 'Generate relevant output.');
+          const sys = prompt || 'Process the input and produce high-quality, expert-level output.';
+          const msg = ctx ? `${ctx}${prompt ? `\nTask: ${prompt}` : 'Continue based on the context above.'}` : (prompt || 'Generate output.');
           let acc = '';
           await new Promise((resolve, reject) => {
             streamChat({
-              message: userMsg,
-              history: [],
-              tab: 'text',
-              systemPrompt: sysPrompt,
-              onChunk: (c) => { acc += c; updateNode(nodeId, { output: acc }); },
+              message: msg, history: [], tab: 'text', systemPrompt: sys,
+              onChunk: (c) => { acc += c; upd(nodeId, { output: acc }); },
               onDone: resolve,
-              onError: (err) => reject(new Error(typeof err === 'string' ? err : String(err))),
+              onError: (err) => reject(new Error(typeof err === 'string' ? err : 'Stream error')),
             });
           });
-          updateNode(nodeId, { isDone: true, isRunning: false });
+          upd(nodeId, { isDone: true, isRunning: false });
         }
+        lastDoneId = nodeId;
       } catch (err) {
-        updateNode(nodeId, { error: err?.message || 'Failed', isRunning: false });
+        upd(nodeId, { error: err?.message || 'Failed', isRunning: false });
       }
-
-      await new Promise(r => setTimeout(r, 150));
+      await new Promise(r => setTimeout(r, 120));
     }
+
+    if (lastDoneId) { setSelectedNodeId(lastDoneId); setShowOutput(true); }
     setRunning(false);
   }, [running, limitReached, nodes, edges, setNodes]);
 
-  const handleClear = () => { setNodes([]); setEdges([]); setFlowName('Untitled flow'); };
+  const handleClear = () => { setNodes([]); setEdges([]); setFlowName('Untitled flow'); setShowOutput(false); setSelectedNodeId(null); };
 
-  const filteredPalette = search
-    ? PALETTE.filter(p => p.label.toLowerCase().includes(search.toLowerCase()) || p.type.toLowerCase().includes(search.toLowerCase()))
-    : PALETTE;
-  const paletteGroups = groupBy(filteredPalette, 'group');
+  const filtered = search ? PALETTE.filter(p => p.label.toLowerCase().includes(search.toLowerCase())) : PALETTE;
+  const groups = groupBy(filtered, 'group');
+  const hasOutput = nodes.some(n => n.data.isDone && n.data.output);
 
-  /* ── Empty state ── */
-  if (nodes.length === 0) {
+  /* Empty state */
+  if (!nodes.length) {
     return (
       <div className="nfb__empty">
         <div className="nfb__empty-inner">
           <div className="nfb__empty-icon">⬡</div>
           <h3 className="nfb__empty-title">Visual Flow Builder</h3>
-          <p className="nfb__empty-sub">
-            Build multi-step AI workflows. Connect nodes to chain outputs into inputs.
-            Each node has pre-built instructions — or write your own.
-          </p>
+          <p className="nfb__empty-sub">Connect nodes to chain AI steps. Each node has pre-built instructions — customize or run as-is.</p>
           <div className="nfb__empty-groups">
             {Object.entries(groupBy(PALETTE.slice(0, 12), 'group')).map(([grp, items]) => (
               <div key={grp} className="nfb__empty-group">
                 <div className="nfb__empty-group-label">{grp}</div>
                 <div className="nfb__empty-group-items">
                   {items.map(p => (
-                    <button key={p.type} className="nfb__empty-add-btn" onClick={() => addNode(p)}
-                      style={{ '--nc': p.color }}>
+                    <button key={p.type} className="nfb__empty-add-btn" onClick={() => addNode(p)} style={{ '--nc': p.color }}>
                       <span style={{ color: p.color }}>{p.icon}</span>{p.label}
                     </button>
                   ))}
@@ -374,7 +407,7 @@ export default function NodeFlowBuilder({ preloadTemplate, subscription, usageCo
               </div>
             ))}
           </div>
-          <p className="nfb__empty-hint">Or pick a <strong>Template</strong> → "Use template" to start with a pre-built flow</p>
+          <p className="nfb__empty-hint">Or pick a <strong>Template</strong> → "Use template" for a pre-built flow</p>
         </div>
       </div>
     );
@@ -385,21 +418,11 @@ export default function NodeFlowBuilder({ preloadTemplate, subscription, usageCo
       {/* Left palette */}
       <aside className="nfb__palette">
         <div className="nfb__palette-top">
-          <input
-            className="nfb__flow-name"
-            value={flowName}
-            onChange={e => setFlowName(e.target.value)}
-            placeholder="Flow name…"
-          />
-          <input
-            className="nfb__palette-search"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search nodes…"
-          />
+          <input className="nfb__flow-name" value={flowName} onChange={e => setFlowName(e.target.value)} placeholder="Flow name…" />
+          <input className="nfb__palette-search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search nodes…" />
         </div>
         <div className="nfb__palette-scroll">
-          {Object.entries(paletteGroups).map(([group, items]) => (
+          {Object.entries(groups).map(([group, items]) => (
             <div key={group} className="nfb__palette-group">
               <div className="nfb__palette-group-label">{group}</div>
               {items.map(p => (
@@ -413,36 +436,46 @@ export default function NodeFlowBuilder({ preloadTemplate, subscription, usageCo
         </div>
       </aside>
 
-      {/* Canvas */}
-      <div className="nfb__canvas">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
-          fitView
-          fitViewOptions={{ padding: 0.3 }}
-          minZoom={0.25}
-          maxZoom={2}
-          proOptions={{ hideAttribution: true }}
-          deleteKeyCode="Delete"
-        >
-          <Background color="#334155" gap={20} size={1} />
-          <Controls showInteractive={false} />
-          <Panel position="top-right" className="nfb__panel">
-            <button className="nfb__autofill-btn" onClick={handleAutoFill} disabled={running} title="Fill all empty nodes with pre-built instructions">
-              ✨ Auto-fill
-            </button>
-            <button className="nfb__run-btn" onClick={handleRunFlow} disabled={running || limitReached}>
-              {running ? <><span className="nfb__run-spinner" /> Running…</> : '▶ Run flow'}
-            </button>
-            <button className="nfb__clear-btn" onClick={handleClear} disabled={running}>
-              ✕ Clear
-            </button>
-          </Panel>
-        </ReactFlow>
+      {/* Canvas + output panel column */}
+      <div className="nfb__right">
+        <div className="nfb__canvas">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            nodeTypes={nodeTypes}
+            fitView fitViewOptions={{ padding: 0.3 }}
+            minZoom={0.2} maxZoom={2}
+            proOptions={{ hideAttribution: true }}
+            deleteKeyCode="Delete"
+          >
+            <Background color="#334155" gap={20} size={1} />
+            <Controls showInteractive={false} />
+            <Panel position="top-right" className="nfb__panel">
+              {hasOutput && (
+                <button className="nfb__output-toggle-btn" onClick={() => setShowOutput(p => !p)}>
+                  {showOutput ? '▲ Hide output' : '▼ View output'}
+                </button>
+              )}
+              <button className="nfb__autofill-btn" onClick={handleAutoFill} disabled={running}>✨ Auto-fill</button>
+              <button className="nfb__run-btn" onClick={handleRunFlow} disabled={running || limitReached}>
+                {running ? <><span className="nfb__run-spinner" /> Running…</> : '▶ Run flow'}
+              </button>
+              <button className="nfb__clear-btn" onClick={handleClear} disabled={running}>✕ Clear</button>
+            </Panel>
+          </ReactFlow>
+        </div>
+
+        {/* Output panel — rendered below canvas when visible */}
+        {showOutput && hasOutput && (
+          <OutputPanel
+            nodes={nodes}
+            selectedNodeId={selectedNodeId}
+            onClose={(id) => { if (id) setSelectedNodeId(id); else setShowOutput(false); }}
+          />
+        )}
       </div>
     </div>
   );
