@@ -10,4 +10,19 @@
     <lastmod>2026-05-05</lastmod>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://gormaran.io/pricing</loc>
+    <lastmod>2026-05-05</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gormaran.io/features</loc>
+    <lastmod>2026-05-05</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gormaran.io/dashboard</loc>
+    <lastmod>2026-05-05</lastmod>
+    <priority>0.7</priority>
+  </url>
 </urlset>
