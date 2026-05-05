@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
-import { streamDemoResponse } from '../utils/api';
 import './LandingPage.css';
 import WhatsAppPopup from '../components/WhatsAppPopup';
 import NichePopup from '../components/NichePopup';
@@ -116,6 +115,135 @@ const TOOL_CATEGORIES = [
 ];
 
 /* ─────────────────────────────────────────────────────────────────
+   Hero Tabs Showcase
+───────────────────────────────────────────────────────────────── */
+const HERO_TABS = [
+  {
+    id: 'text', icon: '✍️', label: 'Text & Chat', color: '#6366f1',
+    credit: '2 credits',
+    desc: 'Chat with AI, write content, analyse markets, plan strategies.',
+    preview: () => (
+      <div className="htab__preview htab__preview--text">
+        <div className="htab__chat-msg htab__chat-msg--user">Create a go-to-market strategy for my SaaS startup</div>
+        <div className="htab__chat-msg htab__chat-msg--ai">
+          <div className="htab__ai-label">⚡ Gormaran AI</div>
+          <div className="htab__bars">
+            {[85,70,90,60,75,45,80].map((w,i) => <div key={i} className="htab__bar" style={{ width: `${w}%`, animationDelay: `${i*0.08}s` }} />)}
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'design', icon: '🎨', label: 'Design', color: '#7c3aed',
+    credit: '10 credits',
+    desc: 'Generate stunning images, product shots, social visuals with DALL·E 3.',
+    preview: () => (
+      <div className="htab__preview htab__preview--design">
+        {['#7c3aed22','#6366f122','#be185d22','#0891b222'].map((bg, i) => (
+          <div key={i} className="htab__img-card" style={{ background: bg }}>
+            <div className="htab__img-inner" />
+          </div>
+        ))}
+      </div>
+    ),
+  },
+  {
+    id: 'video', icon: '🎬', label: 'Video', color: '#0284c7',
+    credit: '25 credits',
+    desc: 'Turn text prompts into cinematic AI videos with Kling, Higgsfield and more.',
+    preview: () => (
+      <div className="htab__preview htab__preview--video">
+        <div className="htab__video-frame">
+          <div className="htab__video-play">▶</div>
+          <div className="htab__video-bar" />
+          <div className="htab__video-label">AI Video · 16:9</div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'audio', icon: '🎵', label: 'Audio', color: '#059669',
+    credit: '10 credits',
+    desc: 'Text to speech in 8 languages. AI music generation from a description.',
+    preview: () => (
+      <div className="htab__preview htab__preview--audio">
+        <div className="htab__waveform">
+          {[30,55,80,45,90,35,70,60,85,40,65,75,50,95,30].map((h,i) => (
+            <div key={i} className="htab__wave-bar" style={{ height: `${h}%`, animationDelay: `${i*0.06}s` }} />
+          ))}
+        </div>
+        <div className="htab__audio-label">🎙️ EN · Normal · ▶ Play · ⬇ Download</div>
+      </div>
+    ),
+  },
+  {
+    id: 'agents', icon: '⚡', label: 'AI Agents', color: '#7c3aed',
+    credit: '30 credits',
+    desc: 'Build interactive mini-apps and visual AI workflows — no code needed.',
+    preview: () => (
+      <div className="htab__preview htab__preview--agents">
+        <div className="htab__app-bar">
+          <span className="htab__app-dot" /><span className="htab__app-dot" /><span className="htab__app-dot" />
+          <span className="htab__app-title">KPI Dashboard · Live Preview</span>
+        </div>
+        <div className="htab__app-content">
+          {[['MRR','€24.8k','+12%'],['Churn','2.4%','-0.3%'],['DAU','1,240','+8%']].map(([k,v,d]) => (
+            <div key={k} className="htab__kpi"><div className="htab__kpi-label">{k}</div><div className="htab__kpi-val">{v}</div><div className="htab__kpi-delta">{d}</div></div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+];
+
+function HeroTabsShowcase() {
+  const [active, setActive] = useState(0);
+  const tab = HERO_TABS[active];
+  const PreviewComp = tab.preview;
+
+  return (
+    <div className="htab">
+      {/* Tab pills */}
+      <div className="htab__tabs">
+        {HERO_TABS.map((t, i) => (
+          <button
+            key={t.id}
+            className={`htab__tab${active === i ? ' htab__tab--active' : ''}`}
+            style={active === i ? { '--tc': t.color } : {}}
+            onClick={() => setActive(i)}
+          >
+            <span className="htab__tab-icon">{t.icon}</span>
+            <span className="htab__tab-label">{t.label}</span>
+            <span className="htab__credit">{t.credit}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Preview card */}
+      <motion.div
+        key={active}
+        className="htab__card"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        style={{ '--tc': tab.color }}
+      >
+        <div className="htab__card-left">
+          <div className="htab__card-icon">{tab.icon}</div>
+          <h3 className="htab__card-title">{tab.label}</h3>
+          <p className="htab__card-desc">{tab.desc}</p>
+          <div className="htab__card-credit">{tab.credit} per generation</div>
+        </div>
+        <div className="htab__card-right">
+          <PreviewComp />
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
    AI models marquee
 ───────────────────────────────────────────────────────────────── */
 const MARQUEE_MODELS = [
@@ -132,9 +260,9 @@ const MARQUEE_MODELS = [
 ];
 
 /* ─────────────────────────────────────────────────────────────────
-   Hero prompt chips
+   [Hero prompt chips removed — replaced by HeroTabsShowcase]
 ───────────────────────────────────────────────────────────────── */
-const HERO_CHIPS = [
+const HERO_CHIPS_UNUSED = [
   { icon: '📊', labelKey: 'landing.promptbox.chip.mktg', dLabel: 'Market Analysis', fillKey: 'landing.promptbox.chip.mktg.fill', dFill: 'Analyse the market opportunity for an AI writing tool targeting mid-size marketing teams in Europe', route: '/category/strategy', categoryId: 'strategy', toolId: 'market-analysis', exampleInputs: { market: 'AI writing tools', geography: 'Europe', customer_segment: 'Mid-size marketing teams' } },
   { icon: '🏗️', labelKey: 'landing.promptbox.chip.biz', dLabel: 'Business Plan', fillKey: 'landing.promptbox.chip.biz.fill', dFill: 'Write a business plan for a B2B SaaS project management tool targeting remote-first startups', route: '/category/strategy', categoryId: 'strategy', toolId: 'business-plan', exampleInputs: { business_name: 'FlowDesk', industry: 'B2B SaaS', product: 'Project management for remote-first startups', stage: 'Early Stage (< $100k ARR)' } },
   { icon: '✍️', labelKey: 'landing.promptbox.chip4', dLabel: 'Blog Post', fillKey: 'landing.promptbox.chip4.fill', dFill: 'Write an SEO blog post about the best AI tools for small businesses in 2025', route: '/category/content', categoryId: 'content', toolId: 'blog-post', exampleInputs: { topic: 'Best AI tools for small businesses in 2025', keyword: 'ai tools small business', audience: 'Founders and operators', word_count: '800', tone: 'Informative' } },
@@ -143,147 +271,7 @@ const HERO_CHIPS = [
   { icon: '🎨', labelKey: 'landing.promptbox.chip.brand', dLabel: 'Brand Identity', fillKey: 'landing.promptbox.chip.brand.fill', dFill: 'Create a brand identity guide for a premium D2C wellness supplement brand targeting health-conscious millennials', route: '/category/creative', categoryId: 'creative', toolId: 'brand-identity', exampleInputs: { brand_name: 'Aura Wellness', industry: 'D2C wellness supplements', target: 'Health-conscious millennials, 25–38', tone: 'Premium, clean, science-backed' } },
 ];
 
-const DEMO_LIMIT = 3;
-const DEMO_KEY = 'gormaran_demo_count';
-
-/* ─────────────────────────────────────────────────────────────────
-   Hero Prompt Box
-───────────────────────────────────────────────────────────────── */
-function HeroPromptBox() {
-  const { t, i18n } = useTranslation();
-  const isEs = i18n.language?.startsWith('es');
-  const navigate = useNavigate();
-  const { currentUser } = useAuth();
-  const [value, setValue] = useState('');
-  const [activeChip, setActiveChip] = useState(null);
-  const [isFocused, setIsFocused] = useState(false);
-  const [output, setOutput] = useState('');
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [slowServer, setSlowServer] = useState(false);
-  const slowTimerRef = useRef(null);
-  const [usesLeft, setUsesLeft] = useState(() => {
-    const used = parseInt(localStorage.getItem(DEMO_KEY) || '0', 10);
-    return Math.max(0, DEMO_LIMIT - used);
-  });
-  const abortRef = useRef(null);
-  const inputRef = useRef(null);
-  const outputRef = useRef(null);
-
-  const handleChip = (chip, idx) => {
-    setValue(t(chip.fillKey, { defaultValue: chip.dFill }));
-    setActiveChip(idx);
-    setOutput('');
-    inputRef.current?.focus();
-  };
-
-  const handleSubmit = useCallback(() => {
-    if (!value.trim() || isStreaming) return;
-    if (activeChip !== null) {
-      const chip = HERO_CHIPS[activeChip];
-      if (chip.toolId && chip.exampleInputs) {
-        sessionStorage.setItem('gormaran_rerun', JSON.stringify({ toolId: chip.toolId, inputs: chip.exampleInputs }));
-      }
-      navigate(chip.route);
-      return;
-    }
-    if (currentUser) { navigate('/dashboard'); return; }
-    const used = parseInt(localStorage.getItem(DEMO_KEY) || '0', 10);
-    if (used >= DEMO_LIMIT) { navigate('/auth?mode=register'); return; }
-    const newUsed = used + 1;
-    localStorage.setItem(DEMO_KEY, String(newUsed));
-    setUsesLeft(Math.max(0, DEMO_LIMIT - newUsed));
-    setOutput(''); setIsStreaming(true); setSlowServer(false);
-    slowTimerRef.current = setTimeout(() => setSlowServer(true), 3500);
-    const controller = new AbortController();
-    abortRef.current = controller;
-    streamDemoResponse({
-      prompt: value.trim(),
-      signal: controller.signal,
-      onChunk: (text) => {
-        clearTimeout(slowTimerRef.current); setSlowServer(false);
-        setOutput((prev) => prev + text);
-        outputRef.current?.scrollTo({ top: outputRef.current.scrollHeight, behavior: 'smooth' });
-      },
-      onDone: () => { clearTimeout(slowTimerRef.current); setIsStreaming(false); },
-      onError: () => { clearTimeout(slowTimerRef.current); setSlowServer(false); setIsStreaming(false); },
-    });
-  }, [value, isStreaming, currentUser, activeChip, navigate]);
-
-  const handleKey = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } };
-  const isLimitReached = !currentUser && usesLeft === 0;
-
-  return (
-    <motion.div
-      className={`hero-promptbox${isFocused ? ' hero-promptbox--focused' : ''}${output ? ' hero-promptbox--has-output' : ''}`}
-      initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.12 }}
-    >
-      <AnimatePresence>
-        {slowServer && !output && (
-          <motion.div className="hero-promptbox__slow-msg" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
-            <span className="hero-promptbox__spinner" />
-            <span>{isEs ? 'Conectando servidor AI… un momento' : 'Connecting AI server… one moment'}</span>
-          </motion.div>
-        )}
-        {output && (
-          <motion.div ref={outputRef} className="hero-promptbox__output" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }}>
-            <p className="hero-promptbox__output-text">{output}</p>
-            {!isStreaming && usesLeft === 0 && (
-              <Link to="/auth?mode=register" className="hero-promptbox__upgrade-cta">
-                {t('landing.promptbox.upgradeCta', { defaultValue: 'Create a free account to access all 30 agents →' })}
-              </Link>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="hero-promptbox__input-row">
-        <textarea
-          ref={inputRef} className="hero-promptbox__input"
-          value={value} onChange={(e) => { setValue(e.target.value); if (!e.target.value.trim()) setActiveChip(null); }}
-          onKeyDown={handleKey} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}
-          placeholder={isLimitReached
-            ? t('landing.promptbox.limitReached', { defaultValue: 'Sign up free to keep going →' })
-            : t('landing.promptbox.placeholder', { defaultValue: 'Describe what you need to build or analyse…' })}
-          disabled={isLimitReached} rows={1}
-        />
-        <button
-          className={`hero-promptbox__send${value.trim() && !isLimitReached ? ' hero-promptbox__send--active' : ''}${isLimitReached ? ' hero-promptbox__send--limit' : ''}`}
-          onClick={isLimitReached ? () => navigate('/auth?mode=register') : handleSubmit}
-          aria-label="Send"
-        >
-          {isStreaming
-            ? <span className="hero-promptbox__spinner" />
-            : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          }
-        </button>
-      </div>
-
-      <div className="hero-promptbox__footer">
-        <div className="hero-promptbox__chips">
-          {HERO_CHIPS.map((chip, i) => (
-            <button key={i} className={`hero-promptbox__chip${activeChip === i ? ' hero-promptbox__chip--active' : ''}`} onClick={() => handleChip(chip, i)} disabled={isLimitReached}>
-              <span>{chip.icon}</span>
-              {t(chip.labelKey, { defaultValue: chip.dLabel })}
-            </button>
-          ))}
-          <span className="hero-promptbox__chip-more">+{30 - HERO_CHIPS.length} {isEs ? 'más' : 'more'}</span>
-        </div>
-        {!currentUser && (
-          <span className={`hero-promptbox__counter${isLimitReached ? ' hero-promptbox__counter--done' : ''}`}>
-            {isLimitReached
-              ? t('landing.promptbox.limitDone', { defaultValue: '3/3 demos used' })
-              : t('landing.promptbox.remaining', { defaultValue: '{{n}} free left', n: usesLeft }).replace('{{n}}', usesLeft)}
-          </span>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   Rotating Hero Text
-───────────────────────────────────────────────────────────────── */
+/* eslint-disable */
 function RotatingText() {
   const { t, i18n } = useTranslation();
   const rotatingPhrases = useMemo(() => [
@@ -803,7 +791,7 @@ const FAQ_ITEMS = [
   { q: 'Which AI models does it use?', a: 'The platform runs on Claude Sonnet 4, GPT-4o and Gemini 1.5 Pro for text agents. Creative Studio uses DALL·E 3, Flux 1.1 and Kling 3.0 for image and video prompts.' },
   { q: 'Who uses Gormaran?', a: 'Founders building their first pitch. Strategists running market analysis. Content teams shipping at scale. Agency owners writing client proposals. Finance leads modelling forecasts. Anyone who needs professional output fast.' },
   { q: 'Do I need to know how to prompt AI?', a: 'No. The prompting is built into each agent. You answer focused fields in plain language — topic, audience, goal — and the agent handles everything else.' },
-  { q: 'What are the plan differences?', a: 'The free plan gives access to Marketing and Content agents (10 uses/month). Grow adds Digital Marketing and unlimited generations. Scale adds Strategy, E-commerce, Agency and Creative. Evolution unlocks Finance and Startup. Automation is a separate add-on.' },
+  { q: 'How do credits work?', a: 'You start with 50 free credits. Each action costs: Text chat 2 credits, Design image 10, Video 25, Audio 10, AI Agents run 30. Paid plans give monthly credit allowances — Grow gets 500 credits/month, Scale 2,000, Evolution unlimited.' },
   { q: 'Is my data private?', a: "Yes. Your inputs and outputs are stored privately in your workspace. They're never shared with other users or used to train any AI model." },
   { q: 'Can I cancel at any time?', a: 'Yes — no lock-in, no cancellation fees. Your access continues until the end of the billing period.' },
 ];
@@ -886,25 +874,27 @@ export default function LandingPage() {
               {t('landing.hero.subtitleLine2', { defaultValue: 'Structured inputs. Professional outputs. No prompting required.' })}
             </motion.p>
 
-            <HeroPromptBox />
-
-            <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.35, delay: 0.15 }}>
+            <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.35, delay: 0.12 }}>
               <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
-                {t('landing.hero.cta', { defaultValue: 'Try Gormaran free' })}
+                {t('landing.hero.cta', { defaultValue: 'Start free — 50 credits' })}
                 <span className="landing__cta-arrow">→</span>
               </Link>
               <button className="btn btn-secondary btn-lg"
                 onClick={() => document.getElementById('agents')?.scrollIntoView({ behavior: 'smooth' })}>
-                {t('landing.hero.getDemo', { defaultValue: 'See the agents ↓' })}
+                See what's inside ↓
               </button>
             </motion.div>
 
-            <motion.div className="landing__hero-trust" variants={fadeUp} transition={{ duration: 0.35, delay: 0.2 }}>
-              <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust1', { defaultValue: 'No credit card required' })}</span>
+            <motion.div className="landing__hero-trust" variants={fadeUp} transition={{ duration: 0.35, delay: 0.15 }}>
+              <span className="landing__trust-item"><span className="landing__trust-check">✓</span>50 free credits — no card needed</span>
               <span className="landing__trust-divider">·</span>
-              <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust2', { defaultValue: '50 free credits' })}</span>
+              <span className="landing__trust-item"><span className="landing__trust-check">✓</span>Text · Design · Video · Audio · AI Agents</span>
               <span className="landing__trust-divider">·</span>
-              <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust3', { defaultValue: 'Cancel anytime' })}</span>
+              <span className="landing__trust-item"><span className="landing__trust-check">✓</span>Cancel anytime</span>
+            </motion.div>
+
+            <motion.div variants={fadeUp} transition={{ duration: 0.35, delay: 0.2 }} style={{ width: '100%', maxWidth: '860px' }}>
+              <HeroTabsShowcase />
             </motion.div>
 
             <motion.div className="landing__hero-social-proof" variants={fadeUp} transition={{ duration: 0.35, delay: 0.25 }}>

@@ -314,19 +314,13 @@ function MessageActions({ content, isEs }) {
 /* ─────────────────────────────────────────────────────────────────
    Welcome / empty state
 ───────────────────────────────────────────────────────────────── */
-function WelcomeState({ model, tab, onSuggestion }) {
+function WelcomeState({ tab, onSuggestion }) {
   const suggestions = TAB_SUGGESTIONS[tab] || TAB_SUGGESTIONS.text;
   return (
     <div className="dash__welcome">
-      <div className="dash__welcome-name">{model.name}</div>
-      <p className="dash__welcome-desc">{model.desc}</p>
-      <div className="dash__welcome-caps-label">Key capabilities</div>
       <div className="dash__welcome-caps">
-        {model.caps.map(c => <span key={c} className="dash__welcome-cap">{c}</span>)}
-      </div>
-      <div className="dash__suggestions">
-        {suggestions.map((s, i) => (
-          <button key={i} className="dash__suggestion" onClick={() => onSuggestion(s.text)}>
+        {suggestions.map(s => (
+          <button key={s.text} className="dash__suggestion" onClick={() => onSuggestion(s.text)}>
             <span className="dash__suggestion-icon">{s.icon}</span>
             {s.text}
           </button>
@@ -339,7 +333,7 @@ function WelcomeState({ model, tab, onSuggestion }) {
 /* ─────────────────────────────────────────────────────────────────
    Text Chat Area
 ───────────────────────────────────────────────────────────────── */
-function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageCount, freeLimit, subscription, defaultPrompt }) {
+function ChatArea({ session, systemPrompt, onUpdate, usageCount, freeLimit, subscription, defaultPrompt }) {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [input, setInput]         = useState(defaultPrompt || '');
@@ -414,7 +408,7 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
       attachedImage: imageAttach,
       history: messages.map(m => ({ role: m.role, content: m.content })),
       systemPrompt: systemPrompt || undefined,
-      modelId: modelVersion || undefined,
+      modelId: undefined,
       tab: session.tab,
       signal: controller.signal,
       onChunk: (chunk) => {
@@ -507,7 +501,6 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
     <>
       {messages.length === 0 && !isLoading ? (
         <WelcomeState
-          model={model}
           tab={session.tab}
           onSuggestion={(text) => { setInput(text); textareaRef.current?.focus(); }}
         />
@@ -518,14 +511,14 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
               <div
                 className="dash__message-avatar"
                 style={msg.role === 'assistant'
-                  ? { background: `${model.color}18`, border: `1px solid ${model.color}35` }
+                  ? { background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)' }
                   : {}}
               >
-                {msg.role === 'assistant' ? <ModelLogo modelId={model.id} size={24} /> : '👤'}
+                {msg.role === 'assistant' ? '⚡' : '👤'}
               </div>
               <div className="dash__message-body">
                 {msg.role === 'assistant' && (
-                  <div className="dash__message-role">{model.name}</div>
+                  <div className="dash__message-role">Gormaran AI</div>
                 )}
                 <div className="dash__message-text">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -543,12 +536,12 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
             <div className="dash__message dash__message--assistant">
               <div
                 className="dash__message-avatar"
-                style={{ background: `${model.color}18`, border: `1px solid ${model.color}35` }}
+                style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)' }}
               >
-                <ModelLogo modelId={model.id} size={24} />
+                ⚡
               </div>
               <div className="dash__message-body">
-                <div className="dash__message-role">{model.name}</div>
+                <div className="dash__message-role">Gormaran AI</div>
                 <div className="dash__message-text">
                   {streamText
                     ? <><ReactMarkdown remarkPlugins={[remarkGfm]}>{streamText}</ReactMarkdown><span className="dash__cursor" /></>
@@ -639,7 +632,7 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
 /* ─────────────────────────────────────────────────────────────────
    Design / Image Generation Area
 ───────────────────────────────────────────────────────────────── */
-function DesignArea({ model, subscription, usageCount, freeLimit, defaultPrompt, session, onUpdate }) {
+function DesignArea({ subscription, usageCount, freeLimit, defaultPrompt, session, onUpdate }) {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [prompt, setPrompt]     = useState(defaultPrompt || '');
@@ -677,7 +670,6 @@ function DesignArea({ model, subscription, usageCount, freeLimit, defaultPrompt,
       <div className="dash__image-area">
         {images.length === 0 && !isLoading && (
           <WelcomeState
-            model={model}
             tab="design"
             onSuggestion={(text) => setPrompt(text)}
           />
@@ -753,7 +745,7 @@ const VIDEO_SUGGESTIONS = [
   { icon: '🚀', text: 'Rocket launching through clouds into a starry sky' },
 ];
 
-function VideoArea({ model, subscription, usageCount, freeLimit, session, onUpdate }) {
+function VideoArea({ subscription, usageCount, freeLimit, session, onUpdate }) {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [prompt, setPrompt]         = useState('');
@@ -964,7 +956,7 @@ const MUSIC_SUGGESTIONS = [
   { icon: '🌊', text: 'Relaxing ambient music with nature sounds and soft synths' },
 ];
 
-function AudioArea({ model, subscription, usageCount, freeLimit, session, onUpdate }) {
+function AudioArea({ subscription, usageCount, freeLimit, session, onUpdate }) {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [mode, setMode]           = useState('speech');
@@ -1258,7 +1250,7 @@ const AGENTS_KEY = 'gormaran_agents_v1';
 function loadAgents() { try { return JSON.parse(localStorage.getItem(AGENTS_KEY) || '[]'); } catch { return []; } }
 function saveAgents(a) { try { localStorage.setItem(AGENTS_KEY, JSON.stringify(a)); } catch {} }
 
-function AgentsArea({ model, subscription, usageCount, freeLimit }) {
+function AgentsArea({ subscription, usageCount, freeLimit }) {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [agents, setAgents]       = useState(loadAgents);
@@ -1281,7 +1273,7 @@ function AgentsArea({ model, subscription, usageCount, freeLimit }) {
 
   const handleCreateAgent = () => {
     if (!form.name.trim()) return;
-    const agent = { id: crypto.randomUUID(), name: form.name.trim(), desc: form.desc.trim(), prompt: form.prompt.trim(), model: model.id, createdAt: Date.now() };
+    const agent = { id: crypto.randomUUID(), name: form.name.trim(), desc: form.desc.trim(), prompt: form.prompt.trim(), model: 'claude', createdAt: Date.now() };
     const next = [agent, ...agents];
     setAgents(next);
     setCreating(false);
@@ -1397,7 +1389,7 @@ function AgentsArea({ model, subscription, usageCount, freeLimit }) {
               )}
               {messages.map((msg, i) => (
                 <div key={i} className={`dash__message dash__message--${msg.role}`}>
-                  <div className="dash__message-avatar" style={msg.role === 'assistant' ? { background: `${model.color}18`, border: `1px solid ${model.color}35` } : {}}>
+                  <div className="dash__message-avatar" style={msg.role === 'assistant' ? { background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)' } : {}}>
                     {msg.role === 'assistant' ? '🤖' : '👤'}
                   </div>
                   <div className="dash__message-body">
@@ -1408,7 +1400,7 @@ function AgentsArea({ model, subscription, usageCount, freeLimit }) {
               ))}
               {isLoading && (
                 <div className="dash__message dash__message--assistant">
-                  <div className="dash__message-avatar" style={{ background: `${model.color}18`, border: `1px solid ${model.color}35` }}>🤖</div>
+                  <div className="dash__message-avatar" style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)' }}>🤖</div>
                   <div className="dash__message-body">
                     <div className="dash__message-role">{activeAgent.name}</div>
                     <div className="dash__message-text">
@@ -1647,110 +1639,6 @@ function ComingSoon({ tab }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   Model Panel — syntx.ai style: provider + version + system prompt
-───────────────────────────────────────────────────────────────── */
-function ModelPanel({ selectedId, selectedVersion, onSelect, onSelectVersion, systemPrompt, onSystemPrompt, onClose }) {
-  const [providerOpen, setProviderOpen] = useState(false);
-  const [systemOpen, setSystemOpen]     = useState(false);
-  const selected = MODELS.find(m => m.id === selectedId) || MODELS[0];
-  const versions = MODEL_VERSIONS[selectedId] || [];
-
-  return (
-    <aside className="dash__model-panel">
-      <div className="dash__model-panel-hd">
-        <span className="dash__model-panel-title">Model selection</span>
-        <button className="dash__model-panel-x" onClick={onClose}>✕</button>
-      </div>
-
-      {/* AI provider selector */}
-      <div className="dash__mp-section">
-        <div className="dash__mp-label">AI</div>
-        <button className="dash__mp-dropdown" onClick={() => setProviderOpen(v => !v)}>
-          <div className="dash__model-av dash__model-av--sm">
-            <ModelLogo modelId={selected.id} size={20} />
-          </div>
-          <span className="dash__mp-dropdown-name">{selected.name}</span>
-          <span className="dash__mp-dropdown-arr">{providerOpen ? '▲' : '▼'}</span>
-        </button>
-        {providerOpen && (
-          <div className="dash__mp-provider-list">
-            {MODELS.map(m => (
-              <button
-                key={m.id}
-                className={`dash__mp-provider-item${selectedId === m.id ? ' dash__mp-provider-item--active' : ''}`}
-                onClick={() => {
-                  onSelect(m.id);
-                  onSelectVersion(MODEL_VERSIONS[m.id]?.[0] || '');
-                  setProviderOpen(false);
-                }}
-              >
-                <div className="dash__model-av dash__model-av--sm">
-                  <ModelLogo modelId={m.id} size={20} />
-                </div>
-                <div className="dash__model-info">
-                  <div className="dash__model-name">{m.name}</div>
-                  <div className="dash__model-by">{m.by}</div>
-                </div>
-                {selectedId === m.id && <span className="dash__mp-check">✓</span>}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Model version selector */}
-      <div className="dash__mp-section">
-        <div className="dash__mp-label">Model</div>
-        <div className="dash__mp-version-list">
-          {versions.map(v => (
-            <button
-              key={v}
-              className={`dash__mp-version-item${selectedVersion === v ? ' dash__mp-version-item--active' : ''}`}
-              onClick={() => onSelectVersion(v)}
-            >
-              <span className="dash__mp-version-name">{v}</span>
-              {NEW_VERSIONS.has(v) && <span className="dash__new-badge dash__new-badge--sm">NEW</span>}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="dash__mp-info">
-        Here you can choose the AI and its model.
-      </div>
-
-      <div className="dash__mp-divider" />
-
-      {/* System Prompt */}
-      <div className="dash__mp-section dash__mp-section--system">
-        <button className="dash__mp-system-hd" onClick={() => setSystemOpen(v => !v)}>
-          <span>⚙ System Prompt</span>
-          <span>{systemOpen ? '▲' : '▼'}</span>
-        </button>
-        {systemOpen && (
-          <textarea
-            className="dash__mp-system-input"
-            value={systemPrompt}
-            onChange={e => onSystemPrompt(e.target.value)}
-            placeholder="You are a helpful assistant…"
-            rows={5}
-          />
-        )}
-      </div>
-
-      <div className="dash__mp-footer">
-        <button className="dash__mp-footer-btn" onClick={() => { onSystemPrompt(''); setSystemOpen(false); }}>
-          ↺ Reset all
-        </button>
-        <button className="dash__mp-footer-btn" onClick={() => setSystemOpen(v => !v)}>
-          {systemOpen ? '▲ Close all' : '▼ Open all'}
-        </button>
-      </div>
-    </aside>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────
    Left Sidebar
 ───────────────────────────────────────────────────────────────── */
 function Sidebar({ sessions, activeId, activeTab, onNew, onSelect, onDelete, subscription, usageCount, freeLimit, sessionListRef }) {
@@ -1837,10 +1725,7 @@ export default function Dashboard() {
   const isEs = i18n.language?.startsWith('es');
 
   const [activeTab, setActiveTab]             = useState('text');
-  const [selectedModel, setSelectedModel]     = useState('chatgpt');
-  const [selectedVersion, setSelectedVersion] = useState(MODEL_VERSIONS.chatgpt[0]);
   const [systemPrompt, setSystemPrompt]       = useState('');
-  const [modelPanelOpen, setModelPanelOpen]   = useState(true);
   const [sessions, setSessions]               = useState(loadSessions);
   const [currentId, setCurrentId]             = useState(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
@@ -1873,17 +1758,16 @@ export default function Dashboard() {
   useEffect(() => { saveSessions(sessions); }, [sessions]);
 
   const currentSession = useMemo(() => sessions.find(s => s.id === currentId) || null, [sessions, currentId]);
-  const activeModel = MODELS.find(m => m.id === selectedModel) || MODELS[0];
 
   const handleNew = useCallback(() => {
-    const s = makeSession(activeTab, selectedModel);
+    const s = makeSession(activeTab, 'claude');
     currentIdRef.current = s.id; // sync before setState so first message goes to correct session
     setSessions(prev => [s, ...prev]);
     setCurrentId(s.id);
     requestAnimationFrame(() => {
       sidebarListRef.current?.scrollTo({ top: 0, behavior: 'instant' });
     });
-  }, [activeTab, selectedModel]);
+  }, [activeTab]);
 
   const handleSelectSession = useCallback((id) => {
     const s = sessions.find(s => s.id === id);
@@ -1904,7 +1788,7 @@ export default function Dashboard() {
     if (existing) {
       setSessions(prev => prev.map(s => s.id === id ? { ...s, ...updates, ...(title ? { title } : {}) } : s));
     } else {
-      const s = { ...makeSession(tab, selectedModelRef.current || 'chatgpt'), ...updates, ...(title ? { title } : {}) };
+      const s = { ...makeSession(tab, 'claude'), ...updates, ...(title ? { title } : {}) };
       currentIdRef.current = s.id;
       setCurrentId(s.id);
       setSessions(prev => [s, ...prev]);
@@ -1936,8 +1820,6 @@ export default function Dashboard() {
 
   const sessionsRef = useRef(sessions);
   useEffect(() => { sessionsRef.current = sessions; }, [sessions]);
-  const selectedModelRef = useRef(selectedModel);
-  useEffect(() => { selectedModelRef.current = selectedModel; }, [selectedModel]);
 
   const handleChatUpdate = useCallback(({ messages, title }) => {
     setSessions(prev => {
@@ -1949,16 +1831,16 @@ export default function Dashboard() {
         );
       }
       // Create new session atomically — title + messages in one shot
-      const s = makeSession(activeTab, selectedModel);
+      const s = makeSession(activeTab, 'claude');
       currentIdRef.current = s.id;
       setCurrentId(s.id);
       return [{ ...s, messages, ...(title ? { title } : {}) }, ...prev];
     });
-  }, [activeTab, selectedModel]);
+  }, [activeTab]);
 
-  const session = currentSession || { id: null, tab: activeTab, model: selectedModel, messages: [], title: 'New chat' };
+  const session = currentSession || { id: null, tab: activeTab, model: 'claude', messages: [], title: 'New chat' };
 
-  const cols = modelPanelOpen ? '256px 1fr 276px' : '256px 1fr';
+  const cols = '256px 1fr';
 
   return (
     <div className="dash">
@@ -1999,13 +1881,6 @@ export default function Dashboard() {
           ))}
         </div>
         <div className="dash__tabbar-right">
-          <button
-            className={`dash__model-toggle${modelPanelOpen ? ' dash__model-toggle--active' : ''}`}
-            onClick={() => setModelPanelOpen(v => !v)}
-          >
-            <span className="dash__model-dot" style={{ background: activeModel.color }} />
-            {activeModel.name} ▾
-          </button>
           <span className={`dash__plan-chip dash__plan-chip--${planChip}`}>{planLabel}</span>
         </div>
       </div>
@@ -2040,8 +1915,6 @@ export default function Dashboard() {
                 <ChatArea
                   key={session.id || 'new'}
                   session={session}
-                  model={activeModel}
-                  modelVersion={selectedVersion}
                   systemPrompt={systemPrompt}
                   onUpdate={handleChatUpdate}
                   usageCount={usageCount}
@@ -2053,7 +1926,6 @@ export default function Dashboard() {
               {activeTab === 'design' && (
                 <DesignArea
                   key={currentId || 'new-design'}
-                  model={activeModel}
                   subscription={subscription}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
@@ -2065,7 +1937,6 @@ export default function Dashboard() {
               {activeTab === 'video' && (
                 <VideoArea
                   key={currentId || 'new-video'}
-                  model={activeModel}
                   subscription={subscription}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
@@ -2076,7 +1947,6 @@ export default function Dashboard() {
               {activeTab === 'audio' && (
                 <AudioArea
                   key={currentId || 'new-audio'}
-                  model={activeModel}
                   subscription={subscription}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
@@ -2127,17 +1997,6 @@ export default function Dashboard() {
           </AnimatePresence>
         </main>
 
-        {modelPanelOpen && (
-          <ModelPanel
-            selectedId={selectedModel}
-            selectedVersion={selectedVersion}
-            onSelect={setSelectedModel}
-            onSelectVersion={setSelectedVersion}
-            systemPrompt={systemPrompt}
-            onSystemPrompt={setSystemPrompt}
-            onClose={() => setModelPanelOpen(false)}
-          />
-        )}
       </div>
     </div>
   );
