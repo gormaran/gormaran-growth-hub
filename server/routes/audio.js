@@ -80,39 +80,81 @@ router.get('/voices', verifyToken, (req, res) => {
 
 // POST /api/audio/music — music generation via Replicate MusicGen
 router.post('/music', audioLimiter, verifyToken, async (req, res) => {
-  const { prompt, duration = 15, model_version = 'stereo-large' } = req.body;
+  const { prompt, duration = 15 } = req.body;
   if (!prompt?.trim()) return res.status(400).json({ error: 'Prompt is required' });
 
   const TOKEN = process.env.REPLICATE_API_TOKEN;
   if (!TOKEN) return res.status(503).json({ error: 'Replicate not configured. Add REPLICATE_API_TOKEN to server env.' });
 
   try {
-    const prediction = await fetch('https://api.replicate.com/v1/models/meta/musicgen/predictions', {
+    const raw = await fetch('https://api.replicate.com/v1/models/meta/musicgen/predictions', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${TOKEN}`,
         'Content-Type': 'application/json',
-        Prefer: 'wait=60',
       },
       body: JSON.stringify({
         input: {
           prompt: prompt.trim(),
-          duration,
-          model_version,
+          duration: parseInt(duration) || 15,
           output_format: 'mp3',
-          normalization_strategy: 'peak',
         },
       }),
-    }).then(r => r.json());
+    });
 
-    if (prediction.error) throw new Error(prediction.error);
+    const prediction = await raw.json();
+    console.log('[Music] Replicate status:', raw.status, 'id:', prediction.id, 'error:', prediction.detail || prediction.error);
 
-    // Return taskId for polling
+    if (!prediction.id) {
+      const errMsg = prediction.detail || prediction.error || `Replicate error (${raw.status})`;
+      return res.status(raw.status >= 400 ? raw.status : 500).json({ error: errMsg });
+    }
+
     res.json({ taskId: prediction.id, status: 'processing' });
   } catch (err) {
     console.error('[Audio/music]', err.message);
     res.status(500).json({ error: err.message });
   }
+});
+
+// POST /api/audio/tts-free — Google Translate TTS proxy (free, no key needed)
+router.post('/tts-free', audioLimiter, verifyToken, async (req, res) => {
+  const { text, lang = 'en' } = req.body;
+  if (!text?.trim()) return res.status(400).json({ error: 'Text is required' });
+  if (text.length > 1000) return res.status(400).json({ error: 'Text too long (max 1000 chars)' });
+
+  // Split into ≤190-char chunks at word boundaries
+  const words = text.trim().split(/\s+/);
+  const chunks = [];
+  let cur = '';
+  for (const w of words) {
+    if ((cur + ' ' + w).trim().length > 190) { if (cur) chunks.push(cur.trim()); cur = w; }
+    else { cur = (cur + ' ' + w).trim(); }
+  }
+  if (cur) chunks.push(cur);
+
+  const buffers = [];
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i];
+    try {
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(chunk)}&tl=${lang}&client=gtw&prev=input&total=${chunks.length}&idx=${i}&textlen=${chunk.length}`;
+      const r = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Referer': 'https://translate.google.com/',
+          'Accept': 'audio/webm,audio/ogg,audio/*;q=0.9,*/*;q=0.5',
+        },
+      });
+      if (!r.ok) continue;
+      buffers.push(Buffer.from(await r.arrayBuffer()));
+    } catch {}
+  }
+
+  if (!buffers.length) return res.status(503).json({ error: 'TTS service unavailable. Try again shortly.' });
+
+  res.setHeader('Content-Type', 'audio/mpeg');
+  res.setHeader('Content-Disposition', `attachment; filename="speech-${Date.now()}.mp3"`);
+  res.send(Buffer.concat(buffers));
 });
 
 // GET /api/audio/music/status/:id

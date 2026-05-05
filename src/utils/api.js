@@ -246,6 +246,22 @@ export async function pollVideoStatus(taskId) {
   return res.json(); // { status: 'processing'|'done'|'failed', videoUrl? }
 }
 
+// ── Audio — Free TTS download (Google Translate proxy) ───────────────────────
+export async function downloadFreeTTS(text, lang = 'en') {
+  const authHeaders = await getAuthHeader();
+  const res = await fetch(`${API_URL}/api/audio/tts-free`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders },
+    body: JSON.stringify({ text, lang }),
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Download failed'); }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `speech-${Date.now()}.mp3`; a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ── Audio — Text-to-Speech (ElevenLabs) ──────────────────────────────────────
 
 export async function generateSpeech({ text, voice = 'rachel', model_id = 'eleven_multilingual_v2' }) {

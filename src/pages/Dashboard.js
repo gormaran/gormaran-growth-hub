@@ -17,6 +17,7 @@ import {
   startMusicGeneration,
   pollMusicStatus,
   translateText,
+  downloadFreeTTS,
 } from '../utils/api';
 import OnboardingModal from '../components/OnboardingModal';
 import ProductTour, { shouldShowTour } from '../components/ProductTour';
@@ -911,10 +912,28 @@ function VideoArea({ model, subscription, usageCount, freeLimit, session, onUpda
 /* ─────────────────────────────────────────────────────────────────
    Audio Area (ElevenLabs TTS + MusicGen)
 ───────────────────────────────────────────────────────────────── */
-// Web Speech API fallback voices (displayed until browser voices load)
-const AUDIO_VOICES_FALLBACK = [
-  { id: '', label: 'Default voice' },
+const SPEECH_LANGS = [
+  { code: 'en', label: '🇺🇸 English' },
+  { code: 'es', label: '🇪🇸 Español' },
+  { code: 'fr', label: '🇫🇷 Français' },
+  { code: 'de', label: '🇩🇪 Deutsch' },
+  { code: 'it', label: '🇮🇹 Italiano' },
+  { code: 'pt', label: '🇧🇷 Português' },
+  { code: 'ja', label: '🇯🇵 日本語' },
+  { code: 'zh', label: '🇨🇳 中文' },
 ];
+
+function detectGender(name) {
+  const n = name.toLowerCase();
+  if (/female|femme|woman|mujer/.test(n)) return 'female';
+  if (/\bmale\b|homme|man\b/.test(n)) return 'male';
+  const f = ['alice','anna','aria','ava','bella','emma','ella','fiona','grace','karen','kate','laila','laura','lily','lisa','lucia','mia','michelle','moira','natasha','nicole','nora','olivia','rachel','rosa','samantha','sara','sarah','serena','silvia','sofia','sonya','susan','tessa','tina','veena','victoria','zara','zira','cortana','siri'];
+  const m = ['aaron','adam','arthur','ben','brian','carlos','chris','daniel','david','diego','eric','fred','george','jack','james','jorge','juan','kevin','liam','mark','michael','nicolas','noah','oliver','pablo','paul','peter','rick','robert','ryan','thomas','tom','tony','william','reed','alex'];
+  const first = n.split(/[\s\-_]/)[0];
+  if (f.some(x => first.startsWith(x) || first === x)) return 'female';
+  if (m.some(x => first.startsWith(x) || first === x)) return 'male';
+  return 'unknown';
+}
 const MUSIC_SUGGESTIONS = [
   { icon: '🎵', text: 'Upbeat electronic music for a product demo, 120 BPM' },
   { icon: '🎹', text: 'Calm piano background music for focus and productivity' },
@@ -925,15 +944,19 @@ const MUSIC_SUGGESTIONS = [
 function AudioArea({ model, subscription, usageCount, freeLimit, session, onUpdate }) {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
-  const [mode, setMode]         = useState('speech');
-  const [text, setText]         = useState('');
-  const [voice, setVoice]       = useState('');
+  const [mode, setMode]           = useState('speech');
+  const [text, setText]           = useState('');
+  const [selectedLang, setSelectedLang] = useState('en');
+  const [gender, setGender]       = useState('all');     // 'female' | 'male' | 'all'
+  const [pitchType, setPitchType] = useState('normal');  // 'high' | 'normal' | 'low'
+  const [selectedVoiceName, setSelectedVoiceName] = useState('');
   const [browserVoices, setBrowserVoices] = useState([]);
   const [musicPrompt, setMusicPrompt] = useState('');
-  const [duration, setDuration] = useState(15);
+  const [duration, setDuration]   = useState(15);
   const [isLoading, setIsLoading] = useState(false);
+  const [downloading, setDownloading] = useState(null);
   const [audioItems, setAudioItems] = useState(() => session?.items || []);
-  const [error, setError]       = useState(null);
+  const [error, setError]         = useState(null);
   const [musicStatus, setMusicStatus] = useState(null);
   const pollRef = useRef(null);
   const utterRef = useRef(null);
@@ -946,15 +969,29 @@ function AudioArea({ model, subscription, usageCount, freeLimit, session, onUpda
   useEffect(() => {
     const load = () => {
       const voices = window.speechSynthesis?.getVoices() || [];
-      if (voices.length) {
-        setBrowserVoices(voices);
-        setVoice(prev => prev || voices[0]?.name || '');
-      }
+      if (voices.length) setBrowserVoices(voices);
     };
     load();
     window.speechSynthesis?.addEventListener('voiceschanged', load);
     return () => window.speechSynthesis?.removeEventListener('voiceschanged', load);
   }, []);
+
+  // Filter voices by language + gender
+  const filteredVoices = browserVoices.filter(v => {
+    const langMatch = v.lang.toLowerCase().startsWith(selectedLang.toLowerCase());
+    if (!langMatch) return false;
+    if (gender === 'all') return true;
+    return detectGender(v.name) === gender || detectGender(v.name) === 'unknown';
+  });
+
+  const activeVoice = filteredVoices.find(v => v.name === selectedVoiceName) || filteredVoices[0] || null;
+
+  // Pitch/rate settings
+  const PITCH_MAP = {
+    high:   { pitch: 1.5, rate: 1.05 },
+    normal: { pitch: 1.0, rate: 0.92 },
+    low:    { pitch: 0.55, rate: 0.82 },
+  };
 
   const handleSpeech = () => {
     if (!text.trim() || isLoading || limitReached) return;
@@ -963,19 +1000,29 @@ function AudioArea({ model, subscription, usageCount, freeLimit, session, onUpda
     synth.cancel();
     setError(null); setIsLoading(true);
     const utter = new SpeechSynthesisUtterance(text.trim());
-    const selectedVoice = browserVoices.find(v => v.name === voice);
-    if (selectedVoice) utter.voice = selectedVoice;
-    utter.lang = isEs ? 'es-ES' : 'en-US';
-    utter.rate = 0.95; utter.pitch = 1;
+    if (activeVoice) utter.voice = activeVoice;
+    else utter.lang = `${selectedLang}-${selectedLang.toUpperCase()}`;
+    const { pitch, rate } = PITCH_MAP[pitchType] || PITCH_MAP.normal;
+    utter.pitch = pitch; utter.rate = rate;
     utterRef.current = utter;
     utter.onend = () => {
-      const newItems = [{ url: null, label: text.slice(0, 60), mode: 'speech', ts: Date.now(), speechText: text.trim(), voiceName: selectedVoice?.name || voice }, ...audioItems];
+      const newItems = [{
+        url: null, label: text.slice(0, 60), mode: 'speech', ts: Date.now(),
+        speechText: text.trim(), voiceName: activeVoice?.name || '', lang: selectedLang, pitchType,
+      }, ...audioItems];
       setAudioItems(newItems);
       onUpdate?.(newItems, text.slice(0, 45));
       setText(''); setIsLoading(false);
     };
     utter.onerror = (e) => { setError(`Speech error: ${e.error}`); setIsLoading(false); };
     synth.speak(utter);
+  };
+
+  const handleDownloadSpeech = async (item) => {
+    setDownloading(item.ts);
+    try { await downloadFreeTTS(item.speechText, item.lang || selectedLang); }
+    catch (e) { setError(e.message); }
+    finally { setDownloading(null); }
   };
 
   const handleMusic = async () => {
@@ -1088,15 +1135,21 @@ function AudioArea({ model, subscription, usageCount, freeLimit, session, onUpda
               <div className="dash__audio-replay">
                 <button className="btn btn-secondary btn-sm" onClick={() => {
                   const synth = window.speechSynthesis;
-                  if (!synth) return;
-                  synth.cancel();
+                  if (!synth) return; synth.cancel();
                   const u = new SpeechSynthesisUtterance(item.speechText);
                   const sv = browserVoices.find(v => v.name === item.voiceName);
                   if (sv) u.voice = sv;
-                  u.rate = 0.95;
+                  const { pitch, rate } = PITCH_MAP[item.pitchType] || PITCH_MAP.normal;
+                  u.pitch = pitch; u.rate = rate;
                   synth.speak(u);
-                }}>▶ {isEs ? 'Reproducir' : 'Play again'}</button>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{item.voiceName}</span>
+                }}>▶ {isEs ? 'Reproducir' : 'Play'}</button>
+                <button className="btn btn-primary btn-sm" onClick={() => handleDownloadSpeech(item)}
+                  disabled={downloading === item.ts}>
+                  {downloading === item.ts ? '⏳' : '⬇️'} {isEs ? 'Descargar MP3' : 'Download MP3'}
+                </button>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                  {item.voiceName?.split(' ').slice(0, 2).join(' ')} · {item.pitchType}
+                </span>
               </div>
             ) : null}
           </div>
@@ -1107,13 +1160,29 @@ function AudioArea({ model, subscription, usageCount, freeLimit, session, onUpda
       <div className="dash__media-input-area">
         {mode === 'speech' ? (
           <div className="dash__input-bar">
-            <div className="dash__audio-voice-row">
-              <label className="dash__audio-voice-label">{isEs ? 'Voz:' : 'Voice:'}</label>
-              <select className="dash__audio-voice-select" value={voice} onChange={e => setVoice(e.target.value)}>
-                {(browserVoices.length ? browserVoices : [{ name: '', localService: true, lang: 'en-US' }]).map(v => (
-                  <option key={v.name} value={v.name}>{v.name || 'Default'} {v.localService ? '' : '(network)'}</option>
-                ))}
+            <div className="dash__audio-controls">
+              {/* Language */}
+              <select className="dash__audio-select" value={selectedLang} onChange={e => { setSelectedLang(e.target.value); setSelectedVoiceName(''); }}>
+                {SPEECH_LANGS.map(l => <option key={l.code} value={l.code}>{l.label}</option>)}
               </select>
+              {/* Gender */}
+              <div className="dash__audio-toggle-group">
+                {[['all','All'],['female','👩 F'],['male','👨 M']].map(([v,lbl]) => (
+                  <button key={v} className={`dash__audio-toggle${gender === v ? ' active' : ''}`} onClick={() => { setGender(v); setSelectedVoiceName(''); }}>{lbl}</button>
+                ))}
+              </div>
+              {/* Pitch */}
+              <div className="dash__audio-toggle-group">
+                {[['high', isEs ? 'Aguda' : 'High'],['normal', isEs ? 'Normal' : 'Normal'],['low', isEs ? 'Grave' : 'Deep']].map(([v,lbl]) => (
+                  <button key={v} className={`dash__audio-toggle${pitchType === v ? ' active' : ''}`} onClick={() => setPitchType(v)}>{lbl}</button>
+                ))}
+              </div>
+              {/* Filtered voice picker */}
+              {filteredVoices.length > 1 && (
+                <select className="dash__audio-select dash__audio-select--voice" value={selectedVoiceName || filteredVoices[0]?.name || ''} onChange={e => setSelectedVoiceName(e.target.value)}>
+                  {filteredVoices.map(v => <option key={v.name} value={v.name}>{v.name.replace('Google ','').replace('Microsoft ','').split('(')[0].trim()}</option>)}
+                </select>
+              )}
             </div>
             <div className="dash__input-wrap">
               <div className="dash__input-row">
