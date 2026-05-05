@@ -2,19 +2,15 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { streamChat } from '../utils/api';
 import './AppBuilder.css';
 
-const SYSTEM_PROMPT = `You are an AI mini-app builder. When given a description, generate a complete self-contained HTML application.
+const SYSTEM_PROMPT = `You are an AI app builder. Output ONLY a self-contained HTML file. No preamble, no explanation, no markdown fences.
 
-STRICT RULES:
-- Output ONLY a complete HTML document — start with <!DOCTYPE html>, end with </html>
-- No external CDN links. Use only vanilla JavaScript and inline CSS
-- Must be interactive and functional with realistic sample/mock data
-- Dark modern UI: background #0f0f1a, surface #12121e, accent #6366f1, text #f1f5f9
-- Font: system-ui, -apple-system, sans-serif
-- Include all logic and data inline — no backend needed
-- Do NOT wrap in markdown code blocks — return raw HTML only
-- Do NOT explain anything — just the HTML
-
-For refinements: modify the previous app based on the instruction.`;
+Rules:
+- Start immediately with <!DOCTYPE html>
+- Vanilla JS + inline CSS only — no CDN links
+- Interactive with realistic mock data
+- Dark UI: bg #0f0f1a, surface #12121e, accent #6366f1, text #f1f5f9, font: system-ui
+- Keep it under 200 lines — concise but functional
+- End with </html>`;
 
 const EXAMPLES = [
   { icon: '📊', label: 'KPI Dashboard', prompt: 'Build a KPI dashboard for a SaaS startup with metrics: MRR, churn, DAU, conversion rate. Include mini charts and trend indicators.' },
@@ -26,12 +22,14 @@ const EXAMPLES = [
 ];
 
 function extractHtml(text) {
-  const match = text.match(/```(?:html)?\s*([\s\S]*?)```/);
-  if (match) return match[1].trim();
-  if (text.includes('<!DOCTYPE html>') || text.includes('<html')) {
-    const start = text.indexOf('<!DOCTYPE html>') !== -1 ? text.indexOf('<!DOCTYPE html>') : text.indexOf('<html');
-    return text.slice(start).trim();
-  }
+  // Strip markdown fences first
+  const fenceMatch = text.match(/```(?:html)?\s*([\s\S]*?)```/s);
+  if (fenceMatch) return fenceMatch[1].trim();
+  // Find raw HTML start
+  const dtIdx = text.indexOf('<!DOCTYPE html>');
+  const htmlIdx = text.indexOf('<html');
+  const start = dtIdx !== -1 ? dtIdx : htmlIdx !== -1 ? htmlIdx : -1;
+  if (start !== -1) return text.slice(start).trim();
   return null;
 }
 
@@ -72,14 +70,27 @@ export default function AppBuilder({ session, onUpdate, subscription, usageCount
     abortRef.current = controller;
     let acc = '';
 
+    let liveUpdateTimer = null;
     streamChat({
       message: text,
       history: messages.slice(-4).map(m => ({ role: m.role, content: m.content })),
       tab: 'text',
       systemPrompt: buildSystemPrompt(generatedHtml),
       signal: controller.signal,
-      onChunk: (c) => { acc += c; setStreamText(acc); },
+      onChunk: (c) => {
+        acc += c;
+        setStreamText(acc);
+        // Throttled live preview — update iframe as HTML streams in
+        if (!liveUpdateTimer) {
+          liveUpdateTimer = setTimeout(() => {
+            liveUpdateTimer = null;
+            const partial = extractHtml(acc);
+            if (partial) setGeneratedHtml(partial);
+          }, 400);
+        }
+      },
       onDone: () => {
+        clearTimeout(liveUpdateTimer);
         const html = extractHtml(acc);
         const aiMsg = { role: 'assistant', content: acc, ts: Date.now(), hasApp: !!html };
         const finalMsgs = [...nextMsgs, aiMsg];
@@ -87,10 +98,14 @@ export default function AppBuilder({ session, onUpdate, subscription, usageCount
         if (html) {
           setGeneratedHtml(html);
           onUpdate?.({ appHtml: html, appMessages: finalMsgs }, text.slice(0, 45));
+        } else {
+          // Claude returned text, not HTML — show as error
+          setMessages(prev => [...prev, { role: 'assistant', content: '⚠️ AI returned text instead of HTML. Try being more specific, e.g. "Build a simple to-do app".', ts: Date.now(), error: true }]);
         }
         setStreamText(''); setIsLoading(false);
       },
       onError: (err) => {
+        clearTimeout(liveUpdateTimer);
         setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${err}`, ts: Date.now(), error: true }]);
         setStreamText(''); setIsLoading(false);
       },
@@ -156,7 +171,9 @@ export default function AppBuilder({ session, onUpdate, subscription, usageCount
               <div className="ab__msg-avatar">⚡</div>
               <div className="ab__msg-body">
                 {streamText
-                  ? <span className="ab__msg-text ab__msg-text--stream">Building…</span>
+                  ? <span className="ab__msg-text ab__msg-text--stream">
+                      Building… {streamText.length > 50 ? `${Math.round(streamText.length / 1024 * 10) / 10}KB` : ''}
+                    </span>
                   : <span className="ab__thinking"><span /><span /><span /></span>
                 }
               </div>
