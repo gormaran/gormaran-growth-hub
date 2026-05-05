@@ -239,11 +239,25 @@ export async function startVideoGeneration({ prompt, aspect_ratio = '16:9', dura
   return res.json(); // { taskId, status: 'processing' }
 }
 
-export async function pollVideoStatus(taskId) {
+export async function pollVideoStatus(taskId, provider = 'replicate') {
   const authHeaders = await getAuthHeader();
-  const res = await fetch(`${API_URL}/api/video/status/${taskId}`, { headers: authHeaders });
+  const endpoint = provider === 'higgsfield'
+    ? `${API_URL}/api/video/status-higgsfield/${taskId}`
+    : `${API_URL}/api/video/status/${taskId}`;
+  const res = await fetch(endpoint, { headers: authHeaders });
   if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Failed to poll video'); }
-  return res.json(); // { status: 'processing'|'done'|'failed', videoUrl? }
+  return res.json();
+}
+
+export async function startHiggsfieldVideo({ prompt, aspect_ratio = '16:9' }) {
+  const authHeaders = await getAuthHeader();
+  const res = await fetch(`${API_URL}/api/video/generate-higgsfield`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders },
+    body: JSON.stringify({ prompt, aspect_ratio }),
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Failed to start Higgsfield video'); }
+  return res.json();
 }
 
 // ── Audio — Free TTS download (Google Translate proxy) ───────────────────────

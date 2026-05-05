@@ -12,6 +12,7 @@ import {
   streamChat,
   generateImage,
   startVideoGeneration,
+  startHiggsfieldVideo,
   pollVideoStatus,
   generateSpeech,
   startMusicGeneration,
@@ -772,18 +773,25 @@ function VideoArea({ model, subscription, usageCount, freeLimit, session, onUpda
     setError(null);
     setStatus('generating');
     setProgress('');
+    const savedPrompt = prompt.trim();
     try {
-      const { taskId } = await startVideoGeneration({ prompt: prompt.trim(), aspect_ratio: '16:9', model: videoModel });
+      // Higgsfield uses its own direct API, all others go through Replicate
+      const isHighsfield = videoModel === 'higgsfield';
+      const startFn = isHighsfield ? startHiggsfieldVideo : startVideoGeneration;
+      const startArgs = isHighsfield
+        ? { prompt: savedPrompt, aspect_ratio: '16:9' }
+        : { prompt: savedPrompt, aspect_ratio: '16:9', model: videoModel };
+      const { taskId, provider } = await startFn(startArgs);
       setStatus('polling');
       setPrompt('');
       pollRef.current = setInterval(async () => {
         try {
-          const res = await pollVideoStatus(taskId);
+          const res = await pollVideoStatus(taskId, isHighsfield ? 'higgsfield' : 'replicate');
           if (res.status === 'done') {
             stopPoll();
             setVideos(prev => {
-              const next = [{ url: res.videoUrl, prompt: prompt.trim() || 'video', ts: Date.now() }, ...prev];
-              onUpdate?.(next, (prompt.trim() || 'video').slice(0, 45));
+              const next = [{ url: res.videoUrl, prompt: savedPrompt || 'video', ts: Date.now() }, ...prev];
+              onUpdate?.(next, (savedPrompt || 'video').slice(0, 45));
               return next;
             });
             setStatus(null);
@@ -804,7 +812,8 @@ function VideoArea({ model, subscription, usageCount, freeLimit, session, onUpda
 
   useEffect(() => () => stopPoll(), []);
 
-  const isApiError = error?.includes('API_TOKEN') || error?.includes('not configured');
+  const isApiError = error?.includes('API_TOKEN') || error?.includes('not configured') || error?.includes('HIGGSFIELD_API_KEY');
+  const isReplicateBilling = error?.includes('free time limit') || error?.includes('billing') || error?.includes('activate');
 
   return (
     <div className="dash__media-layout">
@@ -826,7 +835,20 @@ function VideoArea({ model, subscription, usageCount, freeLimit, session, onUpda
           </div>
         )}
 
-        {isApiError && (
+        {isReplicateBilling && (
+          <div className="dash__api-setup">
+            <div className="dash__api-setup-icon">💳</div>
+            <h3 className="dash__api-setup-title">Replicate free tier exhausted</h3>
+            <p className="dash__api-setup-sub">Add billing at <strong>replicate.com/account/billing</strong> — OR — switch to <strong>Higgsfield</strong> model and add <code>HIGGSFIELD_API_KEY</code> in Render.</p>
+            <ol className="dash__api-setup-steps">
+              <li><strong>Option A:</strong> Go to <strong>replicate.com/account/billing</strong> and add a payment method (pay per use, ~$0.05–0.30/video)</li>
+              <li><strong>Option B:</strong> Get a Higgsfield key at <strong>higgsfield.ai</strong> → add <code>HIGGSFIELD_API_KEY</code> to Render → select Higgsfield model</li>
+            </ol>
+            <button className="dash__api-setup-dismiss" onClick={() => setError(null)}>Dismiss</button>
+          </div>
+        )}
+
+        {isApiError && !isReplicateBilling && (
           <div className="dash__api-setup">
             <div className="dash__api-setup-icon">🔑</div>
             <h3 className="dash__api-setup-title">{isEs ? 'Configuración requerida' : 'Setup required'}</h3>

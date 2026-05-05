@@ -17,11 +17,64 @@ const videoLimiter = rateLimit({
 });
 
 const REPLICATE_BASE = 'https://api.replicate.com/v1';
+const HIGGSFIELD_BASE = 'https://api.higgsfield.ai/v1';
 
 function getReplicateToken() {
   const token = process.env.REPLICATE_API_TOKEN;
   if (!token) throw new Error('REPLICATE_API_TOKEN is not configured on the server.');
   return token;
+}
+
+function getHiggsfieldKey() {
+  const key = process.env.HIGGSFIELD_API_KEY;
+  if (!key) return null;
+  return key;
+}
+
+// Direct Higgsfield API — no Replicate needed
+async function startHiggsfieldVideo(prompt, aspect_ratio = '16:9') {
+  const key = getHiggsfieldKey();
+  if (!key) throw new Error('HIGGSFIELD_API_KEY not configured. Add it in Render → Environment.');
+
+  const res = await fetch(`${HIGGSFIELD_BASE}/generation/video`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${key}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ prompt, aspect_ratio }),
+  });
+
+  const data = await res.json();
+  console.log('[Higgsfield] start status:', res.status, 'id:', data.id || data.generation_id, 'error:', data.detail || data.error);
+
+  if (!res.ok) {
+    const msg = data.detail || data.error || data.message || `Higgsfield error ${res.status}`;
+    throw new Error(msg);
+  }
+
+  const id = data.id || data.generation_id;
+  if (!id) throw new Error('Higgsfield returned no generation ID');
+  return id;
+}
+
+async function pollHiggsfieldVideo(id) {
+  const key = getHiggsfieldKey();
+  if (!key) throw new Error('HIGGSFIELD_API_KEY not configured.');
+
+  const res = await fetch(`${HIGGSFIELD_BASE}/generation/video/${id}`, {
+    headers: { 'Authorization': `Bearer ${key}` },
+  });
+  const data = await res.json();
+
+  const status = data.status || 'processing';
+  if (status === 'completed' || status === 'succeeded') {
+    return { status: 'done', videoUrl: data.video_url || data.url || data.output };
+  }
+  if (status === 'failed' || status === 'error') {
+    return { status: 'failed', error: data.error || data.detail || 'Higgsfield generation failed' };
+  }
+  return { status: 'processing' };
 }
 
 async function replicateRequest(path, body, token) {
@@ -52,7 +105,36 @@ async function pollPrediction(id, token, maxMs = 180000) {
   throw new Error('Video generation timed out (3 min). Try a shorter prompt.');
 }
 
-// POST /api/video/generate — text-to-video
+// POST /api/video/generate-higgsfield — direct Higgsfield API
+router.post('/generate-higgsfield', videoLimiter, verifyToken, async (req, res) => {
+  const { prompt, aspect_ratio = '16:9' } = req.body;
+  if (!prompt?.trim()) return res.status(400).json({ error: 'Prompt is required' });
+
+  const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const { trackCredits } = require('../utils/credits');
+  const creditResult = await trackCredits(req.user?.uid, 25, adminUids);
+  if (!creditResult.allowed) return res.status(402).json({ error: creditResult.error, creditsExceeded: true });
+
+  try {
+    const id = await startHiggsfieldVideo(prompt.trim(), aspect_ratio);
+    res.json({ taskId: id, status: 'processing', provider: 'higgsfield' });
+  } catch (err) {
+    console.error('[Higgsfield] error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/video/status-higgsfield/:id
+router.get('/status-higgsfield/:id', verifyToken, async (req, res) => {
+  try {
+    const result = await pollHiggsfieldVideo(req.params.id);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/video/generate — text-to-video (Replicate)
 router.post('/generate', videoLimiter, verifyToken, async (req, res) => {
   const { prompt, aspect_ratio = '16:9', duration = 5, model = 'minimax' } = req.body;
   if (!prompt?.trim()) return res.status(400).json({ error: 'Prompt is required' });
