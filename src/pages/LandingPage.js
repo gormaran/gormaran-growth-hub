@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { useSEO } from '../utils/seo';
 import './LandingPage.css';
 import WhatsAppPopup from '../components/WhatsAppPopup';
 import NichePopup from '../components/NichePopup';
@@ -811,6 +812,12 @@ export default function LandingPage() {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const { currentUser } = useAuth();
+
+  useSEO({
+    title: 'Gormaran.io | Top AI Marketing Tools — Text, Design, Video & More',
+    description: '50 free credits. All-in-one AI platform: chat, image generation, video, audio and AI app builder. No prompting required. Start free.',
+    canonical: 'https://gormaran.io/',
+  });
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL || 'https://gormaran-growth-hub-2.onrender.com'}/health`).catch(() => {});

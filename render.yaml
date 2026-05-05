@@ -79,6 +79,32 @@ services:
           base-uri 'self';
           form-action 'self';
 
+    # Cache headers — hashed JS/CSS bundles get 1-year immutable, HTML never cached
+      - path: /static/js/*.js
+        name: Cache-Control
+        value: "public, max-age=31536000, immutable"
+      - path: /static/css/*.css
+        name: Cache-Control
+        value: "public, max-age=31536000, immutable"
+      - path: /static/media/*
+        name: Cache-Control
+        value: "public, max-age=31536000, immutable"
+      - path: /*.json
+        name: Cache-Control
+        value: "public, max-age=86400"
+      - path: /*.svg
+        name: Cache-Control
+        value: "public, max-age=86400"
+      - path: /*.png
+        name: Cache-Control
+        value: "public, max-age=86400"
+      - path: /
+        name: Cache-Control
+        value: "no-cache, no-store, must-revalidate"
+      - path: /index.html
+        name: Cache-Control
+        value: "no-cache, no-store, must-revalidate"
+
     # Redirect all routes to index.html (SPA fallback — same as public/_redirects)
     routes:
       - type: rewrite

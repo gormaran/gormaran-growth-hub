@@ -3,9 +3,15 @@ import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-do
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { pushEvent } from '../utils/analytics';
+import { useSEO } from '../utils/seo';
 import './AuthPage.css';
 
 export default function AuthPage() {
+  useSEO({
+    title: 'Gormaran.io | Sign In or Create Free Account',
+    description: 'Sign up free and get 50 AI credits. Access Text, Design, Video, Audio and AI Agents — no credit card required.',
+    canonical: 'https://gormaran.io/auth',
+  });
   const [searchParams] = useSearchParams();
   const [mode, setMode] = useState(searchParams.get('mode') === 'register' ? 'register' : 'login');
   const [email, setEmail] = useState('');

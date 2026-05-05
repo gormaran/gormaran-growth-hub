@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
 import { createCheckoutSession, validatePromoCode } from '../utils/api';
 import { useTranslation } from 'react-i18next';
+import { useSEO } from '../utils/seo';
 import './PricingPage.css';
 
 const GROW = {
@@ -86,6 +87,12 @@ export default function PricingPage() {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [searchParams] = useSearchParams();
+
+  useSEO({
+    title: 'Gormaran.io | Pricing — AI Marketing Credits & Plans',
+    description: 'Start with 50 free credits. Upgrade to Grow, Scale or Evolution for more credits on Text, Design, Video, Audio and AI Agents.',
+    canonical: 'https://gormaran.io/pricing',
+  });
   const [billingPeriod, setBillingPeriod] = useState('annual');
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [error, setError] = useState('');

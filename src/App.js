@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useSEO } from './utils/seo';
 import { useTranslation } from 'react-i18next';
 import { AuthProvider } from './context/AuthContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
@@ -48,6 +49,15 @@ function ComingSoon({ page }) {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const label = isEs ? 'Próximamente' : 'Coming Soon';
+  useSEO({
+    title: page === 'Academy'
+      ? 'Gormaran.io | AI Marketing Training & Courses'
+      : `Gormaran.io | ${page}`,
+    description: page === 'Academy'
+      ? 'AI marketing courses, tutorials and guides. Master AI tools for growth. Coming soon.'
+      : `${page} — Gormaran AI Growth Hub`,
+    canonical: `https://gormaran.io/${page.toLowerCase()}`,
+  });
   const desc = page === 'Academy'
     ? (isEs ? 'Cursos, tutoriales y guías para dominar el marketing con IA. Disponible muy pronto.' : 'Courses, tutorials and guides to master AI marketing. Available very soon.')
     : (isEs ? 'Artículos, estrategias y tendencias de marketing con IA escritos por el equipo de Gormaran.' : 'Articles, strategies and AI marketing trends written by the Gormaran team.');

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { useSEO } from '../utils/seo';
 import { CATEGORIES } from '../data/categories';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
@@ -1718,6 +1719,11 @@ export default function Dashboard() {
   const [searchParams] = useSearchParams();
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
+
+  useSEO({
+    title: 'Gormaran.io | AI Growth Hub Dashboard',
+    description: 'Your AI workspace — Text, Design, Video, Audio and AI Agents in one dashboard.',
+  });
 
   const [activeTab, setActiveTab]             = useState('text');
   const [systemPrompt, setSystemPrompt]       = useState('');
