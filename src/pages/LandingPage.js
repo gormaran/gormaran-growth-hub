@@ -484,26 +484,41 @@ function FeatureHighlightsSection() {
   return (
     <section className="landing__features section">
       <div className="container">
-        {FEATURE_ROWS.map((row, i) => (
-          <AnimatedSection key={i} className={`landing__feature-row${row.reverse ? ' landing__feature-row--reverse' : ''}`} delay={0}>
-            <div className="landing__feature-copy">
-              <span className="section-pill">{row.pill}</span>
-              <h2 className="landing__feature-title">
-                {row.title}<br />
-                <span className="gradient-text">{row.highlight}</span>
-              </h2>
-              <p className="landing__feature-desc">{row.desc}</p>
-              <ul className="landing__feature-bullets">
-                {row.bullets.map((b, j) => (
-                  <li key={j}><span className="landing__feature-check">✓</span>{b}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="landing__feature-visual">
-              <FeatureMockup type={row.mockupType} />
-            </div>
-          </AnimatedSection>
-        ))}
+        <AnimatedSection>
+          <h2 className="section-title">
+            Built for teams that{' '}
+            <span className="gradient-text">move fast</span>
+          </h2>
+          <p className="section-subtitle">
+            From AI agents to structured output to model selection — everything in one platform.
+          </p>
+        </AnimatedSection>
+        <motion.div
+          className="landing__feature-cards"
+          initial="hidden" whileInView="visible"
+          viewport={{ once: true, margin: '-20px' }}
+          variants={stagger}
+        >
+          {FEATURE_ROWS.map((row, i) => (
+            <motion.div key={i} className="landing__feature-card" variants={fadeUp}>
+              <div className="landing__feature-card-visual">
+                <FeatureMockup type={row.mockupType} />
+              </div>
+              <div className="landing__feature-card-body">
+                <span className="section-pill">{row.pill}</span>
+                <h3 className="landing__feature-card-title">
+                  {row.title} <span className="gradient-text">{row.highlight}</span>
+                </h3>
+                <p className="landing__feature-card-desc">{row.desc}</p>
+                <ul className="landing__feature-bullets">
+                  {row.bullets.map((b, j) => (
+                    <li key={j}><span className="landing__feature-check">✓</span>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

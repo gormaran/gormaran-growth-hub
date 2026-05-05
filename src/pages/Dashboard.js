@@ -904,13 +904,9 @@ function VideoArea({ model, subscription, usageCount, freeLimit }) {
 /* ─────────────────────────────────────────────────────────────────
    Audio Area (ElevenLabs TTS + MusicGen)
 ───────────────────────────────────────────────────────────────── */
-const AUDIO_VOICES = [
-  { id: 'rachel', label: 'Rachel — Female, calm' },
-  { id: 'josh', label: 'Josh — Male, deep' },
-  { id: 'bella', label: 'Bella — Female, warm' },
-  { id: 'adam', label: 'Adam — Male, natural' },
-  { id: 'elli', label: 'Elli — Female, young' },
-  { id: 'callum', label: 'Callum — Male, Scottish' },
+// Web Speech API fallback voices (displayed until browser voices load)
+const AUDIO_VOICES_FALLBACK = [
+  { id: '', label: 'Default voice' },
 ];
 const MUSIC_SUGGESTIONS = [
   { icon: '🎵', text: 'Upbeat electronic music for a product demo, 120 BPM' },
@@ -922,9 +918,10 @@ const MUSIC_SUGGESTIONS = [
 function AudioArea({ model, subscription, usageCount, freeLimit }) {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
-  const [mode, setMode]         = useState('speech'); // 'speech' | 'music'
+  const [mode, setMode]         = useState('speech');
   const [text, setText]         = useState('');
-  const [voice, setVoice]       = useState('rachel');
+  const [voice, setVoice]       = useState('');
+  const [browserVoices, setBrowserVoices] = useState([]);
   const [musicPrompt, setMusicPrompt] = useState('');
   const [duration, setDuration] = useState(15);
   const [isLoading, setIsLoading] = useState(false);
@@ -932,20 +929,44 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
   const [error, setError]       = useState(null);
   const [musicStatus, setMusicStatus] = useState(null);
   const pollRef = useRef(null);
+  const utterRef = useRef(null);
 
   const limitReached = subscription === 'free' && usageCount >= freeLimit;
   const stopPoll = () => { clearInterval(pollRef.current); pollRef.current = null; };
-  useEffect(() => () => stopPoll(), []);
+  useEffect(() => () => { stopPoll(); window.speechSynthesis?.cancel(); }, []);
 
-  const handleSpeech = async () => {
+  // Load browser voices
+  useEffect(() => {
+    const load = () => {
+      const voices = window.speechSynthesis?.getVoices() || [];
+      if (voices.length) {
+        setBrowserVoices(voices);
+        setVoice(prev => prev || voices[0]?.name || '');
+      }
+    };
+    load();
+    window.speechSynthesis?.addEventListener('voiceschanged', load);
+    return () => window.speechSynthesis?.removeEventListener('voiceschanged', load);
+  }, []);
+
+  const handleSpeech = () => {
     if (!text.trim() || isLoading || limitReached) return;
+    const synth = window.speechSynthesis;
+    if (!synth) { setError('Web Speech API not supported in this browser.'); return; }
+    synth.cancel();
     setError(null); setIsLoading(true);
-    try {
-      const audioUrl = await generateSpeech({ text: text.trim(), voice });
-      setAudioItems(prev => [{ url: audioUrl, label: text.slice(0, 50), mode: 'speech', ts: Date.now() }, ...prev]);
-      setText('');
-    } catch (err) { setError(err.message); }
-    finally { setIsLoading(false); }
+    const utter = new SpeechSynthesisUtterance(text.trim());
+    const selectedVoice = browserVoices.find(v => v.name === voice);
+    if (selectedVoice) utter.voice = selectedVoice;
+    utter.lang = isEs ? 'es-ES' : 'en-US';
+    utter.rate = 0.95; utter.pitch = 1;
+    utterRef.current = utter;
+    utter.onend = () => {
+      setAudioItems(prev => [{ url: null, label: text.slice(0, 60), mode: 'speech', ts: Date.now(), speechText: text.trim(), voiceName: selectedVoice?.name || voice }, ...prev]);
+      setText(''); setIsLoading(false);
+    };
+    utter.onerror = (e) => { setError(`Speech error: ${e.error}`); setIsLoading(false); };
+    synth.speak(utter);
   };
 
   const handleMusic = async () => {
@@ -1010,21 +1031,21 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
           </div>
         )}
 
-        {error && isApiError(error) && (
+        {error && isApiError(error) && mode === 'music' && (
           <div className="dash__api-setup">
             <div className="dash__api-setup-icon">🔑</div>
             <h3 className="dash__api-setup-title">{isEs ? 'Configuración requerida' : 'Setup required'}</h3>
-            <p className="dash__api-setup-sub">{isEs ? 'Añade tu API key de ElevenLabs para generar audio' : 'Add your ElevenLabs API key to enable audio generation'}</p>
+            <p className="dash__api-setup-sub">{isEs ? 'Añade tu REPLICATE_API_TOKEN para generar música' : 'Add REPLICATE_API_TOKEN to enable music generation'}</p>
             <ol className="dash__api-setup-steps">
               <li>Go to <strong>dashboard.render.com</strong> → your service → <strong>Environment</strong></li>
-              <li>Add: <code>ELEVENLABS_API_KEY</code> (speech) and/or <code>REPLICATE_API_TOKEN</code> (music)</li>
-              <li>Get ElevenLabs key at <strong>elevenlabs.io</strong></li>
+              <li>Add: <code>REPLICATE_API_TOKEN</code></li>
+              <li>Get key at <strong>replicate.com/account/api-tokens</strong></li>
               <li>Save and redeploy</li>
             </ol>
             <button className="dash__api-setup-dismiss" onClick={() => setError(null)}>Dismiss</button>
           </div>
         )}
-        {error && !isApiError(error) && (
+        {error && (!isApiError(error) || mode === 'speech') && (
           <div className="dash__gen-error">⚠️ {error} <button onClick={() => setError(null)} style={{ marginLeft: '0.5rem', opacity: 0.6, background: 'none', border: 'none', color: 'inherit', cursor: 'pointer' }}>✕</button></div>
         )}
 
@@ -1041,12 +1062,30 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
         {audioItems.filter(a => a.mode === mode).map(item => (
           <div key={item.ts} className="dash__audio-card">
             <div className="dash__audio-card-label">{item.mode === 'speech' ? '🎙️' : '🎵'} {item.label}</div>
-            <audio controls src={item.url} style={{ width: '100%', marginTop: '0.5rem' }} />
-            <div className="dash__image-actions">
-              <a href={item.url} download={`audio-${item.ts}.mp3`} className="btn btn-secondary btn-sm">
-                ↓ {isEs ? 'Descargar' : 'Download'}
-              </a>
-            </div>
+            {item.url ? (
+              <>
+                <audio controls src={item.url} style={{ width: '100%', marginTop: '0.5rem' }} />
+                <div className="dash__image-actions">
+                  <a href={item.url} download={`audio-${item.ts}.mp3`} className="btn btn-secondary btn-sm">
+                    ↓ {isEs ? 'Descargar' : 'Download'}
+                  </a>
+                </div>
+              </>
+            ) : item.speechText ? (
+              <div className="dash__audio-replay">
+                <button className="btn btn-secondary btn-sm" onClick={() => {
+                  const synth = window.speechSynthesis;
+                  if (!synth) return;
+                  synth.cancel();
+                  const u = new SpeechSynthesisUtterance(item.speechText);
+                  const sv = browserVoices.find(v => v.name === item.voiceName);
+                  if (sv) u.voice = sv;
+                  u.rate = 0.95;
+                  synth.speak(u);
+                }}>▶ {isEs ? 'Reproducir' : 'Play again'}</button>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{item.voiceName}</span>
+              </div>
+            ) : null}
           </div>
         ))}
       </div>
@@ -1058,7 +1097,9 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
             <div className="dash__audio-voice-row">
               <label className="dash__audio-voice-label">{isEs ? 'Voz:' : 'Voice:'}</label>
               <select className="dash__audio-voice-select" value={voice} onChange={e => setVoice(e.target.value)}>
-                {AUDIO_VOICES.map(v => <option key={v.id} value={v.id}>{v.label}</option>)}
+                {(browserVoices.length ? browserVoices : [{ name: '', localService: true, lang: 'en-US' }]).map(v => (
+                  <option key={v.name} value={v.name}>{v.name || 'Default'} {v.localService ? '' : '(network)'}</option>
+                ))}
               </select>
             </div>
             <div className="dash__input-wrap">
@@ -1074,7 +1115,7 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
                   {isLoading ? <span className="dash__spinner" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>}
                 </button>
               </div>
-              <div className="dash__input-footer"><span /><span className="dash__input-hint">Powered by ElevenLabs</span></div>
+              <div className="dash__input-footer"><span /><span className="dash__input-hint">Powered by Web Speech API — free, browser-native</span></div>
             </div>
           </div>
         ) : (

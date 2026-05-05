@@ -52,13 +52,21 @@ export default function Navbar() {
   function handleHashLink(e, to) {
     if (!to.includes('#')) return;
     e.preventDefault();
+    setMobileOpen(false);
     const [path, hash] = to.split('#');
     const target = path === '' || path === '/' ? '/' : path;
+    const scrollToHash = () => {
+      const el = document.getElementById(hash);
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    };
     if (location.pathname === target || (target === '/' && location.pathname === '/')) {
-      document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
+      scrollToHash();
     } else {
       navigate(target);
-      setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 300);
+      setTimeout(scrollToHash, 400);
     }
   }
 
