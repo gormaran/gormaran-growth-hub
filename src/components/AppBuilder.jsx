@@ -2,15 +2,15 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { streamChat } from '../utils/api';
 import './AppBuilder.css';
 
-const SYSTEM_PROMPT = `You are an AI app builder. Output ONLY a self-contained HTML file. No preamble, no explanation, no markdown fences.
+const SYSTEM_PROMPT = `You are an AI app builder. Output ONLY a complete, self-contained HTML file. No preamble, no explanation, no markdown fences.
 
 Rules:
-- Start immediately with <!DOCTYPE html>
-- Vanilla JS + inline CSS only — no CDN links
-- Interactive with realistic mock data
-- Dark UI: bg #0f0f1a, surface #12121e, accent #6366f1, text #f1f5f9, font: system-ui
-- Keep it under 200 lines — concise but functional
-- End with </html>`;
+- Start immediately with <!DOCTYPE html> and end with </html>
+- Vanilla JS + inline CSS only — no external CDN links
+- Fully interactive with realistic sample data populated inline
+- Dark UI: bg #0f0f1a, surface #12121e, border rgba(255,255,255,0.08), accent #6366f1, text #f1f5f9, font: system-ui
+- Make it genuinely usable — real data, working buttons, complete functionality
+- All JavaScript logic must be complete and working before </html>`;
 
 const EXAMPLES = [
   { icon: '📊', label: 'KPI Dashboard', prompt: 'Build a KPI dashboard for a SaaS startup with metrics: MRR, churn, DAU, conversion rate. Include mini charts and trend indicators.' },
@@ -80,13 +80,13 @@ export default function AppBuilder({ session, onUpdate, subscription, usageCount
       onChunk: (c) => {
         acc += c;
         setStreamText(acc);
-        // Throttled live preview — update iframe as HTML streams in
-        if (!liveUpdateTimer) {
+        // Live preview: only render when HTML document is complete (has </html>)
+        if (!liveUpdateTimer && acc.includes('</html>')) {
           liveUpdateTimer = setTimeout(() => {
             liveUpdateTimer = null;
             const partial = extractHtml(acc);
             if (partial) setGeneratedHtml(partial);
-          }, 400);
+          }, 200);
         }
       },
       onDone: () => {

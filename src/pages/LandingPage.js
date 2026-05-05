@@ -563,36 +563,10 @@ function PopularAgentsSection() {
         </motion.div>
 
         <div className="landing__agents-footer">
-          <Link to="/auth?mode=register" className="btn btn-secondary">
-            See all 30 agents →
+          <Link to="/auth?mode=register" className="btn btn-primary">
+            Get your credits free →
           </Link>
         </div>
-
-        {/* All categories compact grid */}
-        <motion.div
-          className="landing__cats-grid"
-          initial="hidden" whileInView="visible"
-          viewport={{ once: true, margin: '-20px' }}
-          variants={stagger}
-          style={{ marginTop: '3rem' }}
-        >
-          {TOOL_CATEGORIES.map((cat) => (
-            <motion.div key={cat.id} variants={fadeUp}>
-              <Link to={`/category/${cat.id}`} className="landing__cat-card" style={{ '--cat-color': cat.color }}>
-                <div className="landing__cat-header">
-                  <span className="landing__cat-icon">{cat.emoji}</span>
-                  <span className={`landing__cat-badge landing__cat-badge--${cat.plan}`}>{PLAN_LABELS[cat.plan]}</span>
-                </div>
-                <div className="landing__cat-name">{cat.name}</div>
-                <div className="landing__cat-tools-list">
-                  {cat.tools.slice(0, 3).map((name) => <span key={name}>{name}</span>)}
-                  {cat.count > 3 && <span>+{cat.count - 3} more</span>}
-                </div>
-                <div className="landing__cat-count">{cat.count} agent{cat.count !== 1 ? 's' : ''} →</div>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
       </div>
     </section>
   );
@@ -876,8 +850,7 @@ export default function LandingPage() {
 
             <motion.div className="landing__hero-actions" variants={fadeUp} transition={{ duration: 0.35, delay: 0.12 }}>
               <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
-                {t('landing.hero.cta', { defaultValue: 'Start free — 50 credits' })}
-                <span className="landing__cta-arrow">→</span>
+                Get your credits free →
               </Link>
               <button className="btn btn-secondary btn-lg"
                 onClick={() => document.getElementById('agents')?.scrollIntoView({ behavior: 'smooth' })}>
@@ -911,8 +884,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── MODELS MARQUEE ─────────────────────────────────── */}
-      <ModelsMarquee />
+      {/* ── VALUE PROP BAR ─────────────────────────────────── */}
+      <div className="landing__value-bar">
+        <div className="container">
+          <span className="landing__value-pill">⚡ One Subscription</span>
+          <span className="landing__value-text">All-In-One AI Marketing Tools — Text · Design · Video · Audio · AI Agents</span>
+          <Link to="/pricing" className="landing__value-cta">See plans →</Link>
+        </div>
+      </div>
 
       {/* ── FEATURE HIGHLIGHTS ─────────────────────────────── */}
       <FeatureHighlightsSection />
@@ -1041,7 +1020,7 @@ export default function LandingPage() {
               </p>
               <div className="landing__cta-actions">
                 <Link to="/auth?mode=register" className="btn btn-primary btn-lg">
-                  {isEs ? 'Empezar gratis →' : 'Try Gormaran free →'}
+                  {isEs ? 'Obtén tus créditos gratis →' : 'Get your credits free →'}
                 </Link>
                 <button className="btn btn-secondary btn-lg"
                   onClick={() => document.getElementById('agents')?.scrollIntoView({ behavior: 'smooth' })}>

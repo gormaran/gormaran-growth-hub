@@ -1097,3 +1097,28 @@
   .htab__tabs { gap: 0.3rem; }
   .htab__credit { display: none; }
 }
+
+/* ── One Subscription value bar (replaces marquee) ── */
+.landing__value-bar {
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-surface);
+}
+.landing__value-bar .container {
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;
+}
+.landing__value-pill {
+  font-size: 0.78rem; font-weight: 700;
+  padding: 0.3rem 0.75rem; border-radius: 100px;
+  background: rgba(99,102,241,0.12); color: #a5b4fc;
+  white-space: nowrap;
+}
+.landing__value-text {
+  font-size: 0.88rem; color: var(--text-secondary); text-align: center;
+}
+.landing__value-cta {
+  font-size: 0.82rem; font-weight: 600; color: var(--color-primary-light);
+  text-decoration: none; white-space: nowrap;
+}
+.landing__value-cta:hover { text-decoration: underline; }

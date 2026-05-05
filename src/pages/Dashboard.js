@@ -143,13 +143,7 @@ const TEMPLATES = [
 ];
 
 const VIDEO_MODELS = [
-  { id: 'kling',       label: 'KLING 3.0',      by: 'Kuaishou'      },
-  { id: 'higgsfield',  label: 'Higgsfield',      by: 'Higgsfield AI' },
-  { id: 'sora',        label: 'Sora 2',          by: 'OpenAI'        },
-  { id: 'veo',         label: 'Veo 3.1',         by: 'Google'        },
-  { id: 'seedance',    label: 'Seedance 2.0',    by: 'ByteDance'     },
-  { id: 'wan',         label: 'WAN 2.6',         by: 'Alibaba'       },
-  { id: 'minimax',     label: 'Minimax Video',   by: 'MiniMax'       },
+  { id: 'higgsfield', label: 'Higgsfield', by: 'Higgsfield AI' },
 ];
 
 const TAB_SUGGESTIONS = {
@@ -843,15 +837,16 @@ function VideoArea({ subscription, usageCount, freeLimit, session, onUpdate }) {
         {isApiError && !isReplicateBilling && (
           <div className="dash__api-setup">
             <div className="dash__api-setup-icon">🔑</div>
-            <h3 className="dash__api-setup-title">{isEs ? 'Configuración requerida' : 'Setup required'}</h3>
-            <p className="dash__api-setup-sub">{isEs ? 'Añade tu API key de Replicate para generar vídeos' : 'Add your Replicate API key to enable video generation'}</p>
+            <h3 className="dash__api-setup-title">API key missing for selected model</h3>
+            <p className="dash__api-setup-sub">Each model needs its own API key:</p>
             <ol className="dash__api-setup-steps">
-              <li>Go to <strong>dashboard.render.com</strong> → your service → <strong>Environment</strong></li>
-              <li>Add variable: <code>REPLICATE_API_TOKEN</code></li>
-              <li>Get your key at <strong>replicate.com/account/api-tokens</strong></li>
-              <li>Save and redeploy</li>
+              <li>🟣 <strong>Higgsfield</strong> → <code>HIGGSFIELD_API_KEY</code> in Render (you have this ✓ — select Higgsfield model)</li>
+              <li>🔵 <strong>KLING / WAN / Minimax</strong> → <code>REPLICATE_API_TOKEN</code> in Render</li>
+              <li>To add: Render dashboard → your service → <strong>Environment</strong> → Save & redeploy</li>
             </ol>
-            <button className="dash__api-setup-dismiss" onClick={() => setError(null)}>Dismiss</button>
+            <button className="dash__api-setup-dismiss" onClick={() => { setError(null); setVideoModel('higgsfield'); }}>
+              Switch to Higgsfield →
+            </button>
           </div>
         )}
 
