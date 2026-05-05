@@ -231,7 +231,7 @@ function OutputPanel({ nodes, selectedNodeId, onClose }) {
 /* ─────────────────────────────────────────────────────────────────
    Main NodeFlowBuilder
 ───────────────────────────────────────────────────────────────── */
-export default function NodeFlowBuilder({ preloadTemplate, subscription, usageCount, freeLimit }) {
+export default function NodeFlowBuilder({ preloadTemplate, session, onUpdate, subscription, usageCount, freeLimit }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [running, setRunning] = useState(false);
@@ -270,6 +270,14 @@ export default function NodeFlowBuilder({ preloadTemplate, subscription, usageCo
     setShowOutput(false);
     setSelectedNodeId(null);
   }, [preloadTemplate?.id]); // eslint-disable-line
+
+  useEffect(() => {
+    if (preloadTemplate?.nodes?.length) return; // template takes priority
+    if (!session?.nodes?.length) return;
+    setFlowName(session.flowName || 'Untitled flow');
+    setNodes(injectCallbacks(session.nodes.map(n => ({ ...n, data: { ...n.data, output: null, isRunning: false, isDone: false, error: null } }))));
+    setEdges(session.edges || []);
+  }, [session?.id]); // eslint-disable-line
 
   useEffect(() => {
     setNodes(prev => injectCallbacks(prev));
@@ -377,7 +385,12 @@ export default function NodeFlowBuilder({ preloadTemplate, subscription, usageCo
 
     if (lastDoneId) { setSelectedNodeId(lastDoneId); setShowOutput(true); }
     setRunning(false);
-  }, [running, limitReached, nodes, edges, setNodes]);
+    setNodes(prev => {
+      const stripped = prev.map(n => ({ ...n, data: { ...n.data, onChange: null, onDelete: null, onSelect: null } }));
+      onUpdate?.({ nodes: stripped, edges, flowName }, flowName || 'AI Flow');
+      return prev;
+    });
+  }, [running, limitReached, nodes, edges, setNodes, onUpdate, flowName]);
 
   const handleClear = () => { setNodes([]); setEdges([]); setFlowName('Untitled flow'); setShowOutput(false); setSelectedNodeId(null); };
 

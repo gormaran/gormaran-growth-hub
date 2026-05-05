@@ -179,7 +179,8 @@ function saveSessions(sessions) {
   catch {}
 }
 function makeSession(tab, model) {
-  return { id: crypto.randomUUID(), title: 'New chat', tab, model, messages: [], createdAt: Date.now() };
+  const titles = { text: 'New chat', design: 'New design', video: 'New video', audio: 'New audio', agents: 'New flow' };
+  return { id: crypto.randomUUID(), title: titles[tab] || 'New session', tab, model, messages: [], items: [], nodes: [], edges: [], flowName: '', createdAt: Date.now() };
 }
 function sessionIcon(tab) {
   return TABS.find(t => t.id === tab)?.icon || '💬';
@@ -635,12 +636,12 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
 /* ─────────────────────────────────────────────────────────────────
    Design / Image Generation Area
 ───────────────────────────────────────────────────────────────── */
-function DesignArea({ model, subscription, usageCount, freeLimit, defaultPrompt }) {
+function DesignArea({ model, subscription, usageCount, freeLimit, defaultPrompt, session, onUpdate }) {
   const { t, i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [prompt, setPrompt]     = useState(defaultPrompt || '');
   const [isLoading, setIsLoading] = useState(false);
-  const [images, setImages]     = useState([]);
+  const [images, setImages]     = useState(() => session?.items || []);
   const [error, setError]       = useState(null);
 
   const limitReached = subscription === 'free' && usageCount >= freeLimit;
@@ -652,7 +653,9 @@ function DesignArea({ model, subscription, usageCount, freeLimit, defaultPrompt 
     try {
       const result = await generateImage({ subject: prompt.trim(), style: 'photorealistic', aspect_ratio: '16:9 — Landscape', mood: 'professional', lighting: 'natural light' });
       if (result.imageUrl) {
-        setImages(prev => [{ url: result.imageUrl, prompt: prompt.trim(), ts: Date.now() }, ...prev]);
+        const newImages = [{ url: result.imageUrl, prompt: prompt.trim(), ts: Date.now() }, ...images];
+        setImages(newImages);
+        onUpdate?.(newImages, prompt.trim().slice(0, 45));
         setPrompt('');
       }
     } catch (err) {
@@ -747,11 +750,11 @@ const VIDEO_SUGGESTIONS = [
   { icon: '🚀', text: 'Rocket launching through clouds into a starry sky' },
 ];
 
-function VideoArea({ model, subscription, usageCount, freeLimit }) {
+function VideoArea({ model, subscription, usageCount, freeLimit, session, onUpdate }) {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [prompt, setPrompt]         = useState('');
-  const [videos, setVideos]         = useState([]);
+  const [videos, setVideos]         = useState(() => session?.items || []);
   const [status, setStatus]         = useState(null); // null | 'generating' | 'polling'
   const [progress, setProgress]     = useState('');
   const [error, setError]           = useState(null);
@@ -776,7 +779,11 @@ function VideoArea({ model, subscription, usageCount, freeLimit }) {
           const res = await pollVideoStatus(taskId);
           if (res.status === 'done') {
             stopPoll();
-            setVideos(prev => [{ url: res.videoUrl, prompt: prompt.trim() || 'video', ts: Date.now() }, ...prev]);
+            setVideos(prev => {
+              const next = [{ url: res.videoUrl, prompt: prompt.trim() || 'video', ts: Date.now() }, ...prev];
+              onUpdate?.(next, (prompt.trim() || 'video').slice(0, 45));
+              return next;
+            });
             setStatus(null);
           } else if (res.status === 'failed') {
             stopPoll();
@@ -915,7 +922,7 @@ const MUSIC_SUGGESTIONS = [
   { icon: '🌊', text: 'Relaxing ambient music with nature sounds and soft synths' },
 ];
 
-function AudioArea({ model, subscription, usageCount, freeLimit }) {
+function AudioArea({ model, subscription, usageCount, freeLimit, session, onUpdate }) {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const [mode, setMode]         = useState('speech');
@@ -925,7 +932,7 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
   const [musicPrompt, setMusicPrompt] = useState('');
   const [duration, setDuration] = useState(15);
   const [isLoading, setIsLoading] = useState(false);
-  const [audioItems, setAudioItems] = useState([]);
+  const [audioItems, setAudioItems] = useState(() => session?.items || []);
   const [error, setError]       = useState(null);
   const [musicStatus, setMusicStatus] = useState(null);
   const pollRef = useRef(null);
@@ -962,7 +969,9 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
     utter.rate = 0.95; utter.pitch = 1;
     utterRef.current = utter;
     utter.onend = () => {
-      setAudioItems(prev => [{ url: null, label: text.slice(0, 60), mode: 'speech', ts: Date.now(), speechText: text.trim(), voiceName: selectedVoice?.name || voice }, ...prev]);
+      const newItems = [{ url: null, label: text.slice(0, 60), mode: 'speech', ts: Date.now(), speechText: text.trim(), voiceName: selectedVoice?.name || voice }, ...audioItems];
+      setAudioItems(newItems);
+      onUpdate?.(newItems, text.slice(0, 45));
       setText(''); setIsLoading(false);
     };
     utter.onerror = (e) => { setError(`Speech error: ${e.error}`); setIsLoading(false); };
@@ -980,7 +989,11 @@ function AudioArea({ model, subscription, usageCount, freeLimit }) {
           const res = await pollMusicStatus(taskId);
           if (res.status === 'done') {
             stopPoll(); setMusicStatus(null);
-            setAudioItems(prev => [{ url: res.audioUrl, label: musicPrompt.slice(0, 50), mode: 'music', ts: Date.now() }, ...prev]);
+            setAudioItems(prev => {
+              const next = [{ url: res.audioUrl, label: musicPrompt.slice(0, 50), mode: 'music', ts: Date.now() }, ...prev];
+              onUpdate?.(next, musicPrompt.slice(0, 45));
+              return next;
+            });
           } else if (res.status === 'failed') {
             stopPoll(); setMusicStatus(null); setError(res.error || 'Music generation failed');
           }
@@ -1653,9 +1666,9 @@ function Sidebar({ sessions, activeId, onNew, onSelect, onDelete, subscription, 
   const { t } = useTranslation();
 
   const usagePct = subscription === 'free' ? Math.min(100, Math.round((usageCount / freeLimit) * 100)) : 100;
-  const chatSessions = sessions.filter(s => s.tab !== 'design');
-  const designSessions = sessions.filter(s => s.tab === 'design');
-  const displaySessions = navTab === 'chats' ? chatSessions : designSessions;
+  const chatSessions = sessions.filter(s => s.tab === 'text');
+  const historySessions = sessions.filter(s => s.tab !== 'text');
+  const displaySessions = navTab === 'chats' ? chatSessions : historySessions;
 
   function fmt(ts) {
     const d = new Date(ts);
@@ -1671,13 +1684,13 @@ function Sidebar({ sessions, activeId, onNew, onSelect, onDelete, subscription, 
     <aside className="dash__sidebar">
       <div className="dash__sidebar-top">
         <button className="dash__new-btn" onClick={onNew}>
-          <span>✦</span> New chat
+          <span>✦</span> New
         </button>
       </div>
 
       <div className="dash__nav-tabs">
         <button className={`dash__nav-tab${navTab === 'chats' ? ' dash__nav-tab--active' : ''}`} onClick={() => setNavTab('chats')}>Chats</button>
-        <button className={`dash__nav-tab${navTab === 'projects' ? ' dash__nav-tab--active' : ''}`} onClick={() => setNavTab('projects')}>Projects</button>
+        <button className={`dash__nav-tab${navTab === 'history' ? ' dash__nav-tab--active' : ''}`} onClick={() => setNavTab('history')}>History</button>
       </div>
 
       <div className="dash__session-list" ref={sessionListRef}>
@@ -1685,7 +1698,7 @@ function Sidebar({ sessions, activeId, onNew, onSelect, onDelete, subscription, 
           <div className="dash__session-empty">
             {navTab === 'chats'
               ? 'There\'s a blank page here for now\nSend a message, and a chat will\nappear right away'
-              : 'No projects yet.\nStart a new chat to create one.'}
+              : 'No generation history yet.\nCreate images, videos, audio or AI flows.'}
           </div>
         ) : displaySessions.map(s => (
           <button
@@ -1782,9 +1795,24 @@ export default function Dashboard() {
   }, [sessions]);
 
   const handleTabChange = useCallback((tabId) => {
-    currentIdRef.current = null;
+    const latest = sessionsRef.current.filter(s => s.tab === tabId).sort((a,b) => b.createdAt - a.createdAt)[0];
+    currentIdRef.current = latest?.id || null;
+    setCurrentId(latest?.id || null);
     setActiveTab(tabId);
-    setCurrentId(null);
+    setDefaultPrompt('');
+  }, []);
+
+  const handleMediaUpdate = useCallback((tab, updates, title) => {
+    const id = currentIdRef.current;
+    const existing = id ? sessionsRef.current.find(s => s.id === id && s.tab === tab) : null;
+    if (existing) {
+      setSessions(prev => prev.map(s => s.id === id ? { ...s, ...updates, ...(title ? { title } : {}) } : s));
+    } else {
+      const s = { ...makeSession(tab, selectedModelRef.current || 'chatgpt'), ...updates, ...(title ? { title } : {}) };
+      currentIdRef.current = s.id;
+      setCurrentId(s.id);
+      setSessions(prev => [s, ...prev]);
+    }
   }, []);
 
   const handleTemplateSelect = useCallback((template) => {
@@ -1809,6 +1837,11 @@ export default function Dashboard() {
   // Atomic session update — creates session on first call if needed
   const currentIdRef = useRef(null);
   useEffect(() => { currentIdRef.current = currentId; }, [currentId]);
+
+  const sessionsRef = useRef(sessions);
+  useEffect(() => { sessionsRef.current = sessions; }, [sessions]);
+  const selectedModelRef = useRef(selectedModel);
+  useEffect(() => { selectedModelRef.current = selectedModel; }, [selectedModel]);
 
   const handleChatUpdate = useCallback(({ messages, title }) => {
     setSessions(prev => {
@@ -1922,32 +1955,44 @@ export default function Dashboard() {
               )}
               {activeTab === 'design' && (
                 <DesignArea
+                  key={currentId || 'new-design'}
                   model={activeModel}
                   subscription={subscription}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
                   defaultPrompt={defaultPrompt}
+                  session={currentSession}
+                  onUpdate={(items, title) => handleMediaUpdate('design', { items }, title)}
                 />
               )}
               {activeTab === 'video' && (
                 <VideoArea
+                  key={currentId || 'new-video'}
                   model={activeModel}
                   subscription={subscription}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
+                  session={currentSession}
+                  onUpdate={(videos, title) => handleMediaUpdate('video', { items: videos }, title)}
                 />
               )}
               {activeTab === 'audio' && (
                 <AudioArea
+                  key={currentId || 'new-audio'}
                   model={activeModel}
                   subscription={subscription}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
+                  session={currentSession}
+                  onUpdate={(audioItems, title) => handleMediaUpdate('audio', { items: audioItems }, title)}
                 />
               )}
               {activeTab === 'agents' && (
                 <NodeFlowBuilder
+                  key={currentId || 'new-agents'}
                   preloadTemplate={activeFlowTemplate}
+                  session={currentSession}
+                  onUpdate={(data, title) => handleMediaUpdate('agents', data, title)}
                   subscription={subscription}
                   usageCount={usageCount}
                   freeLimit={FREE_MONTHLY_LIMIT}
