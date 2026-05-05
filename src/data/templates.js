@@ -4,7 +4,7 @@
 export const NODE_TYPES = {
   context:  { icon: '◈', label: 'Context input',  color: '#64748b', bg: '#f1f5f9' },
   text:     { icon: 'T',  label: 'Generate text',  color: '#7c3aed', bg: '#f5f3ff' },
-  image:    { icon: '⬡',  label: 'AI image',       color: '#f97316', bg: '#fff7ed' },
+  image:    { icon: '⬡',  label: 'AI image',       color: '#7c3aed', bg: '#f5f3ff' },
   video:    { icon: '▶',  label: 'AI video',       color: '#0284c7', bg: '#eff6ff' },
   audio:    { icon: '♪',  label: 'AI audio',       color: '#059669', bg: '#f0fdf4' },
   chat:     { icon: '◉',  label: 'AI chat',        color: '#6366f1', bg: '#eef2ff' },
@@ -28,7 +28,7 @@ export const TEMPLATES = [
     tab: 'text',
     creditCost: 1,
     desc: '5-email B2B outreach sequence with subject lines and CTAs',
-    thumbnail: { gradient: 'linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%)', accent: '#f97316' },
+    thumbnail: { gradient: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)', accent: '#7c3aed' },
     nodes: ['context', 'persona', 'text', 'format'],
     howItWorks: [
       'Describe your ideal customer profile (ICP) and the pain points they face',
@@ -54,7 +54,7 @@ export const TEMPLATES = [
     tab: 'text',
     creditCost: 1,
     desc: '10 headline + body variations for Google & Meta ads',
-    thumbnail: { gradient: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)', accent: '#ea580c' },
+    thumbnail: { gradient: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)', accent: '#6366f1' },
     nodes: ['context', 'research', 'text', 'format'],
     howItWorks: [
       'Input your product details and target audience',
@@ -291,7 +291,7 @@ export const TEMPLATES = [
     tab: 'design',
     creditCost: 4,
     desc: 'Studio-quality product shot on clean background',
-    thumbnail: { gradient: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)', accent: '#f97316' },
+    thumbnail: { gradient: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)', accent: '#7c3aed' },
     nodes: ['context', 'image'],
     howItWorks: [
       'Describe your product — shape, material, and intended mood',

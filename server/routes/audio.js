@@ -6,6 +6,7 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { verifyToken } = require('../middleware/firebaseAuth');
+const { trackCredits } = require('../utils/credits');
 
 const router = express.Router();
 
@@ -39,6 +40,10 @@ router.post('/speech', audioLimiter, verifyToken, async (req, res) => {
 
   const API_KEY = process.env.ELEVENLABS_API_KEY;
   if (!API_KEY) return res.status(503).json({ error: 'ElevenLabs not configured. Add ELEVENLABS_API_KEY to server env.' });
+
+  const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const creditResult = await trackCredits(req.user?.uid, 10, adminUids);
+  if (!creditResult.allowed) return res.status(402).json({ error: creditResult.error, creditsExceeded: true });
 
   const voiceId = VOICES[voice] || VOICES.rachel;
 
@@ -86,6 +91,10 @@ router.post('/music', audioLimiter, verifyToken, async (req, res) => {
   const TOKEN = process.env.REPLICATE_API_TOKEN;
   if (!TOKEN) return res.status(503).json({ error: 'Replicate not configured. Add REPLICATE_API_TOKEN to server env.' });
 
+  const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const creditResult = await trackCredits(req.user?.uid, 10, adminUids);
+  if (!creditResult.allowed) return res.status(402).json({ error: creditResult.error, creditsExceeded: true });
+
   try {
     const raw = await fetch('https://api.replicate.com/v1/models/meta/musicgen/predictions', {
       method: 'POST',
@@ -122,6 +131,10 @@ router.post('/tts-free', audioLimiter, verifyToken, async (req, res) => {
   const { text, lang = 'en' } = req.body;
   if (!text?.trim()) return res.status(400).json({ error: 'Text is required' });
   if (text.length > 1000) return res.status(400).json({ error: 'Text too long (max 1000 chars)' });
+
+  const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const creditResult = await trackCredits(req.user?.uid, 5, adminUids);
+  if (!creditResult.allowed) return res.status(402).json({ error: creditResult.error, creditsExceeded: true });
 
   // Split into ≤190-char chunks at word boundaries
   const words = text.trim().split(/\s+/);

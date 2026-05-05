@@ -6,6 +6,7 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { verifyToken } = require('../middleware/firebaseAuth');
+const { trackCredits } = require('../utils/credits');
 
 const router = express.Router();
 
@@ -71,6 +72,10 @@ router.post('/generate', videoLimiter, verifyToken, async (req, res) => {
     higgsfield: { path: '/models/wavespeedai/wan-2.1-1.3b/predictions',    input: { prompt, aspect_ratio } },
   };
 
+  const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const creditResult = await trackCredits(req.user?.uid, 25, adminUids);
+  if (!creditResult.allowed) return res.status(402).json({ error: creditResult.error, creditsExceeded: true });
+
   const cfg = modelVersions[model] || modelVersions.wan;
 
   try {
@@ -81,10 +86,11 @@ router.post('/generate', videoLimiter, verifyToken, async (req, res) => {
     });
     const prediction = await raw.json();
 
-    console.log('[Video] Replicate response status:', raw.status, 'id:', prediction.id, 'detail:', prediction.detail);
+    console.log('[Video] Replicate response status:', raw.status, 'id:', prediction.id, 'detail:', prediction.detail || prediction.error);
 
     if (!prediction.id) {
-      const errMsg = prediction.detail || prediction.error || `Replicate error (${raw.status})`;
+      let errMsg = prediction.detail || prediction.error || `Replicate error (${raw.status})`;
+      if (raw.status === 401) errMsg = 'Replicate API token invalid or expired. Check REPLICATE_API_TOKEN in Render dashboard → Environment variables.';
       return res.status(raw.status >= 400 ? raw.status : 500).json({ error: errMsg });
     }
 

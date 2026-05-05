@@ -430,7 +430,7 @@ function ChatArea({ session, model, modelVersion, systemPrompt, onUpdate, usageC
       },
       onError: (err) => {
         clearTimeout(slowTimerRef.current); setSlowServer(false);
-        const friendly = err?.includes('limit') ? err : (isEs ? 'Algo salió mal. Inténtalo de nuevo.' : 'Something went wrong. Please try again.');
+        const friendly = (err?.includes('credit') || err?.includes('limit')) ? err : (isEs ? 'Algo salió mal. Inténtalo de nuevo.' : 'Something went wrong. Please try again.');
         const errMsg = { role: 'assistant', content: `⚠️ ${friendly}`, ts: Date.now(), error: true };
         onUpdate({ messages: [...nextMessages, errMsg] });
         setStreamText('');
@@ -1730,8 +1730,11 @@ function ModelPanel({ selectedId, selectedVersion, onSelect, onSelectVersion, sy
 /* ─────────────────────────────────────────────────────────────────
    Left Sidebar
 ───────────────────────────────────────────────────────────────── */
-function Sidebar({ sessions, activeId, onNew, onSelect, onDelete, subscription, usageCount, freeLimit, sessionListRef }) {
+function Sidebar({ sessions, activeId, activeTab, onNew, onSelect, onDelete, subscription, usageCount, freeLimit, sessionListRef }) {
   const [navTab, setNavTab] = useState('chats');
+  useEffect(() => {
+    setNavTab(activeTab === 'text' ? 'chats' : 'history');
+  }, [activeTab]);
   const { t } = useTranslation();
 
   const usagePct = subscription === 'free' ? Math.min(100, Math.round((usageCount / freeLimit) * 100)) : 100;
@@ -1787,7 +1790,7 @@ function Sidebar({ sessions, activeId, onNew, onSelect, onDelete, subscription, 
       {subscription === 'free' && (
         <div className="dash__sidebar-footer">
           <div className="dash__usage-row">
-            <span>⚡ {freeLimit - usageCount} {t('dashboard.creditsLeft', { defaultValue: 'credits left' })}</span>
+            <span>⚡ {Math.max(0, freeLimit - usageCount)} {t('dashboard.creditsLeft', { defaultValue: 'credits left' })}</span>
             <span className="dash__usage-fraction">{usageCount}/{freeLimit}</span>
           </div>
           <div className="dash__usage-track">
@@ -1989,6 +1992,7 @@ export default function Dashboard() {
         <Sidebar
           sessions={sessions}
           activeId={currentId}
+          activeTab={activeTab}
           onNew={handleNew}
           onSelect={handleSelectSession}
           onDelete={(id) => setSessions(prev => prev.filter(s => s.id !== id))}

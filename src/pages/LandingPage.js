@@ -871,7 +871,7 @@ export default function LandingPage() {
 
             <motion.div variants={fadeUp} transition={{ duration: 0.3 }}>
               <span className="landing__hero-badge">
-                {t('landing.hero.badge', { defaultValue: '⚡ 30 AI agents. One subscription.' })}
+                {t('landing.hero.badge', { defaultValue: '⚡ 50 free credits. No card required.' })}
               </span>
             </motion.div>
 
@@ -902,7 +902,7 @@ export default function LandingPage() {
             <motion.div className="landing__hero-trust" variants={fadeUp} transition={{ duration: 0.35, delay: 0.2 }}>
               <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust1', { defaultValue: 'No credit card required' })}</span>
               <span className="landing__trust-divider">·</span>
-              <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust2', { defaultValue: '24-hour free trial' })}</span>
+              <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust2', { defaultValue: '50 free credits' })}</span>
               <span className="landing__trust-divider">·</span>
               <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust3', { defaultValue: 'Cancel anytime' })}</span>
             </motion.div>
@@ -1061,7 +1061,7 @@ export default function LandingPage() {
               <div className="landing__cta-trust">
                 <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust1', { defaultValue: 'No credit card required' })}</span>
                 <span className="landing__trust-divider">·</span>
-                <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust2', { defaultValue: '24-hour free trial' })}</span>
+                <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust2', { defaultValue: '50 free credits' })}</span>
                 <span className="landing__trust-divider">·</span>
                 <span className="landing__trust-item"><span className="landing__trust-check">✓</span>{t('landing.hero.trust3', { defaultValue: 'Cancel anytime' })}</span>
               </div>

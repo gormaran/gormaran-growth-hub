@@ -65,7 +65,7 @@ function RelatedCard({ tpl, onSelect }) {
         padding: 0, overflow: 'hidden', cursor: 'pointer', textAlign: 'left',
         transition: 'border-color 0.15s, box-shadow 0.15s',
       }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(249,115,22,0.12)'; }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(249,115,22,0.12)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       <div style={{
@@ -178,7 +178,7 @@ export default function TemplateDetail({ template, onClose, onUse }) {
             <button
               onClick={() => onUse(template)}
               style={{
-                background: '#f97316', color: 'white', border: 'none',
+                background: '#7c3aed', color: 'white', border: 'none',
                 borderRadius: 10, padding: '12px 20px',
                 fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer',
                 transition: 'filter 0.15s, transform 0.12s',
@@ -199,7 +199,7 @@ export default function TemplateDetail({ template, onClose, onUse }) {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{
-                  width: 22, height: 22, borderRadius: 6, background: '#f97316',
+                  width: 22, height: 22, borderRadius: 6, background: '#7c3aed',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '0.68rem', fontWeight: 900, color: 'white',
                 }}>
@@ -246,7 +246,7 @@ export default function TemplateDetail({ template, onClose, onUse }) {
               <div style={{ fontSize: '0.65rem', color: '#9a3412', fontWeight: 700, marginBottom: 2 }}>
                 CREDIT COST
               </div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f97316' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#7c3aed' }}>
                 ⚡ {template.creditCost} {template.creditCost === 1 ? 'credit' : 'credits'}
               </div>
             </div>

@@ -19,6 +19,7 @@ const aiLimiter = rateLimit({
 });
 
 const CATEGORY_PROMPTS = require('./categoryPrompts');
+const { trackCredits, CREDIT_LIMIT } = require('../utils/credits');
 
 // POST /api/ai/generate  — streaming SSE response
 router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
@@ -49,7 +50,7 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
   let userSubscription = req.user?.subscription || 'free';
   let userCreatedAt = null;
 
-  const FREE_MONTHLY_LIMIT = 10;
+  const FREE_MONTHLY_LIMIT = CREDIT_LIMIT;
   let usageCount = 0;
   let usageResetDate = null;
 
@@ -88,8 +89,8 @@ router.post('/generate', aiLimiter, verifyToken, async (req, res) => {
     const reset = usageResetDate ? new Date(usageResetDate) : null;
     const isNewMonth = !reset || reset.getMonth() !== now.getMonth() || reset.getFullYear() !== now.getFullYear();
     const effectiveCount = isNewMonth ? 0 : usageCount;
-    if (effectiveCount >= FREE_MONTHLY_LIMIT) {
-      return res.status(403).json({ error: 'Monthly limit reached', monthlyLimitReached: true });
+    if (effectiveCount + 2 > FREE_MONTHLY_LIMIT) {
+      return res.status(403).json({ error: `Not enough credits. ${FREE_MONTHLY_LIMIT - effectiveCount} remaining, text generation costs 2 credits.`, monthlyLimitReached: true });
     }
   }
 
@@ -310,21 +311,21 @@ router.post('/chat', aiLimiter, verifyToken, async (req, res) => {
       const data = userDoc.exists ? userDoc.data() : {};
       const planAliases = { grow: 'pro', scale: 'pro', evolution: 'enterprise' };
       const sub = planAliases[data.subscription] || data.subscription || 'free';
-      const FREE_LIMIT = 10;
+      const FREE_LIMIT = CREDIT_LIMIT;
 
       if (sub === 'free') {
         const now = Date.now();
         const resetMs = data.usageResetDate?.toMillis?.() || 0;
         const count = resetMs > now ? (data.usageCount || 0) : 0;
-        if (count >= FREE_LIMIT) {
-          return res.status(403).json({ error: 'Monthly limit reached. Upgrade to continue.' });
+        if (count + 2 > FREE_LIMIT) {
+          return res.status(403).json({ error: `Not enough credits. ${FREE_LIMIT - count} remaining, chat costs 2 credits.` });
         }
         const nextReset = new Date(now);
         nextReset.setMonth(nextReset.getMonth() + 1);
         nextReset.setDate(1);
         nextReset.setHours(0, 0, 0, 0);
         await userRef.set({
-          usageCount: count + 1,
+          usageCount: count + 2,
           usageResetDate: adminSdk.firestore.Timestamp.fromMillis(resetMs > now ? resetMs : nextReset.getTime()),
         }, { merge: true });
       }

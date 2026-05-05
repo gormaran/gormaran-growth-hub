@@ -2,6 +2,7 @@ const express = require('express');
 const OpenAI = require('openai');
 const rateLimit = require('express-rate-limit');
 const { verifyToken } = require('../middleware/firebaseAuth');
+const { trackCredits } = require('../utils/credits');
 
 const router = express.Router();
 
@@ -61,6 +62,10 @@ router.post('/generate-logo', imageLimiter, verifyToken, async (req, res) => {
 // POST /api/image/generate — general-purpose image generation
 router.post('/generate', imageLimiter, verifyToken, async (req, res) => {
   const { inputs } = req.body;
+
+  const adminUids = (process.env.ADMIN_UIDS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const creditResult = await trackCredits(req.user?.uid, 10, adminUids);
+  if (!creditResult.allowed) return res.status(402).json({ error: creditResult.error, creditsExceeded: true });
 
   if (!inputs?.subject || !inputs?.style) {
     return res.status(400).json({ error: 'Missing required fields: subject, style' });
