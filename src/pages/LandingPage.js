@@ -813,7 +813,7 @@ export default function LandingPage() {
   const isEs = i18n.language?.startsWith('es');
   const { currentUser } = useAuth();
 
-  useSEO({
+  const seoEl = useSEO({
     title: 'Gormaran.io | Top AI Marketing Tools — Text, Design, Video & More',
     description: '50 free credits. All-in-one AI platform: chat, image generation, video, audio and AI app builder. No prompting required. Start free.',
     canonical: 'https://gormaran.io/',
@@ -824,7 +824,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="landing">
+    <>{seoEl}<div className="landing">
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <section className="landing__hero">
@@ -1048,6 +1048,6 @@ export default function LandingPage() {
 
       <WhatsAppPopup />
       {!currentUser && <NichePopup />}
-    </div>
+    </div></>
   );
 }

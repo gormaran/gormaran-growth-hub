@@ -7,7 +7,7 @@ import { useSEO } from '../utils/seo';
 import './AuthPage.css';
 
 export default function AuthPage() {
-  useSEO({
+  const seoEl = useSEO({
     title: 'Gormaran.io | Sign In or Create Free Account',
     description: 'Sign up free and get 50 AI credits. Access Text, Design, Video, Audio and AI Agents — no credit card required.',
     canonical: 'https://gormaran.io/auth',
@@ -105,6 +105,7 @@ export default function AuthPage() {
 
   return (
     <div className="auth">
+      {seoEl}
       {/* Background */}
       <div className="auth__bg">
         <div className="auth__orb auth__orb-1" />

@@ -88,7 +88,7 @@ export default function PricingPage() {
   const isEs = i18n.language?.startsWith('es');
   const [searchParams] = useSearchParams();
 
-  useSEO({
+  const seoEl = useSEO({
     title: 'Gormaran.io | Pricing — AI Marketing Credits & Plans',
     description: 'Start with 50 free credits. Upgrade to Grow, Scale or Evolution for more credits on Text, Design, Video, Audio and AI Agents.',
     canonical: 'https://gormaran.io/pricing',
@@ -191,6 +191,7 @@ export default function PricingPage() {
 
   return (
     <div className="page">
+      {seoEl}
       <div className="pricing2">
 
         {/* ── HERO ── */}

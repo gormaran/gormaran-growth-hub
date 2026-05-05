@@ -1,37 +1,26 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 
-export function useSEO({ title, description, canonical }) {
-  useEffect(() => {
-    // Title
-    document.title = title;
+/**
+ * SEOHead — renders react-helmet-async Helmet with unique page metadata.
+ * Works with react-snap (pre-render) and JS crawlers (Google).
+ */
+export function SEOHead({ title, description, canonical }) {
+  return (
+    <Helmet>
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      {canonical && <link rel="canonical" href={canonical} />}
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      {canonical && <meta property="og:url" content={canonical} />}
+    </Helmet>
+  );
+}
 
-    // Meta description
-    let metaDesc = document.querySelector('meta[name="description"]');
-    if (!metaDesc) {
-      metaDesc = document.createElement('meta');
-      metaDesc.name = 'description';
-      document.head.appendChild(metaDesc);
-    }
-    metaDesc.content = description;
-
-    // Canonical
-    if (canonical) {
-      let link = document.querySelector('link[rel="canonical"]');
-      if (!link) {
-        link = document.createElement('link');
-        link.rel = 'canonical';
-        document.head.appendChild(link);
-      }
-      link.href = canonical;
-    }
-
-    // OG tags
-    const setOG = (prop, val) => {
-      let el = document.querySelector(`meta[property="${prop}"]`);
-      if (el) el.content = val;
-    };
-    setOG('og:title', title);
-    setOG('og:description', description);
-    if (canonical) setOG('og:url', canonical);
-  }, [title, description, canonical]);
+/** Backwards-compat hook — pages that called useSEO() as a hook now need
+ *  to render the returned element: const seo = useSEO(...); return <>{seo}...</>
+ *  New pages should use <SEOHead /> directly.
+ */
+export function useSEO(props) {
+  return <SEOHead {...props} />;
 }

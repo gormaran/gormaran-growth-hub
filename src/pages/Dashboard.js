@@ -1720,7 +1720,7 @@ export default function Dashboard() {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
 
-  useSEO({
+  const seoEl = useSEO({
     title: 'Gormaran.io | AI Growth Hub Dashboard',
     description: 'Your AI workspace — Text, Design, Video, Audio and AI Agents in one dashboard.',
   });
@@ -1845,6 +1845,7 @@ export default function Dashboard() {
 
   return (
     <div className="dash">
+      {seoEl}
       {showOnboarding && (
         <OnboardingModal onComplete={() => {
           refreshUserProfile(currentUser.uid);

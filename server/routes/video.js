@@ -45,7 +45,12 @@ async function startHiggsfieldVideo(prompt, aspect_ratio = '16:9') {
     body: JSON.stringify({ prompt, aspect_ratio }),
   });
 
-  const data = await res.json();
+  const rawText = await res.text();
+  let data;
+  try { data = JSON.parse(rawText); }
+  catch {
+    throw new Error(`Higgsfield API error (status ${res.status}): not JSON — check HIGGSFIELD_API_KEY and endpoint. Raw: ${rawText.slice(0, 200)}`);
+  }
   console.log('[Higgsfield] start status:', res.status, 'id:', data.id || data.generation_id, 'error:', data.detail || data.error);
 
   if (!res.ok) {
@@ -54,7 +59,7 @@ async function startHiggsfieldVideo(prompt, aspect_ratio = '16:9') {
   }
 
   const id = data.id || data.generation_id;
-  if (!id) throw new Error('Higgsfield returned no generation ID');
+  if (!id) throw new Error(`Higgsfield returned no ID. Full response: ${JSON.stringify(data)}`);
   return id;
 }
 
@@ -65,7 +70,10 @@ async function pollHiggsfieldVideo(id) {
   const res = await fetch(`${HIGGSFIELD_BASE}/generation/video/${id}`, {
     headers: { 'Authorization': `Bearer ${key}` },
   });
-  const data = await res.json();
+  const rawText = await res.text();
+  let data;
+  try { data = JSON.parse(rawText); }
+  catch { return { status: 'failed', error: `Higgsfield poll error (${res.status}): ${rawText.slice(0, 200)}` }; }
 
   const status = data.status || 'processing';
   if (status === 'completed' || status === 'succeeded') {

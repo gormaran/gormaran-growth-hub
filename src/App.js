@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { useSEO } from './utils/seo';
 import { useTranslation } from 'react-i18next';
 import { AuthProvider } from './context/AuthContext';
@@ -49,7 +50,7 @@ function ComingSoon({ page }) {
   const { i18n } = useTranslation();
   const isEs = i18n.language?.startsWith('es');
   const label = isEs ? 'Próximamente' : 'Coming Soon';
-  useSEO({
+  const seoEl = useSEO({
     title: page === 'Academy'
       ? 'Gormaran.io | AI Marketing Training & Courses'
       : `Gormaran.io | ${page}`,
@@ -63,6 +64,7 @@ function ComingSoon({ page }) {
     : (isEs ? 'Artículos, estrategias y tendencias de marketing con IA escritos por el equipo de Gormaran.' : 'Articles, strategies and AI marketing trends written by the Gormaran team.');
   return (
     <div className="page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', gap: '1rem', textAlign: 'center', padding: '2rem' }}>
+      {seoEl}
       <div style={{ fontSize: '3rem' }}>{page === 'Academy' ? '🎓' : '📝'}</div>
       <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>{page} — <span style={{ background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{label}</span></h1>
       <p style={{ color: 'var(--text-secondary)', maxWidth: 480 }}>{desc}</p>
@@ -83,6 +85,7 @@ function AppLayout({ children, hideFooter }) {
 
 export default function App() {
   return (
+    <HelmetProvider>
     <Router>
       <AnalyticsTracker />
       <ThemeProvider>
@@ -203,5 +206,6 @@ export default function App() {
       </AuthProvider>
       </ThemeProvider>
     </Router>
+    </HelmetProvider>
   );
 }
